@@ -1,15 +1,15 @@
 <script setup lang="ts">
 
 import { computed } from 'vue'
-import { Jobs } from '../../Craft';
+import { Jobs, Actions } from '../../Craft';
 
 const props = defineProps<{
     scale?: number,
     job: Jobs,
-    name: string,
+    action: Actions,
 }>();
 
-const iconUrl = computed(() => new URL(`../../assets/icons/${Jobs[props.job].toLowerCase()}/${props.name}.png`, import.meta.url).href)
+const iconUrl = computed(() => new URL(`../../assets/icons/${Jobs[props.job].toLowerCase()}/${props.action}.png`, import.meta.url).href)
 
 const onClick = (event: MouseEvent) => {
     (event.target as HTMLElement).classList.add('click-animation')
@@ -21,17 +21,27 @@ const onAnimationEnd = (event: AnimationEvent) => {
 </script>
 
 <template>
+<div class="container">
     <div class="action" @click="onClick" @animationend="onAnimationEnd($event)"></div>
+</div>
+    
 </template>
 
 <style scoped>
-.action {
+.container {
     display: inline-block;
+    width: calc(48px * v-bind("props.scale || 0.85"));
+    height: calc(48px * v-bind("props.scale || 0.85"));
+    transform: scale(v-bind("props.scale || 0.85"));
+    transform-origin: 0px 0px;
+}
+.action {
+    display: block;
     width: 48px;
     height: 48px;
     background: url("../../assets/icons/icona_frame_tex.png") no-repeat,
         v-bind("'url('+iconUrl+')'") no-repeat top 3px left 4px;
-    transform: scale(v-bind("props.scale || 0.85"));
+    transform: scale(1);
 }
 .action:hover:after {
     content: "";
