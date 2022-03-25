@@ -6,10 +6,10 @@ declare module 'vue' {
   export interface GlobalComponents {
     Action: typeof import('./src/components/designer/Action.vue')['default']
     ActionPanel: typeof import('./src/components/designer/ActionPanel.vue')['default']
+    ActionQueue: typeof import('./src/components/designer/ActionQueue.vue')['default']
     Condition: typeof import('./src/components/designer/Condition.vue')['default']
     Designer: typeof import('./src/components/designer/Designer.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
-    ElCard: typeof import('element-plus/es')['ElCard']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElContainer: typeof import('element-plus/es')['ElContainer']
     ElHeader: typeof import('element-plus/es')['ElHeader']

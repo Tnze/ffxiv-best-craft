@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Attributes, Jobs, Status } from '../../Craft'
+import { Attributes, Jobs, Status, new_recipe, Actions, simulate } from '../../Craft'
 import ActionPanel from './ActionPanel.vue'
+import Action from './Action.vue'
 import Condition from './Condition.vue'
 import Split from './Split.vue';
+import ActionQueue from './ActionQueue.vue'
 
 const props = defineProps<{
     itemName: string;
@@ -11,7 +13,18 @@ const props = defineProps<{
     status: Status;
 }>()
 
+interface Slot {
+    id: number
+    action: Actions
+}
 
+const actionQueue = ref<Slot[]>([])
+const maxid = ref(0)
+
+const onClick = (action: Actions) => {
+    actionQueue.value.push({ id: maxid.value, action })
+    maxid.value++
+}
 
 </script>
 
@@ -22,8 +35,7 @@ const props = defineProps<{
                 <el-col :span="18">
                     <h1>{{ itemName }}</h1>
                 </el-col>
-                <el-col :span="6">
-                </el-col>
+                <el-col :span="6"></el-col>
             </el-row>
         </el-header>
         <el-main>
@@ -38,12 +50,12 @@ const props = defineProps<{
                         <el-col :span="8">进度条</el-col>
                     </el-row>
                     <el-row>
-                        <el-scrollbar></el-scrollbar>
+                        <ActionQueue :job="Jobs.Armorer" :list="actionQueue" />
                     </el-row>
                 </template>
                 <template #lower>
                     <el-scrollbar>
-                        <ActionPanel :job="Jobs.Armorer" #lower />
+                        <ActionPanel @clicked-action="onClick" :job="Jobs.Armorer" #lower />
                     </el-scrollbar>
                 </template>
             </Split>
@@ -52,10 +64,6 @@ const props = defineProps<{
 </template>
 
 <style scoped>
-.el-header {
-    text-align: left;
-}
-
 #condition {
     text-align: center;
 }

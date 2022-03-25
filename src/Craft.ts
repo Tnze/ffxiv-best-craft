@@ -1,3 +1,5 @@
+import { invoke } from "@tauri-apps/api/tauri";
+
 interface Attributes {
   level: number;
   craftsmanship: number;
@@ -7,11 +9,11 @@ interface Attributes {
 
 interface Recipe {
   rlv: number;
-  jobLevel: number;
+  job_level: number;
   difficulty: number;
   quality: number;
   durability: number;
-  conditionsFlag: number;
+  conditions_flag: number;
 
   progress_divider: number;
   quality_divider: number;
@@ -56,4 +58,67 @@ enum Jobs {
   Culinarian,
 }
 
-export { Attributes, Recipe, Status, Conditions, Jobs };
+enum Actions {
+  BasicSynthesis = "basic_synthesis",
+  BasicTouch = "basic_touch",
+  MastersMend = "masters_mend",
+  HastyTouch = "hasty_touch",
+  RapidSynthesis = "rapid_synthesis",
+  Observe = "observe",
+  TricksOfTheTrade = "tricks_of_the_trade",
+  WasteNot = "waste_not",
+  Veneration = "veneration",
+  StandardTouch = "standard_touch",
+  GreatStrides = "great_strides",
+  Innovation = "innovation",
+  FinalAppraisal = "final_appraisal",
+  WasteNotII = "waste_not_ii",
+  ByregotsBlessing = "byregot_s_blessing",
+  PreciseTouch = "precise_touch",
+  MuscleMemory = "muscle_memory",
+  CarefulSynthesis = "careful_synthesis",
+  Manipulation = "manipulation",
+  PrudentTouch = "prudent_touch",
+  FocusedSynthesis = "focused_synthesis",
+  FocusedTouch = "focused_touch",
+  Reflect = "reflect",
+  PreparatoryTouch = "preparatory_touch",
+  Groundwork = "groundwork",
+  DelicateSynthesis = "delicate_synthesis",
+  IntensiveSynthesis = "intensive_synthesis",
+  TrainedEye = "trained_eye",
+  AdvancedTouch = "advanced_touch",
+  PrudentSynthesis = "prudent_synthesis",
+  TrainedFinesse = "trained_finesse",
+  CarefulObservation = "careful_observation",
+  HeartAndSoul = "heart_and_soul",
+}
+
+const new_recipe = async (
+  rlv: number,
+  difficultyFactor: number,
+  qualityFactor: number,
+  durabilityFactor: number
+): Promise<Recipe> => {
+  return await invoke("new_recipe", {
+    rlv,
+    difficultyFactor,
+    qualityFactor,
+    durabilityFactor,
+  });
+};
+
+const simulate = async (actions: Actions[]): Promise<string> => {
+  return await invoke("simulate", { skills: actions });
+};
+
+export {
+  Attributes,
+  Recipe,
+  Status,
+  Conditions,
+  Jobs,
+  Actions,
+  new_recipe,
+  simulate,
+};
