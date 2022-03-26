@@ -7,12 +7,14 @@ const props = defineProps<{
     scale?: number,
     job: Jobs,
     action: Actions,
+    disabled?: boolean,
 }>();
 
 const iconUrl = computed(() => new URL(`../../assets/icons/${Jobs[props.job].toLowerCase()}/${props.action}.png`, import.meta.url).href)
 
 const onClick = (event: MouseEvent) => {
-    (event.target as HTMLElement).classList.add('click-animation')
+    if (!props.disabled)
+        (event.target as HTMLElement).classList.add('click-animation')
 }
 const onAnimationEnd = (event: AnimationEvent) => {
     (event.target as HTMLElement).classList.remove('click-animation')
@@ -21,10 +23,9 @@ const onAnimationEnd = (event: AnimationEvent) => {
 </script>
 
 <template>
-<div class="container">
-    <div class="action" @click="onClick" @animationend="onAnimationEnd($event)"></div>
-</div>
-    
+    <div class="container">
+        <div class="action" @click="onClick" @animationend="onAnimationEnd($event)"></div>
+    </div>
 </template>
 
 <style scoped>
@@ -53,6 +54,7 @@ const onAnimationEnd = (event: AnimationEvent) => {
     position: absolute;
     background: url("../../assets/icons/icona_frame_tex.png") no-repeat top 0px
         left -240px;
+    cursor: v-bind("disabled?'inherit':'pointer'");
 }
 .click-animation:before {
     content: "";

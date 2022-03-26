@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import draggable from 'vuedraggable'
 import { Actions, Jobs } from '../../Craft';
 import Action from './Action.vue'
 
@@ -13,12 +14,22 @@ const props = defineProps<{
     job: Jobs,
 }>()
 
+const dragOptions = computed(() => {
+    return {
+        animation: 200,
+        group: "description",
+        disabled: false,
+        ghostClass: "ghost"
+    }
+})
+
+const isDragging = ref(false)
 
 </script>
 
 <template>
     <div class="action-queue-container">
-        <transition-group name="list-complete" tag="p">
+        <!-- <transition-group name="list-complete">
             <div
                 v-for="(item, index) in list"
                 @click.stop.prevent.right="list.splice(index, 1)"
@@ -32,7 +43,42 @@ const props = defineProps<{
                     @click.stop.prevent.right="list.splice(index, 1)"
                 />
             </div>
-        </transition-group>
+        </transition-group>-->
+
+        <!-- <Container orientation="horizontal" @drop="onDrop">
+            <Draggable v-for="(item, i) in list" :key="item.id">
+                <Action
+                    :scale="0.7"
+                    :job="Jobs.Armorer"
+                    :action="item.action"
+                    @click.stop.prevent.right="list.splice(i, 1)"
+                />
+            </Draggable>
+        </Container>-->
+        <draggable
+            class="list-group"
+            item-key="id"
+            tag="transition-group"
+            :component-data="{
+                name: !isDragging ? 'flip-list' : null,
+            }"
+            :list="list"
+            v-bind="dragOptions"
+            @start="isDragging = true"
+            @end="isDragging = false"
+        >
+            <template #item="{ element, index }">
+                <div class="list-group-item">
+                    <Action
+                        :scale="0.7"
+                        :job="Jobs.Armorer"
+                        :action="element.action"
+                        :disabled="true"
+                        @click.stop.prevent.right="list.splice(index, 1)"
+                    />
+                </div>
+            </template>
+        </draggable>
     </div>
 </template>
 
@@ -40,18 +86,23 @@ const props = defineProps<{
 .action-queue-container {
     margin: 10px;
 }
-.list-complete-item {
+.flip-list-move,
+.flip-list-enter-active,
+.flip-list-leave-active {
     transition: all 0.3s ease;
-    display: inline-block;
 }
-
-.list-complete-enter-from,
-.list-complete-leave-to {
-    opacity: 0;
-    transform: translateY(30px);
-}
-
-.list-complete-leave-active {
+.flip-list-leave-active {
     position: absolute;
+}
+.flip-list-enter-from,
+.flip-list-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+}
+.ghost {
+    opacity: 0.5;
+}
+.list-group-item {
+    display: inline-block;
 }
 </style>
