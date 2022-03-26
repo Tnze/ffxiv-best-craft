@@ -4,7 +4,7 @@ interface Attributes {
   level: number;
   craftsmanship: number;
   control: number;
-  craftPoints: number;
+  craft_points: number;
 }
 
 interface Recipe {
@@ -21,8 +21,30 @@ interface Recipe {
   quality_modifier: number;
 }
 
+interface Buffs {
+  muscle_memory: number;
+  great_strides: number;
+  veneration: number;
+  innovation: number;
+  inner_quiet: number;
+  final_appraisal: number;
+  manipulation: number;
+  wast_not: number;
+  standard_touch_prepared: boolean;
+  advanced_touch_prepared: boolean;
+  observed: boolean;
+}
+
 interface Status {
-  condition: Conditions;
+  buffs: Buffs;
+  attributes: Attributes;
+  recipe: Recipe;
+  durability: number;
+  craft_points: number;
+  progress: number;
+  quality: number;
+  step: number;
+  condition: string;
 }
 
 enum Conditions {
@@ -108,17 +130,27 @@ const new_recipe = async (
   });
 };
 
-const simulate = async (actions: Actions[]): Promise<string> => {
-  return await invoke("simulate", { skills: actions });
+const new_status = async (
+  attrs: Attributes,
+  recipe: Recipe,
+  initQuality: number = 0
+): Promise<Status> => {
+  return await invoke("new_status", { attrs, recipe, initQuality });
+};
+
+const simulate = async (s: Status, actions: Actions[]): Promise<Status> => {
+  return await invoke("simulate", { status: s, skills: actions });
 };
 
 export {
   Attributes,
+  Buffs,
+  Conditions,
   Recipe,
   Status,
-  Conditions,
   Jobs,
   Actions,
   new_recipe,
+  new_status,
   simulate,
 };

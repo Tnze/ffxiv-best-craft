@@ -29,34 +29,7 @@ const isDragging = ref(false)
 
 <template>
     <div class="action-queue-container">
-        <!-- <transition-group name="list-complete">
-            <div
-                v-for="(item, index) in list"
-                @click.stop.prevent.right="list.splice(index, 1)"
-                :key="item.id"
-                class="list-complete-item"
-            >
-                <Action
-                    :scale="0.7"
-                    :job="Jobs.Armorer"
-                    :action="item.action"
-                    @click.stop.prevent.right="list.splice(index, 1)"
-                />
-            </div>
-        </transition-group>-->
-
-        <!-- <Container orientation="horizontal" @drop="onDrop">
-            <Draggable v-for="(item, i) in list" :key="item.id">
-                <Action
-                    :scale="0.7"
-                    :job="Jobs.Armorer"
-                    :action="item.action"
-                    @click.stop.prevent.right="list.splice(i, 1)"
-                />
-            </Draggable>
-        </Container>-->
         <draggable
-            class="list-group"
             item-key="id"
             tag="transition-group"
             :component-data="{
@@ -84,7 +57,7 @@ const isDragging = ref(false)
 
 <style scoped>
 .action-queue-container {
-    margin: 10px;
+    margin: 7px 10px 3px 10px;
 }
 .flip-list-move,
 .flip-list-enter-active,
