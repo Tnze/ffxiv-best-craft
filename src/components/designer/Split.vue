@@ -8,7 +8,7 @@ const split1 = ref<HTMLElement | null>(null)
 onMounted(() => {
     Split([split0.value!, split1.value!], {
         direction: 'vertical',
-        sizes: [80, 20],
+        sizes: [78, 22],
         minSize: 0,
     })
 })

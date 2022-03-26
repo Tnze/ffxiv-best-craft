@@ -20,15 +20,15 @@ const handleSelect = (key: number, keyPath: string) => {
     <el-menu default-active="2" @select="handleSelect" :collapse="true">
         <el-menu-item index="0">
             <el-icon>
-                <notebook />
-            </el-icon>
-            <template #title>配方</template>
-        </el-menu-item>
-        <el-menu-item index="1">
-            <el-icon>
                 <suitcase />
             </el-icon>
             <template #title>装备</template>
+        </el-menu-item>
+        <el-menu-item index="1">
+            <el-icon>
+                <notebook />
+            </el-icon>
+            <template #title>配方</template>
         </el-menu-item>
         <el-menu-item index="2">
             <el-icon>

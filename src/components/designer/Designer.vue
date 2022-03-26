@@ -1,24 +1,41 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Attributes, Jobs, Status, new_recipe, Actions, simulate } from '../../Craft'
+import { ref, watch, computed } from 'vue'
+import { Attributes, Jobs, Actions, simulate, Recipe, new_recipe, Status, new_status } from '../../Craft'
 import ActionPanel from './ActionPanel.vue'
 import Action from './Action.vue'
-import Condition from './Condition.vue'
 import Split from './Split.vue';
 import ActionQueue from './ActionQueue.vue'
+import StatusBar from './StatusBar.vue'
 
 const props = defineProps<{
     itemName: string;
+    job: Jobs;
     attributes: Attributes;
-    status: Status;
+    recipe?: Recipe;
 }>()
+const actionQueue = ref<Slot[]>([])
+const initStatus = ref<Status | undefined>(undefined)
+const status = ref<Status | undefined>(undefined)
+
+watch(() => [props.attributes, props.recipe], async ([attr, recipe]) => {
+    if (recipe == undefined) return
+    let s = await new_status(attr as Attributes, recipe as Recipe)
+    console.log(s)
+    initStatus.value = s
+})
+watch([initStatus, actionQueue], async ([s, actions]) => {
+    try {
+        status.value = await simulate(s!, actions.map(x => x.action))
+    } catch (e) {
+        console.error(e)
+    }
+}, { deep: true })
 
 interface Slot {
     id: number
     action: Actions
 }
 
-const actionQueue = ref<Slot[]>([])
 const maxid = ref(0)
 
 const onClick = (action: Actions) => {
@@ -31,31 +48,21 @@ const onClick = (action: Actions) => {
 <template>
     <el-container>
         <el-header>
-            <el-row :gutter="20">
-                <el-col :span="18">
-                    <h1>{{ itemName }}</h1>
-                </el-col>
-                <el-col :span="6"></el-col>
-            </el-row>
+            <h1>{{ itemName }}</h1>
         </el-header>
         <el-main>
             <Split>
                 <template #upper>
                     <el-row :gutter="0">
-                        <el-col id="condition" :span="4">
-                            耐久
-                            <br />
-                            <Condition :cond="status.condition" />
-                        </el-col>
-                        <el-col :span="8">进度条</el-col>
+                        <StatusBar :status="status!" />
                     </el-row>
-                    <el-row>
-                        <ActionQueue :job="Jobs.Armorer" :list="actionQueue" />
+                    <el-row class="action-queue">
+                        <ActionQueue :job="job" :list="actionQueue" />
                     </el-row>
                 </template>
                 <template #lower>
                     <el-scrollbar>
-                        <ActionPanel @clicked-action="onClick" :job="Jobs.Armorer" #lower />
+                        <ActionPanel @clicked-action="onClick" :job="job" #lower />
                     </el-scrollbar>
                 </template>
             </Split>
@@ -64,8 +71,9 @@ const onClick = (action: Actions) => {
 </template>
 
 <style scoped>
-#condition {
-    text-align: center;
+.action-queue {
+    border-top: 1px solid var(--el-border-color);
+    border-bottom: 1px solid var(--el-border-color);
 }
 .el-footer {
     padding: 0;

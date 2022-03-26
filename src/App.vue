@@ -1,24 +1,39 @@
 <script setup lang="ts">
-import { defineComponent, ref, shallowRef } from 'vue';
-import Recipe from './components/Recipe.vue';
+import { ref, shallowRef } from 'vue';
+import RecipePanel from './components/RecipePanel.vue';
 import Gearsets from './components/Gearsets.vue';
 import Designer from './components/designer/Designer.vue';
+import Settings from './components/Settings.vue';
 import Menu from './components/Menu.vue';
-import { Attributes, Status, Conditions } from './Craft'
+import { Attributes, Recipe, Jobs, new_recipe } from './Craft'
 
-const pages = shallowRef([Recipe, Gearsets, Designer])
-const pageProps = ref([{}, {}, {
-  itemName: "弗里金治愈耳夹",
-  attributes: {
-    level: 80,
-    craftsmanship: 2000,
-    control: 3000,
-    craftPoints: 400,
+const pages = shallowRef([Gearsets, RecipePanel, Designer, Settings])
+const attributes = ref<Attributes>({
+  level: 82,
+  craftsmanship: 2786,
+  control: 2764,
+  craft_points: 533,
+})
+const recipe = ref<Recipe | undefined>(undefined)
+const job = ref<Jobs>(Jobs.Weaver)
+
+new_recipe(535, 100, 100, 100).then((r) => { recipe.value = r })
+
+const pageProps = ref([
+  {},
+  {},
+  {
+    itemName: "弗里金治愈耳夹",
+    attributes,
+    recipe,
+    job,
   },
-  status: {
-    condition: Conditions.Excellent
+  {
+    settings: {
+      language: "zh-CN"
+    }
   }
-}])
+])
 const currentPage = ref(2)
 const handlePageSelect = (page: number) => {
   currentPage.value = page

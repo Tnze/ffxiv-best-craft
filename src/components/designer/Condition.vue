@@ -1,17 +1,16 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Conditions } from '../../Craft'
 
 const props = defineProps<{
     cond: Conditions
 }>();
 
+
 </script>
 
 <template>
-    <span
-        id="icon"
-        :class="Conditions[cond].toLowerCase()"
-    >{{ cond == Conditions.Normal ? "○" : "●" }}</span>
+    <span id="icon" :class="Conditions[props.cond].toLowerCase()">{{ cond == Conditions.Normal ? "○" : "●" }}</span>
     <br />
     <span id="text">{{ Conditions[cond] }}</span>
 </template>
