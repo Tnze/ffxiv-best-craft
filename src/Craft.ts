@@ -39,6 +39,7 @@ interface Status {
   buffs: Buffs;
   attributes: Attributes;
   recipe: Recipe;
+  catches: any;
   durability: number;
   craft_points: number;
   progress: number;
@@ -130,16 +131,37 @@ const new_recipe = async (
   });
 };
 
-const new_status = async (
+const new_status = (
   attrs: Attributes,
   recipe: Recipe,
   initQuality: number = 0
-): Promise<Status> => {
-  return await invoke("new_status", { attrs, recipe, initQuality });
+): Promise<Status> => invoke("new_status", { attrs, recipe, initQuality });
+
+interface SimulateResult {
+  status: Status;
+  errors: {
+    pos: number;
+    err: string;
+  }[];
+}
+
+const simulate = (s: Status, actions: Actions[]): Promise<SimulateResult> => {
+  return invoke("simulate", { status: s, skills: actions });
 };
 
-const simulate = async (s: Status, actions: Actions[]): Promise<Status> => {
-  return await invoke("simulate", { status: s, skills: actions });
+interface RecipeRow {
+  id: number;
+  rlv: number;
+  name: string;
+  job: string;
+  
+  difficulty_factor: number;
+  quality_factor: number;
+  durability_factor: number;
+}
+
+const recipe_table = (): Promise<RecipeRow[]> => {
+  return invoke("recipe_table");
 };
 
 export {
@@ -153,4 +175,6 @@ export {
   new_recipe,
   new_status,
   simulate,
+  RecipeRow,
+  recipe_table,
 };

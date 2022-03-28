@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import { computed } from 'vue'
+import hoverUrl from '../../assets/icons/icona_frame_tex.png'
 import { Jobs, Actions } from '../../Craft';
 
 const props = defineProps<{
@@ -8,9 +9,27 @@ const props = defineProps<{
     job: Jobs,
     action: Actions,
     disabled?: boolean,
+    effect?: string
 }>();
 
 const iconUrl = computed(() => new URL(`../../assets/icons/${Jobs[props.job].toLowerCase()}/${props.action}.png`, import.meta.url).href)
+
+const hoverLayerOffset = computed(() => {
+    switch (props.effect) {
+        case 'sunken':
+            return 'top -96px left 0px'
+        case 'black':
+            return 'top 0px left -48px'
+        case 'blue-cross':
+            return 'top -48px left 0px'
+        case 'red-cross':
+            return 'top -48px left -48px'
+        case undefined:
+        case 'normal':
+        default:
+            return 'top 0px left 0px'
+    }
+})
 
 const onClick = (event: MouseEvent) => {
     if (!props.disabled)
@@ -40,8 +59,9 @@ const onAnimationEnd = (event: AnimationEvent) => {
     display: block;
     width: 48px;
     height: 48px;
-    background: url("../../assets/icons/icona_frame_tex.png") no-repeat,
-        v-bind("'url('+iconUrl+')'") no-repeat top 3px left 4px;
+    background: v-bind(
+        "'url('+hoverUrl+') no-repeat '+hoverLayerOffset+', url('+iconUrl+') no-repeat top 3px left 4px'"
+    );
     transform: scale(1);
 }
 .action:hover:after {
