@@ -16,19 +16,17 @@ const props = defineProps<{
 const actionQueue = ref<Slot[]>([])
 const initStatus = ref<Status | undefined>(undefined)
 const status = ref<Status | undefined>(undefined)
+const castingErrors = ref<{ pos: number, err: string }[]>([])
 
 watch(() => [props.attributes, props.recipe], async ([attr, recipe]) => {
     if (recipe == undefined) return
     let s = await new_status(attr as Attributes, recipe as Recipe)
-    console.log(s)
     initStatus.value = s
 })
 watch([initStatus, actionQueue], async ([s, actions]) => {
-    try {
-        status.value = await simulate(s!, actions.map(x => x.action))
-    } catch (e) {
-        console.error(e)
-    }
+    let result = await simulate(s!, actions.map(x => x.action))
+    status.value = result.status
+    castingErrors.value = result.errors
 }, { deep: true })
 
 interface Slot {
@@ -57,7 +55,7 @@ const onClick = (action: Actions) => {
                         <StatusBar :status="status!" />
                     </el-row>
                     <el-row class="action-queue">
-                        <ActionQueue :job="job" :list="actionQueue" />
+                        <ActionQueue :job="job" :list="actionQueue" :err-list="castingErrors" />
                     </el-row>
                 </template>
                 <template #lower>

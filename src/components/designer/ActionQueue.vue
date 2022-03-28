@@ -11,6 +11,7 @@ interface Slot {
 
 const props = defineProps<{
     list: Slot[]
+    errList?: { pos: number, err: string }[]
     job: Jobs,
 }>()
 
@@ -46,6 +47,7 @@ const isDragging = ref(false)
                         :scale="0.7"
                         :job="Jobs.Armorer"
                         :action="element.action"
+                        :effect="errList?.find((v) => v.pos == index) !== undefined ? 'red-cross' : 'normal'"
                         :disabled="true"
                         @click.stop.prevent.right="list.splice(index, 1)"
                     />
