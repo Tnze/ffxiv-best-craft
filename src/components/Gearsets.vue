@@ -1,7 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { Attributes } from '../Craft'
 
-// defineProps<{ msg: string }>()
+const props = defineProps<{
+    attr: Attributes
+}>()
+
+const emits = defineEmits<{
+    (event: 'update:attr', attr: Attributes): void
+}>()
+
 
 </script>
 

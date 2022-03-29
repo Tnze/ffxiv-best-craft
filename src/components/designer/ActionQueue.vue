@@ -13,13 +13,14 @@ const props = defineProps<{
     list: Slot[]
     errList?: { pos: number, err: string }[]
     job: Jobs,
+    disabled?: boolean
 }>()
 
 const dragOptions = computed(() => {
     return {
         animation: 200,
         group: "description",
-        disabled: false,
+        disabled: props.disabled || false,
         ghostClass: "ghost"
     }
 })

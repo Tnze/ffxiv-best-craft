@@ -37,16 +37,18 @@ const onRecipeChange = (j: Jobs, name: string) => {
       <Menu @select="(page) => currentPage = page"></Menu>
     </el-aside>
     <el-main>
-      <Gearsets v-if="currentPage == 0" />
-      <RecipePanel v-else-if="currentPage == 1" @change="onRecipeChange" />
-      <Designer
-        v-else-if="currentPage == 2"
-        :item-name="recipeName"
-        :attributes="attributes"
-        :recipe="recipe"
-        :job="job"
-      />
-      <Settings v-else-if="currentPage == 3" :settings="settings" />
+      <keep-alive>
+        <Gearsets v-model:attr="attributes" v-if="currentPage == 0" />
+        <RecipePanel v-else-if="currentPage == 1" @change="onRecipeChange" />
+        <Designer
+          v-else-if="currentPage == 2"
+          :item-name="recipeName"
+          :attributes="attributes"
+          :recipe="recipe"
+          :job="job"
+        />
+        <Settings v-else-if="currentPage == 3" :settings="settings" />
+      </keep-alive>
     </el-main>
   </el-container>
 </template>

@@ -46,33 +46,55 @@ const condition = computed(() => {
 </script>
 
 <template>
-    <el-col :span="4">
-        <div id="durability">
-            耐久{{ status?.durability }} / {{ status?.recipe.durability }}
+    <div class="conatiner">
+        <div id="durability-and-condition">
+            <div id="durability">
+                耐久{{ status?.durability }} / {{ status?.recipe.durability }}
+                <el-progress
+                    :stroke-width="14"
+                    :show-text="false"
+                    :percentage="durability"
+                    :color="durabilityColor"
+                ></el-progress>
+            </div>
+            <div id="condition">
+                <Condition :cond="condition" />
+            </div>
+        </div>
+        <div id="progress">
+            进展
             <el-progress
-                :stroke-width="14"
-                :show-text="false"
-                :percentage="durability"
-                :color="durabilityColor"
-            ></el-progress>
+                :percentage="progress"
+            >{{ status?.progress }} / {{ status?.recipe.difficulty }}</el-progress>品质
+            <el-progress :percentage="quality">{{ status?.quality }} / {{ status?.recipe.quality }}</el-progress>
         </div>
-        <div id="condition">
-            <Condition :cond="condition" />
-        </div>
-    </el-col>
-    <el-col :span="14">
-        进展
-        <el-progress :percentage="progress">{{ status?.progress }} / {{ status?.recipe.difficulty }}</el-progress>品质
-        <el-progress :percentage="quality">{{ status?.quality }} / {{ status?.recipe.quality }}</el-progress>
-    </el-col>
-    <el-col :span="4">制作力{{ status?.craft_points }}</el-col>
+        <div id="attributes"></div>
+    </div>
+    <!-- 
+    
+    制作力{{ status?.craft_points }}-->
 </template>
 
 <style scoped>
+.conatiner {
+    width: 100%;
+    display: flex;
+}
+#durability-and-condition {
+    padding: 3px 10px 5px 5px;
+    flex: none;
+}
 #durability {
     padding: 10px;
 }
 #condition {
     text-align: center;
+}
+#progress {
+    padding: 7px;
+    flex-grow: 5;
+}
+#attributes {
+    flex-grow: 3;
 }
 </style>
