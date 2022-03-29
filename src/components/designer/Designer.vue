@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import { Attributes, Jobs, Actions, simulate, Recipe, new_recipe, Status, new_status } from '../../Craft'
+import { ref, watch, watchEffect } from 'vue'
+import { Attributes, Jobs, Actions, simulate, Recipe, Status, new_status } from '../../Craft'
 import ActionPanel from './ActionPanel.vue'
 import ActionQueue from './ActionQueue.vue'
 import StatusBar from './StatusBar.vue'
@@ -10,16 +10,17 @@ const props = defineProps<{
     itemName: string;
     job: Jobs;
     attributes: Attributes;
-    recipe?: Recipe;
+    recipe: Recipe | null;
 }>()
 const actionQueue = ref<Slot[]>([])
 const initStatus = ref<Status | undefined>(undefined)
 const status = ref<Status | undefined>(undefined)
 const castingErrors = ref<{ pos: number, err: string }[]>([])
 
-watch(() => [props.attributes, props.recipe], async ([attr, recipe]) => {
-    if (recipe == undefined) return
-    let s = await new_status(attr as Attributes, recipe as Recipe)
+watchEffect(async () => {
+    console.log(props.attributes, props.recipe)
+    if (props.recipe == null) return
+    let s = await new_status(props.attributes as Attributes, props.recipe as Recipe)
     initStatus.value = s
 })
 watch([initStatus, actionQueue], async ([s, actions]) => {
@@ -49,7 +50,8 @@ const saveQueue = () => {
 </script>
 
 <template>
-    <el-container>
+    <el-empty v-if="status == undefined" description="未加载配方" style="height: 100%;" />
+    <el-container v-else>
         <el-header>
             <h1>{{ itemName }}</h1>
         </el-header>
