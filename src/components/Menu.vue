@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import {
     Notebook,
     Suitcase,
-    Cpu,
+    Edit,
     Setting,
 } from '@element-plus/icons-vue'
 
@@ -17,7 +17,7 @@ const handleSelect = (key: number, keyPath: string) => {
 </script>
 
 <template>
-    <el-menu default-active="2" @select="handleSelect" :collapse="true">
+    <el-menu default-active="0" @select="handleSelect" :collapse="true">
         <el-menu-item index="0">
             <el-icon>
                 <suitcase />
@@ -32,7 +32,7 @@ const handleSelect = (key: number, keyPath: string) => {
         </el-menu-item>
         <el-menu-item index="2">
             <el-icon>
-                <cpu />
+                <edit />
             </el-icon>
             <template #title>设计</template>
         </el-menu-item>

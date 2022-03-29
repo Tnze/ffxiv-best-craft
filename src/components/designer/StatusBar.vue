@@ -68,7 +68,16 @@ const condition = computed(() => {
             >{{ status?.progress }} / {{ status?.recipe.difficulty }}</el-progress>品质
             <el-progress :percentage="quality">{{ status?.quality }} / {{ status?.recipe.quality }}</el-progress>
         </div>
-        <div id="attributes"></div>
+        <div id="attributes">
+            等级：{{ status?.attributes.level }}
+            <br />
+            作业精度：{{ status?.attributes.craftsmanship }}
+            <br />
+            加工精度：{{ status?.attributes.control }}
+            <br />
+            制作力：{{ status?.craft_points }} / {{ status?.attributes.craft_points }}
+            <br />
+        </div>
     </div>
     <!-- 
     
@@ -95,6 +104,8 @@ const condition = computed(() => {
     flex-grow: 5;
 }
 #attributes {
-    flex-grow: 3;
+    padding: 0px 20px 0px 0px;
+    flex-grow: 2;
+    text-align: right;
 }
 </style>

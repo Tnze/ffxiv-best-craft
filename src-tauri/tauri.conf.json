@@ -1,6 +1,6 @@
 {
     "package": {
-        "productName": "ffxiv-crafting-assistant",
+        "productName": "ffxiv-best-craft",
         "version": "0.1.0"
     },
     "build": {
@@ -56,7 +56,7 @@
             "all": true
         },
         "windows": [{
-            "title": "FCA",
+            "title": "BestCraft 最优生产",
             "width": 800,
             "height": 600,
             "resizable": true,

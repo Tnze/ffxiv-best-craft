@@ -1,33 +1,37 @@
 <script setup lang="ts">
-import { ref, shallowRef } from 'vue';
+import { reactive, ref, shallowRef, watch } from 'vue';
 import RecipePanel from './components/recipe-manager/RecipePanel.vue';
 import Gearsets from './components/Gearsets.vue';
 import Designer from './components/designer/Designer.vue';
 import Settings from './components/Settings.vue';
 import Menu from './components/Menu.vue';
-import { Attributes, Recipe, Jobs, new_recipe } from './Craft'
+import { Attributes, Recipe, Jobs } from './Craft'
 
-const pages = shallowRef([Gearsets, RecipePanel, Designer, Settings])
-const attributes = ref<Attributes>({
+const attributes = reactive<Attributes>({
   level: 82,
   craftsmanship: 2786,
   control: 2764,
   craft_points: 533,
 })
-const recipe = ref<Recipe | undefined>(undefined)
-const job = ref<Jobs>(Jobs.Culinarian)
 
-new_recipe(535, 100, 100, 100).then((r) => { recipe.value = r })
+const recipe = ref<Recipe | null>(null)
+const job = ref<Jobs>(Jobs.Culinarian)
 
 const currentPage = ref(2)
 const settings = ref({
   language: "zh-CN"
 })
 const recipeName = ref("弗里金治愈耳夹")
-const onRecipeChange = (j: Jobs, name: string) => {
+const onRecipeChange = (j: Jobs, name: string, r: Recipe) => {
+  console.log(j, name, r)
   job.value = j
+  recipe.value = r
   recipeName.value = name
 }
+
+watch(attributes, () => {
+  console.log(attributes)
+})
 
 </script>
 
@@ -37,18 +41,20 @@ const onRecipeChange = (j: Jobs, name: string) => {
       <Menu @select="(page) => currentPage = page"></Menu>
     </el-aside>
     <el-main>
+      <Gearsets v-model="attributes" v-if="currentPage == 0" />
       <keep-alive>
-        <Gearsets v-model:attr="attributes" v-if="currentPage == 0" />
-        <RecipePanel v-else-if="currentPage == 1" @change="onRecipeChange" />
+        <RecipePanel v-if="currentPage == 1" v-model="recipe" @change="onRecipeChange" />
+      </keep-alive>
+      <keep-alive>
         <Designer
-          v-else-if="currentPage == 2"
+          v-if="currentPage == 2"
           :item-name="recipeName"
           :attributes="attributes"
           :recipe="recipe"
           :job="job"
         />
-        <Settings v-else-if="currentPage == 3" :settings="settings" />
       </keep-alive>
+      <Settings v-if="currentPage == 3" :settings="settings" />
     </el-main>
   </el-container>
 </template>
