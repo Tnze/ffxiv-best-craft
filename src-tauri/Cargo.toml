@@ -1,7 +1,7 @@
 [package]
-authors = ["you"]
+authors = ["Tnze"]
 default-run = "app"
-description = "A Tauri App"
+description = "BestCraft rust backend"
 edition = "2021"
 license = ""
 name = "app"
@@ -12,14 +12,15 @@ version = "0.1.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = {version = "1.0.0-rc.4", features = [] }
+tauri-build = {version = "1.0.0-rc.5", features = [] }
 
 [dependencies]
 ffxiv-crafting = {path = 'C:\Users\Tnze\Documents\Projects\rust\ffxiv-crafting', features = ["serde-support"] }
 serde = {version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 csv = "1.1.6"
-tauri = {version = "1.0.0-rc.4", features = ["api-all"] }
+tauri = {version = "1.0.0-rc.6", features = ["api-all"] }
+msgbox = "0.7.0"
 
 [features]
 # by default Tauri runs in production mode
@@ -28,3 +29,6 @@ default = ["custom-protocol"]
 # this feature is used used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
 custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+lto = true
