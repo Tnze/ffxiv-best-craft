@@ -73,9 +73,8 @@ const selectRecipe = (row: RecipeRow | undefined) => {
                         <el-pagination
                             small
                             layout="prev, pager, next"
-                            :currentPage="currentPage"
+                            v-model:current-page="currentPage"
                             :page-count="Math.ceil(displayTable.length / 100)"
-                            @current-change="(v: number) => currentPage = v"
                         />
                     </template>
                 </el-table-column>

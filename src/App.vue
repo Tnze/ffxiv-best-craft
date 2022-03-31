@@ -17,13 +17,12 @@ const attributes = reactive<Attributes>({
 const recipe = ref<Recipe | null>(null)
 const job = ref<Jobs>(Jobs.Culinarian)
 
-const currentPage = ref(2)
+const currentPage = ref(0)
 const settings = ref({
   language: "zh-CN"
 })
-const recipeName = ref("弗里金治愈耳夹")
+const recipeName = ref('')
 const onRecipeChange = (j: Jobs, name: string, r: Recipe) => {
-  console.log(j, name, r)
   job.value = j
   recipe.value = r
   recipeName.value = name

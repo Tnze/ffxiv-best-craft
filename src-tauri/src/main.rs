@@ -3,10 +3,17 @@
     windows_subsystem = "windows"
 )]
 
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    sync::Mutex,
+};
+
 use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
 use serde::Serialize;
 
-#[tauri::command]
+mod solver;
+
+#[tauri::command(async)]
 fn new_recipe(
     rlv: i32,
     difficulty_factor: u16,
@@ -16,8 +23,8 @@ fn new_recipe(
     Recipe::new(rlv, difficulty_factor, quality_factor, durability_factor)
 }
 
-#[tauri::command]
-fn new_status(attrs: Attributes, recipe: Recipe, init_quality: i32) -> Status {
+#[tauri::command(async)]
+fn new_status(attrs: Attributes, recipe: Recipe, init_quality: u32) -> Status {
     let mut s = Status::new(attrs, recipe);
     s.quality = init_quality;
     s
@@ -35,7 +42,7 @@ struct SimulateResult {
     errors: Vec<CastErrorPos>,
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn simulate(status: Status, skills: Vec<Skills>) -> SimulateResult {
     let mut result = SimulateResult {
         status,
@@ -90,14 +97,92 @@ fn recipe_table() -> Vec<RecipeRow> {
         .unwrap()
 }
 
+struct AppState {
+    solver_list: Mutex<HashMap<solver::SolverHash, Box<solver::Driver>>>,
+}
+
+impl AppState {
+    fn new() -> Self {
+        Self {
+            solver_list: Mutex::new(HashMap::new()),
+        }
+    }
+}
+
+#[tauri::command(async)]
+fn create_solver(status: Status, app_state: tauri::State<AppState>) -> Result<(), String> {
+    let key = solver::SolverHash {
+        attributes: status.attributes,
+        recipe: status.recipe,
+    };
+    let list = &mut *app_state.solver_list.lock().unwrap();
+    match list.entry(key) {
+        Entry::Occupied(_) => Err("solver already exists".to_string()),
+        Entry::Vacant(e) => {
+            e.insert(Box::new(solver::Driver::new(&status)));
+            Ok(())
+        }
+    }
+}
+
+#[tauri::command(async)]
+fn init_solver(
+    status: Status,
+    allowed_list: Vec<Skills>,
+    app_state: tauri::State<AppState>,
+) -> Result<(), String> {
+    let key = solver::SolverHash {
+        attributes: status.attributes,
+        recipe: status.recipe,
+    };
+    let list = &mut *app_state.solver_list.lock().unwrap();
+    match list.entry(key) {
+        Entry::Occupied(mut e) => {
+            e.get_mut().init(allowed_list);
+            Ok(())
+        }
+        Entry::Vacant(_) => Err("solver not exists".to_string()),
+    }
+}
+
+#[tauri::command(async)]
+fn read_solver(
+    status: Status,
+    app_state: tauri::State<AppState>,
+) -> Result<Vec<Skills>, String> {
+    let key = solver::SolverHash {
+        attributes: status.attributes,
+        recipe: status.recipe,
+    };
+    let list = &mut *app_state.solver_list.lock().unwrap();
+    match list.entry(key) {
+        Entry::Occupied(e) => {
+            let solver = e.get().read_all(&status);
+            Ok(solver.1)
+        }
+        Entry::Vacant(_) => Err("solver not exists".to_string()),
+    }
+}
+
 fn main() {
     tauri::Builder::default()
+        .manage(AppState::new())
         .invoke_handler(tauri::generate_handler![
             new_recipe,
             new_status,
             simulate,
-            recipe_table
+            recipe_table,
+            create_solver,
+            init_solver,
+            read_solver,
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .map_err(|err| {
+            msgbox::create(
+                "错误",
+                format!("error while running tauri application: {}", err).as_str(),
+                msgbox::IconType::Error,
+            )
+        })
+        .unwrap();
 }

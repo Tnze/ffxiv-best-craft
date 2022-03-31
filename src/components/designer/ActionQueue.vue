@@ -26,6 +26,10 @@ const dragOptions = computed(() => {
 })
 
 const isDragging = ref(false)
+const onRightClick = (index: number) => {
+    if (!props.disabled)
+        props.list.splice(index, 1)
+}
 
 </script>
 
@@ -46,11 +50,11 @@ const isDragging = ref(false)
                 <div class="list-group-item">
                     <Action
                         :scale="0.7"
-                        :job="Jobs.Armorer"
+                        :job="job"
                         :action="element.action"
                         :effect="errList?.find((v) => v.pos == index) !== undefined ? 'red-cross' : 'normal'"
-                        :disabled="true"
-                        @click.stop.prevent.right="list.splice(index, 1)"
+                        disabled
+                        @click.stop.prevent.right="onRightClick(index)"
                     />
                 </div>
             </template>
