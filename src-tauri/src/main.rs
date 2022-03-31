@@ -98,7 +98,7 @@ fn recipe_table() -> Vec<RecipeRow> {
 }
 
 struct AppState {
-    solver_list: Mutex<HashMap<solver::SolverHash, Box<solver::Driver>>>,
+    solver_list: Mutex<HashMap<solver::SolverHash, Box<solver::Solver>>>,
 }
 
 impl AppState {
@@ -110,25 +110,10 @@ impl AppState {
 }
 
 #[tauri::command(async)]
-fn create_solver(status: Status, app_state: tauri::State<AppState>) -> Result<(), String> {
-    let key = solver::SolverHash {
-        attributes: status.attributes,
-        recipe: status.recipe,
-    };
-    let list = &mut *app_state.solver_list.lock().unwrap();
-    match list.entry(key) {
-        Entry::Occupied(_) => Err("solver already exists".to_string()),
-        Entry::Vacant(e) => {
-            e.insert(Box::new(solver::Driver::new(&status)));
-            Ok(())
-        }
-    }
-}
-
-#[tauri::command(async)]
-fn init_solver(
+fn create_solver(
     status: Status,
-    allowed_list: Vec<Skills>,
+    synth_skills: Vec<Skills>,
+    touch_skills: Vec<Skills>,
     app_state: tauri::State<AppState>,
 ) -> Result<(), String> {
     let key = solver::SolverHash {
@@ -137,19 +122,20 @@ fn init_solver(
     };
     let list = &mut *app_state.solver_list.lock().unwrap();
     match list.entry(key) {
-        Entry::Occupied(mut e) => {
-            e.get_mut().init(allowed_list);
+        Entry::Occupied(_) => Err("solver already exists".to_string()),
+        Entry::Vacant(e) => {
+            let mut driver = solver::Driver::new(&status);
+            driver.init(&synth_skills);
+            let mut solver = solver::Solver::new(driver);
+            solver.init(&touch_skills);
+            e.insert(Box::new(solver));
             Ok(())
         }
-        Entry::Vacant(_) => Err("solver not exists".to_string()),
     }
 }
 
 #[tauri::command(async)]
-fn read_solver(
-    status: Status,
-    app_state: tauri::State<AppState>,
-) -> Result<Vec<Skills>, String> {
+fn read_solver(status: Status, app_state: tauri::State<AppState>) -> Result<Vec<Skills>, String> {
     let key = solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
@@ -173,7 +159,6 @@ fn main() {
             simulate,
             recipe_table,
             create_solver,
-            init_solver,
             read_solver,
         ])
         .run(tauri::generate_context!())

@@ -3,42 +3,62 @@ import { ref } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 import { Actions, Status } from "../../Craft"
-import { create_solver, init_solver } from '../../Solver'
+import { create_solver } from '../../Solver'
 
 const props = defineProps<{
     initStatus: Status | undefined,
 }>()
 
-const allowedList = [
+const synthList = [
     Actions.BasicSynthesis,
     Actions.Observe,
     Actions.WasteNot,
     Actions.Veneration,
     Actions.WasteNotII,
-    // Actions.MuscleMemory,
     Actions.CarefulSynthesis,
     Actions.Manipulation,
-    Actions.FocusedSynthesis,
     Actions.Groundwork,
     Actions.DelicateSynthesis,
     Actions.IntensiveSynthesis,
     Actions.PrudentSynthesis,
 ];
 
+const touchList = [
+    Actions.BasicSynthesis,
+    Actions.BasicTouch,
+    Actions.MastersMend,
+    Actions.WasteNot,
+    Actions.Veneration,
+    Actions.StandardTouch,
+    Actions.GreatStrides,
+    Actions.Innovation,
+    Actions.WasteNotII,
+    Actions.ByregotsBlessing,
+    Actions.MuscleMemory,
+    Actions.CarefulSynthesis,
+    Actions.Manipulation,
+    Actions.PrudentTouch,
+    Actions.PreparatoryTouch,
+    Actions.Groundwork,
+    Actions.DelicateSynthesis,
+    Actions.TrainedEye,
+    Actions.AdvancedTouch,
+    Actions.PrudentSynthesis,
+    Actions.TrainedFinesse,
+]
+
 const solvers = ref([])
 
 const createSolver = async () => {
+    const msg1 = ElMessage({
+        showClose: true,
+        duration: 0,
+        type: 'info',
+        message: `求解器初始化中……`,
+    })
     try {
-        await create_solver(props.initStatus!)
-        const msg1 = ElMessage({
-            showClose: true,
-            duration: 0,
-            type: 'info',
-            message: `求解器初始化中……`,
-        })
+        await create_solver(props.initStatus!, synthList, touchList)
         console.log('求解器初始化成功')
-        await init_solver(props.initStatus!, allowedList)
-        msg1.close()
         ElMessage({
             showClose: true,
             duration: 0,
@@ -52,6 +72,8 @@ const createSolver = async () => {
             message: `错误: ${err}`,
         })
         console.error(err)
+    } finally {
+        msg1.close()
     }
 }
 </script>e
@@ -62,7 +84,7 @@ const createSolver = async () => {
             class="list-item"
             :disabled="initStatus == undefined"
             @click="createSolver"
-        >以当前配方和属性开始求解</el-button>
+        >以当前属性求解当前配方</el-button>
     </el-scrollbar>
 </template>
 

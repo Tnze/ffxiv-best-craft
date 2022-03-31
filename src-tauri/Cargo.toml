@@ -20,6 +20,7 @@ serde = {version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 csv = "1.1.6"
 tauri = {version = "1.0.0-rc.6", features = ["api-all"] }
+platform-dirs = "0.3.0"
 msgbox = "0.7.0"
 
 [features]

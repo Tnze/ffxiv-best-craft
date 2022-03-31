@@ -60,6 +60,7 @@ dependencies = [
  "csv",
  "ffxiv-crafting",
  "msgbox",
+ "platform-dirs",
  "serde",
  "serde_json",
  "tauri",
@@ -726,6 +727,16 @@ checksum = "f2fb860ca6fafa5552fb6d0e816a69c8e49f0908bf524e30a90d97c85892d506"
 dependencies = [
  "block-buffer",
  "crypto-common",
+]
+
+[[package]]
+name = "dirs-next"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf36e65a80337bea855cd4ef9b8401ffce06a7baedf2e85ec467b1ac3f6e82b6"
+dependencies = [
+ "cfg-if",
+ "dirs-sys-next",
 ]
 
 [[package]]
@@ -1617,7 +1628,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "297c13fc8ff9fa8b2d0e53850f80e0aa962628e865d447031ce58cdb062e5b29"
 dependencies = [
  "cc",
- "dirs-next",
+ "dirs-next 2.0.0",
  "objc-foundation",
  "objc_id",
  "time",
@@ -2223,6 +2234,15 @@ name = "pkg-config"
 version = "0.3.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "58893f751c9b0412871a09abd62ecd2a00298c6c83befa223ef98c52aef40cbe"
+
+[[package]]
+name = "platform-dirs"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e188d043c1a692985f78b5464853a263f1a27e5bd6322bad3a4078ee3c998a38"
+dependencies = [
+ "dirs-next 1.0.2",
+]
 
 [[package]]
 name = "png"
@@ -3060,7 +3080,7 @@ dependencies = [
  "attohttpc",
  "bincode",
  "cfg_aliases",
- "dirs-next",
+ "dirs-next 2.0.0",
  "either",
  "embed_plist",
  "flate2",
