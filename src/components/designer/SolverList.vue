@@ -53,7 +53,7 @@ const createSolver = async () => {
         showClose: true,
         duration: 0,
         type: 'info',
-        message: `求解器初始化中……`,
+        message: `求解器初始化中，请稍后……`,
     })
     try {
         const start_time = new Date().getTime();

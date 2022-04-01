@@ -116,41 +116,41 @@ impl Solver {
     }
 
     pub fn read_all(&self, s: &Status) -> (u32, Vec<Skills>) {
-        // Only the step 2 is required for solve a list how can we make progress
-        // The purpose of step 1 is only to find out at least how many resources we can use.
-        // Hopefully this will helps us avoid lengthy steps
-
-        let max_quality = s.recipe.quality - s.quality;
-        let mut best = {
-            let (quality, step, _skill) = self.read(s);
-            let quality = quality.min(max_quality);
-            ((quality, step), (s.craft_points, s.durability))
-        };
-        // Step 1
+        let max_quality = s.recipe.quality;
         let mut new_s = s.clone();
-        for cp in 0..=s.craft_points {
-            new_s.craft_points = cp;
-            for du in 1..=s.durability {
-                new_s.durability = du;
-                let (quality, step, _skill) = self.read(&new_s);
-                let quality = quality.min(max_quality);
-                if quality >= best.0 .0 && step < best.0 .1 {
-                    best = ((quality, step), (cp, du));
-                }
-            }
-        }
-        // Step 2
-        new_s.craft_points = best.1 .0;
-        new_s.durability = best.1 .1;
         let mut list = Vec::new();
         loop {
-            if let (_quality, _step, Some(skill)) = self.read(&new_s) {
-                new_s.cast_action(skill);
-                list.push(skill);
-            } else {
-                let (_progress, mut synth_list) = self.driver.read_all(&new_s);
-                list.append(&mut synth_list);
-                break (new_s.quality, list);
+            let max_addon = max_quality - new_s.quality;
+            let mut new_s2 = new_s.clone();
+            let mut best = {
+                let (quality, step, skill) = self.read(&new_s);
+                let quality = quality.min(max_addon);
+                (
+                    (quality, step),
+                    (new_s.craft_points, new_s.durability),
+                    skill,
+                )
+            };
+            for cp in 0..=new_s.craft_points {
+                new_s2.craft_points = cp;
+                for du in 1..=new_s.durability {
+                    new_s2.durability = du;
+                    let (quality, step, skill) = self.read(&new_s2);
+                    let quality = quality.min(max_addon);
+                    if quality >= best.0 .0 && step < best.0 .1 {
+                        best = ((quality, step), (cp, du), skill);
+                    }
+                }
+            }
+            match best.2 {
+                Some(sk) => {
+                    new_s.cast_action(sk);
+                    list.push(sk);
+                }
+                None => {
+                    list.append(&mut self.driver.read_all(&new_s).1);
+                    break (new_s.quality, list);
+                }
             }
         }
     }
@@ -280,6 +280,9 @@ impl Driver {
                 Some(sk) => {
                     new_s.cast_action(sk);
                     list.push(sk);
+                    if new_s.is_finished() {
+                        break (new_s.progress, list);
+                    }
                 }
                 None => break (new_s.progress, list),
             }
