@@ -150,6 +150,5 @@ const saveQueue = () => {
 .solver-and-options-item {
     display: flex;
     border-bottom: 1px solid var(--el-border-color);
-    height: 50px;
 }
 </style>
