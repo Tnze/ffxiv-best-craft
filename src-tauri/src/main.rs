@@ -126,7 +126,7 @@ fn create_solver(
         Entry::Vacant(e) => {
             let mut driver = solver::Driver::new(&status);
             driver.init(&synth_skills);
-            let mut solver = solver::Solver::new(driver);
+            let mut solver = solver::Solver::new(driver, &touch_skills);
             solver.init(&touch_skills);
             e.insert(Box::new(solver));
             Ok(())

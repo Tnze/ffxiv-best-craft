@@ -17,12 +17,12 @@ struct SolverSlot {
 
 pub struct Solver {
     pub driver: Driver,
-    // results [d][cp][iq][iv][mn][wn]
-    results: Vec<Vec<[[[[SolverSlot; 9]; 1]; 5]; 11]>>,
+    // results [d][cp][iq][iv][gs][mn][wn]
+    results: Vec<Vec<[[[[[SolverSlot; 9]; 1]; 4]; 5]; 11]>>,
 }
 
 impl Solver {
-    pub fn new(driver: Driver) -> Self {
+    pub fn new(driver: Driver, allowd_list: &[Skills]) -> Self {
         let cp = driver.init_status.attributes.craft_points as usize;
         let du = driver.init_status.recipe.durability as usize;
         const DEFAULT_SLOT: SolverSlot = SolverSlot {
@@ -30,7 +30,8 @@ impl Solver {
             step: 0,
             skill: None,
         };
-        const DEFAULT_ARY: [[[[SolverSlot; 9]; 1]; 5]; 11] = [[[[DEFAULT_SLOT; 9]; 1]; 5]; 11];
+        const DEFAULT_ARY: [[[[[SolverSlot; 9]; 1]; 4]; 5]; 11] =
+            [[[[[DEFAULT_SLOT; 9]; 1]; 4]; 5]; 11];
         Self {
             driver,
             results: vec![vec![DEFAULT_ARY; cp + 1]; du + 1],
@@ -48,40 +49,47 @@ impl Solver {
                     s.buffs.inner_quiet = iq;
                     for iv in 0..=MAX_INNOVATION {
                         s.buffs.innovation = iv;
-                        for mn in 0..=MAX_MANIPULATION {
-                            s.buffs.manipulation = mn;
-                            for wn in 0..=MAX_WAST_NOT {
-                                s.buffs.wast_not = wn;
-                                for sk in allowd_list {
-                                    if s.is_action_allowed(*sk).is_ok() {
-                                        let mut new_s = s.clone();
-                                        new_s.cast_action(*sk);
-                                        let (progress, _step, _sk) = self.driver.read(&new_s);
-                                        if progress == difficulty {
-                                            let mut quality = new_s.quality;
-                                            let mut step = 1;
-                                            {
-                                                let next = &self.results[new_s.durability as usize]
-                                                    [new_s.craft_points as usize]
-                                                    [new_s.buffs.inner_quiet as usize]
-                                                    [new_s.buffs.innovation as usize]
-                                                    [new_s.buffs.manipulation as usize]
-                                                    [new_s.buffs.wast_not as usize];
-                                                quality += next.quality;
-                                                step += next.step;
-                                            }
-                                            let slot = &mut self.results[du as usize][cp as usize]
-                                                [iq as usize]
-                                                [iv as usize]
-                                                [mn as usize]
-                                                [wn as usize];
-                                            if quality > slot.quality
-                                                || (quality == slot.quality && step < slot.step)
-                                            {
-                                                *slot = SolverSlot {
-                                                    quality,
-                                                    step,
-                                                    skill: Some(*sk),
+                        for gs in 0..=MAX_GREAT_STRIDES {
+                            s.buffs.great_strides = gs;
+                            for mn in 0..=MAX_MANIPULATION {
+                                s.buffs.manipulation = mn;
+                                for wn in 0..=MAX_WAST_NOT {
+                                    s.buffs.wast_not = wn;
+                                    for sk in allowd_list {
+                                        if s.is_action_allowed(*sk).is_ok() {
+                                            let mut new_s = s.clone();
+                                            new_s.cast_action(*sk);
+                                            let (progress, _step, _sk) = self.driver.read(&new_s);
+                                            if progress == difficulty {
+                                                let mut quality = new_s.quality;
+                                                let mut step = 1;
+                                                {
+                                                    let next = &self.results
+                                                        [new_s.durability as usize]
+                                                        [new_s.craft_points as usize]
+                                                        [new_s.buffs.inner_quiet as usize]
+                                                        [new_s.buffs.innovation as usize]
+                                                        [new_s.buffs.great_strides as usize]
+                                                        [new_s.buffs.manipulation as usize]
+                                                        [new_s.buffs.wast_not as usize];
+                                                    quality += next.quality;
+                                                    step += next.step;
+                                                }
+                                                let slot = &mut self.results[du as usize]
+                                                    [cp as usize]
+                                                    [iq as usize]
+                                                    [iv as usize]
+                                                    [gs as usize]
+                                                    [mn as usize]
+                                                    [wn as usize];
+                                                if quality > slot.quality
+                                                    || (quality == slot.quality && step < slot.step)
+                                                {
+                                                    *slot = SolverSlot {
+                                                        quality,
+                                                        step,
+                                                        skill: Some(*sk),
+                                                    }
                                                 }
                                             }
                                         }
@@ -102,7 +110,8 @@ impl Solver {
             skill,
         } = self.results[s.durability as usize][s.craft_points as usize]
             [s.buffs.inner_quiet as usize][s.buffs.innovation as usize]
-            [s.buffs.manipulation as usize][s.buffs.wast_not as usize];
+            [s.buffs.great_strides as usize][s.buffs.manipulation as usize]
+            [s.buffs.wast_not as usize];
         (quality, step, skill)
     }
 
