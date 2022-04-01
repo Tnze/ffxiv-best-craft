@@ -16,7 +16,7 @@ const synthList = [
     Actions.Veneration,
     Actions.WasteNotII,
     Actions.CarefulSynthesis,
-    Actions.Manipulation,
+    // Actions.Manipulation,
     Actions.Groundwork,
     Actions.DelicateSynthesis,
     Actions.IntensiveSynthesis,
@@ -36,12 +36,11 @@ const touchList = [
     Actions.ByregotsBlessing,
     Actions.MuscleMemory,
     Actions.CarefulSynthesis,
-    Actions.Manipulation,
+    // Actions.Manipulation,
     Actions.PrudentTouch,
     Actions.PreparatoryTouch,
     Actions.Groundwork,
     Actions.DelicateSynthesis,
-    Actions.TrainedEye,
     Actions.AdvancedTouch,
     Actions.PrudentSynthesis,
     Actions.TrainedFinesse,
@@ -57,13 +56,14 @@ const createSolver = async () => {
         message: `求解器初始化中……`,
     })
     try {
+        const start_time = new Date().getTime();
         await create_solver(props.initStatus!, synthList, touchList)
-        console.log('求解器初始化成功')
+        const stop_time = new Date().getTime();
         ElMessage({
             showClose: true,
             duration: 0,
             type: 'success',
-            message: `求解器创建成功`,
+            message: `求解器创建成功(${ (stop_time - start_time) }ms)`,
         })
         console.log('求解过程结束')
     } catch (err) {

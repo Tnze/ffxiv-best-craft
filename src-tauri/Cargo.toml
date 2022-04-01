@@ -15,13 +15,14 @@ version = "0.1.0"
 tauri-build = {version = "1.0.0-rc.5", features = [] }
 
 [dependencies]
+csv = "1.1.6"
 ffxiv-crafting = {path = 'C:\Users\Tnze\Documents\Projects\rust\ffxiv-crafting', features = ["serde-support"] }
+msgbox = "0.7.0"
+ndarray = {version = "0.15", features = [] }
+platform-dirs = "0.3.0"
 serde = {version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-csv = "1.1.6"
 tauri = {version = "1.0.0-rc.6", features = ["api-all"] }
-platform-dirs = "0.3.0"
-msgbox = "0.7.0"
 
 [features]
 # by default Tauri runs in production mode
