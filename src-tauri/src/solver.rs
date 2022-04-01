@@ -5,7 +5,7 @@ const MAX_VENERATION: u8 = 4;
 const MAX_INNOVATION: u8 = 4;
 const MAX_MUSCLE_MEMORY: u8 = 5;
 const MAX_INNER_QUIET: u8 = 10;
-const MAX_MANIPULATION: u8 = 8;
+const MAX_MANIPULATION: u8 = 0;
 const MAX_WAST_NOT: u8 = 8;
 
 #[derive(Copy, Clone)]
@@ -18,7 +18,7 @@ struct SolverSlot {
 pub struct Solver {
     pub driver: Driver,
     // results [d][cp][iq][iv][mn][wn]
-    results: Vec<Vec<[[[[SolverSlot; 9]; 9]; 5]; 11]>>,
+    results: Vec<Vec<[[[[SolverSlot; 9]; 1]; 5]; 11]>>,
 }
 
 impl Solver {
@@ -30,7 +30,7 @@ impl Solver {
             step: 0,
             skill: None,
         };
-        const DEFAULT_ARY: [[[[SolverSlot; 9]; 9]; 5]; 11] = [[[[DEFAULT_SLOT; 9]; 9]; 5]; 11];
+        const DEFAULT_ARY: [[[[SolverSlot; 9]; 1]; 5]; 11] = [[[[DEFAULT_SLOT; 9]; 1]; 5]; 11];
         Self {
             driver,
             results: vec![vec![DEFAULT_ARY; cp + 1]; du + 1],
@@ -157,7 +157,7 @@ struct DriverSlot {
 pub struct Driver {
     init_status: Status,
     // results[d][cp][ve][mm][mn][wn]
-    results: Vec<Vec<[[[[DriverSlot; 9]; 9]; 6]; 5]>>,
+    results: Vec<Vec<[[[[DriverSlot; 9]; 1]; 6]; 5]>>,
 }
 
 impl Driver {
@@ -169,7 +169,7 @@ impl Driver {
             step: 0,
             skill: None,
         };
-        const DEFAULT_ARY: [[[[DriverSlot; 9]; 9]; 6]; 5] = [[[[DEFAULT_SLOT; 9]; 9]; 6]; 5];
+        const DEFAULT_ARY: [[[[DriverSlot; 9]; 1]; 6]; 5] = [[[[DEFAULT_SLOT; 9]; 1]; 6]; 5];
         Self {
             init_status: s.clone(),
             results: vec![vec![DEFAULT_ARY; cp + 1]; du + 1],
@@ -241,39 +241,38 @@ impl Driver {
     }
 
     pub fn read_all(&self, s: &Status) -> (u16, Vec<Skills>) {
-        // Only the step 2 is required for solve a list how can we make progress
-        // The purpose of step 1 is only to find out at least how many resources we can use.
-        // Hopefully this will helps us avoid lengthy steps
-
-        let max_progress_addon = s.recipe.difficulty - s.progress;
-        let mut best = {
-            let (progress, step, _skill) = self.read(s);
-            let progress = progress.min(max_progress_addon);
-            ((progress, step), (s.craft_points, s.durability))
-        };
-        // Step 1
+        let difficulty = s.recipe.difficulty;
         let mut new_s = s.clone();
-        for cp in 0..=s.craft_points {
-            new_s.craft_points = cp;
-            for du in 1..=s.durability {
-                new_s.durability = du;
-                let (progress, step, _skill) = self.read(&new_s);
-                let progress = progress.min(max_progress_addon);
-                if progress >= best.0 .0 && step < best.0 .1 {
-                    best = ((progress, step), (cp, du));
-                }
-            }
-        }
-        // Step 2
-        new_s.craft_points = best.1 .0;
-        new_s.durability = best.1 .1;
         let mut list = Vec::new();
         loop {
-            if let (_progress, _step, Some(skill)) = self.read(&new_s) {
-                new_s.cast_action(skill);
-                list.push(skill);
-            } else {
-                break (new_s.progress, list);
+            let max_addon = difficulty - new_s.progress;
+            let mut new_s2 = new_s.clone();
+            let mut best = {
+                let (progress, step, skill) = self.read(&new_s);
+                let progress = progress.min(max_addon);
+                (
+                    (progress, step),
+                    (new_s.craft_points, new_s.durability),
+                    skill,
+                )
+            };
+            for cp in 0..=new_s.craft_points {
+                new_s2.craft_points = cp;
+                for du in 1..=new_s.durability {
+                    new_s2.durability = du;
+                    let (progress, step, skill) = self.read(&new_s2);
+                    let progress = progress.min(max_addon);
+                    if progress >= best.0 .0 && step < best.0 .1 {
+                        best = ((progress, step), (cp, du), skill);
+                    }
+                }
+            }
+            match best.2 {
+                Some(sk) => {
+                    new_s.cast_action(sk);
+                    list.push(sk);
+                }
+                None => break (new_s.progress, list),
             }
         }
     }
