@@ -59,36 +59,57 @@ impl Solver {
                                         if s.is_action_allowed(*sk).is_ok() {
                                             let mut new_s = s.clone();
                                             new_s.cast_action(*sk);
-                                            let (progress, _step, _sk) = self.driver.read(&new_s);
-                                            if progress == difficulty {
-                                                let mut quality = new_s.quality;
-                                                let mut step = 1;
-                                                {
-                                                    let next = &self.results
-                                                        [new_s.durability as usize]
-                                                        [new_s.craft_points as usize]
-                                                        [new_s.buffs.inner_quiet as usize]
-                                                        [new_s.buffs.innovation as usize]
-                                                        [new_s.buffs.great_strides as usize]
-                                                        [new_s.buffs.manipulation as usize]
-                                                        [new_s.buffs.wast_not as usize];
-                                                    quality += next.quality;
-                                                    step += next.step;
-                                                }
-                                                let slot = &mut self.results[du as usize]
-                                                    [cp as usize]
-                                                    [iq as usize]
-                                                    [iv as usize]
-                                                    [gs as usize]
-                                                    [mn as usize]
-                                                    [wn as usize];
-                                                if quality > slot.quality
-                                                    || (quality == slot.quality && step < slot.step)
-                                                {
-                                                    *slot = SolverSlot {
-                                                        quality,
-                                                        step,
-                                                        skill: Some(*sk),
+                                            unsafe {
+                                                let (progress, _step, _sk) =
+                                                    self.driver.read_unchecked(&new_s);
+                                                if progress == difficulty {
+                                                    let mut quality = new_s.quality;
+                                                    let mut step = 1;
+                                                    {
+                                                        let next = &self
+                                                            .results
+                                                            .get_unchecked(
+                                                                new_s.durability as usize,
+                                                            )
+                                                            .get_unchecked(
+                                                                new_s.craft_points as usize,
+                                                            )
+                                                            .get_unchecked(
+                                                                new_s.buffs.inner_quiet as usize,
+                                                            )
+                                                            .get_unchecked(
+                                                                new_s.buffs.innovation as usize,
+                                                            )
+                                                            .get_unchecked(
+                                                                new_s.buffs.great_strides as usize,
+                                                            )
+                                                            .get_unchecked(
+                                                                new_s.buffs.manipulation as usize,
+                                                            )
+                                                            .get_unchecked(
+                                                                new_s.buffs.wast_not as usize,
+                                                            );
+                                                        quality += next.quality;
+                                                        step += next.step;
+                                                    }
+                                                    let slot = self
+                                                        .results
+                                                        .get_unchecked_mut(du as usize)
+                                                        .get_unchecked_mut(cp as usize)
+                                                        .get_unchecked_mut(iq as usize)
+                                                        .get_unchecked_mut(iv as usize)
+                                                        .get_unchecked_mut(gs as usize)
+                                                        .get_unchecked_mut(mn as usize)
+                                                        .get_unchecked_mut(wn as usize);
+                                                    if quality > slot.quality
+                                                        || (quality == slot.quality
+                                                            && step < slot.step)
+                                                    {
+                                                        *slot = SolverSlot {
+                                                            quality,
+                                                            step,
+                                                            skill: Some(*sk),
+                                                        }
                                                     }
                                                 }
                                             }
@@ -246,6 +267,22 @@ impl Driver {
         } = self.results[s.durability as usize][s.craft_points as usize]
             [s.buffs.veneration as usize][s.buffs.muscle_memory as usize]
             [s.buffs.manipulation as usize][s.buffs.wast_not as usize];
+        return (progress, step, skill);
+    }
+
+    unsafe fn read_unchecked(&self, s: &Status) -> (u16, u8, Option<Skills>) {
+        let &DriverSlot {
+            progress,
+            step,
+            skill,
+        } = self
+            .results
+            .get_unchecked(s.durability as usize)
+            .get_unchecked(s.craft_points as usize)
+            .get_unchecked(s.buffs.veneration as usize)
+            .get_unchecked(s.buffs.muscle_memory as usize)
+            .get_unchecked(s.buffs.manipulation as usize)
+            .get_unchecked(s.buffs.wast_not as usize);
         return (progress, step, skill);
     }
 

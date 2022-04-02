@@ -12,7 +12,7 @@ const props = defineProps<{
     effect?: string
 }>();
 
-const iconUrl = computed(() => new URL(`../../assets/icons/${Jobs[props.job].toLowerCase()}/${props.action}.png`, import.meta.url).href)
+const iconUrl = computed(() => new URL(`../../assets/icons/${props.job.toLowerCase()}/${props.action}.png`, import.meta.url).href)
 
 const hoverLayerOffset = computed(() => {
     switch (props.effect) {
