@@ -71,14 +71,14 @@ enum Conditions {
 }
 
 enum Jobs {
-  Carpenter,
-  Blacksmith,
-  Armorer,
-  Goldsmith,
-  Leatherworker,
-  Weaver,
-  Alchemist,
-  Culinarian,
+  Carpenter = "carpenter",
+  Blacksmith = "blacksmith",
+  Armorer = "armorer",
+  Goldsmith = "goldsmith",
+  Leatherworker = "leatherworker",
+  Weaver = "weaver",
+  Alchemist = "alchemist",
+  Culinarian = "culinarian",
 }
 
 enum Actions {
@@ -154,7 +154,7 @@ interface RecipeRow {
   rlv: number;
   name: string;
   job: string;
-  
+
   difficulty_factor: number;
   quality_factor: number;
   durability_factor: number;

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
-import { Filter } from '@element-plus/icons-vue'
+import 'element-plus/es/components/message/style/css'
+import 'element-plus/es/components/message-box/style/css'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { EditPen, Filter } from '@element-plus/icons-vue'
 import { Jobs, RecipeRow, Recipe, recipe_table, new_recipe } from '../../Craft'
 
 const jobMaps: { [key: string]: Jobs } = {
@@ -34,9 +37,34 @@ const emits = defineEmits<{
 const openFilter = ref(false)
 
 const selectRecipe = (row: RecipeRow | undefined) => {
-    if (row != undefined)
+    if (row == undefined)
+        return
+    ElMessageBox.confirm(
+        `确认将当前配方设置为“${row.name}”吗`,
+        'Warning',
+        {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }
+    ).then(() => {
         new_recipe(row.rlv, row.difficulty_factor, row.quality_factor, row.durability_factor)
-            .then((r) => { emits('change', jobMaps[row.job], row.name, r) })
+            .then((r) => {
+                emits('change', jobMaps[row.job], row.name, r)
+                ElMessage({
+                    type: 'success',
+                    duration: 5000,
+                    showClose: true,
+                    dangerouslyUseHTMLString: true,
+                    message: `配方设置已变更 rlv: ${r.rlv}<br/>
+                    难度系数: ${row.difficulty_factor}
+                    品质系数: ${row.quality_factor}
+                    耐久系数: ${row.durability_factor}`
+                })
+            })
+    }).catch(() => {
+        // operation canceled by user
+    })
 }
 
 </script>
@@ -53,13 +81,14 @@ const selectRecipe = (row: RecipeRow | undefined) => {
             <el-input v-model="searchText" class="search-input" placeholder="键入以搜索">
                 <template #append>
                     <el-button :icon="Filter" @click="openFilter = true" />
+                    <!-- <el-button :icon="EditPen" @click="openFilter = true" /> -->
                 </template>
             </el-input>
             <el-table
                 v-loading="recipeTable.length == 0"
                 element-loading-text="请稍等..."
                 highlight-current-row
-                @current-change="selectRecipe"
+                @row-dblclick="selectRecipe"
                 :data="displayTable.slice((currentPage - 1) * 100, currentPage * 100)"
                 height="100%"
                 style="width: 100%"
