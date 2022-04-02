@@ -24,10 +24,14 @@ fn new_recipe(
 }
 
 #[tauri::command(async)]
-fn new_status(attrs: Attributes, recipe: Recipe, init_quality: u32) -> Status {
-    let mut s = Status::new(attrs, recipe);
-    s.quality = init_quality;
-    s
+fn new_status(attrs: Attributes, recipe: Recipe, init_quality: u32) -> Result<Status, String> {
+    if recipe.job_level > attrs.level + 5 {
+        Err("Player level lower than recipe's require".to_string())
+    } else {
+        let mut s = Status::new(attrs, recipe);
+        s.quality = init_quality;
+        Ok(s)
+    }
 }
 
 #[derive(Serialize)]

@@ -14,11 +14,6 @@ interface Recipe {
   quality: number;
   durability: number;
   conditions_flag: number;
-
-  progress_divider: number;
-  quality_divider: number;
-  progress_modifier: number;
-  quality_modifier: number;
 }
 
 interface Buffs {

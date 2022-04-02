@@ -37,7 +37,7 @@ const emits = defineEmits<{
 const openFilter = ref(false)
 const openCustomlizer = ref(false)
 
-const selectRecipe = (row: RecipeRow | undefined) => {
+const selectRecipeRow = (row: RecipeRow) => {
     if (row == undefined)
         return
     ElMessageBox.confirm(
@@ -50,33 +50,37 @@ const selectRecipe = (row: RecipeRow | undefined) => {
         }
     ).then(() => {
         new_recipe(row.rlv, row.difficulty_factor, row.quality_factor, row.durability_factor)
-            .then((r) => {
-                emits('change', jobMaps[row.job], row.name, r)
-                ElMessage({
-                    type: 'success',
-                    duration: 5000,
-                    showClose: true,
-                    dangerouslyUseHTMLString: true,
-                    message: `配方设置已变更 rlv: ${r.rlv}<br/>
-                    难度: ${r.difficulty}
-                    品质: ${r.quality}
-                    耐久: ${r.durability}`
-                })
+            .then(r => {
+                selectRecipe(r, row.name, row.job)
             })
     }).catch(() => {
         // operation canceled by user
     })
 }
 
-const customRecipe = ref<RecipeRow>({
-    id: 0,
-    rlv: 580,
-    name: '自定义配方#580',
-    job: '木工',
+const selectRecipe = (recipe: Recipe, name: string, job: string) => {
+    emits('change', jobMaps[job], name, recipe)
+    ElMessage({
+        type: 'success',
+        duration: 5000,
+        showClose: true,
+        dangerouslyUseHTMLString: true,
+        message: `
+        配方设置已变更 rlv: ${recipe.rlv}<br/>
+        难度: ${recipe.difficulty}
+        品质: ${recipe.quality}
+        耐久: ${recipe.durability}`
+    })
+}
 
-    difficulty_factor: 100,
-    quality_factor: 100,
-    durability_factor: 100
+const customRecipe = ref({
+    rlv: 580,
+    name: 'Recipe#580',
+    job_level: 90,
+    difficulty: 3900,
+    quality: 10920,
+    durability: 70,
+    conditions_flag: 15,
 })
 
 </script>
@@ -100,17 +104,17 @@ const customRecipe = ref<RecipeRow>({
                     <el-form-item label="rlv">
                         <el-input-number v-model="customRecipe.rlv" :min="1"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="名称">
-                        <el-input v-model="customRecipe.name"></el-input>
+                    <el-form-item label="等级">
+                        <el-input-number v-model="customRecipe.job_level" :min="1"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="难度系数">
-                        <el-input-number v-model="customRecipe.difficulty_factor" :min="1"></el-input-number>
+                    <el-form-item label="难度">
+                        <el-input-number v-model="customRecipe.difficulty" :min="1"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="品质系数">
-                        <el-input-number v-model="customRecipe.quality_factor" :min="1"></el-input-number>
+                    <el-form-item label="品质">
+                        <el-input-number v-model="customRecipe.quality" :min="1"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="耐久系数">
-                        <el-input-number v-model="customRecipe.durability_factor" :min="1"></el-input-number>
+                    <el-form-item label="耐久">
+                        <el-input-number v-model="customRecipe.durability" :min="1"></el-input-number>
                     </el-form-item>
                 </el-form>
                 <template #footer>
@@ -118,7 +122,7 @@ const customRecipe = ref<RecipeRow>({
                         <el-button @click="openCustomlizer = false">取消</el-button>
                         <el-button
                             type="primary"
-                            @click="openCustomlizer; selectRecipe(customRecipe)"
+                            @click="openCustomlizer = false; selectRecipe(customRecipe, customRecipe.name, '炼金')"
                         >确认</el-button>
                     </span>
                 </template>
@@ -133,7 +137,7 @@ const customRecipe = ref<RecipeRow>({
                 v-loading="recipeTable.length == 0"
                 element-loading-text="请稍等..."
                 highlight-current-row
-                @row-dblclick="selectRecipe"
+                @row-dblclick="selectRecipeRow"
                 :data="displayTable.slice((currentPage - 1) * 100, currentPage * 100)"
                 height="100%"
                 style="width: 100%"
