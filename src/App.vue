@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { reactive, ref, shallowRef, watch } from 'vue';
-import 'element-plus/es/components/message/style/css'
-import { ElMessage } from 'element-plus'
 import RecipePanel from './components/recipe-manager/RecipePanel.vue';
 import Gearsets from './components/Gearsets.vue';
 import Designer from './components/designer/Designer.vue';
@@ -19,7 +17,7 @@ interface GearsetsRow {
 
 const gearsets = ref<{ default: Attributes, special: GearsetsRow[] }>({
   default: {
-    level: 82,
+    level: 90,
     craftsmanship: 2786,
     control: 2764,
     craft_points: 533,

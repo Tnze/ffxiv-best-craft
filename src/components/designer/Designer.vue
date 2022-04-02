@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, watchEffect } from 'vue'
+import 'element-plus/es/components/message/style/css'
+import { ElMessage } from 'element-plus'
 import { Attributes, Jobs, Actions, simulate, Recipe, Status, new_status } from '../../Craft'
 import { read_solver } from '../../Solver'
 import ActionPanel from './ActionPanel.vue'
@@ -29,8 +31,16 @@ const solverResultDisplay = ref<Slot[]>([])
 
 watchEffect(async () => {
     if (props.recipe == null) return
-    let s = await new_status(props.attributes as Attributes, props.recipe as Recipe)
-    initStatus.value = s
+    try {
+        let s = await new_status(props.attributes as Attributes, props.recipe as Recipe)
+        initStatus.value = s
+    } catch (e) {
+        ElMessage({
+            type: 'error',
+            showClose: true,
+            message: e as string,
+        })
+    }
 })
 watch([initStatus, actionQueue], async ([s, actions]) => {
     let result = await simulate(s!, actions.map(x => x.action))
