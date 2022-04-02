@@ -39,6 +39,7 @@ watch([initStatus, actionQueue], async ([s, actions]) => {
     try {
         solverResult.value = await read_solver(result.status)
     } catch (err) {
+        solverResult.value = []
         console.log(err)
     }
 }, { deep: true })

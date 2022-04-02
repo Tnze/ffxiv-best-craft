@@ -35,6 +35,7 @@ const emits = defineEmits<{
 }>()
 
 const openFilter = ref(false)
+const openCustomlizer = ref(false)
 
 const selectRecipe = (row: RecipeRow | undefined) => {
     if (row == undefined)
@@ -57,15 +58,26 @@ const selectRecipe = (row: RecipeRow | undefined) => {
                     showClose: true,
                     dangerouslyUseHTMLString: true,
                     message: `配方设置已变更 rlv: ${r.rlv}<br/>
-                    难度系数: ${row.difficulty_factor}
-                    品质系数: ${row.quality_factor}
-                    耐久系数: ${row.durability_factor}`
+                    难度: ${r.difficulty}
+                    品质: ${r.quality}
+                    耐久: ${r.durability}`
                 })
             })
     }).catch(() => {
         // operation canceled by user
     })
 }
+
+const customRecipe = ref<RecipeRow>({
+    id: 0,
+    rlv: 580,
+    name: '自定义配方#580',
+    job: '木工',
+
+    difficulty_factor: 100,
+    quality_factor: 100,
+    durability_factor: 100
+})
 
 </script>
 
@@ -78,10 +90,43 @@ const selectRecipe = (row: RecipeRow | undefined) => {
             <el-drawer v-model="openFilter" :show-close="false">
                 <template #title>高级过滤</template>
             </el-drawer>
+            <el-dialog v-model="openCustomlizer" title="自定义配方">
+                <el-form
+                    :model="customRecipe"
+                    label-position="right"
+                    label-width="100px"
+                    style="max-width: 460px"
+                >
+                    <el-form-item label="rlv">
+                        <el-input-number v-model="customRecipe.rlv" :min="1"></el-input-number>
+                    </el-form-item>
+                    <el-form-item label="名称">
+                        <el-input v-model="customRecipe.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="难度系数">
+                        <el-input-number v-model="customRecipe.difficulty_factor" :min="1"></el-input-number>
+                    </el-form-item>
+                    <el-form-item label="品质系数">
+                        <el-input-number v-model="customRecipe.quality_factor" :min="1"></el-input-number>
+                    </el-form-item>
+                    <el-form-item label="耐久系数">
+                        <el-input-number v-model="customRecipe.durability_factor" :min="1"></el-input-number>
+                    </el-form-item>
+                </el-form>
+                <template #footer>
+                    <span class="dialog-footer">
+                        <el-button @click="openCustomlizer = false">取消</el-button>
+                        <el-button
+                            type="primary"
+                            @click="openCustomlizer; selectRecipe(customRecipe)"
+                        >确认</el-button>
+                    </span>
+                </template>
+            </el-dialog>
             <el-input v-model="searchText" class="search-input" placeholder="键入以搜索">
                 <template #append>
                     <el-button :icon="Filter" @click="openFilter = true" />
-                    <!-- <el-button :icon="EditPen" @click="openFilter = true" /> -->
+                    <el-button :icon="EditPen" @click="openCustomlizer = true" />
                 </template>
             </el-input>
             <el-table
