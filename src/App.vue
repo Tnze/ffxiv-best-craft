@@ -11,7 +11,6 @@ import { computed } from '@vue/reactivity';
 
 interface GearsetsRow {
   name: string
-  label: string
   value: Attributes | null
 }
 
@@ -23,14 +22,14 @@ const gearsets = ref<{ default: Attributes, special: GearsetsRow[] }>({
     craft_points: 533,
   },
   special: [
-    { name: 'carpenter', label: "刻木匠", value: null },
-    { name: 'blacksmith', label: "锻铁匠", value: null },
-    { name: 'armorer', label: "铸甲匠", value: null },
-    { name: 'goldsmith', label: "雕金匠", value: null },
-    { name: 'leatherworker', label: "制革匠", value: null },
-    { name: 'weaver', label: "裁衣匠", value: null },
-    { name: 'alchemist', label: "炼金术士", value: null },
-    { name: 'culinarian', label: "烹调师", value: null },
+    { name: 'carpenter', value: null },
+    { name: 'blacksmith', value: null },
+    { name: 'armorer', value: null },
+    { name: 'goldsmith', value: null },
+    { name: 'leatherworker', value: null },
+    { name: 'weaver', value: null },
+    { name: 'alchemist', value: null },
+    { name: 'culinarian', value: null },
   ]
 })
 

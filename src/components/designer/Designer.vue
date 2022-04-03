@@ -88,10 +88,10 @@ const saveQueue = () => {
 </script>
 
 <template>
-    <el-empty v-if="status == undefined" description="未加载配方" style="height: 100%;" />
+    <el-empty v-if="status == undefined" description="请先选择配方" style="height: 100%;" />
     <el-container v-else>
         <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
-            <SolverList :init-status="initStatus" />
+            <SolverList :init-status="initStatus" :recipe-name="itemName" />
         </el-drawer>
         <el-header>
             <h1>{{ itemName }}</h1>

@@ -1,12 +1,23 @@
 <script setup lang="ts">
-import { ref, computed, reactive, watch, watchEffect } from 'vue'
+import { createDir, readTextFile, writeFile, Dir } from '@tauri-apps/api/fs'
+import { ref, onMounted, onUpdated } from 'vue'
 import { Attributes, Jobs } from '../Craft'
 
 interface GearsetsRow {
     name: string
-    label: string
     value: Attributes | null
 }
+
+const jobLabels = new Map([
+    ['carpenter', "刻木匠"],
+    ['blacksmith', "锻铁匠"],
+    ['armorer', "铸甲匠"],
+    ['goldsmith', "雕金匠"],
+    ['leatherworker', "制革匠"],
+    ['weaver', "裁衣匠"],
+    ['alchemist', "炼金术士"],
+    ['culinarian', "烹调师"],
+])
 
 const props = defineProps<{
     modelValue: { default: Attributes, special: GearsetsRow[] }
@@ -16,6 +27,29 @@ const emits = defineEmits<{
     (event: 'update:modelValue', attr: Attributes): void
 }>()
 
+onMounted(async () => {
+    try {
+        const conf = await readTextFile('gearsets.json', { dir: Dir.App })
+        emits('update:modelValue', JSON.parse(conf) as Attributes)
+    } catch (err) {
+        // may be the file is not exist
+        console.log(err)
+    }
+})
+
+onUpdated(async () => {
+    const conf = JSON.stringify(props.modelValue)
+    try {
+        await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
+    } catch (err) {
+        try {
+            await createDir('', { dir: Dir.App })
+            await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+})
 
 const jobPage = ref('default')
 
@@ -49,7 +83,11 @@ const jobPage = ref('default')
                         </el-form-item>
                     </el-form>
                 </el-tab-pane>
-                <el-tab-pane v-for="v in modelValue.special" :name="v.name" :label="v.label">
+                <el-tab-pane
+                    v-for="v in modelValue.special"
+                    :name="v.name"
+                    :label="jobLabels.get(v.name)"
+                >
                     <el-form
                         label-position="right"
                         label-width="100px"
