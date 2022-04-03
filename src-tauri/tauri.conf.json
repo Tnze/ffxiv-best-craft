@@ -13,7 +13,7 @@
         "bundle": {
             "active": true,
             "targets": "all",
-            "identifier": "me.tnze.fca",
+            "identifier": "me.tnze.fbc",
             "icon": [
                 "icons/32x32.png",
                 "icons/128x128.png",
@@ -50,10 +50,19 @@
             }
         },
         "updater": {
-            "active": false
+            "active": true,
+            "endpoints": [
+                "https://bestcraft.tnze.workers.dev/releases/{{target}}/{{current_version}}"
+            ],
+            "dialog": true,
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDI2RUQ0NDQ2MEMyNUZEQUUKUldTdS9TVU1Sa1R0Smd6Rll2ZHBkd25aL1J1eWdhMmpSMjZpZWNvaE45K1R5UDU5Qk1sd3djNEgK"
+
         },
         "allowlist": {
-            "all": true
+            "all": true,
+            "fs": {
+                "scope": ["$APP", "$APP/gearsets.json"]
+            }
         },
         "windows": [{
             "title": "BestCraft 最优生产",

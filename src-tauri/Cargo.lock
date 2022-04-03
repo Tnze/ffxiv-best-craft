@@ -61,7 +61,6 @@ dependencies = [
  "ffxiv-crafting",
  "msgbox",
  "ndarray",
- "platform-dirs",
  "serde",
  "serde_json",
  "tauri",
@@ -732,16 +731,6 @@ dependencies = [
 
 [[package]]
 name = "dirs-next"
-version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf36e65a80337bea855cd4ef9b8401ffce06a7baedf2e85ec467b1ac3f6e82b6"
-dependencies = [
- "cfg-if",
- "dirs-sys-next",
-]
-
-[[package]]
-name = "dirs-next"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b98cf8ebf19c3d1b223e151f99a4f9f0690dca41414773390fc824184ac833e1"
@@ -839,6 +828,8 @@ dependencies = [
 [[package]]
 name = "ffxiv-crafting"
 version = "6.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf88ba9ad60943efc6565dc1fe7363ccae72712c20a4acb4d99ae95168a3ee60"
 dependencies = [
  "serde",
 ]
@@ -1629,7 +1620,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "297c13fc8ff9fa8b2d0e53850f80e0aa962628e865d447031ce58cdb062e5b29"
 dependencies = [
  "cc",
- "dirs-next 2.0.0",
+ "dirs-next",
  "objc-foundation",
  "objc_id",
  "time",
@@ -1696,6 +1687,12 @@ checksum = "5aa361d4faea93603064a027415f07bd8e1d5c88c9fbf68bf56a285428fd79ce"
 dependencies = [
  "autocfg",
 ]
+
+[[package]]
+name = "minisign-verify"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "933dca44d65cdd53b355d0b73d380a2ff5da71f87f036053188bf1eab6a19881"
 
 [[package]]
 name = "miniz_oxide"
@@ -2266,15 +2263,6 @@ name = "pkg-config"
 version = "0.3.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "58893f751c9b0412871a09abd62ecd2a00298c6c83befa223ef98c52aef40cbe"
-
-[[package]]
-name = "platform-dirs"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e188d043c1a692985f78b5464853a263f1a27e5bd6322bad3a4078ee3c998a38"
-dependencies = [
- "dirs-next 1.0.2",
-]
 
 [[package]]
 name = "png"
@@ -3116,9 +3104,10 @@ checksum = "f6d514a34b3f9a07e2002d95e1371b42a446636e3d571a59e974b21d6acf3007"
 dependencies = [
  "anyhow",
  "attohttpc",
+ "base64",
  "bincode",
  "cfg_aliases",
- "dirs-next 2.0.0",
+ "dirs-next",
  "either",
  "embed_plist",
  "flate2",
@@ -3130,6 +3119,7 @@ dependencies = [
  "http",
  "ignore",
  "memchr",
+ "minisign-verify",
  "notify-rust",
  "once_cell",
  "open",
@@ -3158,6 +3148,7 @@ dependencies = [
  "url",
  "uuid",
  "windows 0.30.0",
+ "zip",
 ]
 
 [[package]]
@@ -4133,6 +4124,17 @@ dependencies = [
  "serde",
  "static_assertions",
  "zvariant",
+]
+
+[[package]]
+name = "zip"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db2a3b9c90b21734aaf4449cee7735305f559f28894123b57e0f700be8459418"
+dependencies = [
+ "byteorder",
+ "crc32fast",
+ "crossbeam-utils",
 ]
 
 [[package]]

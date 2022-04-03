@@ -154,6 +154,22 @@ fn read_solver(status: Status, app_state: tauri::State<AppState>) -> Result<Vec<
     }
 }
 
+#[tauri::command(async)]
+fn destroy_solver(status: Status, app_state: tauri::State<AppState>) -> Result<(), String> {
+    let key = solver::SolverHash {
+        attributes: status.attributes,
+        recipe: status.recipe,
+    };
+    let list = &mut *app_state.solver_list.lock().unwrap();
+    match list.entry(key) {
+        Entry::Occupied(e) => {
+            e.remove();
+            Ok(())
+        }
+        Entry::Vacant(_) => Err("solver not exists".to_string()),
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(AppState::new())
@@ -164,6 +180,7 @@ fn main() {
             recipe_table,
             create_solver,
             read_solver,
+            destroy_solver,
         ])
         .run(tauri::generate_context!())
         .map_err(|err| {
