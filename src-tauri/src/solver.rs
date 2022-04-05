@@ -16,13 +16,13 @@ struct SolverSlot {
 }
 
 pub struct Solver {
-    pub driver: Driver,
+    pub driver: Driver<0, 8>,
     // results [d][cp][iq][iv][gs][mn][wn]
     results: Vec<Vec<[[[[[SolverSlot; 9]; 1]; 4]; 5]; 11]>>,
 }
 
 impl Solver {
-    pub fn new(driver: Driver, allowd_list: &[Skills]) -> Self {
+    pub fn new(driver: Driver<0, 8>) -> Self {
         let cp = driver.init_status.attributes.craft_points as usize;
         let du = driver.init_status.recipe.durability as usize;
         const DEFAULT_SLOT: SolverSlot = SolverSlot {
@@ -184,28 +184,43 @@ struct DriverSlot {
     skill: Option<Skills>,
 }
 
-pub struct Driver {
+pub struct Driver<const MN: usize, const WN: usize>
+where
+    [(); MN + 1]:,
+    [(); WN + 1]:,
+{
     init_status: Status,
     // results[d][cp][ve][mm][mn][wn]
-    results: Vec<Vec<[[[[DriverSlot; 9]; 1]; 6]; 5]>>,
+    results: Vec<Vec<[[[[DriverSlot; WN + 1]; MN + 1]; 6]; 5]>>,
 }
 
-impl Driver {
+impl<const MN: usize, const WN: usize> Driver<MN, WN>
+where
+    [(); MN + 1]:,
+    [(); WN + 1]:,
+{
+    const DEFAULT_SLOT: DriverSlot = DriverSlot {
+        progress: 0,
+        step: 0,
+        skill: None,
+    };
+    const DEFAULT_ARY: [[[[DriverSlot; WN + 1]; MN + 1]; 6]; 5] =
+        [[[[Self::DEFAULT_SLOT; WN + 1]; MN + 1]; 6]; 5];
     pub fn new(s: &Status) -> Self {
         let cp = s.attributes.craft_points as usize;
         let du = s.recipe.durability as usize;
-        const DEFAULT_SLOT: DriverSlot = DriverSlot {
-            progress: 0,
-            step: 0,
-            skill: None,
-        };
-        const DEFAULT_ARY: [[[[DriverSlot; 9]; 1]; 6]; 5] = [[[[DEFAULT_SLOT; 9]; 1]; 6]; 5];
         Self {
             init_status: s.clone(),
-            results: vec![vec![DEFAULT_ARY; cp + 1]; du + 1],
+            results: vec![vec![Self::DEFAULT_ARY; cp + 1]; du + 1],
         }
     }
+}
 
+impl<const MN: usize, const WN: usize> Driver<MN, WN>
+where
+    [(); MN + 1]:,
+    [(); WN + 1]:,
+{
     pub fn init(&mut self, allowd_list: &[Skills]) {
         let mut s = self.init_status.clone();
         for cp in 0..=self.init_status.attributes.craft_points {
@@ -216,10 +231,10 @@ impl Driver {
                     s.buffs.veneration = ve;
                     for mm in 0..=MAX_MUSCLE_MEMORY {
                         s.buffs.muscle_memory = mm;
-                        for mn in 0..=MAX_MANIPULATION {
-                            s.buffs.manipulation = mn;
-                            for wn in 0..=MAX_WAST_NOT {
-                                s.buffs.wast_not = wn;
+                        for mn in 0..=MN {
+                            s.buffs.manipulation = mn as u8;
+                            for wn in 0..=WN {
+                                s.buffs.wast_not = wn as u8;
                                 for sk in allowd_list {
                                     if s.is_action_allowed(*sk).is_ok() {
                                         let mut new_s = s.clone();

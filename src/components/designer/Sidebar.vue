@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { Plus, Delete, Cpu } from '@element-plus/icons-vue'
+import { Plus, Delete, Cpu, Printer } from '@element-plus/icons-vue'
 
 const emits = defineEmits<{
     (event: 'plus'): void
     (event: 'delete'): void
     (event: 'solver'): void
+    (event: 'print'): void
 }>();
 </script>
 <template>
@@ -22,6 +23,11 @@ const emits = defineEmits<{
         <el-tooltip content="求解器设置" placement="right" :show-after="1000">
             <el-icon class="button" :size="15" @click="emits('solver')">
                 <cpu />
+            </el-icon>
+        </el-tooltip>
+        <el-tooltip content="导出宏" placement="right" :show-after="1000">
+            <el-icon class="button" :size="15" @click="emits('print')">
+                <printer />
             </el-icon>
         </el-tooltip>
     </div>
