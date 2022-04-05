@@ -26,7 +26,7 @@ const chunkedActions = computed(() => {
 })
 
 const copyChunk = async (i: number, macro: string[]) => {
-    await writeText(macro.join('\n'))
+    await writeText(macro.join('\r\n'))
     ElMessage({
         type: 'success',
         duration: 2000,
