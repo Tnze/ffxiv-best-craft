@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 import { Attributes, Jobs, Actions, simulate, Recipe, Status, new_status } from '../../Craft'
@@ -9,6 +9,7 @@ import ActionQueue from './ActionQueue.vue'
 import StatusBar from './StatusBar.vue'
 import Sidebar from './Sidebar.vue'
 import SolverList from './SolverList.vue'
+import MarcoExporter from './MarcoExporter.vue'
 
 interface Slot {
     id: number
@@ -22,10 +23,12 @@ const props = defineProps<{
     recipe: Recipe | null;
 }>()
 const actionQueue = ref<Slot[]>([])
+const actions = computed(() => actionQueue.value.map(slot => slot.action))
 const initStatus = ref<Status | undefined>(undefined)
 const status = ref<Status | undefined>(undefined)
 const castingErrors = ref<{ pos: number, err: string }[]>([])
 const openSolverDrawer = ref(false)
+const openExportMarco = ref(false)
 const solverResult = ref<Actions[]>([])
 const solverResultDisplay = ref<Slot[]>([])
 
@@ -93,6 +96,9 @@ const saveQueue = () => {
         <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
             <SolverList :init-status="initStatus" :recipe-name="itemName" />
         </el-drawer>
+        <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="95%">
+            <MarcoExporter :actions="actions" />
+        </el-drawer>
         <el-header>
             <h1>{{ itemName }}</h1>
         </el-header>
@@ -108,6 +114,7 @@ const saveQueue = () => {
                         @plus="saveQueue"
                         @delete="actionQueue = []"
                         @solver="openSolverDrawer = true"
+                        @print="openExportMarco = true"
                     />
                     <el-scrollbar class="solver-and-options-scrollbar">
                         <ul class="solver-and-options-list">

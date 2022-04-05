@@ -52,7 +52,7 @@ const onRightClick = (index: number) => {
                         :scale="0.7"
                         :job="job"
                         :action="element.action"
-                        :effect="errList?.find((v) => v.pos == index) !== undefined ? 'red-cross' : 'normal'"
+                        :effect="errList?.find((v) => v.pos == index) !== undefined ? 'black' : 'normal'"
                         disabled
                         @click.stop.prevent.right="onRightClick(index)"
                     />

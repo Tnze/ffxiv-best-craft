@@ -2,6 +2,7 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
+#![feature(generic_const_exprs)]
 
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -130,7 +131,7 @@ fn create_solver(
         Entry::Vacant(e) => {
             let mut driver = solver::Driver::new(&status);
             driver.init(&synth_skills);
-            let mut solver = solver::Solver::new(driver, &touch_skills);
+            let mut solver = solver::Solver::new(driver);
             solver.init(&touch_skills);
             e.insert(Box::new(solver));
             Ok(())
