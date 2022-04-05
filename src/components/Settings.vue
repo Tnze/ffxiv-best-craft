@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { checkUpdate } from '@tauri-apps/api/updater'
 
 const props = defineProps<{
     settings: {
@@ -21,6 +22,9 @@ const props = defineProps<{
                     <el-select v-model="settings.language">
                         <el-option label="简体中文" value="zh-CN" />
                     </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="checkUpdate()">检查更新</el-button>
                 </el-form-item>
             </el-form>
         </el-main>
