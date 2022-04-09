@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Plus, Delete, Cpu, Printer } from '@element-plus/icons-vue'
+import { DocumentCopy, Delete, Cpu, Printer } from '@element-plus/icons-vue'
 
 const emits = defineEmits<{
     (event: 'plus'): void
@@ -12,7 +12,7 @@ const emits = defineEmits<{
     <div class="container">
         <el-tooltip content="保存当前宏" placement="right" :show-after="1000">
             <el-icon class="button" :size="15" @click="emits('plus')">
-                <plus />
+                <document-copy />
             </el-icon>
         </el-tooltip>
         <el-tooltip content="清空工作区" placement="right" :show-after="1000">

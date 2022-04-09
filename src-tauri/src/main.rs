@@ -62,6 +62,14 @@ fn simulate(status: Status, skills: Vec<Skills>) -> SimulateResult {
     result
 }
 
+#[tauri::command(async)]
+fn allowed_list(status: Status, skills: Vec<Skills>) -> Vec<bool> {
+    skills
+        .iter()
+        .map(|&sk| status.is_action_allowed(sk).is_ok())
+        .collect()
+}
+
 #[derive(Serialize)]
 struct RecipeRow {
     id: usize,
@@ -125,7 +133,10 @@ fn create_solver(
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let list = &mut *app_state.solver_list.lock().unwrap();
+    let list = &mut *app_state
+        .solver_list
+        .lock()
+        .map_err(|err| err.to_string())?;
     match list.entry(key) {
         Entry::Occupied(_) => Err("solver already exists".to_string()),
         Entry::Vacant(e) => {
@@ -145,7 +156,10 @@ fn read_solver(status: Status, app_state: tauri::State<AppState>) -> Result<Vec<
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let list = &mut *app_state.solver_list.lock().unwrap();
+    let list = &mut *app_state
+        .solver_list
+        .lock()
+        .map_err(|err| err.to_string())?;
     match list.entry(key) {
         Entry::Occupied(e) => {
             let solver = e.get().read_all(&status);
@@ -178,6 +192,7 @@ fn main() {
             new_recipe,
             new_status,
             simulate,
+            allowed_list,
             recipe_table,
             create_solver,
             read_solver,

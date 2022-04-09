@@ -25,9 +25,9 @@ interface Buffs {
   final_appraisal: number;
   manipulation: number;
   wast_not: number;
-  standard_touch_prepared: boolean;
-  advanced_touch_prepared: boolean;
-  observed: boolean;
+  standard_touch_prepared: number;
+  advanced_touch_prepared: number;
+  observed: number;
 }
 
 interface Status {
@@ -112,7 +112,7 @@ enum Actions {
   HeartAndSoul = "heart_and_soul",
 }
 
-const new_recipe = async (
+const newRecipe = async (
   rlv: number,
   difficultyFactor: number,
   qualityFactor: number,
@@ -126,7 +126,7 @@ const new_recipe = async (
   });
 };
 
-const new_status = (
+const newStatus = (
   attrs: Attributes,
   recipe: Recipe,
   initQuality: number = 0
@@ -144,6 +144,13 @@ const simulate = (s: Status, actions: Actions[]): Promise<SimulateResult> => {
   return invoke("simulate", { status: s, skills: actions });
 };
 
+const allowedList = (
+  status: Status,
+  actions: Actions[]
+): Promise<boolean[]> => {
+  return invoke("allowed_list", { status, skills: actions });
+};
+
 interface RecipeRow {
   id: number;
   rlv: number;
@@ -155,7 +162,7 @@ interface RecipeRow {
   durability_factor: number;
 }
 
-const recipe_table = (): Promise<RecipeRow[]> => {
+const newRecipeTable = (): Promise<RecipeRow[]> => {
   return invoke("recipe_table");
 };
 
@@ -167,9 +174,10 @@ export {
   Status,
   Jobs,
   Actions,
-  new_recipe,
-  new_status,
+  newRecipe,
+  newStatus,
   simulate,
+  allowedList,
   RecipeRow,
-  recipe_table,
+  newRecipeTable,
 };

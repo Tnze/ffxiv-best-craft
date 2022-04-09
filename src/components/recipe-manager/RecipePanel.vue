@@ -4,9 +4,9 @@ import 'element-plus/es/components/message/style/css'
 import 'element-plus/es/components/message-box/style/css'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen, Filter } from '@element-plus/icons-vue'
-import { Jobs, RecipeRow, Recipe, recipe_table, new_recipe } from '../../Craft'
+import { Jobs, RecipeRow, Recipe, newRecipeTable, newRecipe } from '../../Craft'
 
-const jobMaps: { [key: string]: Jobs } = {
+const jobMaps: { [key: string]: Jobs | 'unknown' } = {
     '木工': Jobs.Carpenter,
     '锻冶': Jobs.Blacksmith,
     '铸甲': Jobs.Armorer,
@@ -15,10 +15,11 @@ const jobMaps: { [key: string]: Jobs } = {
     '裁缝': Jobs.Weaver,
     '炼金': Jobs.Alchemist,
     '烹调': Jobs.Culinarian,
+    '自定义': 'unknown',
 }
 
 const recipeTable = ref<RecipeRow[]>([])
-recipe_table().then((v) => {
+newRecipeTable().then((v) => {
     recipeTable.value = v.filter(r => r.name.length > 0)
 })
 
@@ -31,7 +32,7 @@ const displayTable = computed(() => {
 const currentPage = ref(1)
 
 const emits = defineEmits<{
-    (event: 'change', job: Jobs, name: string, recipe: Recipe): void
+    (event: 'change', job: Jobs | 'unknown', name: string, recipe: Recipe): void
 }>()
 
 const openFilter = ref(false)
@@ -49,7 +50,7 @@ const selectRecipeRow = (row: RecipeRow) => {
             type: 'warning'
         }
     ).then(() => {
-        new_recipe(row.rlv, row.difficulty_factor, row.quality_factor, row.durability_factor)
+        newRecipe(row.rlv, row.difficulty_factor, row.quality_factor, row.durability_factor)
             .then(r => {
                 selectRecipe(r, row.name, row.job)
             })
@@ -93,6 +94,7 @@ const customRecipe = ref({
         <el-main class="container">
             <el-drawer v-model="openFilter" :show-close="false">
                 <template #title>高级过滤</template>
+                这里本来应该有通过职业过滤、品级过滤、等级过滤、秘籍过滤等等，但是被咕掉了。
             </el-drawer>
             <el-dialog v-model="openCustomlizer" title="自定义配方">
                 <el-form
@@ -122,12 +124,12 @@ const customRecipe = ref({
                         <el-button @click="openCustomlizer = false">取消</el-button>
                         <el-button
                             type="primary"
-                            @click="openCustomlizer = false; selectRecipe(customRecipe, customRecipe.name, '炼金')"
+                            @click="openCustomlizer = false; selectRecipe(customRecipe, customRecipe.name, '自定义')"
                         >确认</el-button>
                     </span>
                 </template>
             </el-dialog>
-            <el-input v-model="searchText" class="search-input" placeholder="键入以搜索">
+            <el-input v-model="searchText" class="search-input" placeholder="键入以搜索" clearable>
                 <template #append>
                     <el-button :icon="Filter" @click="openFilter = true" />
                     <el-button :icon="EditPen" @click="openCustomlizer = true" />
