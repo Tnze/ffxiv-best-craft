@@ -33,7 +33,7 @@ const gearsets = ref<{ default: Attributes, special: GearsetsRow[] }>({
   ]
 })
 
-const job = ref<Jobs>(Jobs.Culinarian)
+const job = ref<Jobs | 'unknown'>('unknown')
 const attributes = computed(() => {
   return gearsets.value.special.find(v => v.name == job.value)?.value || gearsets.value.default
 })
@@ -45,7 +45,7 @@ const settings = ref({
   language: "zh-CN"
 })
 const recipeName = ref('')
-const onRecipeChange = (j: Jobs, name: string, r: Recipe) => {
+const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
   job.value = j
   recipe.value = r
   recipeName.value = name

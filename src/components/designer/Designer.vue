@@ -2,7 +2,8 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
-import { Attributes, Jobs, Actions, simulate, Recipe, Status, new_status } from '../../Craft'
+import { Delete, Edit, SuccessFilled, Failed } from '@element-plus/icons-vue'
+import { Attributes, Jobs, Actions, simulate, Recipe, Status, newStatus } from '../../Craft'
 import { read_solver } from '../../Solver'
 import ActionPanel from './ActionPanel.vue'
 import ActionQueue from './ActionQueue.vue'
@@ -18,10 +19,11 @@ interface Slot {
 
 const props = defineProps<{
     itemName: string;
-    job: Jobs;
+    job: Jobs | 'unknown';
     attributes: Attributes;
     recipe: Recipe | null;
 }>()
+const displayJob = computed(() => props.job == 'unknown' ? Jobs.Culinarian : props.job)
 const actionQueue = ref<Slot[]>([])
 const actions = computed(() => actionQueue.value.map(slot => slot.action))
 const initStatus = ref<Status | undefined>(undefined)
@@ -35,7 +37,7 @@ const solverResultDisplay = ref<Slot[]>([])
 watchEffect(async () => {
     if (props.recipe == null) return
     try {
-        let s = await new_status(props.attributes as Attributes, props.recipe as Recipe)
+        let s = await newStatus(props.attributes as Attributes, props.recipe as Recipe)
         initStatus.value = s
     } catch (e) {
         ElMessage({
@@ -46,14 +48,22 @@ watchEffect(async () => {
     }
 })
 watch([initStatus, actionQueue], async ([s, actions]) => {
-    let result = await simulate(s!, actions.map(x => x.action))
-    status.value = result.status
-    castingErrors.value = result.errors
     try {
-        solverResult.value = await read_solver(result.status)
+        let result = await simulate(s!, actions.map(x => x.action))
+        status.value = result.status
+        castingErrors.value = result.errors
+        try {
+            solverResult.value = await read_solver(result.status)
+        } catch (err) {
+            solverResult.value = []
+            console.log(err)
+        }
     } catch (err) {
-        solverResult.value = []
-        console.log(err)
+        ElMessage({
+            type: 'error',
+            showClose: true,
+            message: err as string,
+        })
     }
 }, { deep: true })
 
@@ -106,28 +116,54 @@ const saveQueue = () => {
             <div class="main-page">
                 <StatusBar class="status-bar" :status="status!" />
                 <div class="action-queue">
-                    <ActionQueue :job="job" :list="actionQueue" :err-list="castingErrors" />
+                    <ActionQueue :job="displayJob" :list="actionQueue" :err-list="castingErrors" />
                 </div>
-                <div class="solver-and-options">
+                <div class="solver-and-savedqueue">
                     <Sidebar
-                        class="options-list-sidebar"
+                        class="savedqueue-list-sidebar"
                         @plus="saveQueue"
                         @delete="actionQueue = []"
                         @solver="openSolverDrawer = true"
                         @print="openExportMarco = true"
                     />
-                    <el-scrollbar class="solver-and-options-scrollbar">
-                        <ul class="solver-and-options-list">
-                            <li v-if="solverResult.length > 0" class="solver-and-options-item">
-                                <ActionQueue :job="job" :list="solverResultDisplay" disabled />
+                    <el-scrollbar class="solver-and-savedqueue-scrollbar">
+                        <ul class="solver-and-savedqueue-list">
+                            <li v-if="solverResult.length > 0" class="solver-and-savedqueue-item">
+                                <el-icon :color="'#67C23A'" class="savedqueue-item-status">
+                                    <!-- <success-filled /> -->
+                                    <failed />
+                                </el-icon>
+                                <ActionQueue
+                                    :job="displayJob"
+                                    :list="solverResultDisplay"
+                                    disabled
+                                />
                             </li>
-                            <li v-for="sq in savedQueues" class="solver-and-options-item">
-                                <ActionQueue :job="job" :list="sq" disabled />
+                            <li v-for="sq, i in savedQueues" class="solver-and-savedqueue-item">
+                                <ActionQueue :job="displayJob" :list="sq" disabled />
+                                <el-link
+                                    :icon="Edit"
+                                    :underline="false"
+                                    class="savedqueue-item-status"
+                                    @click="actionQueue = sq.slice()"
+                                />
+                                <el-link
+                                    :icon="Delete"
+                                    :underline="false"
+                                    class="savedqueue-item-status"
+                                    @click="savedQueues.splice(i, 1)"
+                                />
                             </li>
                         </ul>
                     </el-scrollbar>
                 </div>
-                <ActionPanel class="action-panel" @clicked-action="pushAction" :job="job" #lower />
+                <ActionPanel
+                    class="action-panel"
+                    @clicked-action="pushAction"
+                    :job="displayJob"
+                    :status="status"
+                    #lower
+                />
             </div>
         </el-main>
     </el-container>
@@ -147,26 +183,33 @@ const saveQueue = () => {
     border-bottom: 1px solid var(--el-border-color);
     background-color: #fafafa;
 }
-.solver-and-options {
+.solver-and-savedqueue {
     display: flex;
     flex: auto;
     overflow: hidden;
 }
-.options-list-sidebar {
+.savedqueue-list-sidebar {
     border-right: 1px solid var(--el-border-color);
 }
-.solver-and-options-scrollbar {
+.solver-and-savedqueue-scrollbar {
     flex: auto;
 }
 .action-panel {
     margin-bottom: 6px;
 }
-.solver-and-options-list {
+.solver-and-savedqueue-list {
     margin: 0px;
     padding: 0px;
 }
-.solver-and-options-item {
+.solver-and-savedqueue-item {
     display: flex;
+    align-items: center;
     border-bottom: 1px solid var(--el-border-color);
+}
+.savedqueue-item-status {
+    margin-right: 6px;
+}
+.el-link {
+    margin-right: 8px;
 }
 </style>

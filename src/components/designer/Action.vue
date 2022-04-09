@@ -9,6 +9,7 @@ const props = defineProps<{
     job: Jobs,
     action: Actions,
     disabled?: boolean,
+    active?: boolean,
     effect?: string
 }>();
 
@@ -33,7 +34,7 @@ const hoverLayerOffset = computed(() => {
 
 const onClick = (event: MouseEvent) => {
     if (!props.disabled)
-        (event.target as HTMLElement).classList.add('click-animation')
+        (event.target as HTMLElement).firstElementChild!.classList.add('click-animation')
 }
 const onAnimationEnd = (event: AnimationEvent) => {
     (event.target as HTMLElement).classList.remove('click-animation')
@@ -42,29 +43,23 @@ const onAnimationEnd = (event: AnimationEvent) => {
 </script>
 
 <template>
-    <div class="container">
-        <div class="action" @click="onClick" @animationend="onAnimationEnd($event)"></div>
+    <div class="action" @click="onClick">
+        <div @animationend="onAnimationEnd($event)"></div>
+        <div v-if="active" class="active-mask"></div>
     </div>
 </template>
 
 <style scoped>
-.container {
-    display: inline-block;
-    width: calc(48px * v-bind("props.scale || 0.85"));
-    height: calc(48px * v-bind("props.scale || 0.85"));
-    transform: scale(v-bind("props.scale || 0.85"));
-    transform-origin: 0px 0px;
-}
 .action {
-    display: block;
+    position: relative;
+    display: inline-block;
     width: 48px;
     height: 48px;
     background: v-bind(
         "'url('+hoverUrl+') no-repeat '+hoverLayerOffset+', url('+iconUrl+') no-repeat top 3px left 4px'"
     );
-    transform: scale(1);
 }
-.action:hover:after {
+.action:hover::after {
     content: "";
     display: block;
     width: 72px;
@@ -76,7 +71,7 @@ const onAnimationEnd = (event: AnimationEvent) => {
         left -240px;
     cursor: v-bind("disabled?'inherit':'pointer'");
 }
-.click-animation:before {
+.click-animation {
     content: "";
     display: block;
     width: 64px;
@@ -86,11 +81,16 @@ const onAnimationEnd = (event: AnimationEvent) => {
     position: absolute;
     background: url("../../assets/icons/icona_frame_tex.png") no-repeat top -72px
         left -240px;
-    transform: scale(0);
     animation: clickable-wave 0.3s;
 }
-.click-animation:active:before {
-    animation: clickable-wave 0s;
+.active-mask::after {
+    content: "";
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    pointer-events: none;
+    background-image: url("../../assets/icons/icona_frame_tex.png");
+    animation: active 0.25s steps(1, start) infinite;
 }
 @keyframes clickable-wave {
     from {
@@ -100,6 +100,35 @@ const onAnimationEnd = (event: AnimationEvent) => {
     to {
         transform: scale(1);
         opacity: 0;
+    }
+}
+@keyframes active {
+    0% {
+        background-position: top 0px left -96px;
+    }
+    12.5% {
+        background-position: top 0px left -144px;
+    }
+    25% {
+        background-position: top 0px left -192px;
+    }
+    37.5% {
+        background-position: top -48px left -96px;
+    }
+    50% {
+        background-position: top -48px left -144px;
+    }
+    62.5% {
+        background-position: top -48px left -192px;
+    }
+    75% {
+        background-position: top -96px left -96px;
+    }
+    87.5% {
+        background-position: top -96px left -144px;
+    }
+    100% {
+        background-position: top -96px left -144px;
     }
 }
 </style>
