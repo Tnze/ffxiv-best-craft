@@ -40,7 +40,7 @@ const isActived = (action: Actions) => {
     return false;
 }
 
-const cachedAllowedList = ref<boolean[]>([])
+const cachedAllowedList = ref<string[]>([])
 
 watchEffect(() => {
     if (props.status == undefined) {
@@ -52,20 +52,20 @@ watchEffect(() => {
     })
 })
 
-
 </script>
 
 <template>
     <div class="container">
         <Action
             :job="job"
+            class="item"
             v-for="action, i in actions"
             @click="emit('clickedAction', action)"
             @mouseover="emit('mouseoverAction', action)"
             @mouseleave="emit('mouseleaveAction', action)"
             :action="action"
             :active="isActived(action)"
-            :effect="cachedAllowedList[i] ? 'normal' : 'black'"
+            :effect="cachedAllowedList.at(i) == 'ok' ? 'normal' : 'black'"
         />
     </div>
 </template>
@@ -73,6 +73,10 @@ watchEffect(() => {
 <style scoped>
 .container {
     box-sizing: border-box;
-    padding: 13px;
+    padding: 3px 10px;
+}
+.item {
+    transform: scale(0.8);
+    margin: calc(-48px * 0.1);
 }
 </style>

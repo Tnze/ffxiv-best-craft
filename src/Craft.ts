@@ -147,7 +147,7 @@ const simulate = (s: Status, actions: Actions[]): Promise<SimulateResult> => {
 const allowedList = (
   status: Status,
   actions: Actions[]
-): Promise<boolean[]> => {
+): Promise<string[]> => {
   return invoke("allowed_list", { status, skills: actions });
 };
 

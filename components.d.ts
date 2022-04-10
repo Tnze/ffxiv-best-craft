@@ -42,6 +42,7 @@ declare module 'vue' {
     Loading: typeof import('element-plus/es')['ElLoadingDirective']
     MarcoExporter: typeof import('./src/components/designer/MarcoExporter.vue')['default']
     Menu: typeof import('./src/components/Menu.vue')['default']
+    QueueStatus: typeof import('./src/components/designer/QueueStatus.vue')['default']
     RecipePanel: typeof import('./src/components/recipe-manager/RecipePanel.vue')['default']
     Settings: typeof import('./src/components/Settings.vue')['default']
     Sidebar: typeof import('./src/components/designer/Sidebar.vue')['default']

@@ -61,12 +61,12 @@ const createSolver = async () => {
         type: 'info',
         message: `求解器初始化中，请稍后……`,
     })
+    let solver: Solver = {
+        initStatus: props.initStatus!,
+        name: props.recipeName,
+        status: 'solving'
+    }
     try {
-        let solver: Solver = {
-            initStatus: props.initStatus!,
-            name: props.recipeName,
-            status: 'solving'
-        }
         solvers.value.push(solver)
         const start_time = new Date().getTime();
         await create_solver(solver.initStatus, synthList, touchList)
@@ -80,6 +80,7 @@ const createSolver = async () => {
         solver.status = 'prepared'
         console.log('求解过程结束')
     } catch (err) {
+        solvers.value.splice(solvers.value.indexOf(solver), 1)
         ElMessage({
             type: 'error',
             message: `错误: ${err}`,
@@ -92,7 +93,7 @@ const createSolver = async () => {
 
 const destroySolver = (s: Solver) => {
     try {
-        solvers.value.splice(solvers.value.findIndex(v => v == s), 1)
+        solvers.value.splice(solvers.value.indexOf(s), 1)
         destroy_solver(s.initStatus)
     } catch (err) {
         ElMessage({
