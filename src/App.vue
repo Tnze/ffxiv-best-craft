@@ -64,13 +64,19 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
         <RecipePanel v-if="currentPage == 1" v-model="recipe" @change="onRecipeChange" />
       </keep-alive>
       <keep-alive>
-        <Designer
-          v-if="currentPage == 2"
-          :item-name="recipeName"
-          :attributes="attributes"
-          :recipe="recipe"
-          :job="job"
-        />
+        <Suspense v-if="currentPage == 2">
+          <Designer
+            v-if="recipe != null"
+            :item-name="recipeName"
+            :attributes="attributes"
+            :recipe="recipe"
+            :job="job"
+          />
+          <el-empty v-else description="请先选择配方" style="height: 100%;" />
+          <template #fallback>
+            <el-empty description="加载中" style="height: 100%;" />
+          </template>
+        </Suspense>
       </keep-alive>
       <Settings v-if="currentPage == 3" :settings="settings" />
     </el-main>

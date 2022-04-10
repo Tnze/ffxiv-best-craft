@@ -136,7 +136,7 @@ fn create_solver(
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let check = {
+    {
         let mut list = app_state
             .solver_list
             .lock()
@@ -151,8 +151,8 @@ fn create_solver(
                 Ok(())
             }
         }
-    };
-    if check.is_ok() {
+    }
+    .and_then(|_| {
         let mut driver = solver::Driver::new(&status);
         driver.init(&synth_skills);
         let mut solver = solver::Solver::new(driver);
@@ -162,8 +162,8 @@ fn create_solver(
             .lock()
             .map_err(|err| err.to_string())?;
         *list.get_mut(&key).unwrap() = Some(Box::new(solver)); // we are sure that there is a None value so we can successfully get it
-    }
-    Ok(())
+        Ok(())
+    })
 }
 
 #[tauri::command(async)]
