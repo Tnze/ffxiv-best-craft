@@ -1,0 +1,41 @@
+name: Tauri
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: [macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+        
+    - name: Use Rust
+      uses: actions-rs/toolchain@v1.0.6
+      with:
+        toolchain: nightly
+        
+    - name: Install dependencies
+      run: yarn
+    - name: Build tauri
+      run: yarn tauri build
+      env:
+        TAURI_KEY_PASSWORD: ${{ secrets. TAURI_KEY_PASSWORD }}
+        TAURI_PRIVATE_KEY: ${{ secrets. TAURI_PRIVATE_KEY }}
+        
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
