@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, Ref, ref, unref, watch, watchEffect } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 import { Delete, Edit } from '@element-plus/icons-vue'
@@ -22,42 +22,25 @@ const props = defineProps<{
     itemName: string;
     job: Jobs | 'unknown';
     attributes: Attributes;
-    recipe: Recipe | null;
+    recipe: Recipe;
 }>()
 const displayJob = computed(() => props.job == 'unknown' ? Jobs.Culinarian : props.job)
+
+// Actions Queue
 const actionQueue = ref<Slot[]>([])
 const actions = computed(() => actionQueue.value.map(slot => slot.action))
-const initStatus = ref<Status | undefined>(undefined)
-const status = ref<Status | undefined>(undefined)
-const castingErrors = ref<{ pos: number, err: string }[]>([])
-const openSolverDrawer = ref(false)
-const openExportMarco = ref(false)
-const solverResult = ref<Actions[]>([])
-const solverResultDisplay = ref<Slot[]>([])
 
-watchEffect(async () => {
-    if (props.recipe == null) return
+// Simulation
+const initStatus = ref<Status>(await newStatus(props.attributes, props.recipe))
+const { status, errors } = await (async () => {
+    const { status, errors } = await simulate(initStatus.value, actions.value)
+    return { status: ref(status), errors: ref(errors) }
+})()
+watch([initStatus, actions], async ([s, a]) => {
     try {
-        let s = await newStatus(props.attributes as Attributes, props.recipe as Recipe)
-        initStatus.value = s
-    } catch (e) {
-        ElMessage({
-            type: 'error',
-            showClose: true,
-            message: e as string,
-        })
-    }
-})
-watch([initStatus, actionQueue], async ([s, actions]) => {
-    try {
-        let result = await simulate(s!, actions.map(x => x.action))
+        let result = await simulate(s, a)
         status.value = result.status
-        castingErrors.value = result.errors
-        try {
-            solverResult.value = await read_solver(result.status)
-        } catch (err) {
-            solverResult.value = []
-        }
+        errors.value = result.errors
     } catch (err) {
         ElMessage({
             type: 'error',
@@ -65,8 +48,20 @@ watch([initStatus, actionQueue], async ([s, actions]) => {
             message: err as string,
         })
     }
-}, { deep: true })
+})
 
+// Solver result
+const solverResult = ref<Actions[]>([])
+watch(status, async (s) => {
+    try {
+        solverResult.value = actions.value.concat(await read_solver(s))
+    } catch (err) {
+        solverResult.value = []
+    }
+})
+
+// Solver result displayer
+const solverResultDisplay = ref<Slot[]>([])
 watch(solverResult, async (newSolverResult) => {
     let display = [];
     let oldSolverResult = solverResultDisplay.value;
@@ -85,11 +80,13 @@ watch(solverResult, async (newSolverResult) => {
     solverResultDisplay.value = display
 })
 
-const maxid = ref(0)
+// Drawer status
+const openSolverDrawer = ref(false)
+const openExportMarco = ref(false)
 
 const pushAction = (action: Actions) => {
-    actionQueue.value.push({ id: maxid.value, action })
-    maxid.value++
+    const maxid = actionQueue.value.map(v => v.id).reduce((a, b) => Math.max(a, b), 0)
+    actionQueue.value.push({ id: maxid + 1, action })
 }
 
 const savedQueues = ref<Slot[][]>([])
@@ -101,8 +98,7 @@ const saveQueue = () => {
 </script>
 
 <template>
-    <el-empty v-if="status == undefined" description="请先选择配方" style="height: 100%;" />
-    <el-container v-else>
+    <el-container>
         <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
             <SolverList :init-status="initStatus" :recipe-name="itemName" />
         </el-drawer>
@@ -116,7 +112,7 @@ const saveQueue = () => {
             <div class="main-page">
                 <StatusBar class="status-bar" :status="status!" />
                 <div class="action-queue">
-                    <ActionQueue :job="displayJob" :list="actionQueue" :err-list="castingErrors" />
+                    <ActionQueue :job="displayJob" :list="actionQueue" :err-list="errors" />
                 </div>
                 <div class="solver-and-savedqueue">
                     <Sidebar
@@ -134,9 +130,17 @@ const saveQueue = () => {
                                     :list="solverResultDisplay"
                                     disabled
                                 />
+                                <el-link
+                                    :icon="Edit"
+                                    :underline="false"
+                                    class="savedqueue-item-status"
+                                    @click="actionQueue = solverResultDisplay"
+                                />
                             </li>
                             <li v-for="sq, i in savedQueues" class="solver-and-savedqueue-item">
-                                <QueueStatus :status="simulate(initStatus!, sq.map(x => x.action))" />
+                                <!-- <QueueStatus
+                                    :status="(await simulate(initStatus!, sq.map(x => x.action))).status"
+                                />-->
                                 <ActionQueue :job="displayJob" :list="sq" disabled />
                                 <el-link
                                     :icon="Edit"
