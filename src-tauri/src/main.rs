@@ -63,10 +63,13 @@ fn simulate(status: Status, skills: Vec<Skills>) -> SimulateResult {
 }
 
 #[tauri::command(async)]
-fn allowed_list(status: Status, skills: Vec<Skills>) -> Vec<bool> {
+fn allowed_list(status: Status, skills: Vec<Skills>) -> Vec<String> {
     skills
         .iter()
-        .map(|&sk| status.is_action_allowed(sk).is_ok())
+        .map(|&sk| match status.is_action_allowed(sk) {
+            Ok(_) => "ok".to_string(),
+            Err(err) => err.to_string(),
+        })
         .collect()
 }
 
@@ -111,7 +114,7 @@ fn recipe_table() -> Vec<RecipeRow> {
 }
 
 struct AppState {
-    solver_list: Mutex<HashMap<solver::SolverHash, Box<solver::Solver>>>,
+    solver_list: Mutex<HashMap<solver::SolverHash, Option<Box<solver::Solver>>>>,
 }
 
 impl AppState {
@@ -133,21 +136,34 @@ fn create_solver(
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let list = &mut *app_state
-        .solver_list
-        .lock()
-        .map_err(|err| err.to_string())?;
-    match list.entry(key) {
-        Entry::Occupied(_) => Err("solver already exists".to_string()),
-        Entry::Vacant(e) => {
-            let mut driver = solver::Driver::new(&status);
-            driver.init(&synth_skills);
-            let mut solver = solver::Solver::new(driver);
-            solver.init(&touch_skills);
-            e.insert(Box::new(solver));
-            Ok(())
+    let check = {
+        let mut list = app_state
+            .solver_list
+            .lock()
+            .map_err(|err| err.to_string())?;
+        match list.entry(key.clone()) {
+            Entry::Occupied(e) => match e.get() {
+                Some(_) => Err("solver already exists".to_string()),
+                None => Err("solver is creating".to_string()),
+            },
+            Entry::Vacant(e) => {
+                e.insert(None); // tell others we are already take this place
+                Ok(())
+            }
         }
+    };
+    if check.is_ok() {
+        let mut driver = solver::Driver::new(&status);
+        driver.init(&synth_skills);
+        let mut solver = solver::Solver::new(driver);
+        solver.init(&touch_skills);
+        let mut list = app_state
+            .solver_list
+            .lock()
+            .map_err(|err| err.to_string())?;
+        *list.get_mut(&key).unwrap() = Some(Box::new(solver)); // we are sure that there is a None value so we can successfully get it
     }
+    Ok(())
 }
 
 #[tauri::command(async)]
@@ -156,16 +172,20 @@ fn read_solver(status: Status, app_state: tauri::State<AppState>) -> Result<Vec<
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let list = &mut *app_state
+    let mut list = app_state
         .solver_list
         .lock()
         .map_err(|err| err.to_string())?;
     match list.entry(key) {
         Entry::Occupied(e) => {
-            let solver = e.get().read_all(&status);
-            Ok(solver.1)
+            if let Some(v) = e.get() {
+                let solver = v.read_all(&status);
+                Ok(solver.1)
+            } else {
+                Err("solver not prepared".to_string())
+            }
         }
-        Entry::Vacant(_) => Err("solver not exists".to_string()),
+        _ => Err("solver not exists".to_string()),
     }
 }
 
@@ -175,12 +195,15 @@ fn destroy_solver(status: Status, app_state: tauri::State<AppState>) -> Result<(
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let list = &mut *app_state.solver_list.lock().unwrap();
+    let mut list = app_state.solver_list.lock().unwrap();
     match list.entry(key) {
-        Entry::Occupied(e) => {
-            e.remove();
-            Ok(())
-        }
+        Entry::Occupied(e) => match e.get() {
+            Some(_) => {
+                e.remove();
+                Ok(())
+            }
+            None => Err("solver is creating".to_string()), // we can't take the solver when it is a None, because the creating thread expect it will not be remove
+        },
         Entry::Vacant(_) => Err("solver not exists".to_string()),
     }
 }

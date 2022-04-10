@@ -49,7 +49,7 @@ const onRightClick = (index: number) => {
             <template #item="{ element, index }">
                 <div class="list-group-item">
                     <Action
-                        :scale="0.7"
+                        class="action-icon"
                         :job="job"
                         :action="element.action"
                         :effect="errList?.find((v) => v.pos == index) !== undefined ? 'black' : 'normal'"
@@ -84,5 +84,9 @@ const onRightClick = (index: number) => {
 }
 .list-group-item {
     display: inline-block;
+}
+.action-icon {
+    transform: scale(0.7);
+    margin: calc(-48px * 0.15);
 }
 </style>

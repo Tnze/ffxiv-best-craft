@@ -342,7 +342,7 @@ where
     }
 }
 
-#[derive(Hash, Eq, PartialEq)]
+#[derive(Hash, Eq, PartialEq, Clone)]
 pub struct SolverHash {
     pub attributes: Attributes,
     pub recipe: Recipe,

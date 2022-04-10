@@ -2,7 +2,7 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
-import { Delete, Edit, SuccessFilled, Failed } from '@element-plus/icons-vue'
+import { Delete, Edit } from '@element-plus/icons-vue'
 import { Attributes, Jobs, Actions, simulate, Recipe, Status, newStatus } from '../../Craft'
 import { read_solver } from '../../Solver'
 import ActionPanel from './ActionPanel.vue'
@@ -11,6 +11,7 @@ import StatusBar from './StatusBar.vue'
 import Sidebar from './Sidebar.vue'
 import SolverList from './SolverList.vue'
 import MarcoExporter from './MarcoExporter.vue'
+import QueueStatus from './QueueStatus.vue'
 
 interface Slot {
     id: number
@@ -56,7 +57,6 @@ watch([initStatus, actionQueue], async ([s, actions]) => {
             solverResult.value = await read_solver(result.status)
         } catch (err) {
             solverResult.value = []
-            console.log(err)
         }
     } catch (err) {
         ElMessage({
@@ -129,10 +129,6 @@ const saveQueue = () => {
                     <el-scrollbar class="solver-and-savedqueue-scrollbar">
                         <ul class="solver-and-savedqueue-list">
                             <li v-if="solverResult.length > 0" class="solver-and-savedqueue-item">
-                                <el-icon :color="'#67C23A'" class="savedqueue-item-status">
-                                    <!-- <success-filled /> -->
-                                    <failed />
-                                </el-icon>
                                 <ActionQueue
                                     :job="displayJob"
                                     :list="solverResultDisplay"
@@ -140,6 +136,7 @@ const saveQueue = () => {
                                 />
                             </li>
                             <li v-for="sq, i in savedQueues" class="solver-and-savedqueue-item">
+                                <QueueStatus :status="simulate(initStatus!, sq.map(x => x.action))" />
                                 <ActionQueue :job="displayJob" :list="sq" disabled />
                                 <el-link
                                     :icon="Edit"
