@@ -80,6 +80,13 @@ watch(solverResult, async (newSolverResult) => {
     solverResultDisplay.value = display
 })
 
+// Solver result status
+const solverResultStatus = ref<Status>(initStatus.value)
+watch(solverResult, async (newSolverResult) => {
+    const result = await simulate(initStatus.value, newSolverResult)
+    solverResultStatus.value = result.status
+})
+
 // Drawer status
 const openSolverDrawer = ref(false)
 const openExportMarco = ref(false)
@@ -89,10 +96,14 @@ const pushAction = (action: Actions) => {
     actionQueue.value.push({ id: maxid + 1, action })
 }
 
-const savedQueues = ref<Slot[][]>([])
-
-const saveQueue = () => {
-    savedQueues.value.push(actionQueue.value.slice())
+const savedQueues = ref<{ actions: Slot[], status: Status }[]>([])
+const saveQueue = async () => {
+    const actions = actionQueue.value.map(x => x.action);
+    const result = await simulate(initStatus.value, actions);
+    savedQueues.value.push({
+        actions: actionQueue.value.slice(),
+        status: result.status
+    })
 }
 
 </script>
@@ -125,6 +136,7 @@ const saveQueue = () => {
                     <el-scrollbar class="solver-and-savedqueue-scrollbar">
                         <ul class="solver-and-savedqueue-list">
                             <li v-if="solverResult.length > 0" class="solver-and-savedqueue-item">
+                                <QueueStatus :status="solverResultStatus" />
                                 <ActionQueue
                                     :job="displayJob"
                                     :list="solverResultDisplay"
@@ -133,25 +145,23 @@ const saveQueue = () => {
                                 <el-link
                                     :icon="Edit"
                                     :underline="false"
-                                    class="savedqueue-item-status"
+                                    class="savedqueue-item-button"
                                     @click="actionQueue = solverResultDisplay"
                                 />
                             </li>
                             <li v-for="sq, i in savedQueues" class="solver-and-savedqueue-item">
-                                <!-- <QueueStatus
-                                    :status="(await simulate(initStatus!, sq.map(x => x.action))).status"
-                                />-->
-                                <ActionQueue :job="displayJob" :list="sq" disabled />
+                                <QueueStatus :status="sq.status" />
+                                <ActionQueue :job="displayJob" :list="sq.actions" disabled />
                                 <el-link
                                     :icon="Edit"
                                     :underline="false"
-                                    class="savedqueue-item-status"
-                                    @click="actionQueue = sq.slice()"
+                                    class="savedqueue-item-button"
+                                    @click="actionQueue = sq.actions.slice()"
                                 />
                                 <el-link
                                     :icon="Delete"
                                     :underline="false"
-                                    class="savedqueue-item-status"
+                                    class="savedqueue-item-button"
                                     @click="savedQueues.splice(i, 1)"
                                 />
                             </li>
@@ -207,10 +217,7 @@ const saveQueue = () => {
     align-items: center;
     border-bottom: 1px solid var(--el-border-color);
 }
-.savedqueue-item-status {
+.savedqueue-item-button{
     margin-right: 6px;
-}
-.el-link {
-    margin-right: 8px;
 }
 </style>
