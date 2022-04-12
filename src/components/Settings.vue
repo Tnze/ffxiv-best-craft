@@ -44,19 +44,26 @@ const onCheckUpdateClick = () => {
         </el-header>
         <el-main>
             <el-form class="setting-page" :model="settings" label-width="120px">
-                <el-form-item label="语言">
+                <el-form-item label="Language">
                     <el-select v-model="settings.language">
                         <el-option label="简体中文" value="zh-CN" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="版本">
+                <el-form-item label="Version">
                     {{ version }}
                 </el-form-item>
-                <el-form-item label="Tauri">
+                <el-form-item label="Tauri Version">
                     {{ tauriVersion }}
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onCheckUpdateClick">检查更新</el-button>
+                </el-form-item>
+                <el-form-item label="Auther">
+                    Tnze
+                </el-form-item>
+                <el-form-item label="Repositories">
+                    <el-link href="https://gitee.com/Tnze/ffxiv-best-craft" target="_blank">Gitee</el-link>
+                    <el-link href="https://github.com/Tnze/ffxiv-best-craft" target="_blank">Github</el-link>
                 </el-form-item>
             </el-form>
         </el-main>
@@ -66,5 +73,9 @@ const onCheckUpdateClick = () => {
 <style scoped>
 .setting-page {
     padding-top: 10px;
+}
+
+.el-link {
+    margin-right: 8px;
 }
 </style>
