@@ -1,7 +1,7 @@
 {
     "package": {
         "productName": "ffxiv-best-craft",
-        "version": "0.1.5"
+        "version": "0.1.6"
     },
     "build": {
         "distDir": "../dist",
@@ -52,7 +52,8 @@
         "updater": {
             "active": true,
             "endpoints": [
-                "https://bestcraft.tnze.workers.dev/update/{{target}}/{{current_version}}"
+                "https://bestcraft.tnze.workers.dev/update/{{target}}/{{current_version}}",
+                "https://bestcraft.tnze.me/update/{{target}}/{{current_version}}"
             ],
             "dialog": true,
             "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDI2RUQ0NDQ2MEMyNUZEQUUKUldTdS9TVU1Sa1R0Smd6Rll2ZHBkd25aL1J1eWdhMmpSMjZpZWNvaE45K1R5UDU5Qk1sd3djNEgK"
