@@ -32,6 +32,9 @@ const actions = computed(() => actionQueue.value.map(slot => slot.action))
 
 // Simulation
 const initStatus = ref<Status>(await newStatus(props.attributes, props.recipe))
+watch(() => [props.attributes, props.recipe], async ([newAttr, newRecipe]) => {
+    initStatus.value = await newStatus(newAttr as Attributes, newRecipe as Recipe)
+})
 const { status, errors } = await (async () => {
     const { status, errors } = await simulate(initStatus.value, actions.value)
     return { status: ref(status), errors: ref(errors) }
@@ -82,8 +85,8 @@ watch(solverResult, async (newSolverResult) => {
 
 // Solver result status
 const solverResultStatus = ref<Status>(initStatus.value)
-watch(solverResult, async (newSolverResult) => {
-    const result = await simulate(initStatus.value, newSolverResult)
+watch([initStatus, solverResult], async ([s, a]) => {
+    const result = await simulate(s, a)
     solverResultStatus.value = result.status
 })
 
@@ -96,15 +99,14 @@ const pushAction = (action: Actions) => {
     actionQueue.value.push({ id: maxid + 1, action })
 }
 
-const savedQueues = ref<{ actions: Slot[], status: Status }[]>([])
-const saveQueue = async () => {
-    const actions = actionQueue.value.map(x => x.action);
-    const result = await simulate(initStatus.value, actions);
-    savedQueues.value.push({
-        actions: actionQueue.value.slice(),
-        status: result.status
-    })
-}
+const savedQueues = ref<Slot[][]>([])
+const savedQueuesResults = ref<Status[]>([])
+watchEffect(() => {
+    savedQueuesResults.value = new Array(savedQueues.value.length)
+    for (const i in savedQueues.value)
+        simulate(initStatus.value, savedQueues.value[i].map(x => x.action))
+            .then(result => savedQueuesResults.value[i] = result.status)
+})
 
 </script>
 
@@ -126,55 +128,29 @@ const saveQueue = async () => {
                     <ActionQueue :job="displayJob" :list="actionQueue" :err-list="errors" />
                 </div>
                 <div class="solver-and-savedqueue">
-                    <Sidebar
-                        class="savedqueue-list-sidebar"
-                        @plus="saveQueue"
-                        @delete="actionQueue = []"
-                        @solver="openSolverDrawer = true"
-                        @print="openExportMarco = true"
-                    />
+                    <Sidebar class="savedqueue-list-sidebar" @plus="savedQueues.push(actionQueue.slice())"
+                        @delete="actionQueue = []" @solver="openSolverDrawer = true" @print="openExportMarco = true" />
                     <el-scrollbar class="solver-and-savedqueue-scrollbar">
                         <ul class="solver-and-savedqueue-list">
                             <li v-if="solverResult.length > 0" class="solver-and-savedqueue-item">
                                 <QueueStatus :status="solverResultStatus" />
-                                <ActionQueue
-                                    :job="displayJob"
-                                    :list="solverResultDisplay"
-                                    disabled
-                                />
-                                <el-link
-                                    :icon="Edit"
-                                    :underline="false"
-                                    class="savedqueue-item-button"
-                                    @click="actionQueue = solverResultDisplay"
-                                />
+                                <ActionQueue :job="displayJob" :list="solverResultDisplay" disabled />
+                                <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
+                                    @click="actionQueue = solverResultDisplay" />
                             </li>
                             <li v-for="sq, i in savedQueues" class="solver-and-savedqueue-item">
-                                <QueueStatus :status="sq.status" />
-                                <ActionQueue :job="displayJob" :list="sq.actions" disabled />
-                                <el-link
-                                    :icon="Edit"
-                                    :underline="false"
-                                    class="savedqueue-item-button"
-                                    @click="actionQueue = sq.actions.slice()"
-                                />
-                                <el-link
-                                    :icon="Delete"
-                                    :underline="false"
-                                    class="savedqueue-item-button"
-                                    @click="savedQueues.splice(i, 1)"
-                                />
+                                <QueueStatus :status="savedQueuesResults[i]" />
+                                <ActionQueue :job="displayJob" :list="sq" disabled />
+                                <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
+                                    @click="actionQueue = sq.slice()" />
+                                <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
+                                    @click="savedQueues.splice(i, 1)" />
                             </li>
                         </ul>
                     </el-scrollbar>
                 </div>
-                <ActionPanel
-                    class="action-panel"
-                    @clicked-action="pushAction"
-                    :job="displayJob"
-                    :status="status"
-                    #lower
-                />
+                <ActionPanel class="action-panel" @clicked-action="pushAction" :job="displayJob" :status="status"
+                    #lower />
             </div>
         </el-main>
     </el-container>
@@ -186,38 +162,47 @@ const saveQueue = async () => {
     display: flex;
     flex-direction: column;
 }
+
 .status-bar {
     flex: none;
 }
+
 .action-queue {
     border-top: 1px solid var(--el-border-color);
     border-bottom: 1px solid var(--el-border-color);
     background-color: #fafafa;
 }
+
 .solver-and-savedqueue {
     display: flex;
     flex: auto;
     overflow: hidden;
 }
+
 .savedqueue-list-sidebar {
     border-right: 1px solid var(--el-border-color);
 }
+
 .solver-and-savedqueue-scrollbar {
     flex: auto;
 }
+
 .action-panel {
     margin-bottom: 6px;
 }
+
 .solver-and-savedqueue-list {
     margin: 0px;
     padding: 0px;
 }
+
 .solver-and-savedqueue-item {
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--el-border-color);
 }
-.savedqueue-item-button{
+
+.savedqueue-item-button {
     margin-right: 6px;
 }
 </style>
