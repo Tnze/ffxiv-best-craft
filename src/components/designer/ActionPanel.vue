@@ -35,7 +35,9 @@ const isActived = (action: Actions) => {
             return props.status.buffs.standard_touch_prepared > 0
         case Actions.AdvancedTouch:
             return props.status.buffs.advanced_touch_prepared > 0
-
+        case Actions.FocusedSynthesis:
+        case Actions.FocusedTouch:
+            return props.status.buffs.observed > 0
     }
     return false;
 }
@@ -56,17 +58,9 @@ watchEffect(() => {
 
 <template>
     <div class="container">
-        <Action
-            :job="job"
-            class="item"
-            v-for="action, i in actions"
-            @click="emit('clickedAction', action)"
-            @mouseover="emit('mouseoverAction', action)"
-            @mouseleave="emit('mouseleaveAction', action)"
-            :action="action"
-            :active="isActived(action)"
-            :effect="cachedAllowedList.at(i) == 'ok' ? 'normal' : 'black'"
-        />
+        <Action :job="job" class="item" v-for="action, i in actions" @click="emit('clickedAction', action)"
+            @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)" :action="action"
+            :active="isActived(action)" :effect="cachedAllowedList.at(i) == 'ok' ? 'normal' : 'black'" />
     </div>
 </template>
 
@@ -75,6 +69,7 @@ watchEffect(() => {
     box-sizing: border-box;
     padding: 3px 10px;
 }
+
 .item {
     transform: scale(0.8);
     margin: calc(-48px * 0.1);

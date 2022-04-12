@@ -1,0 +1,66 @@
+<script setup lang="ts">
+import { computed } from 'vue';
+import { Buffs } from '../../Craft';
+
+const props = defineProps<{
+    buffs: Buffs
+}>()
+
+const fakeBuffs = ['observed', 'standard_touch_prepared', 'advanced_touch_prepared']
+
+const buffsDisplay = computed<{
+    url: URL,
+    duration: number | undefined
+}[]>(() => {
+    return Object.entries(props.buffs)
+        .filter(v => !fakeBuffs.includes(v[0]))
+        .filter(v => v[1] > 0)
+        .map(([buffName, duration]) => {
+            if (buffName == 'inner_quiet') {
+                return {
+                    url: new URL(`../../assets/buffs/${buffName}_${duration as number}.png`, import.meta.url),
+                    duration: undefined
+                }
+            } else {
+                return {
+                    url: new URL(`../../assets/buffs/${buffName}.png`, import.meta.url),
+                    duration: duration as number,
+                }
+            }
+        })
+})
+</script>
+
+<template>
+    <div class="container">
+        <div class="buff" v-for="buffDisplay in buffsDisplay" :duration="buffDisplay.duration">
+            <img class="buff-img" :src="buffDisplay.url.href" />
+        </div>
+    </div>
+</template>
+
+<style scoped>
+.container {
+    display: flex;
+}
+
+.buff {
+    margin-right: 5px;
+}
+
+.buff::after {
+    content: attr(duration);
+    display: block;
+    text-align: center;
+    margin-top: -8px;
+    margin-bottom: -5px;
+    font-size: 0.9em;
+    color: #606266;
+}
+
+.buff-img {
+    max-width: 24px;
+    pointer-events: none;
+    user-select: none;
+}
+</style>

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { Conditions, Status } from '../../Craft';
 import Condition from './Condition.vue'
+import Buffs from './Buffs.vue';
 
 const props = defineProps<{
     status: Status;
@@ -50,23 +51,18 @@ const condition = computed(() => {
         <div id="durability-and-condition">
             <div id="durability">
                 耐久{{ status?.durability }} / {{ status?.recipe.durability }}
-                <el-progress
-                    :stroke-width="14"
-                    :show-text="false"
-                    :percentage="durability"
-                    :color="durabilityColor"
-                ></el-progress>
+                <el-progress :stroke-width="14" :show-text="false" :percentage="durability" :color="durabilityColor">
+                </el-progress>
             </div>
             <div id="condition">
                 <Condition :cond="condition" />
             </div>
         </div>
-        <div id="progress">
+        <div id="progress-and-buffs">
             进展
-            <el-progress
-                :percentage="progress"
-            >{{ status?.progress }} / {{ status?.recipe.difficulty }}</el-progress>品质
+            <el-progress :percentage="progress">{{ status?.progress }} / {{ status?.recipe.difficulty }}</el-progress>品质
             <el-progress :percentage="quality">{{ status?.quality }} / {{ status?.recipe.quality }}</el-progress>
+            <Buffs id="buffs" :buffs="status.buffs" />
         </div>
         <div id="attributes">
             等级：{{ status?.attributes.level }}
@@ -79,33 +75,42 @@ const condition = computed(() => {
             <br />
         </div>
     </div>
-    <!-- 
-    
-    制作力{{ status?.craft_points }}-->
 </template>
 
 <style scoped>
 .conatiner {
     width: 100%;
     display: flex;
+    font-size: 14px;
+    color: #606266;
 }
+
 #durability-and-condition {
     padding: 3px 10px 5px 5px;
     flex: none;
 }
+
 #durability {
     padding: 10px;
 }
+
 #condition {
     text-align: center;
 }
-#progress {
+
+#progress-and-buffs {
     padding: 7px;
     flex-grow: 5;
 }
+
+#buffs {
+    margin-top: 7px;
+}
+
 #attributes {
     padding: 0px 20px 0px 0px;
     flex-grow: 2;
     text-align: right;
+    color: #909399;
 }
 </style>

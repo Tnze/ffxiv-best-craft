@@ -7,6 +7,7 @@ declare module 'vue' {
     Action: typeof import('./src/components/designer/Action.vue')['default']
     ActionPanel: typeof import('./src/components/designer/ActionPanel.vue')['default']
     ActionQueue: typeof import('./src/components/designer/ActionQueue.vue')['default']
+    Buffs: typeof import('./src/components/designer/Buffs.vue')['default']
     Condition: typeof import('./src/components/designer/Condition.vue')['default']
     Designer: typeof import('./src/components/designer/Designer.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
