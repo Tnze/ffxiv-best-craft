@@ -12,7 +12,10 @@ use std::{
 use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
 use serde::Serialize;
 
+mod ordinary_solver;
 mod solver;
+
+use crate::solver::Solver;
 
 #[tauri::command(async)]
 fn new_recipe(
@@ -114,7 +117,7 @@ fn recipe_table() -> Vec<RecipeRow> {
 }
 
 struct AppState {
-    solver_list: Mutex<HashMap<solver::SolverHash, Option<Box<solver::Solver>>>>,
+    solver_list: Mutex<HashMap<ordinary_solver::SolverHash, Option<Box<dyn Solver + Send + Sync>>>>,
 }
 
 impl AppState {
@@ -132,7 +135,7 @@ fn create_solver(
     touch_skills: Vec<Skills>,
     app_state: tauri::State<AppState>,
 ) -> Result<(), String> {
-    let key = solver::SolverHash {
+    let key = ordinary_solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
@@ -153,10 +156,10 @@ fn create_solver(
         }
     }
     .and_then(|_| {
-        let mut driver = solver::Driver::new(&status);
-        driver.init(&synth_skills);
-        let mut solver = solver::Solver::new(driver);
-        solver.init(&touch_skills);
+        let mut driver = ordinary_solver::ProgressSolver::new(&status, synth_skills);
+        driver.init();
+        let mut solver = ordinary_solver::OrdinarySolver::new(driver, touch_skills);
+        solver.init();
         let mut list = app_state
             .solver_list
             .lock()
@@ -168,7 +171,7 @@ fn create_solver(
 
 #[tauri::command(async)]
 fn read_solver(status: Status, app_state: tauri::State<AppState>) -> Result<Vec<Skills>, String> {
-    let key = solver::SolverHash {
+    let key = ordinary_solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
@@ -180,7 +183,7 @@ fn read_solver(status: Status, app_state: tauri::State<AppState>) -> Result<Vec<
         Entry::Occupied(e) => {
             if let Some(v) = e.get() {
                 let solver = v.read_all(&status);
-                Ok(solver.1)
+                Ok(solver)
             } else {
                 Err("solver not prepared".to_string())
             }
@@ -191,7 +194,7 @@ fn read_solver(status: Status, app_state: tauri::State<AppState>) -> Result<Vec<
 
 #[tauri::command(async)]
 fn destroy_solver(status: Status, app_state: tauri::State<AppState>) -> Result<(), String> {
-    let key = solver::SolverHash {
+    let key = ordinary_solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
