@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import 'element-plus/es/components/message/style/css'
+import { ElMessage } from 'element-plus'
+import { getName, getVersion, getTauriVersion } from '@tauri-apps/api/app'
 import { checkUpdate } from '@tauri-apps/api/updater'
 
 const props = defineProps<{
@@ -7,6 +10,29 @@ const props = defineProps<{
         language: string
     }
 }>()
+
+const appName = ref('')
+const version = ref('')
+const tauriVersion = ref('')
+getName().then(n => appName.value = n)
+getVersion().then(v => version.value = v)
+getTauriVersion().then(t => tauriVersion.value = t)
+
+const onCheckUpdateClick = () => {
+    checkUpdate()
+        .then(v => {
+            ElMessage({
+                type: 'success',
+                message: '检查更新成功',
+            })
+        })
+        .catch(err => {
+            ElMessage({
+                type: 'error',
+                message: err as string,
+            })
+        })
+}
 
 </script>
 
@@ -23,8 +49,14 @@ const props = defineProps<{
                         <el-option label="简体中文" value="zh-CN" />
                     </el-select>
                 </el-form-item>
+                <el-form-item label="版本">
+                    {{ version }}
+                </el-form-item>
+                <el-form-item label="Tauri">
+                    {{ tauriVersion }}
+                </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="checkUpdate()">检查更新</el-button>
+                    <el-button type="primary" @click="onCheckUpdateClick">检查更新</el-button>
                 </el-form-item>
             </el-form>
         </el-main>
