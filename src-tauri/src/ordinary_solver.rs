@@ -6,8 +6,6 @@ const MAX_VENERATION: u8 = 4;
 const MAX_INNOVATION: u8 = 4;
 const MAX_MUSCLE_MEMORY: u8 = 5;
 const MAX_INNER_QUIET: u8 = 10;
-const MAX_MANIPULATION: u8 = 0;
-const MAX_WAST_NOT: u8 = 8;
 
 #[derive(Copy, Clone)]
 struct SolverSlot {
@@ -16,39 +14,68 @@ struct SolverSlot {
     skill: Option<Skills>,
 }
 
-pub struct OrdinarySolver {
-    pub driver: ProgressSolver<0, 8>,
+pub struct OrdinarySolver<const MN: usize, const WN: usize>
+where
+    [(); MN + 1]:,
+    [(); WN + 1]:,
+{
+    pub driver: ProgressSolver<MN, WN>,
     allowed_list: Vec<Skills>,
     // results [d][cp][iq][iv][gs][mn][wn]
-    results: Vec<Vec<[[[[[SolverSlot; 9]; 1]; 4]; 5]; 11]>>,
+    results: Vec<Vec<[[[[[SolverSlot; WN + 1]; MN + 1]; 4]; 5]; 11]>>,
 }
 
-impl OrdinarySolver {
-    pub fn new(driver: ProgressSolver<0, 8>, allowed_list: Vec<Skills>) -> Self {
+impl<const MN: usize, const WN: usize> OrdinarySolver<MN, WN>
+where
+    [(); MN + 1]:,
+    [(); WN + 1]:,
+{
+    const DEFAULT_SLOT: SolverSlot = SolverSlot {
+        quality: 0,
+        step: 0,
+        skill: None,
+    };
+    const DEFAULT_ARY: [[[[[SolverSlot; WN + 1]; MN + 1]; 4]; 5]; 11] =
+        [[[[[Self::DEFAULT_SLOT; WN + 1]; MN + 1]; 4]; 5]; 11];
+    pub fn new(driver: ProgressSolver<MN, WN>, allowed_list: Vec<Skills>) -> Self {
         let cp = driver.init_status.attributes.craft_points as usize;
         let du = driver.init_status.recipe.durability as usize;
-        const DEFAULT_SLOT: SolverSlot = SolverSlot {
-            quality: 0,
-            step: 0,
-            skill: None,
-        };
-        const DEFAULT_ARY: [[[[[SolverSlot; 9]; 1]; 4]; 5]; 11] =
-            [[[[[DEFAULT_SLOT; 9]; 1]; 4]; 5]; 11];
         Self {
             driver,
             allowed_list,
-            results: vec![vec![DEFAULT_ARY; cp + 1]; du + 1],
+            results: vec![vec![Self::DEFAULT_ARY; cp + 1]; du + 1],
         }
     }
 
-    fn get(&self, s: &Status) -> &SolverSlot {
-        &self.results[s.durability as usize][s.craft_points as usize][s.buffs.inner_quiet as usize]
-            [s.buffs.innovation as usize][s.buffs.great_strides as usize]
-            [s.buffs.manipulation as usize][s.buffs.wast_not as usize]
+    fn get(&self, s: &Status) -> Option<&SolverSlot> {
+        self.results
+            .get(s.durability as usize)?
+            .get(s.craft_points as usize)?
+            .get(s.buffs.inner_quiet as usize)?
+            .get(s.buffs.innovation as usize)?
+            .get(s.buffs.great_strides as usize)?
+            .get(s.buffs.manipulation as usize)?
+            .get(s.buffs.wast_not as usize)
+    }
+
+    unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot {
+        &self
+            .results
+            .get_unchecked(s.durability as usize)
+            .get_unchecked(s.craft_points as usize)
+            .get_unchecked(s.buffs.inner_quiet as usize)
+            .get_unchecked(s.buffs.innovation as usize)
+            .get_unchecked(s.buffs.great_strides as usize)
+            .get_unchecked(s.buffs.manipulation as usize)
+            .get_unchecked(s.buffs.wast_not as usize)
     }
 }
 
-impl Solver for OrdinarySolver {
+impl<const MN: usize, const WN: usize> Solver for OrdinarySolver<MN, WN>
+where
+    [(); MN + 1]:,
+    [(); WN + 1]:,
+{
     fn init(&mut self) {
         let mut s = self.driver.init_status.clone();
         let difficulty = s.recipe.difficulty;
@@ -62,10 +89,10 @@ impl Solver for OrdinarySolver {
                         s.buffs.innovation = iv;
                         for gs in 0..=MAX_GREAT_STRIDES {
                             s.buffs.great_strides = gs;
-                            for mn in 0..=MAX_MANIPULATION {
-                                s.buffs.manipulation = mn;
-                                for wn in 0..=MAX_WAST_NOT {
-                                    s.buffs.wast_not = wn;
+                            for mn in 0..=MN {
+                                s.buffs.manipulation = mn as u8;
+                                for wn in 0..=WN {
+                                    s.buffs.wast_not = wn as u8;
                                     for sk in &self.allowed_list {
                                         if s.is_action_allowed(*sk).is_ok() {
                                             let mut new_s = s.clone();
@@ -77,29 +104,7 @@ impl Solver for OrdinarySolver {
                                                     let mut quality = new_s.quality;
                                                     let mut step = 1;
                                                     {
-                                                        let next = &self
-                                                            .results
-                                                            .get_unchecked(
-                                                                new_s.durability as usize,
-                                                            )
-                                                            .get_unchecked(
-                                                                new_s.craft_points as usize,
-                                                            )
-                                                            .get_unchecked(
-                                                                new_s.buffs.inner_quiet as usize,
-                                                            )
-                                                            .get_unchecked(
-                                                                new_s.buffs.innovation as usize,
-                                                            )
-                                                            .get_unchecked(
-                                                                new_s.buffs.great_strides as usize,
-                                                            )
-                                                            .get_unchecked(
-                                                                new_s.buffs.manipulation as usize,
-                                                            )
-                                                            .get_unchecked(
-                                                                new_s.buffs.wast_not as usize,
-                                                            );
+                                                        let next = self.get_unchecked(&new_s);
                                                         quality += next.quality;
                                                         step += next.step;
                                                     }
@@ -136,7 +141,7 @@ impl Solver for OrdinarySolver {
     }
 
     fn read(&self, s: &Status) -> Option<Skills> {
-        self.get(s).skill
+        self.get(s)?.skill
     }
 
     fn read_all(&self, s: &Status) -> Vec<Skills> {
@@ -147,30 +152,38 @@ impl Solver for OrdinarySolver {
             let max_addon = max_quality - new_s.quality;
             let mut new_s2 = new_s.clone();
             let mut best = {
-                let &SolverSlot {
+                if let Some(&SolverSlot {
                     quality,
                     step,
                     skill,
-                } = self.get(&new_s);
-                let quality = quality.min(max_addon);
-                (
-                    (quality, step),
-                    (new_s.craft_points, new_s.durability),
-                    skill,
-                )
+                }) = self.get(&new_s)
+                {
+                    let quality = quality.min(max_addon);
+                    (
+                        (quality, step),
+                        (new_s.craft_points, new_s.durability),
+                        skill,
+                    )
+                } else {
+                    return vec![];
+                }
             };
             for cp in 0..=new_s.craft_points {
                 new_s2.craft_points = cp;
                 for du in 1..=new_s.durability {
                     new_s2.durability = du;
-                    let &SolverSlot {
+                    if let Some(&SolverSlot {
                         quality,
                         step,
                         skill,
-                    } = self.get(&new_s2);
-                    let quality = quality.min(max_addon);
-                    if quality >= best.0 .0 && step < best.0 .1 {
-                        best = ((quality, step), (cp, du), skill);
+                    }) = self.get(&new_s2)
+                    {
+                        let quality = quality.min(max_addon);
+                        if quality >= best.0 .0 && step < best.0 .1 {
+                            best = ((quality, step), (cp, du), skill);
+                        }
+                    } else {
+                        return vec![];
                     }
                 }
             }
