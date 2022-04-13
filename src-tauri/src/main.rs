@@ -15,6 +15,7 @@ use serde::Serialize;
 mod ordinary_solver;
 mod solver;
 
+use crate::ordinary_solver::{OrdinarySolver, ProgressSolver};
 use crate::solver::Solver;
 
 #[tauri::command(async)]
@@ -156,15 +157,25 @@ fn create_solver(
         }
     }
     .and_then(|_| {
-        let mut driver = ordinary_solver::ProgressSolver::new(&status, synth_skills);
-        driver.init();
-        let mut solver = ordinary_solver::OrdinarySolver::new(driver, touch_skills);
-        solver.init();
+        let solver: Box<dyn Solver + Send + Sync> = if touch_skills.contains(&Skills::Manipulation)
+        {
+            let mut driver = ProgressSolver::new(&status, synth_skills);
+            driver.init();
+            let mut solver = OrdinarySolver::<8, 8>::new(driver, touch_skills);
+            solver.init();
+            Box::new(solver)
+        } else {
+            let mut driver = ProgressSolver::new(&status, synth_skills);
+            driver.init();
+            let mut solver = OrdinarySolver::<0, 8>::new(driver, touch_skills);
+            solver.init();
+            Box::new(solver)
+        };
         let mut list = app_state
             .solver_list
             .lock()
             .map_err(|err| err.to_string())?;
-        *list.get_mut(&key).unwrap() = Some(Box::new(solver)); // we are sure that there is a None value so we can successfully get it
+        *list.get_mut(&key).unwrap() = Some(solver); // we are sure that there is a None value so we can successfully get it
         Ok(())
     })
 }

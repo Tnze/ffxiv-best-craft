@@ -32,7 +32,7 @@ const actions = computed(() => actionQueue.value.map(slot => slot.action))
 
 // Simulation
 const initStatus = ref<Status>(await newStatus(props.attributes, props.recipe))
-watch(() => [props.attributes, props.recipe], async ([newAttr, newRecipe]) => {
+watch([props.attributes, props.recipe], async ([newAttr, newRecipe]) => {
     initStatus.value = await newStatus(newAttr as Attributes, newRecipe as Recipe)
 })
 const { status, errors } = await (async () => {
@@ -113,7 +113,7 @@ watchEffect(() => {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
-            <SolverList :init-status="initStatus" :recipe-name="itemName" />
+            <SolverList :init-status="initStatus" :status="status" :recipe-name="itemName" />
         </el-drawer>
         <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="95%">
             <MarcoExporter :actions="actions" />
@@ -200,6 +200,7 @@ watchEffect(() => {
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--el-border-color);
+    min-height: 50px;
 }
 
 .savedqueue-item-button {

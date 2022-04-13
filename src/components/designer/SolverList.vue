@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 import { Actions, Status } from "../../Craft"
@@ -7,6 +7,7 @@ import { create_solver, destroy_solver } from '../../Solver'
 
 const props = defineProps<{
     initStatus: Status | undefined,
+    status: Status | undefined,
     recipeName: string
 }>()
 
@@ -17,7 +18,6 @@ const synthList = [
     Actions.Veneration,
     Actions.WasteNotII,
     Actions.CarefulSynthesis,
-    // Actions.Manipulation,
     Actions.Groundwork,
     Actions.DelicateSynthesis,
     Actions.IntensiveSynthesis,
@@ -53,6 +53,7 @@ interface Solver {
     status: 'solving' | 'prepared'
 }
 const solvers = ref<Solver[]>([])
+const useManipulation = ref(false)
 
 const createSolver = async () => {
     const msg1 = ElMessage({
@@ -69,7 +70,7 @@ const createSolver = async () => {
     try {
         solvers.value.push(solver)
         const start_time = new Date().getTime();
-        await create_solver(solver.initStatus, synthList, touchList)
+        await create_solver(solver.initStatus, synthList, useManipulation.value ? touchList.concat(Actions.Manipulation) : touchList)
         const stop_time = new Date().getTime();
         ElMessage({
             showClose: true,
@@ -108,17 +109,10 @@ const destroySolver = (s: Solver) => {
 
 <template>
     <el-scrollbar class="container">
-        <el-button
-            class="list-item"
-            :disabled="initStatus == undefined"
-            @click="createSolver"
-        >以当前属性求解当前配方</el-button>
-        <el-button
-            v-for="s in solvers"
-            class="list-item"
-            :disabled="s.status == 'solving'"
-            @click="destroySolver(s)"
-        >释放求解器【{{ s.name }}】</el-button>
+        <el-checkbox v-model="useManipulation" label="使用掌握(启用此选项会使求解时间增加8倍)" />
+        <el-button class="list-item" :disabled="initStatus == undefined" @click="createSolver">创建求解器</el-button>
+        <el-button v-for="s in solvers" class="list-item" :disabled="s.status == 'solving'" @click="destroySolver(s)">
+            释放求解器【{{ s.name }}】</el-button>
     </el-scrollbar>
 </template>
 
@@ -127,6 +121,7 @@ const destroySolver = (s: Solver) => {
     display: flex;
     flex-direction: column;
 }
+
 .list-item {
     height: 50px;
     width: 100%;
