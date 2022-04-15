@@ -32,10 +32,12 @@ const actions = computed(() => actionQueue.value.map(slot => slot.action))
 
 // Simulation
 const initStatus = ref<Status>(await newStatus(props.attributes, props.recipe))
-watch([props.attributes, props.recipe], async ([newAttr, newRecipe]) => {
-    initStatus.value = await newStatus(newAttr as Attributes, newRecipe as Recipe)
+watch(props, async p => {
+    console.log('recipe updated')
+    initStatus.value = await newStatus(p.attributes, p.recipe)
 })
 const { status, errors } = await (async () => {
+    console.log('status updated')
     const { status, errors } = await simulate(initStatus.value, actions.value)
     return { status: ref(status), errors: ref(errors) }
 })()
