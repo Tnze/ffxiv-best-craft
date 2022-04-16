@@ -8,8 +8,8 @@ const MAX_MUSCLE_MEMORY: u8 = 5;
 const MAX_INNER_QUIET: u8 = 10;
 
 #[derive(Copy, Clone)]
-struct SolverSlot {
-    quality: u32,
+struct SolverSlot<V> {
+    value: V,
     step: u8,
     skill: Option<Skills>,
 }
@@ -22,7 +22,7 @@ where
     pub driver: ProgressSolver<MN, WN>,
     allowed_list: Vec<Skills>,
     // results [d][cp][iq][iv][gs][mn][wn]
-    results: Vec<Vec<[[[[[SolverSlot; WN + 1]; MN + 1]; 4]; 5]; 11]>>,
+    results: Vec<Vec<[[[[[SolverSlot<u32>; WN + 1]; MN + 1]; 4]; 5]; 11]>>,
 }
 
 impl<const MN: usize, const WN: usize> OrdinarySolver<MN, WN>
@@ -30,12 +30,12 @@ where
     [(); MN + 1]:,
     [(); WN + 1]:,
 {
-    const DEFAULT_SLOT: SolverSlot = SolverSlot {
-        quality: 0,
+    const DEFAULT_SLOT: SolverSlot<u32> = SolverSlot {
+        value: 0,
         step: 0,
         skill: None,
     };
-    const DEFAULT_ARY: [[[[[SolverSlot; WN + 1]; MN + 1]; 4]; 5]; 11] =
+    const DEFAULT_ARY: [[[[[SolverSlot<u32>; WN + 1]; MN + 1]; 4]; 5]; 11] =
         [[[[[Self::DEFAULT_SLOT; WN + 1]; MN + 1]; 4]; 5]; 11];
     pub fn new(driver: ProgressSolver<MN, WN>, allowed_list: Vec<Skills>) -> Self {
         let cp = driver.init_status.attributes.craft_points as usize;
@@ -47,7 +47,7 @@ where
         }
     }
 
-    fn get(&self, s: &Status) -> Option<&SolverSlot> {
+    fn get(&self, s: &Status) -> Option<&SolverSlot<u32>> {
         self.results
             .get(s.durability as usize)?
             .get(s.craft_points as usize)?
@@ -58,7 +58,7 @@ where
             .get(s.buffs.wast_not as usize)
     }
 
-    unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot {
+    unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot<u32> {
         &self
             .results
             .get_unchecked(s.durability as usize)
@@ -99,13 +99,13 @@ where
                                             new_s.cast_action(*sk);
                                             unsafe {
                                                 let progress =
-                                                    self.driver.get_unchecked(&new_s).progress;
+                                                    self.driver.get_unchecked(&new_s).value;
                                                 if progress == difficulty {
                                                     let mut quality = new_s.quality;
                                                     let mut step = 1;
                                                     {
                                                         let next = self.get_unchecked(&new_s);
-                                                        quality += next.quality;
+                                                        quality += next.value;
                                                         step += next.step;
                                                     }
                                                     let slot = self
@@ -117,12 +117,12 @@ where
                                                         .get_unchecked_mut(gs as usize)
                                                         .get_unchecked_mut(mn as usize)
                                                         .get_unchecked_mut(wn as usize);
-                                                    if quality > slot.quality
-                                                        || (quality == slot.quality
+                                                    if quality > slot.value
+                                                        || (quality == slot.value
                                                             && step < slot.step)
                                                     {
                                                         *slot = SolverSlot {
-                                                            quality,
+                                                            value: quality,
                                                             step,
                                                             skill: Some(*sk),
                                                         }
@@ -153,7 +153,7 @@ where
             let mut new_s2 = new_s.clone();
             let mut best = {
                 if let Some(&SolverSlot {
-                    quality,
+                    value: quality,
                     step,
                     skill,
                 }) = self.get(&new_s)
@@ -173,7 +173,7 @@ where
                 for du in 1..=new_s.durability {
                     new_s2.durability = du;
                     if let Some(&SolverSlot {
-                        quality,
+                        value: quality,
                         step,
                         skill,
                     }) = self.get(&new_s2)
@@ -201,13 +201,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
-struct DriverSlot {
-    progress: u16,
-    step: u8,
-    skill: Option<Skills>,
-}
-
 /// ProgressSolver 是一种专注于推动进展的求解器，给定玩家属性和配方并经过初始化后，
 /// 对于任意的当前状态，可以以O(1)时间复杂度算出剩余资源最多可推多少进展。
 pub struct ProgressSolver<const MN: usize, const WN: usize>
@@ -218,7 +211,7 @@ where
     init_status: Status,
     allowed_list: Vec<Skills>,
     // results[d][cp][ve][mm][mn][wn]
-    results: Vec<Vec<[[[[DriverSlot; WN + 1]; MN + 1]; 6]; 5]>>,
+    results: Vec<Vec<[[[[SolverSlot<u16>; WN + 1]; MN + 1]; 6]; 5]>>,
 }
 
 impl<const MN: usize, const WN: usize> ProgressSolver<MN, WN>
@@ -226,12 +219,12 @@ where
     [(); MN + 1]:,
     [(); WN + 1]:,
 {
-    const DEFAULT_SLOT: DriverSlot = DriverSlot {
-        progress: 0,
+    const DEFAULT_SLOT: SolverSlot<u16> = SolverSlot {
+        value: 0,
         step: 0,
         skill: None,
     };
-    const DEFAULT_ARY: [[[[DriverSlot; WN + 1]; MN + 1]; 6]; 5] =
+    const DEFAULT_ARY: [[[[SolverSlot<u16>; WN + 1]; MN + 1]; 6]; 5] =
         [[[[Self::DEFAULT_SLOT; WN + 1]; MN + 1]; 6]; 5];
     pub fn new(s: &Status, allowed_list: Vec<Skills>) -> Self {
         let cp = s.attributes.craft_points as usize;
@@ -249,7 +242,7 @@ where
     [(); MN + 1]:,
     [(); WN + 1]:,
 {
-    unsafe fn get_unchecked(&self, s: &Status) -> &DriverSlot {
+    unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot<u16> {
         self.results
             .get_unchecked(s.durability as usize)
             .get_unchecked(s.craft_points as usize)
@@ -259,7 +252,7 @@ where
             .get_unchecked(s.buffs.wast_not as usize)
     }
 
-    fn get(&self, s: &Status) -> &DriverSlot {
+    fn get(&self, s: &Status) -> &SolverSlot<u16> {
         &self.results[s.durability as usize][s.craft_points as usize][s.buffs.veneration as usize]
             [s.buffs.muscle_memory as usize][s.buffs.manipulation as usize]
             [s.buffs.wast_not as usize]
@@ -298,18 +291,18 @@ where
                                                 [new_s.buffs.muscle_memory as usize]
                                                 [new_s.buffs.manipulation as usize]
                                                 [new_s.buffs.wast_not as usize];
-                                            progress += next.progress;
+                                            progress += next.value;
                                             progress = progress.min(s.recipe.difficulty);
                                             step += next.step;
                                         }
                                         let slot = &mut self.results[du as usize][cp as usize]
                                             [ve as usize][mm as usize]
                                             [mn as usize][wn as usize];
-                                        if progress > slot.progress
-                                            || (progress == slot.progress && step < slot.step)
+                                        if progress > slot.value
+                                            || (progress == slot.value && step < slot.step)
                                         {
-                                            *slot = DriverSlot {
-                                                progress,
+                                            *slot = SolverSlot {
+                                                value: progress,
                                                 step,
                                                 skill: Some(*sk),
                                             };
@@ -337,8 +330,8 @@ where
             let max_addon = difficulty - new_s.progress;
             let mut new_s2 = new_s.clone();
             let mut best = {
-                let &DriverSlot {
-                    progress,
+                let &SolverSlot {
+                    value: progress,
                     step,
                     skill,
                 } = self.get(&new_s);
@@ -353,8 +346,8 @@ where
                 new_s2.craft_points = cp;
                 for du in 1..=new_s.durability {
                     new_s2.durability = du;
-                    let &DriverSlot {
-                        progress,
+                    let &SolverSlot {
+                        value: progress,
                         step,
                         skill,
                     } = self.get(&new_s2);
