@@ -35,27 +35,14 @@ const onRightClick = (index: number) => {
 
 <template>
     <div class="action-queue-container">
-        <draggable
-            item-key="id"
-            tag="transition-group"
-            :component-data="{
-                name: !isDragging ? 'flip-list' : null,
-            }"
-            :list="list"
-            v-bind="dragOptions"
-            @start="isDragging = true"
-            @end="isDragging = false"
-        >
+        <draggable item-key="id" tag="transition-group" :component-data="{
+            name: !isDragging ? 'flip-list' : null,
+        }" :list="list" v-bind="dragOptions" @start="isDragging = true" @end="isDragging = false">
             <template #item="{ element, index }">
                 <div class="list-group-item">
-                    <Action
-                        class="action-icon"
-                        :job="job"
-                        :action="element.action"
-                        :effect="errList?.find((v) => v.pos == index) !== undefined ? 'black' : 'normal'"
-                        disabled
-                        @click.stop.prevent.right="onRightClick(index)"
-                    />
+                    <Action class="action-icon" :job="job" :action="element.action"
+                        :effect="errList?.find((v) => v.pos == index) !== undefined ? 'black' : 'normal'" disabled
+                        @click.stop.prevent.right="onRightClick(index)" />
                 </div>
             </template>
         </draggable>
@@ -66,25 +53,31 @@ const onRightClick = (index: number) => {
 .action-queue-container {
     margin: 7px 10px 3px 10px;
 }
+
 .flip-list-move,
 .flip-list-enter-active,
 .flip-list-leave-active {
     transition: all 0.3s ease;
 }
+
 .flip-list-leave-active {
     position: absolute;
 }
+
 .flip-list-enter-from,
 .flip-list-leave-to {
     opacity: 0;
     transform: translateX(30px);
 }
+
 .ghost {
     opacity: 0.5;
 }
+
 .list-group-item {
     display: inline-block;
 }
+
 .action-icon {
     transform: scale(0.7);
     margin: calc(-48px * 0.15);
