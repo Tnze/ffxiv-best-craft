@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, Ref, ref, unref, watch, watchEffect } from 'vue'
+import { computed, reactive, Ref, ref, unref, watch, watchEffect } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 import { Delete, Edit } from '@element-plus/icons-vue'
@@ -18,6 +18,14 @@ interface Slot {
     action: Actions
 }
 
+// 用于表示一个技能的序列，或者说一个宏
+// 为了实现拖拽和删除等动画效果，我们需要给每个技能一个唯一的id
+// maxid储存了当前序列中最大的标志，并用于生成下一个id
+interface Sequence {
+    slots: Slot[]
+    maxid: number
+}
+
 const props = defineProps<{
     itemName: string;
     job: Jobs | 'unknown';
@@ -27,17 +35,15 @@ const props = defineProps<{
 const displayJob = computed(() => props.job == 'unknown' ? Jobs.Culinarian : props.job)
 
 // Actions Queue
-const actionQueue = ref<Slot[]>([])
-const actions = computed(() => actionQueue.value.map(slot => slot.action))
+const actionQueue = reactive<Sequence>({ slots: [], maxid: 0 })
+const actions = computed(() => actionQueue.slots.map(slot => slot.action))
 
 // Simulation
 const initStatus = ref<Status>(await newStatus(props.attributes, props.recipe))
 watch(props, async p => {
-    console.log('recipe updated')
     initStatus.value = await newStatus(p.attributes, p.recipe)
 })
 const { status, errors } = await (async () => {
-    console.log('status updated')
     const { status, errors } = await simulate(initStatus.value, actions.value)
     return { status: ref(status), errors: ref(errors) }
 })()
@@ -96,19 +102,38 @@ watch([initStatus, solverResult], async ([s, a]) => {
 const openSolverDrawer = ref(false)
 const openExportMarco = ref(false)
 
-const pushAction = (action: Actions) => {
-    const maxid = actionQueue.value.map(v => v.id).reduce((a, b) => Math.max(a, b), 0)
-    actionQueue.value.push({ id: maxid + 1, action })
-}
-
-const savedQueues = ref<Slot[][]>([])
+const savedQueues = ref<Sequence[]>([])
 const savedQueuesResults = ref<Status[]>([])
 watchEffect(() => {
     savedQueuesResults.value = new Array(savedQueues.value.length)
     for (const i in savedQueues.value)
-        simulate(initStatus.value, savedQueues.value[i].map(x => x.action))
+        simulate(initStatus.value, savedQueues.value[i].slots.map(x => x.action))
             .then(result => savedQueuesResults.value[i] = result.status)
 })
+
+function pushAction(action: Actions) {
+    actionQueue.slots.push({ id: actionQueue.maxid++, action })
+}
+
+function clearSequence() {
+    actionQueue.slots = []
+    actionQueue.maxid = 0
+}
+
+function saveSequence() {
+    const copied = actionQueue.slots.slice()
+    savedQueues.value.push({ slots: copied, maxid: actionQueue.maxid })
+}
+
+function loadSequence(seq: Sequence) {
+    actionQueue.slots = seq.slots.map(x => {
+        return {
+            action: x.action,
+            id: x.id + actionQueue.maxid
+        }
+    })
+    actionQueue.maxid += seq.maxid
+}
 
 </script>
 
@@ -127,11 +152,11 @@ watchEffect(() => {
             <div class="main-page">
                 <StatusBar class="status-bar" :status="status!" />
                 <div class="action-queue">
-                    <ActionQueue :job="displayJob" :list="actionQueue" :err-list="errors" />
+                    <ActionQueue :job="displayJob" :list="actionQueue.slots" :err-list="errors" />
                 </div>
                 <div class="solver-and-savedqueue">
-                    <Sidebar class="savedqueue-list-sidebar" @plus="savedQueues.push(actionQueue.slice())"
-                        @delete="actionQueue = []" @solver="openSolverDrawer = true" @print="openExportMarco = true" />
+                    <Sidebar class="savedqueue-list-sidebar" @plus="saveSequence" @delete="clearSequence"
+                        @solver="openSolverDrawer = true" @print="openExportMarco = true" />
                     <el-scrollbar class="solver-and-savedqueue-scrollbar">
                         <ul class="solver-and-savedqueue-list">
                             <li v-if="solverResult.length > 0" class="solver-and-savedqueue-item">
@@ -142,9 +167,9 @@ watchEffect(() => {
                             </li>
                             <li v-for="sq, i in savedQueues" class="solver-and-savedqueue-item">
                                 <QueueStatus :status="savedQueuesResults[i]" />
-                                <ActionQueue :job="displayJob" :list="sq" disabled />
+                                <ActionQueue :job="displayJob" :list="sq.slots" disabled />
                                 <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                    @click="actionQueue = sq.slice()" />
+                                    @click="loadSequence(sq)" />
                                 <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
                                     @click="savedQueues.splice(i, 1)" />
                             </li>

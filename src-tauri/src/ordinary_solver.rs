@@ -16,8 +16,7 @@ struct SolverSlot<V> {
 
 pub struct OrdinarySolver<const MN: usize, const WN: usize>
 where
-    [(); MN + 1]:,
-    [(); WN + 1]:,
+    [[(); WN + 1]; MN + 1]:,
 {
     pub driver: ProgressSolver<MN, WN>,
     allowed_list: Vec<Skills>,
@@ -27,8 +26,7 @@ where
 
 impl<const MN: usize, const WN: usize> OrdinarySolver<MN, WN>
 where
-    [(); MN + 1]:,
-    [(); WN + 1]:,
+    [[(); WN + 1]; MN + 1]:,
 {
     const DEFAULT_SLOT: SolverSlot<u32> = SolverSlot {
         value: 0,
@@ -73,8 +71,7 @@ where
 
 impl<const MN: usize, const WN: usize> Solver for OrdinarySolver<MN, WN>
 where
-    [(); MN + 1]:,
-    [(); WN + 1]:,
+    [[(); WN + 1]; MN + 1]:,
 {
     fn init(&mut self) {
         let mut s = self.driver.init_status.clone();
@@ -205,8 +202,7 @@ where
 /// 对于任意的当前状态，可以以O(1)时间复杂度算出剩余资源最多可推多少进展。
 pub struct ProgressSolver<const MN: usize, const WN: usize>
 where
-    [(); MN + 1]:,
-    [(); WN + 1]:,
+    [[(); WN + 1]; MN + 1]:,
 {
     init_status: Status,
     allowed_list: Vec<Skills>,
@@ -216,8 +212,7 @@ where
 
 impl<const MN: usize, const WN: usize> ProgressSolver<MN, WN>
 where
-    [(); MN + 1]:,
-    [(); WN + 1]:,
+    [[(); WN + 1]; MN + 1]:,
 {
     const DEFAULT_SLOT: SolverSlot<u16> = SolverSlot {
         value: 0,
@@ -239,8 +234,7 @@ where
 
 impl<const MN: usize, const WN: usize> ProgressSolver<MN, WN>
 where
-    [(); MN + 1]:,
-    [(); WN + 1]:,
+    [[(); WN + 1]; MN + 1]:,
 {
     unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot<u16> {
         self.results
@@ -261,8 +255,7 @@ where
 
 impl<const MN: usize, const WN: usize> Solver for ProgressSolver<MN, WN>
 where
-    [(); MN + 1]:,
-    [(); WN + 1]:,
+    [[(); WN + 1]; MN + 1]:,
 {
     fn init(&mut self) {
         let mut s = self.init_status.clone();
