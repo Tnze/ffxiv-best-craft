@@ -826,9 +826,9 @@ dependencies = [
 
 [[package]]
 name = "ffxiv-crafting"
-version = "6.0.5"
+version = "6.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76e628fcfd3cd4d56f809b91689b6a357568546749b2c263311a4218bdbfe5b7"
+checksum = "0523d25bb58a897b1d0108c23d1b4bb224a0e324435065b5d7fe577e09d2508f"
 dependencies = [
  "serde",
 ]
