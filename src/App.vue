@@ -65,13 +65,8 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
       </keep-alive>
       <keep-alive>
         <Suspense v-if="currentPage == 2">
-          <Designer
-            v-if="recipe != null"
-            :item-name="recipeName"
-            :attributes="attributes"
-            :recipe="recipe"
-            :job="job"
-          />
+          <Designer v-if="recipe != null" :item-name="recipeName" :attributes="attributes" :recipe="recipe"
+            :job="job" />
           <el-empty v-else description="请先选择配方" style="height: 100%;" />
           <template #fallback>
             <el-empty description="加载中" style="height: 100%;" />
@@ -93,9 +88,11 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
   height: 100%;
   margin: 0;
 }
+
 .el-container {
   height: 100%;
 }
+
 .el-main {
   padding: 0;
 }

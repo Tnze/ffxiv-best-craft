@@ -111,12 +111,7 @@ const waitTimes = new Map([
 
 <template>
     <el-space wrap alignment="flex-start">
-        <el-card
-            v-for="(marco, i) in chunkedActions"
-            class="box-card"
-            shadow="hover"
-            @click="copyChunk(i, marco)"
-        >
+        <el-card v-for="(marco, i) in chunkedActions" class="box-card" shadow="hover" @click="copyChunk(i, marco)">
             <span v-for="line in marco">
                 {{ line }}
                 <br />
