@@ -24,6 +24,8 @@ interface Slot {
 interface Sequence {
     slots: Slot[]
     maxid: number
+    status: Status
+    errors: { pos: number, err: string }[]
 }
 
 const props = defineProps<{
@@ -34,24 +36,20 @@ const props = defineProps<{
 }>()
 const displayJob = computed(() => props.job == 'unknown' ? Jobs.Culinarian : props.job)
 
-// Actions Queue
-const actionQueue = reactive<Sequence>({ slots: [], maxid: 0 })
-const actions = computed(() => actionQueue.slots.map(slot => slot.action))
-
 // Simulation
 const initStatus = ref<Status>(await newStatus(props.attributes, props.recipe))
 watch(props, async p => {
     initStatus.value = await newStatus(p.attributes, p.recipe)
 })
-const { status, errors } = await (async () => {
-    const { status, errors } = await simulate(initStatus.value, actions.value)
-    return { status: ref(status), errors: ref(errors) }
-})()
+// Actions Queue
+const actionQueue = reactive<Sequence>({ slots: [], maxid: 0, status: initStatus.value, errors: [] })
+const actions = computed(() => actionQueue.slots.map(slot => slot.action))
+
 watch([initStatus, actions], async ([s, a]) => {
     try {
         let result = await simulate(s, a)
-        status.value = result.status
-        errors.value = result.errors
+        actionQueue.status = result.status
+        actionQueue.errors = result.errors
     } catch (err) {
         ElMessage({
             type: 'error',
@@ -62,53 +60,43 @@ watch([initStatus, actions], async ([s, a]) => {
 })
 
 // Solver result
-const solverResult = ref<Actions[]>([])
-watch(status, async (s) => {
+const solverResult = reactive<Sequence>({ slots: [], maxid: 0, status: initStatus.value, errors: [] })
+watch(() => actionQueue.status, async (s) => {
     try {
-        solverResult.value = actions.value.concat(await read_solver(s))
+        const newSolverResult = actions.value.concat(await read_solver(s))
+        let display = [];
+        let oldID = new Map<Actions, number[]>()
+        for (const slot of solverResult.slots) {
+            if (oldID.get(slot.action)?.push(slot.id) == undefined)
+                oldID.set(slot.action, [slot.id])
+        }
+        for (const skill of newSolverResult) {
+            const i = oldID.get(skill)?.shift() || solverResult.maxid++;
+            display.push({ id: i, action: skill })
+        }
+        solverResult.slots = display
+
+        const result = await simulate(initStatus.value, newSolverResult)
+        solverResult.status = result.status
+        solverResult.errors = result.errors
     } catch (err) {
-        solverResult.value = []
+        solverResult.slots = []
     }
 })
-
-// Solver result displayer
-const solverResultDisplay = ref<Slot[]>([])
-watch(solverResult, async (newSolverResult) => {
-    let display = [];
-    let oldSolverResult = solverResultDisplay.value;
-    let maxid = 0;
-    if (oldSolverResult.length > 0)
-        maxid = oldSolverResult.map(x => x.id).reduce((pv, cv) => Math.max(pv, cv));
-    let oldID = new Map<Actions, number[]>()
-    for (const slot of oldSolverResult) {
-        if (oldID.get(slot.action)?.push(slot.id) == undefined)
-            oldID.set(slot.action, [slot.id])
-    }
-    for (const skill of newSolverResult) {
-        const i = oldID.get(skill)?.shift() || ++maxid;
-        display.push({ id: i, action: skill })
-    }
-    solverResultDisplay.value = display
-})
-
-// Solver result status
-const solverResultStatus = ref<Status>(initStatus.value)
-watch([initStatus, solverResult], async ([s, a]) => {
-    const result = await simulate(s, a)
-    solverResultStatus.value = result.status
-})
-
 // Drawer status
 const openSolverDrawer = ref(false)
 const openExportMarco = ref(false)
 
-const savedQueues = ref<Sequence[]>([])
-const savedQueuesResults = ref<Status[]>([])
-watchEffect(() => {
-    savedQueuesResults.value = new Array(savedQueues.value.length)
-    for (const i in savedQueues.value)
-        simulate(initStatus.value, savedQueues.value[i].slots.map(x => x.action))
-            .then(result => savedQueuesResults.value[i] = result.status)
+const savedQueues = reactive<Sequence[]>([])
+watch(initStatus, (newInitStatus) => {
+    // recalculate all results of savedQueues
+    for (let q of savedQueues) {
+        simulate(newInitStatus, q.slots.map(x => x.action))
+            .then(result => {
+                q.status = result.status
+                q.errors = result.errors
+            })
+    }
 })
 
 function pushAction(action: Actions) {
@@ -121,18 +109,17 @@ function clearSequence() {
 }
 
 function saveSequence() {
-    const copied = actionQueue.slots.slice()
-    savedQueues.value.push({ slots: copied, maxid: actionQueue.maxid })
+    savedQueues.push({
+        slots: actionQueue.slots.slice(),
+        maxid: actionQueue.maxid,
+        status: actionQueue.status,
+        errors: actionQueue.errors,
+    })
 }
 
 function loadSequence(seq: Sequence) {
-    actionQueue.slots = seq.slots.map(x => {
-        return {
-            action: x.action,
-            id: x.id + actionQueue.maxid
-        }
-    })
-    actionQueue.maxid += seq.maxid
+    console.log('saving seq:', seq.slots)
+    actionQueue.slots = seq.slots
 }
 
 </script>
@@ -140,7 +127,7 @@ function loadSequence(seq: Sequence) {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
-            <SolverList :init-status="initStatus" :status="status" :recipe-name="itemName" />
+            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="itemName" />
         </el-drawer>
         <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="95%">
             <MarcoExporter :actions="actions" />
@@ -150,24 +137,24 @@ function loadSequence(seq: Sequence) {
         </el-header>
         <el-main>
             <div class="main-page">
-                <StatusBar class="status-bar" :status="status!" />
+                <StatusBar class="status-bar" :status="actionQueue.status" />
                 <div class="action-queue">
-                    <ActionQueue :job="displayJob" :list="actionQueue.slots" :err-list="errors" />
+                    <ActionQueue :job="displayJob" :list="actionQueue.slots" :err-list="actionQueue.errors" />
                 </div>
                 <div class="solver-and-savedqueue">
                     <Sidebar class="savedqueue-list-sidebar" @plus="saveSequence" @delete="clearSequence"
                         @solver="openSolverDrawer = true" @print="openExportMarco = true" />
                     <el-scrollbar class="solver-and-savedqueue-scrollbar">
                         <ul class="solver-and-savedqueue-list">
-                            <li v-if="solverResult.length > 0" class="solver-and-savedqueue-item">
-                                <QueueStatus :status="solverResultStatus" />
-                                <ActionQueue :job="displayJob" :list="solverResultDisplay" disabled />
+                            <li v-if="solverResult.slots.length > 0" class="solver-and-savedqueue-item">
+                                <QueueStatus :status="solverResult.status" />
+                                <ActionQueue :job="displayJob" :list="solverResult.slots" disabled />
                                 <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                    @click="actionQueue = solverResultDisplay" />
+                                    @click="loadSequence(solverResult)" />
                             </li>
                             <li v-for="sq, i in savedQueues" class="solver-and-savedqueue-item">
-                                <QueueStatus :status="savedQueuesResults[i]" />
-                                <ActionQueue :job="displayJob" :list="sq.slots" disabled />
+                                <QueueStatus :status="sq.status" />
+                                <ActionQueue :job="displayJob" :list="sq.slots" :err-list="sq.errors" disabled />
                                 <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
                                     @click="loadSequence(sq)" />
                                 <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
@@ -176,8 +163,8 @@ function loadSequence(seq: Sequence) {
                         </ul>
                     </el-scrollbar>
                 </div>
-                <ActionPanel class="action-panel" @clicked-action="pushAction" :job="displayJob" :status="status"
-                    #lower />
+                <ActionPanel class="action-panel" @clicked-action="pushAction" :job="displayJob"
+                    :status="actionQueue.status" #lower />
             </div>
         </el-main>
     </el-container>
