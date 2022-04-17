@@ -27,8 +27,10 @@ const isActived = (action: Actions) => {
             return props.status.step == 0
         case Actions.TricksOfTheTrade:
         case Actions.IntensiveSynthesis:
-        case Actions.PrudentTouch:
-            return props.status.condition == 'good' || props.status.condition == 'excellent'
+        case Actions.PreciseTouch:
+            return props.status.condition == 'good' ||
+                props.status.condition == 'excellent' ||
+                props.status.buffs.heart_and_soul > 0
         case Actions.ByregotsBlessing:
             return props.status.buffs.inner_quiet > 0
         case Actions.StandardTouch:
