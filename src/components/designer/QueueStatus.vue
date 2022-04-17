@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { SuccessFilled, WarningFilled } from '@element-plus/icons-vue'
-import { computed } from '@vue/reactivity';
+import { computed } from 'vue';
 import { Status } from '../../Craft';
 
 const props = defineProps<{
-    status?: Status
+    status: Status
 }>()
 
 const color = computed(() => {
-    if (props.status == undefined)
-        return undefined
-    else if (props.status.progress < props.status.recipe.difficulty)
+    console.log('computing color', props.status)
+    if (props.status.progress < props.status.recipe.difficulty)
         return '#F56C6C'
     else if (props.status.quality < props.status.recipe.quality)
         return '#E6A23C'
