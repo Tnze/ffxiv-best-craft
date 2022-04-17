@@ -118,8 +118,8 @@ function saveSequence() {
 }
 
 function loadSequence(seq: Sequence) {
-    console.log('saving seq:', seq.slots)
-    actionQueue.slots = seq.slots
+    actionQueue.slots = seq.slots.slice()
+    actionQueue.maxid = seq.maxid
 }
 
 </script>
@@ -130,7 +130,7 @@ function loadSequence(seq: Sequence) {
             <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="itemName" />
         </el-drawer>
         <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="95%">
-            <MarcoExporter :actions="actions" />
+            <MarcoExporter :actions="actionQueue.slots.map(v => v.action)" />
         </el-drawer>
         <el-header>
             <h1>{{ itemName }}</h1>
