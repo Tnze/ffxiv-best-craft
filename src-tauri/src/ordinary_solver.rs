@@ -114,9 +114,8 @@ where
                                                         .get_unchecked_mut(gs as usize)
                                                         .get_unchecked_mut(mn as usize)
                                                         .get_unchecked_mut(wn as usize);
-                                                    if quality > slot.value
-                                                        || (quality == slot.value
-                                                            && step < slot.step)
+                                                    if (quality == slot.value && step < slot.step)
+                                                        || quality > slot.value
                                                     {
                                                         *slot = SolverSlot {
                                                             value: quality,

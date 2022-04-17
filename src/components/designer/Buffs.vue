@@ -6,7 +6,7 @@ const props = defineProps<{
     buffs: Buffs
 }>()
 
-const fakeBuffs = ['observed', 'standard_touch_prepared', 'advanced_touch_prepared']
+const fakeBuffs = ['careful_observation_used', 'heart_and_soul_used', 'standard_touch_prepared', 'advanced_touch_prepared', 'observed']
 
 const buffsDisplay = computed<{
     url: URL,
@@ -24,7 +24,7 @@ const buffsDisplay = computed<{
             } else {
                 return {
                     url: new URL(`../../assets/buffs/${buffName}.png`, import.meta.url),
-                    duration: duration as number,
+                    duration: buffName == 'heart_and_soul' ? undefined : duration as number,
                 }
             }
         })

@@ -25,6 +25,9 @@ interface Buffs {
   final_appraisal: number;
   manipulation: number;
   wast_not: number;
+  heart_and_soul: number;
+  careful_observation_used: number;
+  heart_and_soul_used: number;
   standard_touch_prepared: number;
   advanced_touch_prepared: number;
   observed: number;
@@ -144,10 +147,7 @@ const simulate = (s: Status, actions: Actions[]): Promise<SimulateResult> => {
   return invoke("simulate", { status: s, skills: actions });
 };
 
-const allowedList = (
-  status: Status,
-  actions: Actions[]
-): Promise<string[]> => {
+const allowedList = (status: Status, actions: Actions[]): Promise<string[]> => {
   return invoke("allowed_list", { status, skills: actions });
 };
 
