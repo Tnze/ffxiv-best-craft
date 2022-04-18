@@ -79,7 +79,7 @@ const onRightClick = (index: number) => {
 }
 
 .action-icon {
-    transform: scale(0.7);
-    margin: calc(-48px * 0.15);
+    transform: scale(0.8);
+    margin: calc(-48px * 0.1);
 }
 </style>

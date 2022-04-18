@@ -73,7 +73,7 @@ watchEffect(() => {
 }
 
 .item {
-    transform: scale(0.8);
-    margin: calc(-48px * 0.1);
+    transform: scale(0.85);
+    margin: calc(-48px * 0.07);
 }
 </style>
