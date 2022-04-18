@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { createDir, readTextFile, writeFile, Dir } from '@tauri-apps/api/fs'
 import { ref, onMounted, onUpdated } from 'vue'
-import { Attributes, Jobs } from '../Craft'
+import { Attributes } from '../Craft'
 
 interface GearsetsRow {
     name: string

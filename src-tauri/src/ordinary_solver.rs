@@ -14,38 +14,50 @@ struct SolverSlot<V> {
     skill: Option<Skills>,
 }
 
-pub struct OrdinarySolver<const MN: usize, const WN: usize>
+pub struct OrdinarySolver<const MN: usize, const WN: usize, const PG: usize>
 where
     [[(); WN + 1]; MN + 1]:,
+    [(); PG + 1]:,
 {
     pub driver: ProgressSolver<MN, WN>,
+    final_progress: Vec<u16>,
     allowed_list: Vec<Skills>,
     // results [d][cp][iq][iv][gs][mn][wn]
-    results: Vec<Vec<[[[[[[SolverSlot<u32>; 3]; WN + 1]; MN + 1]; 4]; 5]; 11]>>,
+    results: Vec<Vec<[[[[[[[SolverSlot<u32>; PG + 1]; 3]; WN + 1]; MN + 1]; 4]; 5]; 11]>>,
 }
 
-impl<const MN: usize, const WN: usize> OrdinarySolver<MN, WN>
+impl<const MN: usize, const WN: usize, const PG: usize> OrdinarySolver<MN, WN, PG>
 where
     [[(); WN + 1]; MN + 1]:,
+    [(); PG + 1]:,
 {
     const DEFAULT_SLOT: SolverSlot<u32> = SolverSlot {
         value: 0,
         step: 0,
         skill: None,
     };
-    const DEFAULT_ARY: [[[[[[SolverSlot<u32>; 3]; WN + 1]; MN + 1]; 4]; 5]; 11] =
-        [[[[[[Self::DEFAULT_SLOT; 3]; WN + 1]; MN + 1]; 4]; 5]; 11];
+    const DEFAULT_ARY: [[[[[[[SolverSlot<u32>; PG + 1]; 3]; WN + 1]; MN + 1]; 4]; 5]; 11] =
+        [[[[[[[Self::DEFAULT_SLOT; PG + 1]; 3]; WN + 1]; MN + 1]; 4]; 5]; 11];
     pub fn new(driver: ProgressSolver<MN, WN>, allowed_list: Vec<Skills>) -> Self {
         let cp = driver.init_status.attributes.craft_points as usize;
         let du = driver.init_status.recipe.durability as usize;
+        let pg = driver.init_status.recipe.difficulty;
+        let final_progress = driver
+            .possible_progresses()
+            .iter()
+            .map(|p| pg - *p)
+            .take(PG)
+            .chain([0u16])
+            .collect::<Vec<_>>();
         Self {
             driver,
+            final_progress,
             allowed_list,
             results: vec![vec![Self::DEFAULT_ARY; cp + 1]; du / 5 + 1],
         }
     }
 
-    fn get(&self, s: &Status) -> Option<&SolverSlot<u32>> {
+    fn get(&self, s: &Status) -> Option<&[SolverSlot<u32>; PG + 1]> {
         self.results
             .get(s.durability as usize / 5)?
             .get(s.craft_points as usize)?
@@ -57,7 +69,7 @@ where
             .get(s.buffs.touch_combo_stage as usize)
     }
 
-    unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot<u32> {
+    unsafe fn get_unchecked(&self, s: &Status) -> &[SolverSlot<u32>; PG + 1] {
         &self
             .results
             .get_unchecked(s.durability as usize / 5)
@@ -69,11 +81,20 @@ where
             .get_unchecked(s.buffs.wast_not as usize)
             .get_unchecked(s.buffs.touch_combo_stage as usize)
     }
+
+    fn progress_index(&self, progress: u16) -> usize {
+        self.final_progress
+            .iter()
+            .enumerate()
+            .find_map(|(i, pg)| if progress >= *pg { Some(i) } else { None })
+            .unwrap_or(0)
+    }
 }
 
-impl<const MN: usize, const WN: usize> Solver for OrdinarySolver<MN, WN>
+impl<const MN: usize, const WN: usize, const PG: usize> Solver for OrdinarySolver<MN, WN, PG>
 where
     [[(); WN + 1]; MN + 1]:,
+    [(); PG + 1]:,
 {
     fn init(&mut self) {
         let mut s = self.driver.init_status.clone();
@@ -93,7 +114,7 @@ where
                                 for wn in 0..=WN {
                                     s.buffs.wast_not = wn as u8;
                                     for touch in 0..3 {
-                                        s.buffs.touch_combo_stage = touch;
+                                        s.buffs.touch_combo_stage = touch as u8;
                                         for sk in &self.allowed_list {
                                             if s.is_action_allowed(*sk).is_ok() {
                                                 let mut new_s = s.clone();
@@ -101,32 +122,42 @@ where
                                                 unsafe {
                                                     let progress =
                                                         self.driver.get_unchecked(&new_s).value;
-                                                    if progress == difficulty {
-                                                        let mut quality = new_s.quality;
-                                                        let mut step = 1;
+                                                    let slot = self
+                                                        .results
+                                                        .get_unchecked_mut(du as usize / 5)
+                                                        .get_unchecked_mut(cp as usize)
+                                                        .get_unchecked_mut(iq as usize)
+                                                        .get_unchecked_mut(iv as usize)
+                                                        .get_unchecked_mut(gs as usize)
+                                                        .get_unchecked_mut(mn as usize)
+                                                        .get_unchecked_mut(wn as usize)
+                                                        .get_unchecked_mut(touch)
+                                                        as *mut [SolverSlot<u32>; PG + 1];
+                                                    for pg in 0..=PG {
+                                                        if progress
+                                                            + self.final_progress.get_unchecked(pg)
+                                                            >= difficulty
                                                         {
-                                                            let next = self.get_unchecked(&new_s);
-                                                            quality += next.value;
-                                                            step += next.step;
-                                                        }
-                                                        let slot = self
-                                                            .results
-                                                            .get_unchecked_mut(du as usize / 5)
-                                                            .get_unchecked_mut(cp as usize)
-                                                            .get_unchecked_mut(iq as usize)
-                                                            .get_unchecked_mut(iv as usize)
-                                                            .get_unchecked_mut(gs as usize)
-                                                            .get_unchecked_mut(mn as usize)
-                                                            .get_unchecked_mut(wn as usize)
-                                                            .get_unchecked_mut(touch as usize);
-                                                        if (quality == slot.value
-                                                            && step < slot.step)
-                                                            || quality > slot.value
-                                                        {
-                                                            *slot = SolverSlot {
-                                                                value: quality,
-                                                                step,
-                                                                skill: Some(*sk),
+                                                            let mut quality = new_s.quality;
+                                                            let mut step = 1;
+                                                            {
+                                                                let next = self
+                                                                    .get_unchecked(&new_s)
+                                                                    .get_unchecked(pg);
+                                                                quality += next.value;
+                                                                step += next.step;
+                                                            }
+                                                            let slot =
+                                                                (*slot).get_unchecked_mut(pg);
+                                                            if (quality == slot.value
+                                                                && step < slot.step)
+                                                                || quality > slot.value
+                                                            {
+                                                                *slot = SolverSlot {
+                                                                    value: quality,
+                                                                    step,
+                                                                    skill: Some(*sk),
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -144,10 +175,11 @@ where
     }
 
     fn read(&self, s: &Status) -> Option<Skills> {
-        self.get(s)?.skill
+        self.get(s)?.get(self.progress_index(s.progress))?.skill
     }
 
     fn read_all(&self, s: &Status) -> Vec<Skills> {
+        let i = self.progress_index(s.progress);
         let max_quality = s.recipe.quality;
         let mut new_s = s.clone();
         let mut list = Vec::new();
@@ -159,7 +191,7 @@ where
                     value: quality,
                     step,
                     skill,
-                }) = self.get(&new_s)
+                }) = self.get(&new_s).and_then(|v| v.get(i))
                 {
                     let quality = quality.min(max_addon);
                     (
@@ -179,7 +211,7 @@ where
                         value: quality,
                         step,
                         skill,
-                    }) = self.get(&new_s2)
+                    }) = self.get(&new_s2).and_then(|v| v.get(i))
                     {
                         let quality = quality.min(max_addon);
                         if quality >= best.0 .0 && step < best.0 .1 {
@@ -252,6 +284,37 @@ where
         &self.results[s.durability as usize / 5][s.craft_points as usize]
             [s.buffs.veneration as usize][s.buffs.muscle_memory as usize]
             [s.buffs.manipulation as usize][s.buffs.wast_not as usize]
+    }
+
+    fn possible_progresses(&self) -> Vec<u16> {
+        let mut result = vec![0; self.init_status.recipe.difficulty as usize + 1];
+        let mut s = self.init_status.clone();
+        for cp in 0..=self.init_status.attributes.craft_points {
+            s.craft_points = cp;
+            for du in (1..=self.init_status.recipe.durability).filter(|v| v % 5 == 0) {
+                s.durability = du;
+                for ve in 0..=MAX_VENERATION {
+                    s.buffs.veneration = ve;
+                    for mm in 0..=MAX_MUSCLE_MEMORY {
+                        s.buffs.muscle_memory = mm;
+                        for mn in 0..=MN {
+                            s.buffs.manipulation = mn as u8;
+                            for wn in 0..=WN {
+                                s.buffs.wast_not = wn as u8;
+                                let v = unsafe { self.get_unchecked(&s).value };
+                                result[v as usize] += 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        result
+            .iter()
+            .enumerate()
+            .filter(|&(_i, v)| *v > 0)
+            .map(|(i, _v)| i as u16)
+            .collect()
     }
 }
 

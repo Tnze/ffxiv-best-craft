@@ -49,6 +49,7 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
   job.value = j
   recipe.value = r
   recipeName.value = name
+  currentPage.value = 2
 }
 
 </script>

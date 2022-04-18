@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from '@vue/reactivity';
+import { computed } from 'vue';
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 import { writeText } from '@tauri-apps/api/clipboard'
@@ -103,8 +103,8 @@ const waitTimes = new Map([
     [Actions.AdvancedTouch, 3],
     [Actions.PrudentSynthesis, 3],
     [Actions.TrainedFinesse, 3],
-    [Actions.CarefulObservation, 2],
-    [Actions.HeartAndSoul, 2],
+    [Actions.CarefulObservation, 3],
+    [Actions.HeartAndSoul, 3],
 ])
 
 </script>
