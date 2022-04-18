@@ -28,8 +28,7 @@ interface Buffs {
   heart_and_soul: number;
   careful_observation_used: number;
   heart_and_soul_used: number;
-  standard_touch_prepared: number;
-  advanced_touch_prepared: number;
+  touch_combo_stage: number;
   observed: number;
 }
 

@@ -1,7 +1,7 @@
 {
     "package": {
         "productName": "ffxiv-best-craft",
-        "version": "0.1.9"
+        "version": "0.2.0"
     },
     "build": {
         "distDir": "../dist",

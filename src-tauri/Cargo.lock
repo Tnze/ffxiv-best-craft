@@ -55,7 +55,7 @@ checksum = "4361135be9122e0870de935d7c439aef945b9f9ddd4199a553b5270b49c82a27"
 
 [[package]]
 name = "app"
-version = "0.1.9"
+version = "0.2.0"
 dependencies = [
  "csv",
  "ffxiv-crafting",
@@ -826,9 +826,7 @@ dependencies = [
 
 [[package]]
 name = "ffxiv-crafting"
-version = "6.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0523d25bb58a897b1d0108c23d1b4bb224a0e324435065b5d7fe577e09d2508f"
+version = "6.0.7"
 dependencies = [
  "serde",
 ]

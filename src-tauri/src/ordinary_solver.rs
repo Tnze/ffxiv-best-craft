@@ -41,13 +41,13 @@ where
         Self {
             driver,
             allowed_list,
-            results: vec![vec![Self::DEFAULT_ARY; cp + 1]; du + 1],
+            results: vec![vec![Self::DEFAULT_ARY; cp + 1]; du / 5 + 1],
         }
     }
 
     fn get(&self, s: &Status) -> Option<&SolverSlot<u32>> {
         self.results
-            .get(s.durability as usize)?
+            .get(s.durability as usize / 5)?
             .get(s.craft_points as usize)?
             .get(s.buffs.inner_quiet as usize)?
             .get(s.buffs.innovation as usize)?
@@ -59,7 +59,7 @@ where
     unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot<u32> {
         &self
             .results
-            .get_unchecked(s.durability as usize)
+            .get_unchecked(s.durability as usize / 5)
             .get_unchecked(s.craft_points as usize)
             .get_unchecked(s.buffs.inner_quiet as usize)
             .get_unchecked(s.buffs.innovation as usize)
@@ -78,7 +78,7 @@ where
         let difficulty = s.recipe.difficulty;
         for cp in 0..=s.attributes.craft_points {
             s.craft_points = cp;
-            for du in 1..=s.recipe.durability {
+            for du in (1..=s.recipe.durability).filter(|v| v % 5 == 0) {
                 s.durability = du;
                 for iq in 0..=MAX_INNER_QUIET {
                     s.buffs.inner_quiet = iq;
@@ -107,7 +107,7 @@ where
                                                     }
                                                     let slot = self
                                                         .results
-                                                        .get_unchecked_mut(du as usize)
+                                                        .get_unchecked_mut(du as usize / 5)
                                                         .get_unchecked_mut(cp as usize)
                                                         .get_unchecked_mut(iq as usize)
                                                         .get_unchecked_mut(iv as usize)
@@ -220,6 +220,7 @@ where
     };
     const DEFAULT_ARY: [[[[SolverSlot<u16>; WN + 1]; MN + 1]; 6]; 5] =
         [[[[Self::DEFAULT_SLOT; WN + 1]; MN + 1]; 6]; 5];
+
     pub fn new(s: &Status, allowed_list: Vec<Skills>) -> Self {
         let cp = s.attributes.craft_points as usize;
         let du = s.recipe.durability as usize;
@@ -229,15 +230,10 @@ where
             results: vec![vec![Self::DEFAULT_ARY; cp + 1]; du + 1],
         }
     }
-}
 
-impl<const MN: usize, const WN: usize> ProgressSolver<MN, WN>
-where
-    [[(); WN + 1]; MN + 1]:,
-{
     unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot<u16> {
         self.results
-            .get_unchecked(s.durability as usize)
+            .get_unchecked(s.durability as usize / 5)
             .get_unchecked(s.craft_points as usize)
             .get_unchecked(s.buffs.veneration as usize)
             .get_unchecked(s.buffs.muscle_memory as usize)
@@ -246,9 +242,9 @@ where
     }
 
     fn get(&self, s: &Status) -> &SolverSlot<u16> {
-        &self.results[s.durability as usize][s.craft_points as usize][s.buffs.veneration as usize]
-            [s.buffs.muscle_memory as usize][s.buffs.manipulation as usize]
-            [s.buffs.wast_not as usize]
+        &self.results[s.durability as usize / 5][s.craft_points as usize]
+            [s.buffs.veneration as usize][s.buffs.muscle_memory as usize]
+            [s.buffs.manipulation as usize][s.buffs.wast_not as usize]
     }
 }
 
@@ -260,7 +256,7 @@ where
         let mut s = self.init_status.clone();
         for cp in 0..=self.init_status.attributes.craft_points {
             s.craft_points = cp;
-            for du in 1..=self.init_status.recipe.durability {
+            for du in (1..=self.init_status.recipe.durability).filter(|v| v % 5 == 0) {
                 s.durability = du;
                 for ve in 0..=MAX_VENERATION {
                     s.buffs.veneration = ve;
@@ -277,7 +273,7 @@ where
                                         let mut progress = new_s.progress;
                                         let mut step = 1;
                                         if new_s.durability > 0 {
-                                            let next = &self.results[new_s.durability as usize]
+                                            let next = &self.results[new_s.durability as usize / 5]
                                                 [new_s.craft_points as usize]
                                                 [new_s.buffs.veneration as usize]
                                                 [new_s.buffs.muscle_memory as usize]
@@ -287,7 +283,7 @@ where
                                             progress = progress.min(s.recipe.difficulty);
                                             step += next.step;
                                         }
-                                        let slot = &mut self.results[du as usize][cp as usize]
+                                        let slot = &mut self.results[du as usize / 5][cp as usize]
                                             [ve as usize][mm as usize]
                                             [mn as usize][wn as usize];
                                         if progress > slot.value
@@ -309,7 +305,7 @@ where
         }
     }
     fn read(&self, s: &Status) -> Option<Skills> {
-        self.results[s.durability as usize][s.craft_points as usize][s.buffs.veneration as usize]
+        self.results[s.durability as usize/5][s.craft_points as usize][s.buffs.veneration as usize]
             [s.buffs.muscle_memory as usize][s.buffs.manipulation as usize]
             [s.buffs.wast_not as usize]
             .skill

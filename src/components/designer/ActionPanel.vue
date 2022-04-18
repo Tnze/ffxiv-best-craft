@@ -34,9 +34,9 @@ const isActived = (action: Actions) => {
         case Actions.ByregotsBlessing:
             return props.status.buffs.inner_quiet > 0
         case Actions.StandardTouch:
-            return props.status.buffs.standard_touch_prepared > 0
+            return props.status.buffs.touch_combo_stage == 1
         case Actions.AdvancedTouch:
-            return props.status.buffs.advanced_touch_prepared > 0
+            return props.status.buffs.touch_combo_stage == 2
         case Actions.FocusedSynthesis:
         case Actions.FocusedTouch:
             return props.status.buffs.observed > 0
