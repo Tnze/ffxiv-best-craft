@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref,  computed } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import 'element-plus/es/components/message-box/style/css'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -42,8 +42,8 @@ const selectRecipeRow = (row: RecipeRow) => {
     if (row == undefined)
         return
     ElMessageBox.confirm(
-        `确认将当前配方设置为“${row.name}”吗`,
-        'Warning',
+        `将当前配方设置为“${row.name}”吗？`,
+        '请确认',
         {
             confirmButtonText: '确认',
             cancelButtonText: '取消',
@@ -63,14 +63,8 @@ const selectRecipe = (recipe: Recipe, name: string, job: string) => {
     emits('change', jobMaps[job], name, recipe)
     ElMessage({
         type: 'success',
-        duration: 5000,
         showClose: true,
-        dangerouslyUseHTMLString: true,
-        message: `
-        配方设置已变更 rlv: ${recipe.rlv}<br/>
-        难度: ${recipe.difficulty}
-        品质: ${recipe.quality}
-        耐久: ${recipe.durability}`
+        message: '配方设置已变更'
     })
 }
 
@@ -97,12 +91,7 @@ const customRecipe = ref({
                 这里本来应该有通过职业过滤、品级过滤、等级过滤、秘籍过滤等等，但是被咕掉了。
             </el-drawer>
             <el-dialog v-model="openCustomlizer" title="自定义配方">
-                <el-form
-                    :model="customRecipe"
-                    label-position="right"
-                    label-width="100px"
-                    style="max-width: 460px"
-                >
+                <el-form :model="customRecipe" label-position="right" label-width="100px" style="max-width: 460px">
                     <el-form-item label="rlv">
                         <el-input-number v-model="customRecipe.rlv" :min="1"></el-input-number>
                     </el-form-item>
@@ -122,10 +111,9 @@ const customRecipe = ref({
                 <template #footer>
                     <span class="dialog-footer">
                         <el-button @click="openCustomlizer = false">取消</el-button>
-                        <el-button
-                            type="primary"
-                            @click="openCustomlizer = false; selectRecipe(customRecipe, customRecipe.name, '自定义')"
-                        >确认</el-button>
+                        <el-button type="primary"
+                            @click="openCustomlizer = false; selectRecipe(customRecipe, customRecipe.name, '自定义')">确认
+                        </el-button>
                     </span>
                 </template>
             </el-dialog>
@@ -135,27 +123,17 @@ const customRecipe = ref({
                     <el-button :icon="EditPen" @click="openCustomlizer = true" />
                 </template>
             </el-input>
-            <el-table
-                v-loading="recipeTable.length == 0"
-                element-loading-text="请稍等..."
-                highlight-current-row
-                @row-dblclick="selectRecipeRow"
-                :data="displayTable.slice((currentPage - 1) * 100, currentPage * 100)"
-                height="100%"
-                style="width: 100%"
-            >
+            <el-table v-loading="recipeTable.length == 0" element-loading-text="请稍等..." highlight-current-row
+                @row-click="selectRecipeRow" :data="displayTable.slice((currentPage - 1) * 100, currentPage * 100)"
+                height="100%" style="width: 100%">
                 <el-table-column prop="id" label="ID" width="100" />
                 <el-table-column prop="rlv" label="rlv" width="60" />
                 <el-table-column prop="job" label="制作职业" width="100" />
                 <el-table-column prop="name" label="名称" />
                 <el-table-column align="right" width="300">
                     <template #header>
-                        <el-pagination
-                            small
-                            layout="prev, pager, next"
-                            v-model:current-page="currentPage"
-                            :page-count="Math.ceil(displayTable.length / 100)"
-                        />
+                        <el-pagination small layout="prev, pager, next" v-model:current-page="currentPage"
+                            :page-count="Math.ceil(displayTable.length / 100)" />
                     </template>
                 </el-table-column>
             </el-table>
@@ -169,6 +147,7 @@ const customRecipe = ref({
     flex-direction: column;
     align-items: center;
 }
+
 .search-input {
     width: 80%;
 }

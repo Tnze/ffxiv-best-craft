@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DocumentCopy, Delete, Cpu, Printer } from '@element-plus/icons-vue'
+import { BottomRight, Close, Cpu, Printer } from '@element-plus/icons-vue'
 
 const emits = defineEmits<{
     (event: 'plus'): void
@@ -10,23 +10,23 @@ const emits = defineEmits<{
 </script>
 <template>
     <div class="container">
-        <el-tooltip content="保存当前宏" placement="right" :show-after="1000">
-            <el-icon class="button" :size="15" @click="emits('plus')">
-                <document-copy />
+        <el-tooltip content="保存工作区" placement="right" :show-after="1000">
+            <el-icon class="button" :size="16" @click="emits('plus')">
+                <bottom-right />
             </el-icon>
         </el-tooltip>
         <el-tooltip content="清空工作区" placement="right" :show-after="1000">
-            <el-icon class="button" :size="15" @click="emits('delete')">
-                <delete />
+            <el-icon class="button" :size="16" @click="emits('delete')">
+                <close />
             </el-icon>
         </el-tooltip>
         <el-tooltip content="求解器设置" placement="right" :show-after="1000">
-            <el-icon class="button" :size="15" @click="emits('solver')">
+            <el-icon class="button" :size="16" @click="emits('solver')">
                 <cpu />
             </el-icon>
         </el-tooltip>
         <el-tooltip content="导出宏" placement="right" :show-after="1000">
-            <el-icon class="button" :size="15" @click="emits('print')">
+            <el-icon class="button" :size="16" @click="emits('print')">
                 <printer />
             </el-icon>
         </el-tooltip>
@@ -37,15 +37,17 @@ const emits = defineEmits<{
     display: flex;
     flex-direction: column;
     padding: 3px 0px 0px 0px;
-    width: 30px;
+    width: 40px;
     align-items: center;
 }
-.container > :hover {
+
+.container> :hover {
     background-color: #ecf5ff;
     transition: all var(--el-transition-duration);
 }
+
 .button {
-    padding: 5px 0px;
+    padding: 10px 0px;
     cursor: pointer;
     width: 100%;
 }

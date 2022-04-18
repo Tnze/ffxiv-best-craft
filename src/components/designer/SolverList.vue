@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Ref, ref } from 'vue'
+import { ref } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 import { Actions, Status } from "../../Craft"
@@ -12,6 +12,7 @@ const props = defineProps<{
 }>()
 
 const synthList = [
+    // Actions.MuscleMemory,
     Actions.BasicSynthesis,
     Actions.Observe,
     Actions.WasteNot,
@@ -35,7 +36,6 @@ const touchList = [
     Actions.Innovation,
     Actions.WasteNotII,
     Actions.ByregotsBlessing,
-    Actions.MuscleMemory,
     Actions.CarefulSynthesis,
     // Actions.Manipulation,
     Actions.PrudentTouch,
@@ -54,6 +54,7 @@ interface Solver {
 }
 const solvers = ref<Solver[]>([])
 const useManipulation = ref(false)
+const useMuscleMemory = ref(false)
 
 const createSolver = async () => {
     const msg1 = ElMessage({
@@ -70,7 +71,13 @@ const createSolver = async () => {
     try {
         solvers.value.push(solver)
         const start_time = new Date().getTime();
-        await create_solver(solver.initStatus, synthList, useManipulation.value ? touchList.concat(Actions.Manipulation) : touchList)
+        await create_solver(
+            solver.initStatus,
+            synthList,
+            useManipulation.value ? touchList.concat(Actions.Manipulation) : touchList,
+            useMuscleMemory.value,
+            useManipulation.value
+        )
         const stop_time = new Date().getTime();
         ElMessage({
             showClose: true,
@@ -109,7 +116,8 @@ const destroySolver = (s: Solver) => {
 
 <template>
     <el-scrollbar class="container">
-        <el-checkbox v-model="useManipulation" label="使用掌握(启用此选项会使求解时间增加8倍)" />
+        <el-checkbox v-model="useManipulation" label="掌握(时间x9)" />
+        <el-checkbox v-model="useMuscleMemory" label="坚信(时间x3)" />
         <el-button class="list-item" :disabled="initStatus == undefined" @click="createSolver">创建求解器</el-button>
         <el-button v-for="s in solvers" class="list-item" :disabled="s.status == 'solving'" @click="destroySolver(s)">
             释放求解器【{{ s.name }}】</el-button>

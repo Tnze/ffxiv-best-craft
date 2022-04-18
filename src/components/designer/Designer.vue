@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, Ref, ref, unref, watch, watchEffect } from 'vue'
+import { computed, reactive, ref, watch, } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 import { Delete, Edit } from '@element-plus/icons-vue'
@@ -129,7 +129,7 @@ function loadSequence(seq: Sequence) {
         <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
             <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="itemName" />
         </el-drawer>
-        <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="95%">
+        <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="80%">
             <MarcoExporter :actions="actionQueue.slots.map(v => v.action)" />
         </el-drawer>
         <el-header>

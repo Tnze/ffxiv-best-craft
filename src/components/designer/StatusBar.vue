@@ -108,6 +108,8 @@ const condition = computed(() => {
 }
 
 #attributes {
+    font-size: 14px;
+    line-height: 1.5;
     padding: 0px 20px 0px 0px;
     flex-grow: 2;
     text-align: right;
