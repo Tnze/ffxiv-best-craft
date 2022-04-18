@@ -12,15 +12,15 @@ version = "0.2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = {version = "1.0.0-rc.5", features = [] }
+tauri-build = {version = "1.0.0-rc.5", features = []}
 
 [dependencies]
 csv = "1.1.6"
-ffxiv-crafting = {path = 'C:\Users\Tnze\Documents\Projects\rust\ffxiv-crafting', features = ["serde-support"] }
+ffxiv-crafting = {version = "6.0.8", features = ["serde-support"]}
 msgbox = "0.7.0"
-serde = {version = "1.0", features = ["derive"] }
+serde = {version = "1.0", features = ["derive"]}
 serde_json = "1.0"
-tauri = {version = "1.0.0-rc.6", features = ["api-all", "updater"] }
+tauri = {version = "1.0.0-rc.6", features = ["api-all", "updater"]}
 
 [features]
 # by default Tauri runs in production mode
