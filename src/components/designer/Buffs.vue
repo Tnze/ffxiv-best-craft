@@ -6,7 +6,7 @@ const props = defineProps<{
     buffs: Buffs
 }>()
 
-const fakeBuffs = ['careful_observation_used', 'heart_and_soul_used', 'standard_touch_prepared', 'advanced_touch_prepared', 'observed']
+const fakeBuffs = ['careful_observation_used', 'heart_and_soul_used', 'touch_combo_stage', 'observed']
 
 const buffsDisplay = computed<{
     url: URL,

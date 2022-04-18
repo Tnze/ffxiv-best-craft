@@ -13,6 +13,7 @@ use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
 use serde::Serialize;
 
 mod ordinary_solver;
+mod advanced_solver;
 mod solver;
 
 use crate::ordinary_solver::{OrdinarySolver, ProgressSolver};
