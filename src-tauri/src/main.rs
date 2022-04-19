@@ -14,6 +14,7 @@ use serde::Serialize;
 
 mod ordinary_solver;
 mod solver;
+mod start_solver;
 
 use crate::ordinary_solver::{OrdinarySolver, ProgressSolver};
 use crate::solver::Solver;

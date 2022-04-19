@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { h, ref } from 'vue'
 import 'element-plus/es/components/message/style/css'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElProgress } from 'element-plus'
 import { Actions, Status } from "../../Craft"
 import { create_solver, destroy_solver } from '../../Solver'
 
@@ -9,6 +9,9 @@ const props = defineProps<{
     initStatus: Status | undefined,
     status: Status | undefined,
     recipeName: string
+}>()
+const emits = defineEmits<{
+    (event: 'solverLoad', solver: Solver): void
 }>()
 
 const synthList = [
@@ -61,7 +64,7 @@ const createSolver = async () => {
         showClose: true,
         duration: 0,
         type: 'info',
-        message: `求解器初始化中，请稍后……`,
+        message: '求解器初始化中，请稍后……',
     })
     let solver: Solver = {
         initStatus: props.initStatus!,
@@ -86,7 +89,7 @@ const createSolver = async () => {
             message: `求解器创建成功(${(stop_time - start_time)}ms)`,
         })
         solver.status = 'prepared'
-        console.log('求解过程结束')
+        emits('solverLoad', solver)
     } catch (err) {
         solvers.value.splice(solvers.value.indexOf(solver), 1)
         ElMessage({
@@ -118,9 +121,12 @@ const destroySolver = (s: Solver) => {
     <el-scrollbar class="container">
         <el-checkbox v-model="useManipulation" label="掌握(时间x9)" />
         <el-checkbox v-model="useMuscleMemory" label="坚信(时间x3)" />
-        <el-button class="list-item" :disabled="initStatus == undefined" @click="createSolver">创建求解器</el-button>
-        <el-button v-for="s in solvers" class="list-item" :disabled="s.status == 'solving'" @click="destroySolver(s)">
-            释放求解器【{{ s.name }}】</el-button>
+        <el-button class="list-item" :disabled="initStatus == undefined" @click="createSolver">
+            启动求解器
+        </el-button>
+        <el-button v-for="s in solvers" class="list-item" @click="destroySolver(s)" :disabled="s.status == 'solving'">
+            关闭求解器【{{ s.name }}】
+        </el-button>
     </el-scrollbar>
 </template>
 
