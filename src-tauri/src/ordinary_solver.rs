@@ -21,6 +21,7 @@ where
 {
     pub driver: ProgressSolver<MN, WN>,
     final_progress: Vec<u16>,
+    progress_index: Vec<usize>,
     allowed_list: Vec<Skills>,
     // results [d][cp][iq][iv][gs][mn][wn]
     results: Vec<Vec<[[[[[[[SolverSlot<u32>; PG + 1]; 3]; WN + 1]; MN + 1]; 4]; 5]; 11]>>,
@@ -49,9 +50,19 @@ where
             .take(PG)
             .chain([0u16])
             .collect::<Vec<_>>();
+        let progress_index = (0..=pg)
+            .map(|progress| {
+                final_progress
+                    .iter()
+                    .enumerate()
+                    .find_map(|(i, pg)| if progress >= *pg { Some(i) } else { None })
+                    .unwrap_or(0)
+            })
+            .collect();
         Self {
             driver,
             final_progress,
+            progress_index,
             allowed_list,
             results: vec![vec![Self::DEFAULT_ARY; cp + 1]; du / 5 + 1],
         }
@@ -80,14 +91,6 @@ where
             .get_unchecked(s.buffs.manipulation as usize)
             .get_unchecked(s.buffs.wast_not as usize)
             .get_unchecked(s.buffs.touch_combo_stage as usize)
-    }
-
-    fn progress_index(&self, progress: u16) -> usize {
-        self.final_progress
-            .iter()
-            .enumerate()
-            .find_map(|(i, pg)| if progress >= *pg { Some(i) } else { None })
-            .unwrap_or(0)
     }
 }
 
@@ -175,11 +178,16 @@ where
     }
 
     fn read(&self, s: &Status) -> Option<Skills> {
-        self.get(s)?.get(self.progress_index(s.progress))?.skill
+        self.get(s)?
+            .get(*self.progress_index.get(s.progress as usize)?)?
+            .skill
     }
 
     fn read_all(&self, s: &Status) -> Vec<Skills> {
-        let i = self.progress_index(s.progress);
+        let i = match self.progress_index.get(s.progress as usize) {
+            Some(i) => *i,
+            None => return vec![],
+        };
         let max_quality = s.recipe.quality;
         let mut new_s = s.clone();
         let mut list = Vec::new();

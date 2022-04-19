@@ -61,28 +61,7 @@ watch([initStatus, actions], async ([s, a]) => {
 
 // Solver result
 const solverResult = reactive<Sequence>({ slots: [], maxid: 0, status: initStatus.value, errors: [] })
-watch(() => actionQueue.status, async (s) => {
-    try {
-        const newSolverResult = actions.value.concat(await read_solver(s))
-        let display = [];
-        let oldID = new Map<Actions, number[]>()
-        for (const slot of solverResult.slots) {
-            if (oldID.get(slot.action)?.push(slot.id) == undefined)
-                oldID.set(slot.action, [slot.id])
-        }
-        for (const skill of newSolverResult) {
-            const i = oldID.get(skill)?.shift() || solverResult.maxid++;
-            display.push({ id: i, action: skill })
-        }
-        solverResult.slots = display
-
-        const result = await simulate(initStatus.value, newSolverResult)
-        solverResult.status = result.status
-        solverResult.errors = result.errors
-    } catch (err) {
-        solverResult.slots = []
-    }
-})
+watch(() => actionQueue.status, readSolver)
 // Drawer status
 const openSolverDrawer = ref(false)
 const openExportMarco = ref(false)
@@ -122,12 +101,36 @@ function loadSequence(seq: Sequence) {
     actionQueue.maxid = seq.maxid
 }
 
+async function readSolver(s: Status) {
+    try {
+        const newSolverResult = actions.value.concat(await read_solver(s))
+        let display = [];
+        let oldID = new Map<Actions, number[]>()
+        for (const slot of solverResult.slots) {
+            if (oldID.get(slot.action)?.push(slot.id) == undefined)
+                oldID.set(slot.action, [slot.id])
+        }
+        for (const skill of newSolverResult) {
+            const i = oldID.get(skill)?.shift() || solverResult.maxid++;
+            display.push({ id: i, action: skill })
+        }
+        solverResult.slots = display
+
+        const result = await simulate(initStatus.value, newSolverResult)
+        solverResult.status = result.status
+        solverResult.errors = result.errors
+    } catch (err) {
+        solverResult.slots = []
+    }
+}
+
 </script>
 
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
-            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="itemName" />
+            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="itemName"
+                @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
         <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="80%">
             <MarcoExporter :actions="actionQueue.slots.map(v => v.action)" />
