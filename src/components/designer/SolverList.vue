@@ -86,7 +86,7 @@ const createSolver = async () => {
             showClose: true,
             duration: 0,
             type: 'success',
-            message: `求解器创建成功(${(stop_time - start_time)}ms)`,
+            message: `求解器创建成功(${formatDuration(stop_time - start_time)})`,
         })
         solver.status = 'prepared'
         emits('solverLoad', solver)
@@ -115,7 +115,18 @@ const destroySolver = (s: Solver) => {
     }
 }
 
-</script>e
+function formatDuration(u: number): string {
+    if (u < 1000) {
+        return u + "ms"
+    } else {
+        const h = Math.floor(u / 1000 / 3600)
+        const m = Math.floor(u / 1000 / 60) - h * 60
+        const s = (u / 1000 - h * 3600 - m * 60).toFixed(3)
+        return (h > 0 ? h + 'h' : '') + (m > 0 ? m + 'm' : '') + (s + 's')
+    }
+}
+
+</script>
 
 <template>
     <el-scrollbar class="container">
