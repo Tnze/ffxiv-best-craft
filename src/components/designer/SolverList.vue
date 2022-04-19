@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h, ref } from 'vue'
 import 'element-plus/es/components/message/style/css'
-import { ElMessage, ElProgress } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { Actions, Status } from "../../Craft"
 import { create_solver, destroy_solver } from '../../Solver'
 

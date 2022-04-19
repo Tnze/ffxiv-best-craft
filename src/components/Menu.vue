@@ -6,17 +6,21 @@ import {
     Setting,
 } from '@element-plus/icons-vue'
 
+const props = defineProps<{
+    modelValue: number
+}>()
+
 const emit = defineEmits<{
-    (event: 'select', page: number): void
+    (event: 'update:modelValue', page: number): void
 }>()
 
 const handleSelect = (key: number, keyPath: string) => {
-    emit('select', key)
+    emit('update:modelValue', key)
 }
 </script>
 
 <template>
-    <el-menu default-active="0" @select="handleSelect" :collapse="true">
+    <el-menu :default-active="modelValue" @select="handleSelect" :collapse="true">
         <el-menu-item index="0">
             <el-icon>
                 <suitcase />

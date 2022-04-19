@@ -101,8 +101,12 @@ function loadSequence(seq: Sequence) {
     actionQueue.maxid = seq.maxid
 }
 
+const isReadingSolver = ref(false)
+const previewSolver = ref(false)
+
 async function readSolver(s: Status) {
     try {
+        isReadingSolver.value = true
         const newSolverResult = actions.value.concat(await read_solver(s))
         let display = [];
         let oldID = new Map<Actions, number[]>()
@@ -121,6 +125,8 @@ async function readSolver(s: Status) {
         solverResult.errors = result.errors
     } catch (err) {
         solverResult.slots = []
+    } finally {
+        isReadingSolver.value = false
     }
 }
 
@@ -140,34 +146,42 @@ async function readSolver(s: Status) {
         </el-header>
         <el-main>
             <div class="main-page">
-                <StatusBar class="status-bar" :status="actionQueue.status" />
-                <div class="action-queue">
-                    <ActionQueue :job="displayJob" :list="actionQueue.slots" :err-list="actionQueue.errors" />
-                </div>
-                <div class="solver-and-savedqueue">
-                    <Sidebar class="savedqueue-list-sidebar" @plus="saveSequence" @delete="clearSequence"
-                        @solver="openSolverDrawer = true" @print="openExportMarco = true" />
-                    <el-scrollbar class="solver-and-savedqueue-scrollbar">
-                        <ul class="solver-and-savedqueue-list">
-                            <li v-if="solverResult.slots.length > 0" class="solver-and-savedqueue-item">
-                                <QueueStatus :status="solverResult.status" />
-                                <ActionQueue :job="displayJob" :list="solverResult.slots" disabled />
-                                <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                    @click="loadSequence(solverResult)" />
-                            </li>
-                            <li v-for="sq, i in savedQueues" class="solver-and-savedqueue-item">
-                                <QueueStatus :status="sq.status" />
-                                <ActionQueue :job="displayJob" :list="sq.slots" :err-list="sq.errors" disabled />
-                                <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                    @click="loadSequence(sq)" />
-                                <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
-                                    @click="savedQueues.splice(i, 1)" />
-                            </li>
-                        </ul>
+                <StatusBar class="status-bar"
+                    :status="previewSolver && solverResult.slots.length > 0 ? solverResult.status : actionQueue.status" />
+                <div class="actionpanel-and-savedqueue">
+                    <el-scrollbar class="action-panel">
+                        <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="actionQueue.status"
+                            #lower />
                     </el-scrollbar>
+                    <div class="actionqueue-and-savedqueue">
+                        <div class="action-queue">
+                            <ActionQueue :job="displayJob" :list="actionQueue.slots" :err-list="actionQueue.errors" />
+                        </div>
+                        <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver"
+                            @plus="saveSequence" @delete="clearSequence" @solver="openSolverDrawer = true"
+                            @print="openExportMarco = true" />
+                        <el-scrollbar class="solver-and-savedqueue-scrollbar">
+                            <ul class="solver-and-savedqueue-list">
+                                <li v-if="solverResult.slots.length > 0" class="solver-and-savedqueue-item"
+                                    v-loading="isReadingSolver">
+                                    <QueueStatus :status="solverResult.status" />
+                                    <ActionQueue :job="displayJob" :list="solverResult.slots"
+                                        :err-list="solverResult.errors" disabled />
+                                    <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
+                                        @click="loadSequence(solverResult)" />
+                                </li>
+                                <li v-for="sq, i in savedQueues" class="solver-and-savedqueue-item">
+                                    <QueueStatus :status="sq.status" />
+                                    <ActionQueue :job="displayJob" :list="sq.slots" :err-list="sq.errors" disabled />
+                                    <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
+                                        @click="loadSequence(sq)" />
+                                    <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
+                                        @click="savedQueues.splice(i, 1)" />
+                                </li>
+                            </ul>
+                        </el-scrollbar>
+                    </div>
                 </div>
-                <ActionPanel class="action-panel" @clicked-action="pushAction" :job="displayJob"
-                    :status="actionQueue.status" #lower />
             </div>
         </el-main>
     </el-container>
@@ -190,14 +204,21 @@ async function readSolver(s: Status) {
     background-color: #fafafa;
 }
 
-.solver-and-savedqueue {
+.actionpanel-and-savedqueue {
+    border-bottom: 1px solid var(--el-border-color);
     display: flex;
     flex: auto;
     overflow: hidden;
 }
 
 .savedqueue-list-sidebar {
-    border-right: 1px solid var(--el-border-color);
+    flex: auto;
+}
+
+.actionqueue-and-savedqueue {
+    display: flex;
+    flex-direction: column;
+    flex: auto;
 }
 
 .solver-and-savedqueue-scrollbar {
@@ -205,7 +226,9 @@ async function readSolver(s: Status) {
 }
 
 .action-panel {
+    border-top: 1px solid var(--el-border-color);
     margin-bottom: 6px;
+    max-width: 25%;
 }
 
 .solver-and-savedqueue-list {
