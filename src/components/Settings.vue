@@ -78,4 +78,5 @@ const onCheckUpdateClick = () => {
 .el-link {
     margin-right: 8px;
 }
+
 </style>
