@@ -52,6 +52,7 @@ const onRightClick = (index: number) => {
 <style scoped>
 .action-queue-container {
     margin: 7px 10px 3px 10px;
+    min-height: 42px;
 }
 
 .flip-list-move,

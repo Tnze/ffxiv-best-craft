@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, watchEffect } from 'vue'
+import { reactive, watchEffect } from 'vue'
 import Action from './Action.vue'
 import { Jobs, Actions, Status, allowedList } from '../../Craft'
-import { computed } from '@vue/reactivity';
 
 const props = defineProps<{
     job: Jobs,
@@ -15,7 +14,57 @@ const emit = defineEmits<{
     (event: 'mouseleaveAction', action: Actions): void
 }>()
 
-const actions = Object.values(Actions)
+const actions: Actions[][] = [
+    [
+        Actions.Reflect,
+        Actions.MuscleMemory,
+        Actions.TrainedEye,
+    ],
+    [
+        Actions.MastersMend,
+        Actions.WasteNot,
+        Actions.WasteNotII,
+        Actions.Manipulation,
+    ],
+    [
+        Actions.Veneration,
+        Actions.PrudentSynthesis,
+        Actions.Groundwork,
+        Actions.BasicSynthesis,
+        Actions.CarefulSynthesis,
+    ],
+    [
+        Actions.Innovation,
+        Actions.PrudentTouch,
+        Actions.PreparatoryTouch,
+        Actions.BasicTouch,
+        Actions.StandardTouch,
+        Actions.AdvancedTouch,
+        Actions.TrainedFinesse,
+        Actions.GreatStrides,
+        Actions.ByregotsBlessing,
+    ],
+    [
+        Actions.TricksOfTheTrade,
+        Actions.IntensiveSynthesis,
+        Actions.PreciseTouch,
+    ],
+    [
+        Actions.DelicateSynthesis,
+        Actions.Observe,
+        Actions.FocusedSynthesis,
+        Actions.FocusedTouch,
+    ],
+    [
+        Actions.FinalAppraisal,
+        Actions.CarefulObservation,
+        Actions.HeartAndSoul,
+    ],
+    [
+        Actions.RapidSynthesis,
+        Actions.HastyTouch,
+    ]
+]
 
 const isActived = (action: Actions) => {
     if (props.status == undefined)
@@ -44,15 +93,18 @@ const isActived = (action: Actions) => {
     return false;
 }
 
-const cachedAllowedList = ref<string[]>([])
+const cachedAllowedList = reactive(new Map<Actions, string>())
 
 watchEffect(() => {
     if (props.status == undefined) {
-        cachedAllowedList.value = []
+        cachedAllowedList.clear()
         return
     }
-    allowedList(props.status, actions).then((result) => {
-        cachedAllowedList.value = result
+    const actions = Object.values(Actions)
+    allowedList(props.status, actions).then(result => {
+        actions.forEach((i, v) => {
+            cachedAllowedList.set(i, result[v])
+        })
     })
 })
 
@@ -60,16 +112,25 @@ watchEffect(() => {
 
 <template>
     <div class="container">
-        <Action :job="job" class="item" v-for="action, i in actions" @click="emit('clickedAction', action)"
-            @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)" :action="action"
-            :active="isActived(action)" :effect="cachedAllowedList.at(i) == 'ok' ? 'normal' : 'black'" />
+        <div v-for="group in actions" class="group">
+            <Action :job="job" class="item" v-for="action in group" @click="emit('clickedAction', action)"
+                @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
+                :action="action" :active="isActived(action)"
+                :effect="cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'" />
+        </div>
     </div>
 </template>
 
 <style scoped>
 .container {
     box-sizing: border-box;
-    padding: 3px 10px;
+    padding: 0px 6px;
+    border-right: 1px solid var(--el-border-color);
+}
+
+.group {
+    border-bottom: 1px solid var(--el-border-color);
+    padding-top: 5px;
 }
 
 .item {
