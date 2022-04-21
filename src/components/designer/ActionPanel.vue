@@ -66,6 +66,13 @@ const actions: Actions[][] = [
     ]
 ]
 
+const fail_actions: Actions[] = [
+    Actions.RapidSynthesisFail,
+    Actions.HastyTouchFail,
+    Actions.FocusedSynthesisFail,
+    Actions.FocusedTouchFail,
+]
+
 const isActived = (action: Actions) => {
     if (props.status == undefined)
         return false;
@@ -117,6 +124,12 @@ watchEffect(() => {
                 @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
                 :action="action" :active="isActived(action)"
                 :effect="cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'" />
+        </div>
+        <div class="group">
+            <Action :job="job" class="item" v-for="action in fail_actions" @click="emit('clickedAction', action)"
+                @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
+                :action="action" :active="isActived(action)"
+                :effect="cachedAllowedList.get(action) == 'ok' ? 'red-cross' : 'black'" />
         </div>
     </div>
 </template>

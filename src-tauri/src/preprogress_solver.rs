@@ -9,7 +9,6 @@ pub struct PreprogressSolver<const MN: usize, const WN: usize>
 where
     [[(); WN + 1]; MN + 1]:,
 {
-    progress_solver: Arc<ProgressSolver<MN, WN>>,
     progress_index: Vec<usize>,
     quality_solvers: Vec<QualitySolver<MN, WN>>,
 }
@@ -22,7 +21,6 @@ where
         init_status: Status,
         tail_len: usize,
         progress_solver: Arc<ProgressSolver<MN, WN>>,
-        allowed_list: Vec<Skills>,
     ) -> Self {
         let progress_list = progress_solver.possible_progresses();
         let progress_index = progress_list
@@ -44,11 +42,10 @@ where
             .map(|v| {
                 let mut s = init_status.clone();
                 s.progress = s.recipe.difficulty - *v;
-                QualitySolver::new(s, progress_solver.clone(), allowed_list.clone())
+                QualitySolver::new(s, progress_solver.clone())
             })
             .collect();
         Self {
-            progress_solver,
             progress_index,
             quality_solvers,
         }

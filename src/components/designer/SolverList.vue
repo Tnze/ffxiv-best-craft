@@ -14,42 +14,6 @@ const emits = defineEmits<{
     (event: 'solverLoad', solver: Solver): void
 }>()
 
-const synthList = [
-    // Actions.MuscleMemory,
-    Actions.BasicSynthesis,
-    Actions.Observe,
-    Actions.WasteNot,
-    Actions.Veneration,
-    Actions.WasteNotII,
-    Actions.CarefulSynthesis,
-    Actions.Groundwork,
-    Actions.DelicateSynthesis,
-    Actions.IntensiveSynthesis,
-    Actions.PrudentSynthesis,
-];
-
-const touchList = [
-    Actions.BasicSynthesis,
-    Actions.BasicTouch,
-    Actions.MastersMend,
-    Actions.WasteNot,
-    Actions.Veneration,
-    Actions.StandardTouch,
-    Actions.GreatStrides,
-    Actions.Innovation,
-    Actions.WasteNotII,
-    Actions.ByregotsBlessing,
-    Actions.CarefulSynthesis,
-    // Actions.Manipulation,
-    Actions.PrudentTouch,
-    Actions.PreparatoryTouch,
-    Actions.Groundwork,
-    Actions.DelicateSynthesis,
-    Actions.AdvancedTouch,
-    Actions.PrudentSynthesis,
-    Actions.TrainedFinesse,
-]
-
 interface Solver {
     initStatus: Status,
     name: string,
@@ -76,8 +40,6 @@ const createSolver = async () => {
         const start_time = new Date().getTime();
         await create_solver(
             solver.initStatus,
-            synthList,
-            useManipulation.value ? touchList.concat(Actions.Manipulation) : touchList,
             useMuscleMemory.value,
             useManipulation.value
         )

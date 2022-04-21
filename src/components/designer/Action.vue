@@ -13,7 +13,12 @@ const props = defineProps<{
     effect?: string
 }>();
 
-const iconUrl = computed(() => new URL(`../../assets/icons/${props.job.toLowerCase()}/${props.action}.png`, import.meta.url).href)
+const iconUrl = computed(() => {
+    let actionName: string = props.action;
+    if (actionName.endsWith('_fail'))
+        actionName = actionName.slice(0, actionName.length - '_fail'.length)
+    return new URL(`../../assets/icons/${props.job.toLowerCase()}/${actionName}.png`, import.meta.url).href
+})
 
 const hoverLayerOffset = computed(() => {
     switch (props.effect) {
@@ -55,10 +60,10 @@ const onAnimationEnd = (event: AnimationEvent) => {
     display: inline-block;
     width: 48px;
     height: 48px;
-    background: v-bind(
-        "'url('+hoverUrl+') no-repeat '+hoverLayerOffset+', url('+iconUrl+') no-repeat top 3px left 4px'"
-    );
+    background: v-bind("'url('+hoverUrl+') no-repeat '+hoverLayerOffset+', url('+iconUrl+') no-repeat top 3px left 4px'"
+        );
 }
+
 .action:hover::after {
     content: "";
     display: block;
@@ -67,10 +72,10 @@ const onAnimationEnd = (event: AnimationEvent) => {
     top: -12px;
     left: -12px;
     position: absolute;
-    background: url("../../assets/icons/icona_frame_tex.png") no-repeat top 0px
-        left -240px;
+    background: url("../../assets/icons/icona_frame_tex.png") no-repeat top 0px left -240px;
     cursor: v-bind("disabled?'inherit':'pointer'");
 }
+
 .click-animation {
     content: "";
     display: block;
@@ -79,10 +84,10 @@ const onAnimationEnd = (event: AnimationEvent) => {
     top: -8px;
     left: -8px;
     position: absolute;
-    background: url("../../assets/icons/icona_frame_tex.png") no-repeat top -72px
-        left -240px;
+    background: url("../../assets/icons/icona_frame_tex.png") no-repeat top -72px left -240px;
     animation: clickable-wave 0.3s;
 }
+
 .active-mask::after {
     content: "";
     width: 48px;
@@ -92,41 +97,52 @@ const onAnimationEnd = (event: AnimationEvent) => {
     background-image: url("../../assets/icons/icona_frame_tex.png");
     animation: active 0.25s steps(1, start) infinite;
 }
+
 @keyframes clickable-wave {
     from {
         transform: scale(0.3);
         opacity: 1;
     }
+
     to {
         transform: scale(1);
         opacity: 0;
     }
 }
+
 @keyframes active {
     0% {
         background-position: top 0px left -96px;
     }
+
     12.5% {
         background-position: top 0px left -144px;
     }
+
     25% {
         background-position: top 0px left -192px;
     }
+
     37.5% {
         background-position: top -48px left -96px;
     }
+
     50% {
         background-position: top -48px left -144px;
     }
+
     62.5% {
         background-position: top -48px left -192px;
     }
+
     75% {
         background-position: top -96px left -96px;
     }
+
     87.5% {
         background-position: top -96px left -144px;
     }
+
     100% {
         background-position: top -96px left -144px;
     }

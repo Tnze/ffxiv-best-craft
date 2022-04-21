@@ -31,6 +31,14 @@ const onRightClick = (index: number) => {
         props.list.splice(index, 1)
 }
 
+function calc_effect(index: number): string {
+    if (props.errList?.find((v) => v.pos == index) !== undefined)
+        return 'black'
+    else if (props.list[index].action.endsWith('_fail'))
+        return 'red-cross'
+    return 'normal'
+}
+
 </script>
 
 <template>
@@ -40,9 +48,8 @@ const onRightClick = (index: number) => {
         }" :list="list" v-bind="dragOptions" @start="isDragging = true" @end="isDragging = false">
             <template #item="{ element, index }">
                 <div class="list-group-item">
-                    <Action class="action-icon" :job="job" :action="element.action"
-                        :effect="errList?.find((v) => v.pos == index) !== undefined ? 'black' : 'normal'" disabled
-                        @click.stop.prevent.right="onRightClick(index)" />
+                    <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)"
+                        disabled @click.stop.prevent.right="onRightClick(index)" />
                 </div>
             </template>
         </draggable>

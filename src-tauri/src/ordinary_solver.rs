@@ -16,13 +16,47 @@ struct SolverSlot<V> {
     skill: Option<Skills>,
 }
 
+const SYNTH_SKILLS: [Skills; 10] = [
+    Skills::BasicSynthesis,
+    Skills::Observe,
+    Skills::WasteNot,
+    Skills::Veneration,
+    Skills::WasteNotII,
+    Skills::CarefulSynthesis,
+    Skills::Groundwork,
+    Skills::DelicateSynthesis,
+    Skills::IntensiveSynthesis,
+    Skills::PrudentSynthesis,
+];
+
+const TOUCH_SKILLS: [Skills; 19] = [
+    Skills::BasicSynthesis,
+    Skills::BasicTouch,
+    Skills::MastersMend,
+    Skills::WasteNot,
+    Skills::Veneration,
+    Skills::StandardTouch,
+    Skills::GreatStrides,
+    Skills::Innovation,
+    Skills::WasteNotII,
+    Skills::ByregotsBlessing,
+    Skills::CarefulSynthesis,
+    Skills::PrudentTouch,
+    Skills::PreparatoryTouch,
+    Skills::Groundwork,
+    Skills::DelicateSynthesis,
+    Skills::AdvancedTouch,
+    Skills::PrudentSynthesis,
+    Skills::TrainedFinesse,
+    Skills::Manipulation,
+];
+
 pub struct QualitySolver<const MN: usize, const WN: usize>
 where
     [[(); WN + 1]; MN + 1]:,
 {
     init_status: Status,
     progress_solver: Arc<ProgressSolver<MN, WN>>,
-    allowed_list: Vec<Skills>,
     // results [d][cp][iq][iv][gs][mn][wn]
     results: Vec<Vec<[[[[[[SolverSlot<u32>; 3]; WN + 1]; MN + 1]; 4]; 5]; 11]>>,
 }
@@ -39,17 +73,12 @@ where
     const DEFAULT_ARY: [[[[[[SolverSlot<u32>; 3]; WN + 1]; MN + 1]; 4]; 5]; 11] =
         [[[[[[Self::DEFAULT_SLOT; 3]; WN + 1]; MN + 1]; 4]; 5]; 11];
 
-    pub fn new(
-        init_status: Status,
-        progress_solver: Arc<ProgressSolver<MN, WN>>,
-        allowed_list: Vec<Skills>,
-    ) -> Self {
+    pub fn new(init_status: Status, progress_solver: Arc<ProgressSolver<MN, WN>>) -> Self {
         let cp = init_status.attributes.craft_points as usize;
         let du = init_status.recipe.durability as usize;
         Self {
             init_status,
             progress_solver,
-            allowed_list,
             results: vec![vec![Self::DEFAULT_ARY; cp + 1]; du / 5 + 1],
         }
     }
@@ -104,7 +133,7 @@ where
                                     s.buffs.wast_not = wn as u8;
                                     for touch in 0..3 {
                                         s.buffs.touch_combo_stage = touch as u8;
-                                        for sk in &self.allowed_list {
+                                        for sk in &TOUCH_SKILLS {
                                             if s.is_action_allowed(*sk).is_ok() {
                                                 let mut new_s = s.clone();
                                                 new_s.cast_action(*sk);
@@ -221,7 +250,6 @@ where
     [[(); WN + 1]; MN + 1]:,
 {
     init_status: Status,
-    allowed_list: Vec<Skills>,
     // results[d][cp][ve][mm][mn][wn]
     results: Vec<Vec<[[[[SolverSlot<u16>; WN + 1]; MN + 1]; 6]; 5]>>,
 }
@@ -238,12 +266,11 @@ where
     const DEFAULT_ARY: [[[[SolverSlot<u16>; WN + 1]; MN + 1]; 6]; 5] =
         [[[[Self::DEFAULT_SLOT; WN + 1]; MN + 1]; 6]; 5];
 
-    pub fn new(init_status: Status, allowed_list: Vec<Skills>) -> Self {
+    pub fn new(init_status: Status) -> Self {
         let cp = init_status.attributes.craft_points as usize;
         let du = init_status.recipe.durability as usize;
         Self {
             init_status,
-            allowed_list,
             results: vec![vec![Self::DEFAULT_ARY; cp + 1]; du + 1],
         }
     }
@@ -314,7 +341,7 @@ where
                             s.buffs.manipulation = mn as u8;
                             for wn in 0..=WN {
                                 s.buffs.wast_not = wn as u8;
-                                for sk in &self.allowed_list {
+                                for sk in &SYNTH_SKILLS {
                                     if s.is_action_allowed(*sk).is_ok() {
                                         let mut new_s = s.clone();
                                         new_s.cast_action(*sk);

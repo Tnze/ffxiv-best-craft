@@ -119,7 +119,7 @@ const customRecipe = ref({
             </el-dialog>
             <el-input v-model="searchText" class="search-input" placeholder="键入以搜索" clearable>
                 <template #append>
-                    <el-button :icon="Filter" @click="openFilter = true" />
+                    <!-- <el-button :icon="Filter" @click="openFilter = true" /> -->
                     <el-button :icon="EditPen" @click="openCustomlizer = true" />
                 </template>
             </el-input>
