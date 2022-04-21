@@ -130,8 +130,8 @@ function formatDuration(u: number): string {
 
 <template>
     <el-scrollbar class="container">
-        <el-checkbox v-model="useManipulation" label="掌握(时间x9)" />
-        <el-checkbox v-model="useMuscleMemory" label="坚信(时间x3)" />
+        <el-checkbox v-model="useManipulation" label="掌握(时间&内存x9)" />
+        <el-checkbox v-model="useMuscleMemory" label="坚信(内存x2)" />
         <el-button class="list-item" :disabled="initStatus == undefined" @click="createSolver">
             启动求解器
         </el-button>
