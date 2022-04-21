@@ -210,8 +210,7 @@ fn read_solver(status: Status, app_state: tauri::State<AppState>) -> Result<Vec<
     match list.entry(key) {
         Entry::Occupied(e) => {
             if let Some(v) = e.get() {
-                let solver = v.read_all(&status);
-                Ok(solver)
+                Ok(v.read_all(&status))
             } else {
                 Err("solver not prepared".to_string())
             }
