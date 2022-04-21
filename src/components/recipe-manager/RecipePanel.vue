@@ -70,7 +70,6 @@ const selectRecipe = (recipe: Recipe, name: string, job: string) => {
 
 const customRecipe = ref({
     rlv: 580,
-    name: 'Recipe#580',
     job_level: 90,
     difficulty: 3900,
     quality: 10920,
@@ -112,7 +111,8 @@ const customRecipe = ref({
                     <span class="dialog-footer">
                         <el-button @click="openCustomlizer = false">取消</el-button>
                         <el-button type="primary"
-                            @click="openCustomlizer = false; selectRecipe(customRecipe, customRecipe.name, '自定义')">确认
+                            @click="openCustomlizer = false; selectRecipe(customRecipe, 'Recipe#' + customRecipe.rlv, '自定义')">
+                            确认
                         </el-button>
                     </span>
                 </template>
