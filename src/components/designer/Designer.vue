@@ -101,12 +101,12 @@ function loadSequence(seq: Sequence) {
     actionQueue.maxid = seq.maxid
 }
 
-const isReadingSolver = ref(false)
+const isReadingSolver = ref(0)
 const previewSolver = ref(false)
 
 async function readSolver(s: Status) {
     try {
-        isReadingSolver.value = true
+        isReadingSolver.value++
         const newSolverResult = actions.value.concat(await read_solver(s))
         let display = [];
         let oldID = new Map<Actions, number[]>()
@@ -126,7 +126,7 @@ async function readSolver(s: Status) {
     } catch (err) {
         solverResult.slots = []
     } finally {
-        isReadingSolver.value = false
+        isReadingSolver.value--
     }
 }
 
@@ -163,7 +163,7 @@ async function readSolver(s: Status) {
                         <el-scrollbar class="solver-and-savedqueue-scrollbar">
                             <ul class="solver-and-savedqueue-list">
                                 <li v-if="solverResult.slots.length > 0" class="solver-and-savedqueue-item"
-                                    v-loading="isReadingSolver">
+                                    v-loading="isReadingSolver > 0">
                                     <QueueStatus :status="solverResult.status" />
                                     <ActionQueue :job="displayJob" :list="solverResult.slots"
                                         :err-list="solverResult.errors" disabled />

@@ -7,7 +7,7 @@ license = ""
 name = "app"
 repository = ""
 rust-version = "1.57"
-version = "0.2.1"
+version = "0.2.2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -18,6 +18,7 @@ tauri-build = {version = "1.0.0-rc.5", features = [] }
 csv = "1.1.6"
 ffxiv-crafting = {version = "6.0.8", features = ["serde-support"] }
 msgbox = "0.7.0"
+rayon = "1.5.2"
 serde = {version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tauri = {version = "1.0.0-rc.6", features = ["api-all", "updater"] }

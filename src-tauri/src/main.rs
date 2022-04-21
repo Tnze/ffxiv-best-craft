@@ -6,17 +6,18 @@
 
 use std::{
     collections::{hash_map::Entry, HashMap},
-    sync::Mutex,
+    sync::{Arc, Mutex},
 };
 
 use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
 use serde::Serialize;
 
 mod ordinary_solver;
+mod preprogress_solver;
 mod solver;
-mod start_solver;
 
-use crate::ordinary_solver::{OrdinarySolver, ProgressSolver};
+use crate::ordinary_solver::{ProgressSolver, QualitySolver};
+use crate::preprogress_solver::PreprogressSolver;
 use crate::solver::Solver;
 
 #[tauri::command(async)]
@@ -162,29 +163,31 @@ fn create_solver(
     .and_then(|_| {
         let solver: Box<dyn Solver + Send + Sync> = if use_muscle_memory {
             if use_manipulation {
-                let mut driver = ProgressSolver::new(&status, synth_skills);
+                let mut driver = ProgressSolver::new(status.clone(), synth_skills);
                 driver.init();
-                let mut solver = OrdinarySolver::<8, 8, 3>::new(driver, touch_skills);
+                let mut solver =
+                    PreprogressSolver::<8, 8>::new(status, 2, Arc::new(driver), touch_skills);
                 solver.init();
                 Box::new(solver)
             } else {
-                let mut driver = ProgressSolver::new(&status, synth_skills);
+                let mut driver = ProgressSolver::new(status.clone(), synth_skills);
                 driver.init();
-                let mut solver = OrdinarySolver::<0, 8, 3>::new(driver, touch_skills);
+                let mut solver =
+                    PreprogressSolver::<0, 8>::new(status, 2, Arc::new(driver), touch_skills);
                 solver.init();
                 Box::new(solver)
             }
         } else {
             if use_manipulation {
-                let mut driver = ProgressSolver::new(&status, synth_skills);
+                let mut driver = ProgressSolver::new(status.clone(), synth_skills);
                 driver.init();
-                let mut solver = OrdinarySolver::<8, 8, 0>::new(driver, touch_skills);
+                let mut solver = QualitySolver::<8, 8>::new(status, Arc::new(driver), touch_skills);
                 solver.init();
                 Box::new(solver)
             } else {
-                let mut driver = ProgressSolver::new(&status, synth_skills);
+                let mut driver = ProgressSolver::new(status.clone(), synth_skills);
                 driver.init();
-                let mut solver = OrdinarySolver::<0, 8, 0>::new(driver, touch_skills);
+                let mut solver = QualitySolver::<0, 8>::new(status, Arc::new(driver), touch_skills);
                 solver.init();
                 Box::new(solver)
             }

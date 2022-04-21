@@ -1,7 +1,7 @@
 {
     "package": {
-        "productName": "ffxiv-best-craft",
-        "version": "0.2.1"
+        "productName": "BestCraft",
+        "version": "0.2.2"
     },
     "build": {
         "distDir": "../dist",
@@ -66,7 +66,7 @@
             }
         },
         "windows": [{
-            "title": "BestCraft 最优生产",
+            "title": "BestCraft",
             "width": 800,
             "height": 600,
             "resizable": true,
