@@ -4,15 +4,11 @@ import { invoke } from "@tauri-apps/api/tauri";
 
 const create_solver = (
   s: Status,
-  synthSkills: Actions[],
-  touchSkills: Actions[],
   useMuscleMemory: boolean,
   useManipulation: boolean
 ) => {
   return invoke("create_solver", {
     status: s,
-    synthSkills,
-    touchSkills,
     useMuscleMemory,
     useManipulation,
   });

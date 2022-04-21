@@ -112,6 +112,11 @@ enum Actions {
   TrainedFinesse = "trained_finesse",
   CarefulObservation = "careful_observation",
   HeartAndSoul = "heart_and_soul",
+  // fake skills
+  RapidSynthesisFail = "rapid_synthesis_fail",
+  HastyTouchFail = "hasty_touch_fail",
+  FocusedSynthesisFail = "focused_synthesis_fail",
+  FocusedTouchFail = "focused_touch_fail",
 }
 
 const newRecipe = async (
