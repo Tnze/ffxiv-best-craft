@@ -33,9 +33,12 @@ where
             .enumerate()
             .map(|(i, v)| std::iter::repeat(i).take(v as usize))
             .flatten()
-            .chain(std::iter::once(init_status.recipe.difficulty as usize))
-            .collect();
-
+            .chain(std::iter::once(progress_list.len()))
+            .collect::<Vec<usize>>();
+        assert_eq!(
+            progress_index.len(),
+            *progress_list.last().unwrap() as usize + 1
+        );
         let quality_solvers = progress_list
             .iter()
             .take(tail_len)

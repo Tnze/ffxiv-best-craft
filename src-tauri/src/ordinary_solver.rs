@@ -1,24 +1,13 @@
 use std::sync::Arc;
 
-use super::solver::Solver;
+use super::solver::{
+    Solver, SolverSlot, MAX_GREAT_STRIDES, MAX_INNER_QUIET, MAX_INNOVATION, MAX_MUSCLE_MEMORY,
+    MAX_VENERATION,
+};
 use ffxiv_crafting::{Attributes, Recipe, Skills, Status};
 
-const MAX_GREAT_STRIDES: u8 = 3;
-const MAX_VENERATION: u8 = 4;
-const MAX_INNOVATION: u8 = 4;
-const MAX_MUSCLE_MEMORY: u8 = 5;
-const MAX_INNER_QUIET: u8 = 10;
-
-#[derive(Copy, Clone)]
-struct SolverSlot<V> {
-    value: V,
-    step: u8,
-    skill: Option<Skills>,
-}
-
-const SYNTH_SKILLS: [Skills; 10] = [
+const SYNTH_SKILLS: [Skills; 9] = [
     Skills::BasicSynthesis,
-    Skills::Observe,
     Skills::WasteNot,
     Skills::Veneration,
     Skills::WasteNotII,
@@ -95,7 +84,7 @@ where
             .get(s.buffs.touch_combo_stage as usize)
     }
 
-    unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot<u32> {
+    pub(crate) unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot<u32> {
         &self
             .results
             .get_unchecked(s.durability as usize / 5)
@@ -296,7 +285,7 @@ where
         let mut s = self.init_status.clone();
         for cp in 0..=self.init_status.attributes.craft_points {
             s.craft_points = cp;
-            for du in (1..=self.init_status.recipe.durability).filter(|v| v % 5 == 0) {
+            for du in (0..=self.init_status.recipe.durability).filter(|v| v % 5 == 0) {
                 s.durability = du;
                 for ve in 0..=MAX_VENERATION {
                     s.buffs.veneration = ve;
@@ -342,34 +331,35 @@ where
                             for wn in 0..=WN {
                                 s.buffs.wast_not = wn as u8;
                                 for sk in &SYNTH_SKILLS {
-                                    if s.is_action_allowed(*sk).is_ok() {
-                                        let mut new_s = s.clone();
-                                        new_s.cast_action(*sk);
-                                        let mut progress = new_s.progress;
-                                        let mut step = 1;
-                                        if new_s.durability > 0 {
-                                            let next = &self.results[new_s.durability as usize / 5]
-                                                [new_s.craft_points as usize]
-                                                [new_s.buffs.veneration as usize]
-                                                [new_s.buffs.muscle_memory as usize]
-                                                [new_s.buffs.manipulation as usize]
-                                                [new_s.buffs.wast_not as usize];
-                                            progress += next.value;
-                                            progress = progress.min(s.recipe.difficulty);
-                                            step += next.step;
-                                        }
-                                        let slot = &mut self.results[du as usize / 5][cp as usize]
-                                            [ve as usize][mm as usize]
-                                            [mn as usize][wn as usize];
-                                        if progress > slot.value
-                                            || (progress == slot.value && step < slot.step)
-                                        {
-                                            *slot = SolverSlot {
-                                                value: progress,
-                                                step,
-                                                skill: Some(*sk),
-                                            };
-                                        }
+                                    if s.is_action_allowed(*sk).is_err() {
+                                        continue;
+                                    }
+                                    let mut new_s = s.clone();
+                                    new_s.cast_action(*sk);
+                                    let mut progress = new_s.progress;
+                                    let mut step = 1;
+                                    if new_s.durability > 0 {
+                                        let next = &self.results[new_s.durability as usize / 5]
+                                            [new_s.craft_points as usize]
+                                            [new_s.buffs.veneration as usize]
+                                            [new_s.buffs.muscle_memory as usize]
+                                            [new_s.buffs.manipulation as usize]
+                                            [new_s.buffs.wast_not as usize];
+                                        progress += next.value;
+                                        progress = progress.min(s.recipe.difficulty);
+                                        step += next.step;
+                                    }
+                                    let slot = &mut self.results[du as usize / 5][cp as usize]
+                                        [ve as usize][mm as usize]
+                                        [mn as usize][wn as usize];
+                                    if progress > slot.value
+                                        || (progress == slot.value && step < slot.step)
+                                    {
+                                        *slot = SolverSlot {
+                                            value: progress,
+                                            step,
+                                            skill: Some(*sk),
+                                        };
                                     }
                                 }
                             }

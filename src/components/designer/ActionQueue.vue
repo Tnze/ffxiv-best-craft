@@ -42,7 +42,7 @@ function calc_effect(index: number): string {
 </script>
 
 <template>
-    <div class="action-queue-container">
+    <div class="action-queue-container" @click.stop.prevent.right>
         <draggable item-key="id" tag="transition-group" :component-data="{
             name: !isDragging ? 'flip-list' : null,
         }" :list="list" v-bind="dragOptions" @start="isDragging = true" @end="isDragging = false">

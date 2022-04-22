@@ -118,7 +118,7 @@ watchEffect(() => {
 </script>
 
 <template>
-    <div class="container">
+    <div class="container" @click.stop.prevent.right>
         <div v-for="group in actions" class="group">
             <Action :job="job" class="item" v-for="action in group" @click="emit('clickedAction', action)"
                 @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
