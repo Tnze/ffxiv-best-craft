@@ -24,6 +24,19 @@ const quality = computed<number>(() => {
         : props.status.quality / props.status.recipe.quality * 100
 })
 
+const progressColor = computed<string>(() => {
+    if (props.status.progress >= props.status.recipe.difficulty)
+        return '#13CE66'
+    if (props.status.durability <= 0)
+        return '#F56C6C'
+    return '#409EFF'
+})
+const qualityColor = computed<string>(() => {
+    if (props.status.quality >= props.status.recipe.quality)
+        return '#13CE66'
+    return '#409EFF'
+})
+
 const durabilityColor = [
     { color: '#FF999E', percentage: 20 },
     { color: '#FFD470', percentage: 50 },
@@ -60,8 +73,15 @@ const condition = computed(() => {
         </div>
         <div id="progress-and-buffs">
             进展
-            <el-progress :percentage="progress">{{ status?.progress }} / {{ status?.recipe.difficulty }}</el-progress>品质
-            <el-progress :percentage="quality">{{ status?.quality }} / {{ status?.recipe.quality }}</el-progress>
+            <el-progress :percentage="progress" :color="progressColor">
+                {{ status?.progress }} /
+                {{ status?.recipe.difficulty }} /
+                {{ status?.recipe.difficulty - status?.progress }}
+            </el-progress>品质
+            <el-progress :percentage="quality" :color="qualityColor">
+                {{ status?.quality }} /
+                {{ status?.recipe.quality }}
+            </el-progress>
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
         <div id="attributes">
@@ -73,6 +93,9 @@ const condition = computed(() => {
             <br />
             制作力：{{ status?.craft_points }} / {{ status?.attributes.craft_points }}
             <br />
+            <el-progress class="craft-points-progressbar"
+                :percentage="status?.craft_points / status?.attributes.craft_points * 100" color="#FF9999"
+                :show-text="false" :stroke-width="10" />
         </div>
     </div>
 </template>
@@ -114,5 +137,10 @@ const condition = computed(() => {
     flex-grow: 2;
     text-align: right;
     color: #909399;
+}
+
+.craft-points-progressbar {
+    width: 120px;
+    display: inline-block;
 }
 </style>
