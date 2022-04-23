@@ -154,6 +154,12 @@ const simulate = (s: Status, actions: Actions[]): Promise<SimulateResult> => {
 const allowedList = (status: Status, actions: Actions[]): Promise<string[]> => {
   return invoke("allowed_list", { status, skills: actions });
 };
+const craftPointsList = (
+  status: Status,
+  actions: Actions[]
+): Promise<number[]> => {
+  return invoke("craftpoints_list", { status, skills: actions });
+};
 
 interface RecipeRow {
   id: number;
@@ -182,6 +188,7 @@ export {
   newStatus,
   simulate,
   allowedList,
+  craftPointsList,
   RecipeRow,
   newRecipeTable,
 };

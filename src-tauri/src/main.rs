@@ -79,6 +79,11 @@ fn allowed_list(status: Status, skills: Vec<Skills>) -> Vec<String> {
         .collect()
 }
 
+#[tauri::command(async)]
+fn craftpoints_list(status: Status, skills: Vec<Skills>) -> Vec<i32> {
+    skills.iter().map(|&sk| status.craft_point(sk)).collect()
+}
+
 #[derive(Serialize)]
 struct RecipeRow {
     id: usize,
@@ -246,6 +251,7 @@ fn main() {
             new_status,
             simulate,
             allowed_list,
+            craftpoints_list,
             recipe_table,
             create_solver,
             read_solver,
