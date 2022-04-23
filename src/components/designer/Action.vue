@@ -152,9 +152,9 @@ const onAnimationEnd = (event: AnimationEvent) => {
 
 .craft-point {
     position: absolute;
-    color: white;
+    color: #fefefe;
     font-size: 15px;
     top: 32px;
-    text-shadow: #000 0px 0px 2px, #fff 0px 0px 3px, #000 0px 0px 4px, #000 0px 0px 5px, #000 0px 0px 6px;
+    text-shadow: #000 0px 0px 2px, #000 0px 0px 3px, #fff 0px 0px 4px, #000 0px 0px 5px, #000 0px 0px 6px;
 }
 </style>
