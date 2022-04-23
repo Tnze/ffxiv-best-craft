@@ -7,14 +7,14 @@ import {
 } from '@element-plus/icons-vue'
 
 const props = defineProps<{
-    modelValue: number
+    modelValue: string
 }>()
 
 const emit = defineEmits<{
-    (event: 'update:modelValue', page: number): void
+    (event: 'update:modelValue', page: string): void
 }>()
 
-const handleSelect = (key: number, keyPath: string) => {
+const handleSelect = (key: string, keyPath: string) => {
     emit('update:modelValue', key)
 }
 </script>
