@@ -10,7 +10,8 @@ const props = defineProps<{
     action: Actions,
     disabled?: boolean,
     active?: boolean,
-    effect?: string
+    effect?: string,
+    cp?: number
 }>();
 
 const iconUrl = computed(() => {
@@ -51,6 +52,7 @@ const onAnimationEnd = (event: AnimationEvent) => {
     <div class="action" @click="onClick">
         <div @animationend="onAnimationEnd($event)"></div>
         <div v-if="active" class="active-mask"></div>
+        <div v-if="cp != undefined" class="craft-point">{{ cp }}</div>
     </div>
 </template>
 
@@ -146,5 +148,13 @@ const onAnimationEnd = (event: AnimationEvent) => {
     100% {
         background-position: top -96px left -144px;
     }
+}
+
+.craft-point {
+    position: absolute;
+    color: white;
+    font-size: 15px;
+    top: 32px;
+    text-shadow: #000 0px 0px 2px, #fff 0px 0px 3px, #000 0px 0px 4px, #000 0px 0px 5px, #000 0px 0px 6px;
 }
 </style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, watchEffect } from 'vue'
 import Action from './Action.vue'
-import { Jobs, Actions, Status, allowedList } from '../../Craft'
+import { Jobs, Actions, Status, allowedList, craftPointsList } from '../../Craft'
 
 const props = defineProps<{
     job: Jobs,
@@ -101,6 +101,7 @@ const isActived = (action: Actions) => {
 }
 
 const cachedAllowedList = reactive(new Map<Actions, string>())
+const cachedCraftPointsList = reactive(new Map<Actions, number>())
 
 watchEffect(() => {
     if (props.status == undefined) {
@@ -113,6 +114,11 @@ watchEffect(() => {
             cachedAllowedList.set(i, result[v])
         })
     })
+    craftPointsList(props.status, actions).then(result => {
+        actions.forEach((i, v) => {
+            cachedCraftPointsList.set(i, result[v])
+        })
+    })
 })
 
 </script>
@@ -123,13 +129,15 @@ watchEffect(() => {
             <Action :job="job" class="item" v-for="action in group" @click="emit('clickedAction', action)"
                 @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
                 :action="action" :active="isActived(action)"
-                :effect="cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'" />
+                :effect="cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
+                :cp="cachedCraftPointsList.get(action) || undefined" />
         </div>
         <div class="group">
             <Action :job="job" class="item" v-for="action in fail_actions" @click="emit('clickedAction', action)"
                 @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
                 :action="action" :active="isActived(action)"
-                :effect="cachedAllowedList.get(action) == 'ok' ? 'red-cross' : 'black'" />
+                :effect="cachedAllowedList.get(action) == 'ok' ? 'red-cross' : 'black'"
+                :cp="cachedCraftPointsList.get(action) || undefined" />
         </div>
     </div>
 </template>
