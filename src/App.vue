@@ -34,13 +34,13 @@ const gearsets = ref<{ default: Attributes, special: GearsetsRow[] }>({
 })
 
 const job = ref<Jobs | 'unknown'>('unknown')
-const attributes = computed(() => {
+const attributes = computed<Attributes>(() => {
   return gearsets.value.special.find(v => v.name == job.value)?.value || gearsets.value.default
 })
 
 const recipe = ref<Recipe | null>(null)
 
-const currentPage = ref(0)
+const currentPage = ref('0')
 const settings = ref({
   language: "zh-CN"
 })
@@ -49,7 +49,7 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
   job.value = j
   recipe.value = r
   recipeName.value = name
-  currentPage.value = 2
+  currentPage.value = '2'
 }
 
 </script>
@@ -57,7 +57,7 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
 <template>
   <el-container>
     <el-aside width="64px">
-      <Menu @select="(page) => currentPage = page"></Menu>
+      <Menu v-model="currentPage"></Menu>
     </el-aside>
     <el-main>
       <Gearsets v-model="gearsets" v-show="currentPage == 0" />

@@ -12,6 +12,8 @@ import Sidebar from './Sidebar.vue'
 import SolverList from './SolverList.vue'
 import MarcoExporter from './MarcoExporter.vue'
 import QueueStatus from './QueueStatus.vue'
+import AttrEnhSelector from '../attr-enhancer/AttrEnhSelector.vue'
+import { Enhancer } from '../attr-enhancer/Enhancer'
 
 interface Slot {
     id: number
@@ -35,11 +37,25 @@ const props = defineProps<{
     recipe: Recipe;
 }>()
 const displayJob = computed(() => props.job == 'unknown' ? Jobs.Culinarian : props.job)
+const attributesEnhancers = ref<Enhancer[]>([]);
+const enhancedAttributes = computed<Attributes>(() => {
+    let { level, craftsmanship, control, craft_points } = props.attributes;
+    const sum = (prev: number, curr: number) => prev + curr;
+    craftsmanship += attributesEnhancers.value.filter(v => v.cm && v.cm_max).map(v => Math.min(craftsmanship * v.cm! / 100, v.cm_max!)).reduce(sum, 0)
+    control += attributesEnhancers.value.filter(v => v.ct && v.ct_max).map(v => Math.min(control * v.ct! / 100, v.ct_max!)).reduce(sum, 0)
+    craft_points += attributesEnhancers.value.filter(v => v.cp && v.cp_max).map(v => Math.min(craft_points * v.cp! / 100, v.cp_max!)).reduce(sum, 0)
+    return {
+        level,
+        craftsmanship,
+        control,
+        craft_points,
+    }
+})
 
 // Simulation
-const initStatus = ref<Status>(await newStatus(props.attributes, props.recipe))
-watch(props, async p => {
-    initStatus.value = await newStatus(p.attributes, p.recipe)
+const initStatus = ref<Status>(await newStatus(enhancedAttributes.value, props.recipe))
+watch([props, enhancedAttributes], async ([p, ea]) => {
+    initStatus.value = await newStatus(ea, p.recipe)
 })
 // Actions Queue
 const actionQueue = reactive<Sequence>({ slots: [], maxid: 0, status: initStatus.value, errors: [] })
@@ -65,6 +81,7 @@ watch(() => actionQueue.status, readSolver)
 // Drawer status
 const openSolverDrawer = ref(false)
 const openExportMarco = ref(false)
+const openAttrEnhSelector = ref(false)
 
 const savedQueues = reactive<Sequence[]>([])
 watch(initStatus, (newInitStatus) => {
@@ -141,13 +158,17 @@ async function readSolver(s: Status) {
         <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="80%">
             <MarcoExporter :actions="actionQueue.slots.map(v => v.action)" />
         </el-drawer>
+        <el-dialog v-model="openAttrEnhSelector" title="食物 & 药水">
+            <AttrEnhSelector v-model="attributesEnhancers" />
+        </el-dialog>
         <el-header>
             <h1>{{ itemName }}</h1>
         </el-header>
         <el-main>
             <div class="main-page">
-                <StatusBar class="status-bar"
-                    :status="previewSolver && solverResult.slots.length > 0 ? solverResult.status : actionQueue.status" />
+                <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
+                    :status="previewSolver && solverResult.slots.length > 0 ? solverResult.status : actionQueue.status"
+                    @click-attributes="openAttrEnhSelector = true" />
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">
                         <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="actionQueue.status"

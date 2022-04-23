@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Conditions, Status } from '../../Craft';
+import { Attributes, Conditions, Status } from '../../Craft';
 import Condition from './Condition.vue'
 import Buffs from './Buffs.vue';
+import { Enhancer } from '../attr-enhancer/Enhancer';
 
 const props = defineProps<{
     status: Status;
+    attributes: Attributes;
+    enhancers: Enhancer[];
+}>()
+
+const emits = defineEmits<{
+    (event: 'click-attributes'): void
 }>()
 
 const durability = computed<number>(() => {
@@ -85,13 +92,33 @@ const condition = computed(() => {
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
         <div id="attributes">
-            等级：{{ status?.attributes.level }}
-            <br />
-            作业精度：{{ status?.attributes.craftsmanship }}
-            <br />
-            加工精度：{{ status?.attributes.control }}
-            <br />
-            制作力：{{ status?.craft_points }} / {{ status?.attributes.craft_points }}
+            <el-link class="attributes-link" @click="emits('click-attributes')">
+                等级：{{ status?.attributes.level }}
+                <br />
+                作业精度：{{ attributes.craftsmanship }}
+                {{ enhancers.filter(v => v.cm && v.cm_max)
+                        .map(v => Math.min(
+                            status?.attributes.craftsmanship * v.cm!,
+                            v.cm_max!
+                        )).map(cm => ` + ${cm}`).join('')
+                }}
+                <br />
+                加工精度：{{ attributes.control }}
+                {{ enhancers.filter(v => v.ct && v.ct_max)
+                        .map(v => Math.min(
+                            status?.attributes.control * v.ct!,
+                            v.ct_max!
+                        )).map(ct => ` + ${ct}`).join('')
+                }}
+                <br />
+                制作力：{{ status?.craft_points }} / {{ attributes.craft_points }}
+                {{ enhancers.filter(v => v.cp && v.cp_max)
+                        .map(v => Math.min(
+                            status?.attributes.craft_points * v.cp!,
+                            v.cp_max!
+                        )).map(cp => ` + ${cp}`).join('')
+                }}
+            </el-link>
             <br />
             <el-progress class="craft-points-progressbar"
                 :percentage="status?.craft_points / status?.attributes.craft_points * 100" color="#FF9999"
@@ -137,6 +164,10 @@ const condition = computed(() => {
     flex-grow: 2;
     text-align: right;
     color: #909399;
+}
+
+.attributes-link {
+    display: inline-block;
 }
 
 .craft-points-progressbar {
