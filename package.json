@@ -9,14 +9,12 @@
         "tauri": "tauri"
     },
     "dependencies": {
-        "@tauri-apps/api": "^1.0.0-rc.3",
         "element-plus": "^2.1.4",
         "vue": "3.2.31",
         "vuedraggable": "^4.1.0"
     },
     "devDependencies": {
         "@babel/types": "^7.17.0",
-        "@tauri-apps/cli": "^1.0.0-rc.8",
         "@types/lodash-es": "^4.17.6",
         "@types/node": "^17.0.24",
         "@types/vue-router": "^2.0.0",
