@@ -43,11 +43,11 @@ const emits = defineEmits<{
                 <upload />
             </el-icon>
         </el-tooltip>
-        <el-tooltip content="宏分析" placement="top" :show-after="1000">
+        <!-- <el-tooltip content="宏分析" placement="top" :show-after="1000">
             <el-icon class="button" :size="16" @click="emits('analysis')">
                 <data-analysis />
             </el-icon>
-        </el-tooltip>
+        </el-tooltip> -->
     </div>
 </template>
 <style scoped>
