@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { reactive, ref, shallowRef, watch } from 'vue';
+import { ref, computed } from 'vue';
 import RecipePanel from './components/recipe-manager/RecipePanel.vue';
 import Gearsets from './components/Gearsets.vue';
 import Designer from './components/designer/Designer.vue';
 import Settings from './components/Settings.vue';
 import Menu from './components/Menu.vue';
 import { Attributes, Recipe, Jobs } from './Craft'
-import { computed } from '@vue/reactivity';
 
 
 interface GearsetsRow {
@@ -46,6 +45,7 @@ const settings = ref({
 })
 const recipeName = ref('')
 const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
+  debugger
   job.value = j
   recipe.value = r
   recipeName.value = name
