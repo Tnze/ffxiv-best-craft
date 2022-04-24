@@ -45,7 +45,6 @@ const settings = ref({
 })
 const recipeName = ref('')
 const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
-  debugger
   job.value = j
   recipe.value = r
   recipeName.value = name
