@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BottomRight, Close, Cpu, Printer, View } from '@element-plus/icons-vue'
+import { BottomRight, Close, Cpu, View, Upload, DataAnalysis } from '@element-plus/icons-vue'
 
 const props = defineProps<{
     previewSolver: boolean
@@ -10,6 +10,7 @@ const emits = defineEmits<{
     (event: 'delete'): void
     (event: 'solver'): void
     (event: 'print'): void
+    (event: 'analysis'): void
     (event: 'update:previewSolver', value: boolean): void
 }>();
 
@@ -39,7 +40,12 @@ const emits = defineEmits<{
         </el-tooltip>
         <el-tooltip content="导出宏" placement="top" :show-after="1000">
             <el-icon class="button" :size="16" @click="emits('print')">
-                <printer />
+                <upload />
+            </el-icon>
+        </el-tooltip>
+        <el-tooltip content="宏分析" placement="top" :show-after="1000">
+            <el-icon class="button" :size="16" @click="emits('analysis')">
+                <data-analysis />
             </el-icon>
         </el-tooltip>
     </div>
