@@ -11,5 +11,4 @@ export default defineConfig({
     AutoImport({resolvers: [ElementPlusResolver()]}),
     Components({resolvers: [ElementPlusResolver()]}),
   ],
-  // assetsInclude: ['src/assets/icons/**/*.png'],
 })
