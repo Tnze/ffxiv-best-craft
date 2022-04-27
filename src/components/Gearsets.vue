@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { createDir, readTextFile, writeFile, Dir } from '@tauri-apps/api/fs'
 import { ref, onMounted, onUpdated } from 'vue'
 import { Attributes } from '../Craft'
 
@@ -29,8 +28,8 @@ const emits = defineEmits<{
 
 onMounted(async () => {
     try {
-        const conf = await readTextFile('gearsets.json', { dir: Dir.App })
-        emits('update:modelValue', JSON.parse(conf) as Attributes)
+        // const conf = await readTextFile('gearsets.json', { dir: Dir.App })
+        // emits('update:modelValue', JSON.parse(conf) as Attributes)
     } catch (err) {
         // may be the file is not exist
         console.log(err)
@@ -40,11 +39,11 @@ onMounted(async () => {
 onUpdated(async () => {
     const conf = JSON.stringify(props.modelValue)
     try {
-        await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
+        // await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
     } catch (err) {
         try {
-            await createDir('', { dir: Dir.App })
-            await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
+            // await createDir('', { dir: Dir.App })
+            // await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
         } catch (err) {
             console.log(err)
         }

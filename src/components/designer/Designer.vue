@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { save, open } from '@tauri-apps/api/dialog'
-import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
 import "element-plus/es/components/message/style/css";
 import { ElMessage } from "element-plus";
@@ -183,67 +181,67 @@ async function readSolver(s: Status) {
 }
 
 async function saveListToJSON() {
-    try {
-        const queues = [actionQueue].concat(savedQueues).map(v => v.slots.map(s => s.action)).filter(v => v.length > 0)
-        const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
-        const path = await save({
-            defaultPath: `${props.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
-            filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
-            title: '保存文件'
-        })
-        if (!path) {
-            return
-        }
-        await writeFile({ path, contents: JSON.stringify(queues) })
-        ElMessage({
-            type: "success",
-            showClose: true,
-            message: '保存成功',
-        });
-    } catch (err) {
-        ElMessage({
-            type: "error",
-            showClose: true,
-            message: '保存失败：' + err as string,
-        });
-    }
+    // try {
+    //     const queues = [actionQueue].concat(savedQueues).map(v => v.slots.map(s => s.action)).filter(v => v.length > 0)
+    //     const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
+    //     const path = await save({
+    //         defaultPath: `${props.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
+    //         filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
+    //         title: '保存文件'
+    //     })
+    //     if (!path) {
+    //         return
+    //     }
+    //     await writeFile({ path, contents: JSON.stringify(queues) })
+    //     ElMessage({
+    //         type: "success",
+    //         showClose: true,
+    //         message: '保存成功',
+    //     });
+    // } catch (err) {
+    //     ElMessage({
+    //         type: "error",
+    //         showClose: true,
+    //         message: '保存失败：' + err as string,
+    //     });
+    // }
 }
 
 async function openListFromJSON() {
-    const pathlist = <string[]>await open({
-        filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
-        multiple: true,
-        title: '打开文件'
-    })
-    if (!pathlist)
-        return
-    for (const filepath of pathlist) {
-        try {
-            const content = await readTextFile(filepath)
-            const queues = <Actions[][]>JSON.parse(content)
-            for (const actions of queues) {
-                const slots = actions.map((action, index) => { return { id: index, action } })
-                const { status, errors } = await simulate(initStatus.value, actions)
-                savedQueues.push({
-                    slots,
-                    maxid: slots.length - 1,
-                    status,
-                    errors,
-                });
-            }
-        } catch (err) {
-            ElMessage({
-                type: "error",
-                showClose: true,
-                message: `读取“${filepath}”失败：` + err as string,
-            });
-        }
-        ElMessage({
-            type: "success",
-            showClose: true,
-            message: `读取“${filepath}”成功`,
-        });
-    }
+    // const pathlist = <string[]>await open({
+    //     filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
+    //     multiple: true,
+    //     title: '打开文件'
+    // })
+    // if (!pathlist)
+    //     return
+    // for (const filepath of pathlist) {
+    //     try {
+    //         const content = await readTextFile(filepath)
+    //         const queues = <Actions[][]>JSON.parse(content)
+    //         for (const actions of queues) {
+    //             const slots = actions.map((action, index) => { return { id: index, action } })
+    //             const { status, errors } = await simulate(initStatus.value, actions)
+    //             savedQueues.push({
+    //                 slots,
+    //                 maxid: slots.length - 1,
+    //                 status,
+    //                 errors,
+    //             });
+    //         }
+    //     } catch (err) {
+    //         ElMessage({
+    //             type: "error",
+    //             showClose: true,
+    //             message: `读取“${filepath}”失败：` + err as string,
+    //         });
+    //     }
+    //     ElMessage({
+    //         type: "success",
+    //         showClose: true,
+    //         message: `读取“${filepath}”成功`,
+    //     });
+    // }
 }
 </script>
 
