@@ -1,107 +1,142 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch, } from 'vue'
-import 'element-plus/es/components/message/style/css'
-import { ElMessage } from 'element-plus'
-import { Delete, Edit } from '@element-plus/icons-vue'
-import { Attributes, Jobs, Actions, simulate, Recipe, Status, newStatus } from '../../Craft'
-import { read_solver } from '../../Solver'
-import ActionPanel from './ActionPanel.vue'
-import ActionQueue from './ActionQueue.vue'
-import StatusBar from './StatusBar.vue'
-import Sidebar from './Sidebar.vue'
-import SolverList from './SolverList.vue'
-import MarcoExporter from './MarcoExporter.vue'
-import QueueStatus from './QueueStatus.vue'
-import AttrEnhSelector from '../attr-enhancer/AttrEnhSelector.vue'
-import { Enhancer } from '../attr-enhancer/Enhancer'
+import { save, open } from '@tauri-apps/api/dialog'
+import { writeFile, readTextFile } from '@tauri-apps/api/fs'
+import { computed, reactive, ref, watch } from "vue";
+import "element-plus/es/components/message/style/css";
+import { ElMessage } from "element-plus";
+import { Delete, Edit } from "@element-plus/icons-vue";
+import {
+    Attributes,
+    Jobs,
+    Actions,
+    simulate,
+    Recipe,
+    Status,
+    newStatus,
+} from "../../Craft";
+import { read_solver } from "../../Solver";
+import ActionPanel from "./ActionPanel.vue";
+import ActionQueue from "./ActionQueue.vue";
+import StatusBar from "./StatusBar.vue";
+import Sidebar from "./Sidebar.vue";
+import SolverList from "./SolverList.vue";
+import MarcoExporter from "./MarcoExporter.vue";
+import QueueStatus from "./QueueStatus.vue";
+import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
+import { Enhancer } from "../attr-enhancer/Enhancer";
 
 interface Slot {
-    id: number
-    action: Actions
+    id: number;
+    action: Actions;
 }
 
 // 用于表示一个技能的序列，或者说一个宏
 // 为了实现拖拽和删除等动画效果，我们需要给每个技能一个唯一的id
 // maxid储存了当前序列中最大的标志，并用于生成下一个id
 interface Sequence {
-    slots: Slot[]
-    maxid: number
-    status: Status
-    errors: { pos: number, err: string }[]
+    slots: Slot[];
+    maxid: number;
+    status: Status;
+    errors: { pos: number; err: string }[];
 }
 
 const props = defineProps<{
     itemName: string;
-    job: Jobs | 'unknown';
+    job: Jobs | "unknown";
     attributes: Attributes;
     recipe: Recipe;
-}>()
-const displayJob = computed(() => props.job == 'unknown' ? Jobs.Culinarian : props.job)
+}>();
+const displayJob = computed(() =>
+    props.job == "unknown" ? Jobs.Culinarian : props.job
+);
 const attributesEnhancers = ref<Enhancer[]>([]);
 const enhancedAttributes = computed<Attributes>(() => {
     let { level, craftsmanship, control, craft_points } = props.attributes;
     const sum = (prev: number, curr: number) => prev + curr;
-    craftsmanship += attributesEnhancers.value.filter(v => v.cm && v.cm_max).map(v => Math.min(craftsmanship * v.cm! / 100, v.cm_max!)).reduce(sum, 0)
-    control += attributesEnhancers.value.filter(v => v.ct && v.ct_max).map(v => Math.min(control * v.ct! / 100, v.ct_max!)).reduce(sum, 0)
-    craft_points += attributesEnhancers.value.filter(v => v.cp && v.cp_max).map(v => Math.min(craft_points * v.cp! / 100, v.cp_max!)).reduce(sum, 0)
+    craftsmanship += attributesEnhancers.value
+        .filter((v) => v.cm && v.cm_max)
+        .map((v) => Math.min((craftsmanship * v.cm!) / 100, v.cm_max!))
+        .reduce(sum, 0);
+    control += attributesEnhancers.value
+        .filter((v) => v.ct && v.ct_max)
+        .map((v) => Math.min((control * v.ct!) / 100, v.ct_max!))
+        .reduce(sum, 0);
+    craft_points += attributesEnhancers.value
+        .filter((v) => v.cp && v.cp_max)
+        .map((v) => Math.min((craft_points * v.cp!) / 100, v.cp_max!))
+        .reduce(sum, 0);
     return {
         level,
         craftsmanship,
         control,
         craft_points,
-    }
-})
+    };
+});
 
 // Simulation
-const initStatus = ref<Status>(await newStatus(enhancedAttributes.value, props.recipe))
+const initStatus = ref<Status>(
+    await newStatus(enhancedAttributes.value, props.recipe)
+);
 watch([props, enhancedAttributes], async ([p, ea]) => {
-    initStatus.value = await newStatus(ea, p.recipe)
-})
+    initStatus.value = await newStatus(ea, p.recipe);
+});
 // Actions Queue
-const actionQueue = reactive<Sequence>({ slots: [], maxid: 0, status: initStatus.value, errors: [] })
-const actions = computed(() => actionQueue.slots.map(slot => slot.action))
+const actionQueue = reactive<Sequence>({
+    slots: [],
+    maxid: 0,
+    status: initStatus.value,
+    errors: [],
+});
+const actions = computed(() => actionQueue.slots.map((slot) => slot.action));
 
 watch([initStatus, actions], async ([s, a]) => {
     try {
-        let result = await simulate(s, a)
-        actionQueue.status = result.status
-        actionQueue.errors = result.errors
+        let result = await simulate(s, a);
+        actionQueue.status = result.status;
+        actionQueue.errors = result.errors;
     } catch (err) {
         ElMessage({
-            type: 'error',
+            type: "error",
             showClose: true,
             message: err as string,
-        })
+        });
     }
-})
+});
 
 // Solver result
-const solverResult = reactive<Sequence>({ slots: [], maxid: 0, status: initStatus.value, errors: [] })
-watch(() => actionQueue.status, readSolver)
+const solverResult = reactive<Sequence>({
+    slots: [],
+    maxid: 0,
+    status: initStatus.value,
+    errors: [],
+});
+watch(() => actionQueue.status, readSolver);
 // Drawer status
-const openSolverDrawer = ref(false)
-const openExportMarco = ref(false)
-const openAttrEnhSelector = ref(false)
+const openSolverDrawer = ref(false);
+const openExportMarco = ref(false);
+const openAttrEnhSelector = ref(false);
 
-const savedQueues = reactive<Sequence[]>([])
+const savedQueues = reactive<Sequence[]>([]);
 watch(initStatus, (newInitStatus) => {
     // recalculate all results of savedQueues
     for (let q of savedQueues) {
-        simulate(newInitStatus, q.slots.map(x => x.action))
-            .then(result => {
-                q.status = result.status
-                q.errors = result.errors
-            })
+        simulate(
+            newInitStatus,
+            q.slots.map((x) => x.action)
+        ).then((result) => {
+            q.status = result.status;
+            q.errors = result.errors;
+        });
     }
-})
+});
 
 function pushAction(action: Actions) {
-    actionQueue.slots.push({ id: actionQueue.maxid++, action })
+    actionQueue.slots.push({ id: actionQueue.maxid++, action });
 }
 
 function clearSequence() {
-    actionQueue.slots = []
-    actionQueue.maxid = 0
+    actionQueue.slots = [];
+    actionQueue.maxid = 0;
 }
 
 function saveSequence() {
@@ -110,43 +145,106 @@ function saveSequence() {
         maxid: actionQueue.maxid,
         status: actionQueue.status,
         errors: actionQueue.errors,
-    })
+    });
 }
 
 function loadSequence(seq: Sequence) {
-    actionQueue.slots = seq.slots.slice()
-    actionQueue.maxid = seq.maxid
+    actionQueue.slots = seq.slots.slice();
+    actionQueue.maxid = seq.maxid;
 }
 
-const isReadingSolver = ref(0)
-const previewSolver = ref(false)
+const isReadingSolver = ref(0);
+const previewSolver = ref(false);
 
 async function readSolver(s: Status) {
     try {
-        isReadingSolver.value++
-        const newSolverResult = actions.value.concat(await read_solver(s))
+        isReadingSolver.value++;
+        const newSolverResult = actions.value.concat(await read_solver(s));
         let display = [];
-        let oldID = new Map<Actions, number[]>()
+        let oldID = new Map<Actions, number[]>();
         for (const slot of solverResult.slots) {
             if (oldID.get(slot.action)?.push(slot.id) == undefined)
-                oldID.set(slot.action, [slot.id])
+                oldID.set(slot.action, [slot.id]);
         }
         for (const skill of newSolverResult) {
             const i = oldID.get(skill)?.shift() || solverResult.maxid++;
-            display.push({ id: i, action: skill })
+            display.push({ id: i, action: skill });
         }
-        solverResult.slots = display
+        solverResult.slots = display;
 
-        const result = await simulate(initStatus.value, newSolverResult)
-        solverResult.status = result.status
-        solverResult.errors = result.errors
+        const result = await simulate(initStatus.value, newSolverResult);
+        solverResult.status = result.status;
+        solverResult.errors = result.errors;
     } catch (err) {
-        solverResult.slots = []
+        solverResult.slots = [];
     } finally {
-        isReadingSolver.value--
+        isReadingSolver.value--;
     }
 }
 
+async function saveListToJSON() {
+    try {
+        const queues = [actionQueue].concat(savedQueues).map(v => v.slots.map(s => s.action)).filter(v => v.length > 0)
+        const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
+        const path = await save({
+            defaultPath: `${props.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
+            filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
+            title: '保存文件'
+        })
+        if (!path) {
+            return
+        }
+        await writeFile({ path, contents: JSON.stringify(queues) })
+        ElMessage({
+            type: "success",
+            showClose: true,
+            message: '保存成功',
+        });
+    } catch (err) {
+        ElMessage({
+            type: "error",
+            showClose: true,
+            message: '保存失败：' + err as string,
+        });
+    }
+}
+
+async function openListFromJSON() {
+    const pathlist = <string[]>await open({
+        filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
+        multiple: true,
+        title: '打开文件'
+    })
+    if (!pathlist)
+        return
+    for (const filepath of pathlist) {
+        try {
+            const content = await readTextFile(filepath)
+            const queues = <Actions[][]>JSON.parse(content)
+            for (const actions of queues) {
+                const slots = actions.map((action, index) => { return { id: index, action } })
+                const { status, errors } = await simulate(initStatus.value, actions)
+                savedQueues.push({
+                    slots,
+                    maxid: slots.length - 1,
+                    status,
+                    errors,
+                });
+            }
+        } catch (err) {
+            ElMessage({
+                type: "error",
+                showClose: true,
+                message: `读取“${filepath}”失败：` + err as string,
+            });
+        }
+        ElMessage({
+            type: "success",
+            showClose: true,
+            message: `读取“${filepath}”成功`,
+        });
+    }
+}
 </script>
 
 <template>
@@ -156,7 +254,7 @@ async function readSolver(s: Status) {
                 @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
         <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="80%">
-            <MarcoExporter :actions="actionQueue.slots.map(v => v.action)" />
+            <MarcoExporter :actions="actionQueue.slots.map((v) => v.action)" />
         </el-drawer>
         <el-dialog v-model="openAttrEnhSelector" title="食物 & 药水">
             <AttrEnhSelector v-model="attributesEnhancers" />
@@ -166,9 +264,11 @@ async function readSolver(s: Status) {
         </el-header>
         <el-main>
             <div class="main-page">
-                <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
-                    :status="previewSolver && solverResult.slots.length > 0 ? solverResult.status : actionQueue.status"
-                    @click-attributes="openAttrEnhSelector = true" />
+                <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers" :status="
+                    previewSolver && solverResult.slots.length > 0
+                        ? solverResult.status
+                        : actionQueue.status
+                " @click-attributes="openAttrEnhSelector = true" />
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">
                         <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="actionQueue.status"
@@ -180,7 +280,7 @@ async function readSolver(s: Status) {
                         </div>
                         <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver"
                             @plus="saveSequence" @delete="clearSequence" @solver="openSolverDrawer = true"
-                            @print="openExportMarco = true" />
+                            @print="openExportMarco = true" @save-list="saveListToJSON" @open-list="openListFromJSON" />
                         <el-scrollbar class="solver-and-savedqueue-scrollbar">
                             <ul class="solver-and-savedqueue-list">
                                 <li v-if="solverResult.slots.length > 0" class="solver-and-savedqueue-item"
@@ -191,7 +291,7 @@ async function readSolver(s: Status) {
                                     <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
                                         @click="loadSequence(solverResult)" />
                                 </li>
-                                <li v-for="sq, i in savedQueues" class="solver-and-savedqueue-item">
+                                <li v-for="(sq, i) in savedQueues" class="solver-and-savedqueue-item">
                                     <QueueStatus :status="sq.status" />
                                     <ActionQueue :job="displayJob" :list="sq.slots" :err-list="sq.errors" disabled />
                                     <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"

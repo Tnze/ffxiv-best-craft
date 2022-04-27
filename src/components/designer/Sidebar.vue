@@ -1,22 +1,34 @@
 <script setup lang="ts">
-import { BottomRight, Close, Cpu, Printer, View } from '@element-plus/icons-vue'
+import {
+    BottomRight,
+    Close,
+    Cpu,
+    View,
+    Upload,
+    DataAnalysis,
+    DocumentAdd,
+    Folder
+} from "@element-plus/icons-vue";
 
 const props = defineProps<{
-    previewSolver: boolean
-}>()
-
-const emits = defineEmits<{
-    (event: 'plus'): void
-    (event: 'delete'): void
-    (event: 'solver'): void
-    (event: 'print'): void
-    (event: 'update:previewSolver', value: boolean): void
+    previewSolver: boolean;
 }>();
 
+const emits = defineEmits<{
+    (event: "plus"): void;
+    (event: "delete"): void;
+    (event: "solver"): void;
+    (event: "print"): void;
+    (event: "analysis"): void;
+    (event: "update:previewSolver", value: boolean): void;
+
+    (event: "saveList"): void;
+    (event: "openList"): void;
+}>();
 </script>
 <template>
     <div class="container">
-        <el-tooltip content="保存工作区" placement="top" :show-after="1000">
+        <el-tooltip content="暂存工作区" placement="top" :show-after="1000">
             <el-icon class="button" :size="16" @click="emits('plus')">
                 <bottom-right />
             </el-icon>
@@ -39,9 +51,26 @@ const emits = defineEmits<{
         </el-tooltip>
         <el-tooltip content="导出宏" placement="top" :show-after="1000">
             <el-icon class="button" :size="16" @click="emits('print')">
-                <printer />
+                <upload />
             </el-icon>
         </el-tooltip>
+        <!-- <el-tooltip content="宏分析" placement="top" :show-after="1000">
+            <el-icon class="button" :size="16" @click="emits('analysis')">
+                <data-analysis />
+            </el-icon>
+        </el-tooltip> -->
+        <div class="end-container">
+            <el-tooltip content="导出暂存库到文件" placement="top" :show-after="1000">
+                <el-icon class="button" :size="16" @click="emits('saveList')">
+                    <document-add />
+                </el-icon>
+            </el-tooltip>
+            <el-tooltip content="从文件导入暂存库" placement="top" :show-after="1000">
+                <el-icon class="button" :size="16" @click="emits('openList')">
+                    <folder />
+                </el-icon>
+            </el-tooltip>
+        </div>
     </div>
 </template>
 <style scoped>
@@ -51,7 +80,15 @@ const emits = defineEmits<{
     align-items: center;
 }
 
-.container> :hover {
+.end-container {
+    display: flex;
+    padding: 0px 10px 0px 3px;
+    align-items: center;
+    justify-content: end;
+    flex: auto;
+}
+
+.button:hover {
     background-color: #ecf5ff;
     transition: all var(--el-transition-duration);
 }

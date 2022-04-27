@@ -96,27 +96,33 @@ const condition = computed(() => {
                 等级：{{ status?.attributes.level }}
                 <br />
                 作业精度：{{ attributes.craftsmanship }}
-                {{ enhancers.filter(v => v.cm && v.cm_max)
+                {{ enhancers
+                        .filter(v => v.cm && v.cm_max)
                         .map(v => Math.min(
                             status?.attributes.craftsmanship * v.cm!,
                             v.cm_max!
-                        )).map(cm => ` + ${cm}`).join('')
+                        ))
+                        .map(cm => ` + ${cm}`).join('')
                 }}
                 <br />
                 加工精度：{{ attributes.control }}
-                {{ enhancers.filter(v => v.ct && v.ct_max)
+                {{ enhancers
+                        .filter(v => v.ct && v.ct_max)
                         .map(v => Math.min(
                             status?.attributes.control * v.ct!,
                             v.ct_max!
-                        )).map(ct => ` + ${ct}`).join('')
+                        ))
+                        .map(ct => ` + ${ct}`).join('')
                 }}
                 <br />
                 制作力：{{ status?.craft_points }} / {{ attributes.craft_points }}
-                {{ enhancers.filter(v => v.cp && v.cp_max)
+                {{ enhancers
+                        .filter(v => v.cp && v.cp_max)
                         .map(v => Math.min(
                             status?.attributes.craft_points * v.cp!,
                             v.cp_max!
-                        )).map(cp => ` + ${cp}`).join('')
+                        ))
+                        .map(cp => ` + ${cp}`).join('')
                 }}
             </el-link>
             <br />
