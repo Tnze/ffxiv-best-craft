@@ -8,6 +8,7 @@ version = "0.1.0"
 dependencies = [
  "console_error_panic_hook",
  "ffxiv-crafting",
+ "serde",
  "wasm-bindgen",
  "wee_alloc",
 ]
@@ -45,6 +46,9 @@ name = "ffxiv-crafting"
 version = "6.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4522983f36d9aef9f0a496a194e155dc1f55200037f5d9b4c93728fe5e472a4d"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "itoa"
@@ -108,6 +112,20 @@ name = "serde"
 version = "1.0.136"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce31e24b01e1e524df96f1c2fdd054405f8d7376249a5110886fb4b658484789"
+dependencies = [
+ "serde_derive",
+]
+
+[[package]]
+name = "serde_derive"
+version = "1.0.136"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08597e7152fcd306f41838ed3e37be9eaeed2b61c42e2117266a554fab4662f9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "serde_json"

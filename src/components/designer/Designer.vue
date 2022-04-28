@@ -12,7 +12,6 @@ import {
     Status,
     newStatus,
 } from "../../Craft";
-import { read_solver } from "../../Solver";
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
 import StatusBar from "./StatusBar.vue";
@@ -108,7 +107,6 @@ const solverResult = reactive<Sequence>({
     status: initStatus.value,
     errors: [],
 });
-watch(() => actionQueue.status, readSolver);
 // Drawer status
 const openSolverDrawer = ref(false);
 const openExportMarco = ref(false);
@@ -153,32 +151,6 @@ function loadSequence(seq: Sequence) {
 
 const isReadingSolver = ref(0);
 const previewSolver = ref(false);
-
-async function readSolver(s: Status) {
-    try {
-        isReadingSolver.value++;
-        const newSolverResult = actions.value.concat(await read_solver(s));
-        let display = [];
-        let oldID = new Map<Actions, number[]>();
-        for (const slot of solverResult.slots) {
-            if (oldID.get(slot.action)?.push(slot.id) == undefined)
-                oldID.set(slot.action, [slot.id]);
-        }
-        for (const skill of newSolverResult) {
-            const i = oldID.get(skill)?.shift() || solverResult.maxid++;
-            display.push({ id: i, action: skill });
-        }
-        solverResult.slots = display;
-
-        const result = await simulate(initStatus.value, newSolverResult);
-        solverResult.status = result.status;
-        solverResult.errors = result.errors;
-    } catch (err) {
-        solverResult.slots = [];
-    } finally {
-        isReadingSolver.value--;
-    }
-}
 
 async function saveListToJSON() {
     // try {
@@ -248,8 +220,7 @@ async function openListFromJSON() {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
-            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="itemName"
-                @solver-load="readSolver(actionQueue.status)" />
+            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="itemName" />
         </el-drawer>
         <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="80%">
             <MarcoExporter :actions="actionQueue.slots.map((v) => v.action)" />

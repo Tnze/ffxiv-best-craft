@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/tauri";
+import * as wasm from "../src-wasm/pkg/best_craft";
 
 interface Attributes {
   level: number;
@@ -119,25 +119,26 @@ enum Actions {
   FocusedTouchFail = "focused_touch_fail",
 }
 
-const newRecipe = async (
+function newRecipe(
   rlv: number,
   difficultyFactor: number,
   qualityFactor: number,
   durabilityFactor: number
-): Promise<Recipe> => {
-  return await invoke("new_recipe", {
-    rlv,
-    difficultyFactor,
-    qualityFactor,
-    durabilityFactor,
+): Promise<Recipe> {
+  return new Promise((resolve) => {
+    resolve(
+      wasm.new_recipe(rlv, difficultyFactor, qualityFactor, durabilityFactor)
+    );
   });
-};
+}
 
-const newStatus = (
+function newStatus(
   attrs: Attributes,
   recipe: Recipe,
   initQuality: number = 0
-): Promise<Status> => invoke("new_status", { attrs, recipe, initQuality });
+): Status {
+  return wasm.new_status(attrs, recipe, initQuality) as Status;
+}
 
 interface SimulateResult {
   status: Status;
@@ -147,19 +148,23 @@ interface SimulateResult {
   }[];
 }
 
-const simulate = (s: Status, actions: Actions[]): Promise<SimulateResult> => {
-  return invoke("simulate", { status: s, skills: actions });
-};
+function simulate(s: Status, actions: Actions[]): Promise<SimulateResult> {
+  return new Promise((resolve) => resolve(wasm.simulate(s, actions)));
+}
 
-const allowedList = (status: Status, actions: Actions[]): Promise<string[]> => {
-  return invoke("allowed_list", { status, skills: actions });
-};
-const craftPointsList = (
+function allowedList(status: Status, actions: Actions[]): Promise<string[]> {
+  return new Promise((resolve) => {
+    resolve(wasm.allowed_list(status, actions));
+  });
+}
+function craftPointsList(
   status: Status,
   actions: Actions[]
-): Promise<number[]> => {
-  return invoke("craftpoints_list", { status, skills: actions });
-};
+): Promise<number[]> {
+  return new Promise((resolve) => {
+    resolve(wasm.craftpoints_list(status, actions));
+  });
+}
 
 interface RecipeRow {
   id: number;
@@ -172,9 +177,11 @@ interface RecipeRow {
   durability_factor: number;
 }
 
-const newRecipeTable = (): Promise<RecipeRow[]> => {
-  return invoke("recipe_table");
-};
+function newRecipeTable(): Promise<RecipeRow[]> {
+  return new Promise((resolve) => {
+    resolve([]);
+  });
+}
 
 export {
   Attributes,
