@@ -2,37 +2,13 @@
 import { ref } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
-import { getName, getVersion, getTauriVersion } from '@tauri-apps/api/app'
-import { checkUpdate } from '@tauri-apps/api/updater'
+import { version } from '../../package.json'
 
 const props = defineProps<{
     settings: {
         language: string
     }
 }>()
-
-const appName = ref('')
-const version = ref('')
-const tauriVersion = ref('')
-getName().then(n => appName.value = n)
-getVersion().then(v => version.value = v)
-getTauriVersion().then(t => tauriVersion.value = t)
-
-const onCheckUpdateClick = () => {
-    checkUpdate()
-        .then(v => {
-            ElMessage({
-                type: 'success',
-                message: '检查更新成功',
-            })
-        })
-        .catch(err => {
-            ElMessage({
-                type: 'error',
-                message: err as string,
-            })
-        })
-}
 
 </script>
 
@@ -51,12 +27,6 @@ const onCheckUpdateClick = () => {
                 </el-form-item>
                 <el-form-item label="Version">
                     {{ version }}
-                </el-form-item>
-                <el-form-item label="Tauri Version">
-                    {{ tauriVersion }}
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="onCheckUpdateClick">检查更新</el-button>
                 </el-form-item>
                 <el-form-item label="Auther">
                     Tnze
@@ -78,5 +48,4 @@ const onCheckUpdateClick = () => {
 .el-link {
     margin-right: 8px;
 }
-
 </style>

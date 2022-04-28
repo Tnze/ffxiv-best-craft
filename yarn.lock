@@ -856,6 +856,11 @@ unplugin@^0.6.1:
     webpack-sources "^3.2.3"
     webpack-virtual-modules "^0.4.3"
 
+vite-plugin-csv@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmmirror.com/vite-plugin-csv/-/vite-plugin-csv-1.0.0.tgz#ac088f826cc9f490d00f794ff57c988616fa3de3"
+  integrity sha512-pc0XhALjGQcnbLh8rCKHWzQNX4pth2qUZhQ52YkzDcUldKTrmPS+hXSroF5YklAD2DAd7hFMxUrfwA8cm/X5Jw==
+
 vite@^2.9.5:
   version "2.9.5"
   resolved "https://registry.npmmirror.com/vite/-/vite-2.9.5.tgz#08ef37ac7a6d879c96f328b791732c9a00ea25ea"

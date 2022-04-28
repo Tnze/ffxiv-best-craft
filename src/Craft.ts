@@ -1,4 +1,5 @@
 import * as wasm from "../src-wasm/pkg/best_craft";
+import recipes from "./assets/Recipe.csv";
 
 interface Attributes {
   level: number;
@@ -179,7 +180,20 @@ interface RecipeRow {
 
 function newRecipeTable(): Promise<RecipeRow[]> {
   return new Promise((resolve) => {
-    resolve([]);
+    resolve(
+      recipes.map((v: any) => {
+        return {
+          id: v["0"],
+          rlv: parseInt((v["2"] as string).replaceAll("RecipeLevelTable#", "").replaceAll('"', '')),
+          name: (v['3'] as string).replaceAll('"', ''),
+          job: (v['1'] as string).replaceAll('"', ''),
+
+          difficulty_factor: parseInt(v['28']),
+          quality_factor: parseInt(v['29']),
+          durability_factor: parseInt(v['30']),
+        };
+      })
+    );
   });
 }
 

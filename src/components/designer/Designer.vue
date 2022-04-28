@@ -180,6 +180,7 @@ async function saveListToJSON() {
 }
 
 async function openListFromJSON() {
+    const reader = new FileReader();
     // const pathlist = <string[]>await open({
     //     filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
     //     multiple: true,

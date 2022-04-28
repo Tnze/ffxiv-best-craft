@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import 'element-plus/es/components/message/style/css'
-import { ElMessage } from 'element-plus'
-import { writeText } from '@tauri-apps/api/clipboard'
 import { Actions } from '../../Craft';
 
 const props = defineProps<{
@@ -24,16 +22,6 @@ const chunkedActions = computed(() => {
     }
     return macros
 })
-
-const copyChunk = async (i: number, macro: string[]) => {
-    await writeText(macro.join('\r\n'))
-    ElMessage({
-        type: 'success',
-        duration: 2000,
-        showClose: true,
-        message: `已复制 宏#${i + 1} 到系统剪切板`
-    })
-}
 
 const names = new Map([
     [Actions.BasicSynthesis, "制作"],
@@ -111,7 +99,7 @@ const waitTimes = new Map([
 
 <template>
     <el-space wrap alignment="flex-start">
-        <el-card v-for="(marco, i) in chunkedActions" class="box-card" shadow="hover" @click="copyChunk(i, marco)">
+        <el-card v-for="(marco, i) in chunkedActions" class="box-card">
             <span v-for="line in marco">
                 {{ line }}
                 <br />
@@ -131,6 +119,6 @@ const waitTimes = new Map([
 
 .box-card {
     /* width: 200px; */
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 </style>

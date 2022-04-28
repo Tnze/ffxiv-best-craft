@@ -60,7 +60,7 @@ const emits = defineEmits<{
             </el-icon>
         </el-tooltip> -->
         <div class="end-container">
-            <el-tooltip content="导出暂存库到文件" placement="top" :show-after="1000">
+            <!-- <el-tooltip content="导出暂存库到文件" placement="top" :show-after="1000">
                 <el-icon class="button" :size="16" @click="emits('saveList')">
                     <document-add />
                 </el-icon>
@@ -69,7 +69,7 @@ const emits = defineEmits<{
                 <el-icon class="button" :size="16" @click="emits('openList')">
                     <folder />
                 </el-icon>
-            </el-tooltip>
+            </el-tooltip> -->
         </div>
     </div>
 </template>
