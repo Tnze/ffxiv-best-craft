@@ -3,7 +3,7 @@ import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
 import "element-plus/es/components/message/style/css";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
 import {
     Attributes,
@@ -185,6 +185,21 @@ async function readSolver(s: Status) {
 async function saveListToJSON() {
     try {
         const queues = [actionQueue].concat(savedQueues).map(v => v.slots.map(s => s.action)).filter(v => v.length > 0)
+        try {
+            if (queues.length == 0) {
+                await ElMessageBox.confirm(
+                    '当前要保存的宏数量为0，是否继续？',
+                    '警告',
+                    {
+                        confirmButtonText: 'OK',
+                        cancelButtonText: 'Cancel',
+                        type: 'warning',
+                    }
+                )
+            }
+        } catch {
+            return
+        }
         const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
         const path = await save({
             defaultPath: `${props.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
@@ -231,18 +246,18 @@ async function openListFromJSON() {
                     errors,
                 });
             }
+            ElMessage({
+                type: "success",
+                showClose: true,
+                message: `读取了 ${queues.length} 个宏`,
+            });
         } catch (err) {
             ElMessage({
                 type: "error",
                 showClose: true,
-                message: `读取“${filepath}”失败：` + err as string,
+                message: `读取失败：` + err as string,
             });
         }
-        ElMessage({
-            type: "success",
-            showClose: true,
-            message: `读取“${filepath}”成功`,
-        });
     }
 }
 </script>
