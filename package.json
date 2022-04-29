@@ -4,7 +4,7 @@
     "version": "0.2.10",
     "scripts": {
         "dev": "vite",
-        "build": "wasm-pack build ./src-wasm --target web && vite build",
+        "build": "vite build",
         "preview": "vite preview"
     },
     "dependencies": {
