@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # Rust
-src-wasm/target
+src-*/target
