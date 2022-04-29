@@ -59,7 +59,7 @@ function calc_effect(index: number): string {
 <style scoped>
 .action-queue-container {
     margin: 7px 10px 3px 10px;
-    min-height: 42px;
+    min-height: 43px;
 }
 
 .flip-list-move,

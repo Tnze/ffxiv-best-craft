@@ -42,6 +42,7 @@ const buffsDisplay = computed<{
 <style scoped>
 .container {
     display: flex;
+    min-height: 38px;
 }
 
 .buff {
