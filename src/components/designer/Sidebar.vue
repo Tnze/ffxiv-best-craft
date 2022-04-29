@@ -11,7 +11,6 @@ import {
 } from "@element-plus/icons-vue";
 
 const props = defineProps<{
-    previewSolver: boolean;
 }>();
 
 const emits = defineEmits<{
@@ -20,7 +19,6 @@ const emits = defineEmits<{
     (event: "solver"): void;
     (event: "print"): void;
     (event: "analysis"): void;
-    (event: "update:previewSolver", value: boolean): void;
 
     (event: "saveList"): void;
     (event: "openList"): void;
@@ -41,12 +39,6 @@ const emits = defineEmits<{
         <el-tooltip content="求解器设置" placement="top" :show-after="1000">
             <el-icon class="button" :size="16" @click="emits('solver')">
                 <cpu />
-            </el-icon>
-        </el-tooltip>
-        <el-tooltip content="预览求解结果" placement="top" :show-after="1000">
-            <el-icon class="button" :size="16" :color="previewSolver ? '#409EFC' : undefined"
-                @click="emits('update:previewSolver', !previewSolver)">
-                <View />
             </el-icon>
         </el-tooltip>
         <el-tooltip content="导出宏" placement="top" :show-after="1000">

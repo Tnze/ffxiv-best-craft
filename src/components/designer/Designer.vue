@@ -16,7 +16,6 @@ import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
 import StatusBar from "./StatusBar.vue";
 import Sidebar from "./Sidebar.vue";
-import SolverList from "./SolverList.vue";
 import MarcoExporter from "./MarcoExporter.vue";
 import QueueStatus from "./QueueStatus.vue";
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
@@ -102,15 +101,7 @@ watch([initStatus, actions], async ([s, a]) => {
     }
 });
 
-// Solver result
-const solverResult = reactive<Sequence>({
-    slots: [],
-    maxid: 0,
-    status: initStatus.value,
-    errors: [],
-});
 // Drawer status
-const openSolverDrawer = ref(false);
 const openExportMarco = ref(false);
 const openAttrEnhSelector = ref(false);
 
@@ -151,8 +142,17 @@ function loadSequence(seq: Sequence) {
     actionQueue.maxid = seq.maxid;
 }
 
-const isReadingSolver = ref(0);
-const previewSolver = ref(false);
+async function openSolverList() {
+    try {
+        await ElMessageBox.alert('求解器居然可以免费下载！', '震惊', {
+            confirmButtonText: '打开下载页面',
+            cancelButtonText: '下次再说',
+        })
+        window.open('https://gitee.com/Tnze/ffxiv-best-craft/releases')
+    } catch {
+        // cancel
+    }
+}
 
 async function saveListToJSON() {
     // try {
@@ -238,9 +238,6 @@ const mouseOverAction = ref<Actions | null>(null)
 
 <template>
     <el-container>
-        <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
-            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="itemName" />
-        </el-drawer>
         <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="80%">
             <MarcoExporter :actions="actionQueue.slots.map((v) => v.action)" />
         </el-drawer>
@@ -252,11 +249,8 @@ const mouseOverAction = ref<Actions | null>(null)
         </el-header>
         <el-main>
             <div class="main-page">
-                <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers" :status="
-                    previewSolver && solverResult.slots.length > 0
-                        ? solverResult.status
-                        : actionQueue.status
-                " @click-attributes="openAttrEnhSelector = true" />
+                <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
+                    :status="actionQueue.status" @click-attributes="openAttrEnhSelector = true" />
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">
                         <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="actionQueue.status"
@@ -267,19 +261,11 @@ const mouseOverAction = ref<Actions | null>(null)
                         <div class="action-queue">
                             <ActionQueue :job="displayJob" :list="actionQueue.slots" :err-list="actionQueue.errors" />
                         </div>
-                        <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver"
-                            @plus="saveSequence" @delete="clearSequence" @solver="openSolverDrawer = true"
-                            @print="openExportMarco = true" @save-list="saveListToJSON" @open-list="openListFromJSON" />
+                        <Sidebar class="savedqueue-list-sidebar" @plus="saveSequence" @delete="clearSequence"
+                            @solver="openSolverList" @print="openExportMarco = true" @save-list="saveListToJSON"
+                            @open-list="openListFromJSON" />
                         <el-scrollbar class="solver-and-savedqueue-scrollbar">
                             <ul class="solver-and-savedqueue-list">
-                                <li v-if="solverResult.slots.length > 0" class="solver-and-savedqueue-item"
-                                    v-loading="isReadingSolver > 0">
-                                    <QueueStatus :status="solverResult.status" />
-                                    <ActionQueue :job="displayJob" :list="solverResult.slots"
-                                        :err-list="solverResult.errors" disabled />
-                                    <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                        @click="loadSequence(solverResult)" />
-                                </li>
                                 <li v-for="(sq, i) in savedQueues" class="solver-and-savedqueue-item">
                                     <QueueStatus :status="sq.status" />
                                     <ActionQueue :job="displayJob" :list="sq.slots" :err-list="sq.errors" disabled />

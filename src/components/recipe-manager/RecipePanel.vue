@@ -3,7 +3,7 @@ import { ref, computed, watchEffect, reactive } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import 'element-plus/es/components/message-box/style/css'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { EditPen, Filter } from '@element-plus/icons-vue'
+import { EditPen } from '@element-plus/icons-vue'
 import { Jobs, Recipe, newRecipe } from '../../Craft'
 
 const xivapiBase = "https://cafemaker.wakingsands.com"
@@ -33,10 +33,10 @@ const pagination = reactive({
     Page: 1,
     PageTotal: 1
 })
-const displayTable = ref<XivapiRecipe[]>([])
+const displayTable = ref<XivapiRecipe[] | null>([])
 watchEffect(async () => {
-    displayTable.value = []
-    const response = await fetch(xivapiBase + `/Recipe?page=${pagination.Page}`, { mode: 'cors' })
+    displayTable.value = null
+    const response = await fetch(xivapiBase + `/search?indexes=Recipe&page=${pagination.Page}&string=${searchText.value}`, { mode: 'cors' })
     const data: { Pagination: any, Results: XivapiRecipe[] } = await response.json()
     pagination.PageTotal = data.Pagination.PageTotal;
     displayTable.value = data.Results
@@ -113,10 +113,6 @@ const customRecipe = ref({
             <h1>选择配方</h1>
         </el-header>
         <el-main class="container">
-            <el-drawer v-model="openFilter" :show-close="false">
-                <template #title>高级过滤</template>
-                这里本来应该有通过职业过滤、品级过滤、等级过滤、秘籍过滤等等，但是被咕掉了。
-            </el-drawer>
             <el-dialog v-model="openCustomlizer" title="自定义配方">
                 <el-form :model="customRecipe" label-position="right" label-width="100px" style="max-width: 460px">
                     <el-form-item label="rlv">
@@ -147,11 +143,10 @@ const customRecipe = ref({
             </el-dialog>
             <el-input v-model="searchText" class="search-input" placeholder="键入以搜索" clearable>
                 <template #append>
-                    <!-- <el-button :icon="Filter" @click="openFilter = true" /> -->
                     <el-button :icon="EditPen" @click="openCustomlizer = true" />
                 </template>
             </el-input>
-            <el-table v-loading="displayTable.length == 0" element-loading-text="请稍等..." highlight-current-row
+            <el-table v-loading="displayTable == null" element-loading-text="请稍等..." highlight-current-row
                 @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
                 <el-table-column prop="ID" label="ID" width="100" />
                 <el-table-column prop="Name" label="名称" />
