@@ -6,6 +6,7 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Action: typeof import('./src/components/designer/Action.vue')['default']
+    ActionInfo: typeof import('./src/components/designer/ActionInfo.vue')['default']
     ActionPanel: typeof import('./src/components/designer/ActionPanel.vue')['default']
     ActionQueue: typeof import('./src/components/designer/ActionQueue.vue')['default']
     AttrEnhSelector: typeof import('./src/components/attr-enhancer/AttrEnhSelector.vue')['default']

@@ -21,6 +21,7 @@ import MarcoExporter from "./MarcoExporter.vue";
 import QueueStatus from "./QueueStatus.vue";
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
+import ActionInfo from "./ActionInfo.vue";
 
 
 interface Slot {
@@ -231,6 +232,8 @@ async function openListFromJSON() {
     //     }
     // }
 }
+
+const mouseOverAction = ref<Actions | null>(null)
 </script>
 
 <template>
@@ -257,6 +260,7 @@ async function openListFromJSON() {
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">
                         <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="actionQueue.status"
+                            @mouseover-action="a => mouseOverAction = a" @mouseleave-action="mouseOverAction = null"
                             #lower />
                     </el-scrollbar>
                     <div class="actionqueue-and-savedqueue">
@@ -289,6 +293,7 @@ async function openListFromJSON() {
                     </div>
                 </div>
             </div>
+            <ActionInfo v-if="mouseOverAction" :action="mouseOverAction" class="action-info" />
         </el-main>
     </el-container>
 </template>
@@ -351,5 +356,11 @@ async function openListFromJSON() {
 
 .savedqueue-item-button {
     margin-right: 6px;
+}
+
+.action-info {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
 }
 </style>
