@@ -13,6 +13,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     (event: 'click-attributes'): void
+    (event: 'click-quality'): void
 }>()
 
 const durability = computed<number>(() => {
@@ -86,8 +87,10 @@ const condition = computed(() => {
                 {{ status?.recipe.difficulty - status?.progress }}
             </el-progress>品质
             <el-progress :percentage="quality" :color="qualityColor">
-                {{ status?.quality }} /
-                {{ status?.recipe.quality }}
+                <el-link @click="emits('click-quality')">
+                    {{ status?.quality }} /
+                    {{ status?.recipe.quality }}
+                </el-link>
             </el-progress>
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
