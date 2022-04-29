@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onBeforeMount } from 'vue';
 import RecipePanel from './components/recipe-manager/RecipePanel.vue';
 import Gearsets from './components/Gearsets.vue';
 import Designer from './components/designer/Designer.vue';
 import Settings from './components/Settings.vue';
 import Menu from './components/Menu.vue';
-import { Attributes, Recipe, Jobs } from './Craft'
+import { Attributes, Recipe, Jobs, init as initCraft } from './Craft'
 
+onBeforeMount(initCraft)
 
 interface GearsetsRow {
   name: string

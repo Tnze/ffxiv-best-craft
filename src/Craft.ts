@@ -1,4 +1,4 @@
-import * as wasm from "../src-wasm/pkg/best_craft";
+import init, * as wasm from "../src-wasm/pkg/best_craft";
 import recipes from "./assets/Recipe.csv";
 
 interface Attributes {
@@ -212,4 +212,5 @@ export {
   craftPointsList,
   RecipeRow,
   newRecipeTable,
+  init
 };

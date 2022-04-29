@@ -10,7 +10,7 @@ import {
     simulate,
     Recipe,
     Status,
-    newStatus,
+    newStatus
 } from "../../Craft";
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
@@ -21,6 +21,7 @@ import MarcoExporter from "./MarcoExporter.vue";
 import QueueStatus from "./QueueStatus.vue";
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
+
 
 interface Slot {
     id: number;
