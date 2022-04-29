@@ -9,7 +9,6 @@
     },
     "dependencies": {
         "element-plus": "^2.1.4",
-        "vite-plugin-csv": "^1.0.0",
         "vue": "3.2.31",
         "vuedraggable": "^4.1.0"
     },

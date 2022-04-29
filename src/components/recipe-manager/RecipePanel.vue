@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watchEffect, reactive } from 'vue'
 import 'element-plus/es/components/message/style/css'
 import 'element-plus/es/components/message-box/style/css'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen, Filter } from '@element-plus/icons-vue'
-import { Jobs, RecipeRow, Recipe, newRecipeTable, newRecipe } from '../../Craft'
+import { Jobs, Recipe, newRecipe } from '../../Craft'
+
+const xivapiBase = "https://cafemaker.wakingsands.com"
 
 const jobMaps: { [key: string]: Jobs | 'unknown' } = {
     '木工': Jobs.Carpenter,
@@ -18,18 +20,27 @@ const jobMaps: { [key: string]: Jobs | 'unknown' } = {
     '自定义': 'unknown',
 }
 
-const recipeTable = ref<RecipeRow[]>([])
-newRecipeTable().then((v) => {
-    recipeTable.value = v.filter(r => r.name.length > 0)
-})
-
 const searchText = ref('')
 
-const displayTable = computed(() => {
-    return recipeTable.value.filter(r => r.name.includes(searchText.value))
-})
+interface XivapiRecipe {
+    ID: number;
+    Icon: string;
+    Name: string;
+    Url: string;
+}
 
-const currentPage = ref(1)
+const pagination = reactive({
+    Page: 1,
+    PageTotal: 1
+})
+const displayTable = ref<XivapiRecipe[]>([])
+watchEffect(async () => {
+    displayTable.value = []
+    const response = await fetch(xivapiBase + `/Recipe?page=${pagination.Page}`, { mode: 'cors' })
+    const data: { Pagination: any, Results: XivapiRecipe[] } = await response.json()
+    pagination.PageTotal = data.Pagination.PageTotal;
+    displayTable.value = data.Results
+})
 
 const emits = defineEmits<{
     (event: 'change', job: Jobs | 'unknown', name: string, recipe: Recipe): void
@@ -38,25 +49,42 @@ const emits = defineEmits<{
 const openFilter = ref(false)
 const openCustomlizer = ref(false)
 
-const selectRecipeRow = (row: RecipeRow) => {
-    if (row == undefined)
-        return
-    ElMessageBox.confirm(
-        `将当前配方设置为“${row.name}”吗？`,
-        '请确认',
-        {
-            confirmButtonText: '确认',
-            cancelButtonText: '取消',
-            type: 'warning'
-        }
-    ).then(() => {
-        newRecipe(row.rlv, row.difficulty_factor, row.quality_factor, row.durability_factor)
-            .then(r => {
-                selectRecipe(r, row.name, row.job)
-            })
-    }).catch(() => {
+const selectRecipeRow = async (row: XivapiRecipe) => {
+    try {
+        await ElMessageBox.confirm(
+            `将当前配方设置为“${row.Name}”吗？`,
+            '请确认',
+            {
+                confirmButtonText: '确认',
+                cancelButtonText: '取消',
+                type: 'warning',
+                beforeClose: (action, instance, done) => {
+                    if (action == 'confirm') {
+                        instance.confirmButtonLoading = true
+                        instance.confirmButtonText = '正在获取配方数据...'
+                        getAndSetRecipeData(row)
+                            .catch(err => ElMessage.error(err as string))
+                            .finally(done)
+                    }
+                    else done()
+                }
+            }
+        )
+    } catch {
         // operation canceled by user
-    })
+    }
+}
+
+async function getAndSetRecipeData(row: XivapiRecipe) {
+    const response = await fetch(xivapiBase + row.Url + '?columns=Name,CraftType,RecipeLevelTable,DifficultyFactor,QualityFactor,DurabilityFactor', { mode: 'cors' })
+    const data = await response.json()
+    const recipe = await newRecipe(
+        data.RecipeLevelTable.ID,
+        data.DifficultyFactor,
+        data.QualityFactor,
+        data.DurabilityFactor
+    )
+    selectRecipe(recipe, data.Name, data.CraftType.Name)
 }
 
 const selectRecipe = (recipe: Recipe, name: string, job: string) => {
@@ -123,17 +151,14 @@ const customRecipe = ref({
                     <el-button :icon="EditPen" @click="openCustomlizer = true" />
                 </template>
             </el-input>
-            <el-table v-loading="recipeTable.length == 0" element-loading-text="请稍等..." highlight-current-row
-                @row-click="selectRecipeRow" :data="displayTable.slice((currentPage - 1) * 100, currentPage * 100)"
-                height="100%" style="width: 100%">
-                <el-table-column prop="id" label="ID" width="100" />
-                <el-table-column prop="rlv" label="rlv" width="60" />
-                <el-table-column prop="job" label="制作职业" width="100" />
-                <el-table-column prop="name" label="名称" />
+            <el-table v-loading="displayTable.length == 0" element-loading-text="请稍等..." highlight-current-row
+                @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
+                <el-table-column prop="ID" label="ID" width="100" />
+                <el-table-column prop="Name" label="名称" />
                 <el-table-column align="right" width="300">
                     <template #header>
-                        <el-pagination small layout="prev, pager, next" v-model:current-page="currentPage"
-                            :page-count="Math.ceil(displayTable.length / 100)" />
+                        <el-pagination small layout="prev, pager, next" v-model:current-page="pagination.Page"
+                            :page-count="pagination.PageTotal" />
                     </template>
                 </el-table-column>
             </el-table>
