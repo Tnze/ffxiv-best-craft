@@ -49,6 +49,8 @@ const props = defineProps<{
 const displayJob = computed(() =>
     props.job == "unknown" ? Jobs.Culinarian : props.job
 );
+
+// 食物和药水效果
 const attributesEnhancers = ref<Enhancer[]>([]);
 const enhancedAttributes = computed<Attributes>(() => {
     let { level, craftsmanship, control, craft_points } = props.attributes;
@@ -74,11 +76,13 @@ const enhancedAttributes = computed<Attributes>(() => {
 });
 
 // Simulation
+const initQuality = ref(0)
 const initStatus = ref<Status>(
-    await newStatus(enhancedAttributes.value, props.recipe)
+    await newStatus(enhancedAttributes.value, props.recipe, initQuality.value)
 );
-watch([props, enhancedAttributes], async ([p, ea]) => {
-    initStatus.value = await newStatus(ea, p.recipe);
+watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
+    console.log(ea, p.recipe, iq)
+    initStatus.value = await newStatus(ea, p.recipe, iq);
 });
 // Actions Queue
 const actionQueue = reactive<Sequence>({
@@ -115,6 +119,20 @@ watch(() => actionQueue.status, readSolver);
 const openSolverDrawer = ref(false);
 const openExportMarco = ref(false);
 const openAttrEnhSelector = ref(false);
+
+async function setInitQuality() {
+    try {
+        const { value } = await ElMessageBox.prompt('请输入初期品质', '设置初期品质', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputPattern: /^[0-9]+$/,
+            inputErrorMessage: '请输入一个整数',
+        })
+        initQuality.value = parseInt(value) || 0
+    } catch {
+        // canceled
+    }
+}
 
 const savedQueues = reactive<Sequence[]>([]);
 watch(initStatus, (newInitStatus) => {
@@ -283,7 +301,7 @@ async function openListFromJSON() {
                     previewSolver && solverResult.slots.length > 0
                         ? solverResult.status
                         : actionQueue.status
-                " @click-attributes="openAttrEnhSelector = true" />
+                " @click-attributes="openAttrEnhSelector = true" @click-quality="setInitQuality" />
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">
                         <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="actionQueue.status"
