@@ -1,0 +1,15 @@
+{
+  "name": "best-craft",
+  "collaborators": [
+    "Tnze <cjd001113@outlook.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "best_craft_bg.wasm",
+    "best_craft.js",
+    "best_craft.d.ts"
+  ],
+  "module": "best_craft.js",
+  "types": "best_craft.d.ts",
+  "sideEffects": false
+}
