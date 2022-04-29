@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # Rust
-src-tauri/target
+src-*/target
