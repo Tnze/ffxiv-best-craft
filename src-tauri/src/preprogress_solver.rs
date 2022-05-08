@@ -19,10 +19,9 @@ where
 {
     pub fn new(
         init_status: Status,
-        tail_len: usize,
+        progress_list: Vec<u16>,
         progress_solver: Arc<ProgressSolver<MN, WN>>,
     ) -> Self {
-        let progress_list = progress_solver.possible_progresses();
         let progress_index = progress_list
             .iter()
             .scan(0, |prev, &x| {
@@ -41,7 +40,6 @@ where
         );
         let quality_solvers = progress_list
             .iter()
-            .take(tail_len)
             .map(|v| {
                 let mut s = init_status.clone();
                 s.progress = s.recipe.difficulty - *v;
@@ -65,16 +63,18 @@ where
 
     fn read(&self, s: &Status) -> Option<Skills> {
         let left_progress = s.recipe.difficulty - s.progress;
-        let i = self.progress_index[left_progress as usize];
+        let i = *self.progress_index.get(left_progress as usize)?;
         self.quality_solvers.get(i)?.read(s)
     }
 
     fn read_all(&self, s: &Status) -> Vec<Skills> {
         let left_progress = s.recipe.difficulty - s.progress;
-        let i = self.progress_index[left_progress as usize];
-        match self.quality_solvers.get(i) {
-            Some(qs) => qs.read_all(s),
-            None => vec![],
-        }
+        self.progress_index
+            .get(left_progress as usize)
+            .and_then(|&i| {
+                let qs = self.quality_solvers.get(i);
+                Some(qs?.read_all(s))
+            })
+            .unwrap_or(vec![])
     }
 }

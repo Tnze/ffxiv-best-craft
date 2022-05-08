@@ -165,16 +165,19 @@ fn create_solver(
     }
     .and_then(|_| {
         let solver: Box<dyn Solver + Send + Sync> = if use_muscle_memory {
+            let progress_list = preprogress_list(&status);
             if use_manipulation {
                 let mut driver = ProgressSolver::new(status.clone());
                 driver.init();
-                let mut solver = PreprogressSolver::<8, 8>::new(status, 2, Arc::new(driver));
+                let mut solver =
+                    PreprogressSolver::<8, 8>::new(status, progress_list, Arc::new(driver));
                 solver.init();
                 Box::new(solver)
             } else {
                 let mut driver = ProgressSolver::new(status.clone());
                 driver.init();
-                let mut solver = PreprogressSolver::<0, 8>::new(status, 2, Arc::new(driver));
+                let mut solver =
+                    PreprogressSolver::<0, 8>::new(status, progress_list, Arc::new(driver));
                 solver.init();
                 Box::new(solver)
             }
@@ -200,6 +203,20 @@ fn create_solver(
         *list.get_mut(&key).unwrap() = Some(solver); // we are sure that there is a None value so we can successfully get it
         Ok(())
     })
+}
+
+fn preprogress_list(status: &Status) -> Vec<u16> {
+    let level_based = |level, e1, e2| {
+        if status.attributes.level < level {
+            e1
+        } else {
+            e2
+        }
+    };
+    vec![
+        status.calc_synthesis(level_based(31, 1.0, 1.2)), // basic synth
+        status.calc_synthesis(level_based(82, 1.5, 1.8)), // careful synth
+    ]
 }
 
 #[tauri::command(async)]

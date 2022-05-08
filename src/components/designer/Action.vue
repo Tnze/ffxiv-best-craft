@@ -154,7 +154,6 @@ const onAnimationEnd = (event: AnimationEvent) => {
     position: absolute;
     color: #fff;
     font-size: 13px;
-    font-weight: lighter;
     top: 34px;
     left: 3px;
     user-select: none;
