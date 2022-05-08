@@ -17,6 +17,7 @@
     "devDependencies": {
         "@babel/types": "^7.17.0",
         "@tauri-apps/cli": "^1.0.0-rc.9",
+        "@tauri-apps/tauricon": "^1.0.2",
         "@types/lodash-es": "^4.17.6",
         "@types/node": "^17.0.24",
         "@types/vue-router": "^2.0.0",
