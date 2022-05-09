@@ -3,10 +3,10 @@ import { ref, computed } from 'vue';
 import RecipePanel from './components/recipe-manager/RecipePanel.vue';
 import Gearsets from './components/Gearsets.vue';
 import Designer from './components/designer/Designer.vue';
+import Automation from './components/automation/Automation.vue';
 import Settings from './components/Settings.vue';
 import Menu from './components/Menu.vue';
 import { Attributes, Recipe, Jobs } from './Craft'
-import Automation from './components/automation/Automation.vue';
 
 
 interface GearsetsRow {
@@ -74,7 +74,9 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
           </template>
         </Suspense>
       </keep-alive>
-      <Automation v-if="currentPage == 3" />
+      <keep-alive>
+        <Automation v-if="currentPage == 3" />
+      </keep-alive>
       <Settings v-if="currentPage == 4" :settings="settings" />
     </el-main>
   </el-container>

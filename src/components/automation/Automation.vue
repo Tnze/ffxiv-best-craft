@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import Blockly from 'blockly'
-import Theme from '@blockly/theme-modern';
-import 'blockly/javascript'
-import ZhHans from 'blockly/msg/zh-hans'
-import { unescape } from 'lodash'
 import { onMounted, ref } from 'vue'
+import Blockly, { Workspace } from 'blockly'
+import Theme from '@blockly/theme-modern'
+import BlocklyJS from 'blockly/javascript'
+import Context from './Context'
+import ZhHans from 'blockly/msg/zh-hans'
 import BlockDefines from './block_defines.json'
+import { Promotion } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 const blocklyDiv = ref<Element | null>(null)
 
@@ -146,21 +148,24 @@ var toolbox = {
         },
     ]
 }
+//@ts-ignore
 Blockly.setLocale(ZhHans)
 Blockly.defineBlocksWithJsonArray(BlockDefines)
-Blockly.JavaScript['on_craft_start'] = function (block: Blockly.Block) {
-    const code = 'function() {\n' + Blockly.JavaScript.statementToCode(block, 'STEPS') + '}'
+//@ts-ignore
+BlocklyJS['on_craft_start'] = function (block: Blockly.Block) {
+    const code = 'this.onCraftStart(async (attr, recipe) => {\n' + BlocklyJS.statementToCode(block, 'STEPS') + '})'
     return code;
 };
-Blockly.JavaScript['do_action'] = function (block: Blockly.Block) {
-    const actionName = unescape(block.getFieldValue('ACTION'));
-    const code = 'command("/ac ' + actionName + '")\n'
+//@ts-ignore
+BlocklyJS['do_action'] = function (block: Blockly.Block) {
+    const actionName = BlocklyJS.valueToCode(block, 'ACTION', (BlocklyJS as any).ORDER_FUNCTION_CALL)
+    const code = `await this.command('/ac ' + ${actionName})\n`
     return code;
 };
 
-const code = ref('')
+let workspace: Workspace | null = null
 onMounted(() => {
-    const workspace = Blockly.inject(blocklyDiv.value as Element, {
+    workspace = Blockly.inject(blocklyDiv.value as Element, {
         theme: Theme,
         toolbox: toolbox,
         grid: {
@@ -169,19 +174,31 @@ onMounted(() => {
             colour: '#ccc',
             snap: true,
         },
-    })
-    workspace.addChangeListener((event: any) => {
-        code.value = Blockly.JavaScript.workspaceToCode(workspace as Blockly.Workspace);
-        console.log(code.value)
-    })
+        media: "blockly/media/"
+    }) as Workspace
 })
+
+function run() {
+    const code = BlocklyJS.workspaceToCode(workspace!);
+    try {
+        new Function(`(async () => {${code}})()`).call(Context)
+    } catch (err) {
+        ElMessage({
+            type: "error",
+            showClose: true,
+            message: err as string,
+        })
+    }
+}
 
 </script>
 
 <template>
     <el-container>
         <el-header>
-            <h1>自动化</h1>
+            <h1>自动化
+                <el-button @click="run" type="success" :icon="Promotion" circle />
+            </h1>
         </el-header>
         <el-main>
             <div ref="blocklyDiv" id="blocklyDiv"></div>
