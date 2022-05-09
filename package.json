@@ -4,19 +4,21 @@
     "version": "0.2.11",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
+        "build": "tsc --noEmit && vite build",
         "preview": "vite preview",
         "tauri": "tauri"
     },
     "dependencies": {
+        "@blockly/theme-modern": "^2.1.33",
         "@tauri-apps/api": "^1.0.0-rc.4",
+        "blockly": "^7.20211209.5",
         "element-plus": "^2.1.4",
         "vue": "3.2.31",
         "vuedraggable": "^4.1.0"
     },
     "devDependencies": {
         "@babel/types": "^7.17.0",
-        "@tauri-apps/cli": "^1.0.0-rc.9",
+        "@tauri-apps/cli": "^1.0.0-rc.10",
         "@tauri-apps/tauricon": "^1.0.2",
         "@types/lodash-es": "^4.17.6",
         "@types/node": "^17.0.24",

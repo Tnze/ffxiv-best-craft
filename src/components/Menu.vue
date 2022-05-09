@@ -3,6 +3,7 @@ import {
     Notebook,
     Suitcase,
     Edit,
+    MagicStick,
     Setting,
 } from '@element-plus/icons-vue'
 
@@ -40,6 +41,12 @@ const handleSelect = (key: string, keyPath: string) => {
             <template #title>设计</template>
         </el-menu-item>
         <el-menu-item index="3">
+            <el-icon>
+                <magic-stick />
+            </el-icon>
+            <template #title>自动化</template>
+        </el-menu-item>
+        <el-menu-item index="4">
             <el-icon>
                 <setting />
             </el-icon>
