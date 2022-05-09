@@ -6,6 +6,7 @@ import Designer from './components/designer/Designer.vue';
 import Settings from './components/Settings.vue';
 import Menu from './components/Menu.vue';
 import { Attributes, Recipe, Jobs } from './Craft'
+import Automation from './components/automation/Automation.vue';
 
 
 interface GearsetsRow {
@@ -73,7 +74,8 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
           </template>
         </Suspense>
       </keep-alive>
-      <Settings v-if="currentPage == 3" :settings="settings" />
+      <Automation v-if="currentPage == 3" />
+      <Settings v-if="currentPage == 4" :settings="settings" />
     </el-main>
   </el-container>
 </template>
