@@ -3,14 +3,19 @@
     windows_subsystem = "windows"
 )]
 #![feature(generic_const_exprs)]
+#![feature(async_closure)]
 
 use std::{
     collections::{hash_map::Entry, HashMap},
+    net::SocketAddr,
     sync::{Arc, Mutex},
 };
 
-use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
-use serde::Serialize;
+use axum::{http::StatusCode, response::IntoResponse, routing, Json, Router};
+use ffxiv_crafting::{Attributes, CastActionError, Condition, Recipe, Skills, Status};
+use serde::{Deserialize, Serialize};
+use tauri::Manager;
+use tokio::sync::oneshot;
 
 mod ordinary_solver;
 mod preprogress_solver;
@@ -126,12 +131,14 @@ fn recipe_table() -> Vec<RecipeRow> {
 
 struct AppState {
     solver_list: Mutex<HashMap<ordinary_solver::SolverHash, Option<Box<dyn Solver + Send + Sync>>>>,
+    shutdown_signal: Mutex<Option<oneshot::Sender<()>>>,
 }
 
 impl AppState {
     fn new() -> Self {
         Self {
             solver_list: Mutex::new(HashMap::new()),
+            shutdown_signal: Mutex::new(None),
         }
     }
 }
@@ -260,6 +267,73 @@ fn destroy_solver(status: Status, app_state: tauri::State<AppState>) -> Result<(
     }
 }
 
+#[tauri::command(async)]
+async fn start_http_server(
+    addr: String,
+    app_state: tauri::State<'_, AppState>,
+    app_handle: tauri::AppHandle,
+) -> Result<(), String> {
+    #[derive(Deserialize, Clone, Debug)]
+    struct ActionStep {
+        action: i32,
+        progress: u16,
+        quality: u32,
+        durability: u16,
+        condition: i8,
+    }
+    #[derive(Serialize, Clone)]
+    struct ActionStepJS {
+        action: Skills,
+        progress: u16,
+        quality: u32,
+        durability: u16,
+        condition: i8,
+    }
+    let action = async move |Json(payload): Json<ActionStep>| {
+        println!("{:?}", payload);
+        match ffxiv_crafting::data::action_table(payload.action) {
+            Some(sk) => app_handle
+                .emit_all(
+                    "action-step",
+                    ActionStepJS {
+                        action: sk,
+                        progress: payload.progress,
+                        quality: payload.quality,
+                        durability: payload.durability,
+                        condition: payload.condition,
+                    },
+                )
+                .unwrap(),
+            None => return (StatusCode::BAD_REQUEST, ()),
+        };
+        (StatusCode::NO_CONTENT, ())
+    };
+
+    println!("starting http server");
+    let rx = {
+        let mut current_tx = app_state.shutdown_signal.lock().unwrap();
+        if let Some(_) = *current_tx {
+            return Err(String::from("http server is running"));
+        }
+        let (tx, rx) = oneshot::channel::<()>();
+        *current_tx = Some(tx);
+        rx
+    };
+    let server = Router::new().route("/action", routing::post(action));
+    let addr: SocketAddr = addr.parse().unwrap();
+    axum::Server::bind(&addr)
+        .serve(server.into_make_service())
+        .with_graceful_shutdown(wait_for_shutdown(rx))
+        .await
+        .unwrap();
+    Ok(())
+}
+
+#[allow(unused_must_use)]
+async fn wait_for_shutdown(rx: oneshot::Receiver<()>) {
+    rx.await;
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(AppState::new())
@@ -273,6 +347,7 @@ fn main() {
             create_solver,
             read_solver,
             destroy_solver,
+            start_http_server,
         ])
         .run(tauri::generate_context!())
         .map_err(|err| {

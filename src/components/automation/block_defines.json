@@ -52,14 +52,6 @@
         "helpUrl": ""
     },
     {
-        "type": "get_craft_point",
-        "message0": "制作力",
-        "output": "Number",
-        "colour": 230,
-        "tooltip": "",
-        "helpUrl": ""
-    },
-    {
         "type": "get_durability",
         "message0": "耐久",
         "output": "Number",
