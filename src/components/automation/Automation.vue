@@ -154,13 +154,13 @@ Blockly.setLocale(ZhHans)
 Blockly.defineBlocksWithJsonArray(BlockDefines)
 //@ts-ignore
 BlocklyJS['on_craft_start'] = function (block: Blockly.Block) {
-    const code = 'yield this.onCraftStart(function *(attr, recipe) {\n' + BlocklyJS.statementToCode(block, 'STEPS') + '})'
+    const code = 'this.onCraftStart(function (attr, recipe) {\n' + BlocklyJS.statementToCode(block, 'STEPS') + '})'
     return code;
 };
 //@ts-ignore
 BlocklyJS['do_action'] = function (block: Blockly.Block) {
     const actionName = BlocklyJS.valueToCode(block, 'ACTION', (BlocklyJS as any).ORDER_FUNCTION_CALL)
-    const code = `yield this.command('/ac ' + ${actionName})\n`
+    const code = `await this.command('/ac ' + ${actionName})\n`
     return code;
 };
 //@ts-ignore
@@ -179,6 +179,21 @@ BlocklyJS['get_durability'] = function (block: Blockly.Block) {
 BlocklyJS['get_condition'] = function (block: Blockly.Block) {
     return ["this.get_condition()", (BlocklyJS as any).ORDER_FUNCTION_CALL];
 };
+//@ts-ignore
+BlocklyJS['procedures_callreturn'] = function (block) {
+    // Call a procedure with a return value.
+    //@ts-ignore
+    var funcName = BlocklyJS.variableDB_.getName(block.getFieldValue('NAME'), Blockly.PROCEDURE_CATEGORY_NAME);
+    var args = ['this'];
+    var variables = block.getVars();
+    for (var i = 0; i < variables.length; i++) {
+        args[i] = BlocklyJS.valueToCode(block, 'ARG' + i,
+            (BlocklyJS as any).ORDER_NONE) || 'null';
+    }
+    var code = 'await ' + funcName + '.call(' + args.join(', ') + ')';
+    return [code, (BlocklyJS as any).ORDER_AWAIT];
+};
+
 BlocklyJS.addReservedWords('highlightBlock')
 BlocklyJS.STATEMENT_PREFIX = 'highlightBlock(%1);\n'
 
@@ -228,16 +243,18 @@ onMounted(async () => {
 
 
 async function run() {
-    const code = `return (function* () {\n${BlocklyJS.workspaceToCode(workspace! as Blockly.Workspace)}}).call(this)`
+    let code = BlocklyJS
+        .workspaceToCode(workspace! as Blockly.Workspace)
+        .replace(/(?<=^|\n)function \w+\(.*\)/g, 'async $&')
+    code = `return (async () => {\n${code}})()`
     console.log(code)
     try {
         const hightlightBlock = (id: string) => workspace!.highlightBlock(id)
         const f = new Function("highlightBlock", code)
-        const g: Generator = f.call(InGameContext, hightlightBlock)
-        for (let v of g) {
-            console.log(await v)
-            // await InGameContext.sleep(1000)
-        }
+        await f.call(
+            InGameContext,
+            hightlightBlock,
+        )
     } catch (err) {
         console.error(err)
         ElMessage({

@@ -14,7 +14,6 @@ interface ActionStep {
 
 let waiters: ((value: ActionStep) => void)[] = []
 listen('action-step', (event: Event<ActionStep>) => {
-    console.log(event.payload)
     for (let waiter of waiters)
         waiter(event.payload)
     waiters = []
@@ -48,8 +47,8 @@ export default {
     get_condition(): string { return conditionStrings.get(this.currentStatus!.condition) || "" },
 
     async sleep(t: number) { return new Promise((res, _rej) => setTimeout(res, t)) },
-    async command(cmd: string): Promise<string> {
-        await fetch(this.urlPostNamazu, { body: cmd, mode: 'no-cors', method: 'POST' })
+    async command(cmd: string): Promise<void> {
+        const req = fetch(this.urlPostNamazu, { body: cmd, mode: 'no-cors', method: 'POST' })
         this.currentStatus = await new Promise<ActionStep>((res, rej) => {
             const t = setTimeout(() => {
                 waiters.splice(waiters.indexOf(f), 1)
@@ -60,9 +59,8 @@ export default {
                 res(e)
             }
             waiters.push(f)
-            console.log(cmd)
         }) // wait for the skill
+        await req
         await this.sleep(500)
-        return "[successed] " + cmd
     },
 }
