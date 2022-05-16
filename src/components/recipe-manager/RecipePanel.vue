@@ -26,7 +26,15 @@ interface XivapiRecipe {
     ID: number;
     Icon: string;
     Name: string;
-    Url: string;
+    CraftType: {
+        Name: string // "铸甲"
+    };
+    DifficultyFactor: number// 100,
+    DurabilityFactor: number// 100,
+    QualityFactor: number,
+    RecipeLevelTable: {
+        ID: number // 560
+    }
 }
 
 const pagination = reactive({
@@ -36,7 +44,7 @@ const pagination = reactive({
 const displayTable = ref<XivapiRecipe[] | null>([])
 watchEffect(async () => {
     displayTable.value = null
-    const response = await fetch(xivapiBase + `/search?indexes=Recipe&page=${pagination.Page}&string=${searchText.value}`, { mode: 'cors' })
+    const response = await fetch(xivapiBase + `/search?indexes=Recipe&page=${pagination.Page}&string=${searchText.value}&columns=ID%2CName%2CCraftType.Name%2CDifficultyFactor%2CDurabilityFactor%2CQualityFactor%2CRecipeLevelTable.ID`, { mode: 'cors' })
     const data: { Pagination: any, Results: XivapiRecipe[] } = await response.json()
     pagination.PageTotal = data.Pagination.PageTotal;
     displayTable.value = data.Results
@@ -58,33 +66,18 @@ const selectRecipeRow = async (row: XivapiRecipe) => {
                 confirmButtonText: '确认',
                 cancelButtonText: '取消',
                 type: 'warning',
-                beforeClose: (action, instance, done) => {
-                    if (action == 'confirm') {
-                        instance.confirmButtonLoading = true
-                        instance.confirmButtonText = '正在获取配方数据...'
-                        getAndSetRecipeData(row)
-                            .catch(err => ElMessage.error(err as string))
-                            .finally(done)
-                    }
-                    else done()
-                }
             }
         )
+        const recipe = await newRecipe(
+            row.RecipeLevelTable.ID,
+            row.DifficultyFactor,
+            row.QualityFactor,
+            row.DurabilityFactor
+        )
+        selectRecipe(recipe, row.Name, row.CraftType.Name)
     } catch {
         // operation canceled by user
     }
-}
-
-async function getAndSetRecipeData(row: XivapiRecipe) {
-    const response = await fetch(xivapiBase + row.Url + '?columns=Name,CraftType,RecipeLevelTable,DifficultyFactor,QualityFactor,DurabilityFactor', { mode: 'cors' })
-    const data = await response.json()
-    const recipe = await newRecipe(
-        data.RecipeLevelTable.ID,
-        data.DifficultyFactor,
-        data.QualityFactor,
-        data.DurabilityFactor
-    )
-    selectRecipe(recipe, data.Name, data.CraftType.Name)
 }
 
 const selectRecipe = (recipe: Recipe, name: string, job: string) => {
@@ -148,8 +141,13 @@ const customRecipe = ref({
             </el-input>
             <el-table v-loading="displayTable == null" element-loading-text="请稍等..." highlight-current-row
                 @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
-                <el-table-column prop="ID" label="ID" width="100" />
-                <el-table-column prop="Name" label="名称" />
+                <el-table-column prop="ID" label="ID" />
+                <el-table-column prop="RecipeLevelTable.ID" label="配方等级" />
+                <el-table-column prop="Name" label="名称" width="250" />
+                <el-table-column prop="CraftType.Name" label="类型" />
+                <el-table-column prop="DifficultyFactor" label="难度因子" />
+                <el-table-column prop="QualityFactor" label="品质因子" />
+                <el-table-column prop="DurabilityFactor" label="耐久因子" />
                 <el-table-column align="right" width="300">
                     <template #header>
                         <el-pagination small layout="prev, pager, next" v-model:current-page="pagination.Page"
