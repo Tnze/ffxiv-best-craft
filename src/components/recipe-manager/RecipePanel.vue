@@ -44,7 +44,7 @@ const pagination = reactive({
 const displayTable = ref<XivapiRecipe[] | null>([])
 watchEffect(async () => {
     displayTable.value = null
-    const response = await fetch(xivapiBase + `/search?indexes=Recipe&page=${pagination.Page}&string=${searchText.value}&columns=ID%2CName%2CCraftType.Name%2CDifficultyFactor%2CDurabilityFactor%2CQualityFactor%2CRecipeLevelTable.ID`, { mode: 'cors' })
+    const response = await fetch(xivapiBase + `/search?indexes=Recipe&page=${pagination.Page}&string=${searchText.value}&columns=ID%2CIcon%2CName%2CCraftType.Name%2CDifficultyFactor%2CDurabilityFactor%2CQualityFactor%2CRecipeLevelTable.ID`, { mode: 'cors' })
     const data: { Pagination: any, Results: XivapiRecipe[] } = await response.json()
     pagination.PageTotal = data.Pagination.PageTotal;
     displayTable.value = data.Results
@@ -143,6 +143,13 @@ const customRecipe = ref({
                 @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
                 <el-table-column prop="ID" label="ID" />
                 <el-table-column prop="RecipeLevelTable.ID" label="配方等级" />
+                <el-table-column prop="Icon" label="图标" width="55">
+                    <template #default="scope">
+                        <div style="display: flex; align-items: center">
+                            <el-image :src="xivapiBase + scope.row.Icon" />
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="Name" label="名称" width="250" />
                 <el-table-column prop="CraftType.Name" label="类型" />
                 <el-table-column prop="DifficultyFactor" label="难度因子" />
