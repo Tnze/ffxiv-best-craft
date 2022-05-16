@@ -7,147 +7,35 @@ import BlocklyJS from 'blockly/javascript'
 import InGameContext from './InGameContext'
 import ZhHans from 'blockly/msg/zh-hans'
 import BlockDefines from './block_defines.json'
+import toolbox from './toolbox.json'
 import { Promotion } from '@element-plus/icons-vue'
-import { ElMessage, useTimeout } from 'element-plus'
+import { ElMessage } from 'element-plus'
 
 const blocklyDiv = ref<Element | null>(null)
 
-const toolbox = {
-    "kind": "categoryToolbox",
-    "contents": [
-        {
-            "kind": "category",
-            "name": "流程",
-            "categorystyle": "loop_category",
-            "contents": [
-                {
-                    "kind": "block",
-                    "type": "controls_repeat_ext"
-                },
-                {
-                    "kind": "block",
-                    "type": "controls_repeat"
-                },
-                {
-                    "kind": "block",
-                    "type": "controls_whileUntil"
-                },
-                {
-                    "kind": "block",
-                    "type": "controls_for"
-                },
-                {
-                    "kind": "block",
-                    "type": "controls_flow_statements"
-                },
-            ]
-        },
-        {
-            "kind": "category",
-            "name": "逻辑",
-            "categorystyle": "logic_category",
-            "contents": [
-                {
-                    "kind": "block",
-                    "type": "controls_if"
-                },
-                {
-                    "kind": "block",
-                    "type": "logic_compare"
-                },
-                {
-                    "kind": "block",
-                    "type": "logic_operation"
-                },
-                {
-                    "kind": "block",
-                    "type": "logic_boolean"
-                },
-            ]
-        },
-        {
-            "kind": "category",
-            "name": "数学",
-            "categorystyle": "math_category",
-            "contents": [
-                {
-                    "kind": "block",
-                    "type": "math_number"
-                },
-                {
-                    "kind": "block",
-                    "type": "math_arithmetic"
-                },
-            ]
-        },
-        {
-            "kind": "sep",
-        },
-        {
-            "kind": "category",
-            "name": "变量",
-            "categorystyle": "variable_dynamic_category",
-            "custom": "VARIABLE"
-        },
-        {
-            "kind": "category",
-            "name": "函数",
-            "categorystyle": "colour_category",
-            "custom": "PROCEDURE"
-        },
-        {
-            "kind": "sep",
-        },
-        {
-            "kind": "category",
-            "name": "生产",
-            "categorystyle": "procedure_category",
-            "contents": [
-                // {
-                //     "kind": "block",
-                //     "type": "on_craft_start"
-                // },
-                {
-                    "kind": "block",
-                    "type": "do_action",
-                    "inputs": {
-                        "ACTION": {
-                            "shadow": {
-                                "type": "text",
-                                "fields": {
-                                    "TEXT": ""
-                                }
-                            }
-                        }
-                    },
-                },
-                {
-                    "kind": "block",
-                    "type": "text"
-                },
-                {
-                    "kind": "block",
-                    "type": "get_progress"
-                },
-                {
-                    "kind": "block",
-                    "type": "get_quality"
-                },
-                {
-                    "kind": "block",
-                    "type": "get_durability"
-                },
-                {
-                    "kind": "block",
-                    "type": "get_condition"
-                }
-            ]
-        },
-    ]
-}
 const theme = Blockly.Theme.defineTheme('BestCraftTheme', {
     'base': Theme,
-    'startHats': false
+    'startHats': false,
+    'blockStyles': {
+        "crafting_blocks": {
+            'colourPrimary': 230,
+            'colourSecondary': 230,
+            'colourTertiary': 230,
+        },
+        "craft_simulating_blocks": {
+            'colourPrimary': 300,
+            'colourSecondary': 300,
+            'colourTertiary': 300,
+        }
+    },
+    'categoryStyles': {
+        "crafting_category": {
+            "colour": 230
+        },
+        "craft_simulating_category": {
+            "colour": 300
+        }
+    }
 });
 //@ts-ignore
 Blockly.setLocale(ZhHans)

@@ -8,7 +8,7 @@
         }],
         "previousStatement": null,
         "nextStatement": null,
-        "colour": 120,
+        "style": "crafting_blocks",
         "tooltip": "执行技能",
         "helpUrl": ""
     },
@@ -31,7 +31,7 @@
         "type": "get_condition",
         "message0": "制作状态",
         "output": "String",
-        "colour": 230,
+        "style": "crafting_blocks",
         "tooltip": "",
         "helpUrl": ""
     },
@@ -39,7 +39,7 @@
         "type": "get_progress",
         "message0": "进展",
         "output": "Number",
-        "colour": 230,
+        "style": "crafting_blocks",
         "tooltip": "",
         "helpUrl": ""
     },
@@ -47,7 +47,7 @@
         "type": "get_quality",
         "message0": "品质",
         "output": "Number",
-        "colour": 230,
+        "style": "crafting_blocks",
         "tooltip": "",
         "helpUrl": ""
     },
@@ -55,7 +55,7 @@
         "type": "get_durability",
         "message0": "耐久",
         "output": "Number",
-        "colour": 230,
+        "style": "crafting_blocks",
         "tooltip": "",
         "helpUrl": ""
     }
