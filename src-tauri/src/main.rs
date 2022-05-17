@@ -11,8 +11,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use axum::{http::StatusCode, response::IntoResponse, routing, Json, Router};
-use ffxiv_crafting::{Attributes, CastActionError, Condition, Recipe, Skills, Status};
+use axum::{http::StatusCode, routing, Json, Router};
+use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
 use tokio::sync::oneshot;
