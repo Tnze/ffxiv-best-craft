@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watchEffect } from 'vue'
 import { createDir, readTextFile, writeFile, Dir } from '@tauri-apps/api/fs'
 import * as Blockly from 'blockly'
 import Theme from '@blockly/theme-modern'
+import DarkTheme from '@blockly/theme-dark';
 import BlocklyJS from 'blockly/javascript'
 import InGameContext from './InGameContext'
 import ZhHans from 'blockly/msg/zh-hans'
@@ -12,31 +13,38 @@ import { Promotion } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 const blocklyDiv = ref<Element | null>(null)
+const props = defineProps<{
+    isDark?: boolean
+}>()
 
-const theme = Blockly.Theme.defineTheme('BestCraftTheme', {
-    'base': Theme,
-    'startHats': false,
-    'blockStyles': {
-        "crafting_blocks": {
-            'colourPrimary': 230,
-            'colourSecondary': 230,
-            'colourTertiary': 230,
+function defineTheme(base: any, name: string) {
+    return Blockly.Theme.defineTheme('BestCraftTheme-' + name, {
+        'base': base,
+        'startHats': false,
+        'blockStyles': {
+            "crafting_blocks": {
+                'colourPrimary': 230,
+                'colourSecondary': 230,
+                'colourTertiary': 230,
+            },
+            "craft_simulating_blocks": {
+                'colourPrimary': 300,
+                'colourSecondary': 300,
+                'colourTertiary': 300,
+            }
         },
-        "craft_simulating_blocks": {
-            'colourPrimary': 300,
-            'colourSecondary': 300,
-            'colourTertiary': 300,
+        'categoryStyles': {
+            "crafting_category": {
+                "colour": 230
+            },
+            "craft_simulating_category": {
+                "colour": 300
+            }
         }
-    },
-    'categoryStyles': {
-        "crafting_category": {
-            "colour": 230
-        },
-        "craft_simulating_category": {
-            "colour": 300
-        }
-    }
-});
+    });
+}
+const theme = defineTheme(Theme, 'light');
+const themeDark = defineTheme(DarkTheme, 'dark');
 //@ts-ignore
 Blockly.setLocale(ZhHans)
 Blockly.defineBlocksWithJsonArray(BlockDefines)
@@ -126,6 +134,10 @@ onMounted(async () => {
                 timer = null
             }, 3000)
         }
+    })
+    watchEffect(() => {
+        console.log("use darkmode: ", props.isDark)
+        workspace!.setTheme(props.isDark ? themeDark : theme)
     })
 })
 

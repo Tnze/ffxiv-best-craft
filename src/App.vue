@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useDark, useToggle } from '@vueuse/core'
 import RecipePanel from './components/recipe-manager/RecipePanel.vue';
 import Gearsets from './components/Gearsets.vue';
 import Designer from './components/designer/Designer.vue';
@@ -8,6 +9,7 @@ import Settings from './components/Settings.vue';
 import Menu from './components/Menu.vue';
 import { Attributes, Recipe, Jobs } from './Craft'
 
+const isDark = useDark()
 
 interface GearsetsRow {
   name: string
@@ -75,7 +77,7 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
         </Suspense>
       </keep-alive>
       <keep-alive>
-        <Automation v-if="currentPage == '3'" />
+        <Automation v-if="currentPage == '3'" :is-dark="isDark" />
       </keep-alive>
       <Settings v-if="currentPage == '4'" :settings="settings" />
     </el-main>
