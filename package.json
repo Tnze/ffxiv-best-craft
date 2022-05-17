@@ -12,7 +12,7 @@
         "@blockly/theme-modern": "^2.1.33",
         "@tauri-apps/api": "^1.0.0-rc.4",
         "blockly": "^7.20211209.5",
-        "element-plus": "^2.1.4",
+        "element-plus": "2.2.0",
         "vue": "3.2.31",
         "vuedraggable": "^4.1.0"
     },
@@ -29,5 +29,6 @@
         "unplugin-vue-components": "^0.19.3",
         "vite": "^2.9.5",
         "vue-tsc": "^0.34.11"
-    }
+    },
+    "packageManager": "yarn@3.2.1"
 }

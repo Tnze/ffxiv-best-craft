@@ -60,12 +60,12 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
       <Menu v-model="currentPage"></Menu>
     </el-aside>
     <el-main>
-      <Gearsets v-model="gearsets" v-show="currentPage == 0" />
+      <Gearsets v-model="gearsets" v-show="currentPage == '0'" />
       <keep-alive>
-        <RecipePanel v-if="currentPage == 1" v-model="recipe" @change="onRecipeChange" />
+        <RecipePanel v-if="currentPage == '1'" v-model="recipe" @change="onRecipeChange" />
       </keep-alive>
       <keep-alive>
-        <Suspense v-if="currentPage == 2">
+        <Suspense v-if="currentPage =='2'">
           <Designer v-if="recipe != null" :item-name="recipeName" :attributes="attributes" :recipe="recipe"
             :job="job" />
           <el-empty v-else description="请先选择配方" style="height: 100%;" />
@@ -75,9 +75,9 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
         </Suspense>
       </keep-alive>
       <keep-alive>
-        <Automation v-if="currentPage == 3" />
+        <Automation v-if="currentPage == '3'" />
       </keep-alive>
-      <Settings v-if="currentPage == 4" :settings="settings" />
+      <Settings v-if="currentPage == '4'" :settings="settings" />
     </el-main>
   </el-container>
 </template>
@@ -88,7 +88,6 @@ const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
     "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
   height: 100%;
   margin: 0;
 }

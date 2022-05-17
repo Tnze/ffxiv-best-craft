@@ -25,3 +25,6 @@ dist-ssr
 
 # Rust
 src-*/target
+
+# Yarn
+.yarn/

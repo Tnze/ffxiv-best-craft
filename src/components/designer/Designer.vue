@@ -2,7 +2,6 @@
 import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
-import "element-plus/es/components/message/style/css";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
 import {
@@ -355,7 +354,6 @@ async function openListFromJSON() {
 .action-queue {
     border-top: 1px solid var(--el-border-color);
     border-bottom: 1px solid var(--el-border-color);
-    background-color: #fafafa;
 }
 
 .actionpanel-and-savedqueue {
