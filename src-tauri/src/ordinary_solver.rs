@@ -280,36 +280,6 @@ where
             [s.buffs.manipulation as usize][s.buffs.wast_not as usize]
     }
 
-    pub fn possible_progresses(&self) -> Vec<u16> {
-        let mut result = vec![0; self.init_status.recipe.difficulty as usize + 1];
-        let mut s = self.init_status.clone();
-        for cp in 0..=self.init_status.attributes.craft_points {
-            s.craft_points = cp;
-            for du in (0..=self.init_status.recipe.durability).filter(|v| v % 5 == 0) {
-                s.durability = du;
-                for ve in 0..=MAX_VENERATION {
-                    s.buffs.veneration = ve;
-                    for mm in 0..=MAX_MUSCLE_MEMORY {
-                        s.buffs.muscle_memory = mm;
-                        for mn in 0..=MN {
-                            s.buffs.manipulation = mn as u8;
-                            for wn in 0..=WN {
-                                s.buffs.wast_not = wn as u8;
-                                let v = unsafe { self.get_unchecked(&s).value };
-                                result[v as usize] += 1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        result
-            .iter()
-            .enumerate()
-            .filter(|&(_i, v)| *v > 0)
-            .map(|(i, _v)| i as u16)
-            .collect()
-    }
 }
 
 impl<const MN: usize, const WN: usize> Solver for ProgressSolver<MN, WN>

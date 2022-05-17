@@ -12,17 +12,17 @@ version = "0.3.1"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = {version = "1.0.0-rc.7", features = [] }
+tauri-build = {version = "1.0.0-rc.8", features = [] }
 
 [dependencies]
-axum = "0.5.4"
+axum = "0.5.6"
 csv = "1.1.6"
 ffxiv-crafting = {version = "6.0.12", features = ["serde-support"] }
 msgbox = "0.7.0"
-rayon = "1.5.2"
+rayon = "1.5.3"
 serde = {version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tauri = {version = "1.0.0-rc.8", features = ["api-all", "updater"] }
+tauri = {version = "1.0.0-rc.10", features = ["api-all", "updater"] }
 tokio = "1.18.2"
 
 [features]
