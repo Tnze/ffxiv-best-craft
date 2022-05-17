@@ -56,7 +56,7 @@ const buffsDisplay = computed<{
     margin-top: -8px;
     margin-bottom: -5px;
     font-size: 0.9em;
-    color: #606266;
+    color: var(--el-text-color-regular);
 }
 
 .buff-img {

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 import { writeText } from '@tauri-apps/api/clipboard'
 import { Actions } from '../../Craft';

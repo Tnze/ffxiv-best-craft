@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import 'element-plus/es/components/message/style/css'
-import 'element-plus/es/components/message-box/style/css'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen, Filter } from '@element-plus/icons-vue'
 import { Jobs, RecipeRow, Recipe, newRecipeTable, newRecipe } from '../../Craft'
