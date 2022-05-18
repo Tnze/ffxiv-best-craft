@@ -6,6 +6,7 @@ import {
     MagicStick,
     Setting,
 } from '@element-plus/icons-vue'
+import { ref } from 'vue';
 
 const props = defineProps<{
     modelValue: string
@@ -15,13 +16,12 @@ const emit = defineEmits<{
     (event: 'update:modelValue', page: string): void
 }>()
 
-const handleSelect = (key: string, keyPath: string) => {
-    emit('update:modelValue', key)
-}
+const disableAutomation = ref(true)
+
 </script>
 
 <template>
-    <el-menu :default-active="modelValue" @select="handleSelect" :collapse="true">
+    <el-menu :default-active="modelValue" @select="key => emit('update:modelValue', key)" :collapse="true">
         <el-menu-item index="0">
             <el-icon>
                 <suitcase />
@@ -40,7 +40,7 @@ const handleSelect = (key: string, keyPath: string) => {
             </el-icon>
             <template #title>设计</template>
         </el-menu-item>
-        <el-menu-item index="3">
+        <el-menu-item index="3" :disabled="disableAutomation"  @click.stop.prevent.right="disableAutomation = false">
             <el-icon>
                 <magic-stick />
             </el-icon>
