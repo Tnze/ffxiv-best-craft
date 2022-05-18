@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import 'element-plus/es/components/message/style/css'
 import { Actions } from '../../Craft';
 
 const props = defineProps<{

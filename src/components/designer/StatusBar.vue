@@ -141,7 +141,7 @@ const condition = computed(() => {
     width: 100%;
     display: flex;
     font-size: 14px;
-    color: #606266;
+    color: var(--el-text-color-regular);
 }
 
 #durability-and-condition {
@@ -172,7 +172,7 @@ const condition = computed(() => {
     padding: 0px 20px 0px 0px;
     flex-grow: 2;
     text-align: right;
-    color: #909399;
+    color: var(--el-text-color-secondary);
 }
 
 .attributes-link {

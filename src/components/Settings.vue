@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import 'element-plus/es/components/message/style/css'
 import { ElMessage } from 'element-plus'
 import { version } from '../../package.json'
 

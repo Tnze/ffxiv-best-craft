@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
-import "element-plus/es/components/message/style/css";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
 import {
@@ -317,7 +316,6 @@ const mouseOverAction = ref<Actions | null>(null)
 .action-queue {
     border-top: 1px solid var(--el-border-color);
     border-bottom: 1px solid var(--el-border-color);
-    background-color: #fafafa;
 }
 
 .actionpanel-and-savedqueue {

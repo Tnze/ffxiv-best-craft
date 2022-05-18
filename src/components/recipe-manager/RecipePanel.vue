@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watchEffect, reactive } from 'vue'
-import 'element-plus/es/components/message/style/css'
-import 'element-plus/es/components/message-box/style/css'
+import { ref, watchEffect, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
 import { Jobs, Recipe, newRecipe } from '../../Craft'

@@ -1,14 +1,18 @@
 {
     "name": "ffxiv-best-craft",
     "private": true,
-    "version": "0.2.13",
+    "version": "0.3.1",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview"
     },
     "dependencies": {
-        "element-plus": "^2.1.4",
+        "@blockly/theme-dark": "^3.0.8",
+        "@blockly/theme-modern": "^2.1.33",
+        "@vueuse/core": "^8.5.0",
+        "blockly": "^7.20211209.5",
+        "element-plus": "2.2.0",
         "vue": "3.2.31",
         "vuedraggable": "^4.1.0"
     },
@@ -23,5 +27,6 @@
         "unplugin-vue-components": "^0.19.3",
         "vite": "^2.9.5",
         "vue-tsc": "^0.34.11"
-    }
+    },
+    "packageManager": "yarn@3.2.1"
 }
