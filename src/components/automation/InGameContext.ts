@@ -53,7 +53,7 @@ export default {
             const t = setTimeout(() => {
                 waiters.splice(waiters.indexOf(f), 1)
                 rej('do action time out')
-            }, 5000)
+            }, 10000)
             const f = async (e: ActionStep) => {
                 clearTimeout(t)
                 res(e)
