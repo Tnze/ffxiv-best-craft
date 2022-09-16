@@ -1,11 +1,11 @@
 {
     "package": {
         "productName": "BestCraft",
-        "version": "0.3.1"
+        "version": "0.4.0"
     },
     "build": {
         "distDir": "../dist",
-        "devPath": "http://localhost:3000",
+        "devPath": "http://localhost:5173",
         "beforeDevCommand": "yarn dev",
         "beforeBuildCommand": "yarn build"
     },
