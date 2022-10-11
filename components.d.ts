@@ -47,7 +47,6 @@ declare module '@vue/runtime-core' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Gearsets: typeof import('./src/components/Gearsets.vue')['default']
-    Loading: typeof import('element-plus/es')['ElLoadingDirective']
     MarcoExporter: typeof import('./src/components/designer/MarcoExporter.vue')['default']
     Menu: typeof import('./src/components/Menu.vue')['default']
     QueueStatus: typeof import('./src/components/designer/QueueStatus.vue')['default']

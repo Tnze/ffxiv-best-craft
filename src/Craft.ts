@@ -173,7 +173,7 @@ interface RecipeRow {
 }
 
 const newRecipeTable = (): Promise<RecipeRow[]> => {
-  return invoke("recipe_table");
+  return invoke("recipe_table", { pageId: 1 });
 };
 
 export {
