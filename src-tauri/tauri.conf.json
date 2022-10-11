@@ -21,7 +21,9 @@
                 "icons/icon.icns",
                 "icons/icon.ico"
             ],
-            "resources": [],
+            "resources": [
+                "assets/xiv.db"
+            ],
             "externalBin": [],
             "copyright": "2022 Tnze",
             "category": "Game",

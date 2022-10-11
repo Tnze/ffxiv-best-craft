@@ -13,10 +13,13 @@ use std::{
 
 use axum::{http::StatusCode, routing, Json, Router};
 use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
+use futures::{prelude::*, stream::FuturesOrdered};
+use sea_orm::{entity::*, query::*, Database, DatabaseConnection, DbErr};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
 use tokio::sync::oneshot;
 
+mod db;
 mod ordinary_solver;
 mod preprogress_solver;
 mod solver;
@@ -102,35 +105,52 @@ struct RecipeRow {
 }
 
 #[tauri::command(async)]
-fn recipe_table() -> Vec<RecipeRow> {
-    csv::ReaderBuilder::new()
-        .comment(Some(b'#'))
-        .from_reader(include_bytes!("../assets/Recipe.csv").as_slice())
-        .records()
-        .map(|row| {
-            let row = row?;
+async fn recipe_table(
+    page_id: usize,
+    app_state: tauri::State<'_, AppState>,
+) -> Result<Vec<RecipeRow>, String> {
+    let db = &{
+        let mut db = app_state.db.lock().await;
+        if let None = *db {
+            let new_db = Database::connect("sqlite:./assets/xiv.db?mode=ro").await;
+            *db = Some(new_db.unwrap());
+        }
+        db.as_ref().unwrap().clone()
+    };
+    let paginate = db::prelude::Recipes::find().paginate(db, 1000);
+    // let p = paginate.num_pages().await;
+    let recipes_iter = paginate.fetch_page(page_id).await.unwrap();
+    let data = recipes_iter
+        .iter()
+        .map(async move |recipe| -> Result<RecipeRow, DbErr> {
+            let (result, result_item) = recipe
+                .find_related(db::prelude::ItemWithAmount)
+                .find_also_related(db::prelude::Items)
+                .one(db)
+                .await?
+                .unwrap();
+            let result_item = result_item.unwrap();
             Ok(RecipeRow {
-                id: row.get(1).unwrap().parse().unwrap(),
-                rlv: row
-                    .get(3)
-                    .unwrap()
-                    .strip_prefix("RecipeLevelTable#")
-                    .unwrap()
-                    .parse()
-                    .unwrap(),
-                name: row.get(4).unwrap().into(),
-                job: row.get(2).unwrap().into(),
-                difficulty_factor: row.get(29).unwrap().parse().unwrap(),
-                quality_factor: row.get(30).unwrap().parse().unwrap(),
-                durability_factor: row.get(31).unwrap().parse().unwrap(),
+                id: recipe.number as usize,
+                rlv: recipe.recipe_level,
+                name: result_item.name,
+                job: "".to_string(),
+                difficulty_factor: recipe.difficulty_factor as u16,
+                quality_factor: recipe.quality_factor as u16,
+                durability_factor: recipe.durability_factor as u16,
             })
         })
-        .collect::<Result<Vec<_>, csv::Error>>()
-        .unwrap()
+        .collect::<FuturesOrdered<_>>();
+    let data: Vec<Result<RecipeRow, DbErr>> = data.collect().await;
+    Ok(data
+        .into_iter()
+        .collect::<Result<Vec<RecipeRow>, DbErr>>()
+        .unwrap())
 }
 
 struct AppState {
     solver_list: Mutex<HashMap<ordinary_solver::SolverHash, Option<Box<dyn Solver + Send + Sync>>>>,
+    db: tokio::sync::Mutex<Option<DatabaseConnection>>,
     shutdown_signal: Mutex<Option<oneshot::Sender<()>>>,
 }
 
@@ -138,6 +158,7 @@ impl AppState {
     fn new() -> Self {
         Self {
             solver_list: Mutex::new(HashMap::new()),
+            db: tokio::sync::Mutex::new(None),
             shutdown_signal: Mutex::new(None),
         }
     }
