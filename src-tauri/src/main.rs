@@ -119,17 +119,21 @@ async fn recipe_table(
     };
     let paginate = db::prelude::Recipes::find().paginate(db, 1000);
     // let p = paginate.num_pages().await;
-    let recipes_iter = paginate.fetch_page(page_id).await.unwrap();
+    let recipes_iter = paginate
+        .fetch_page(page_id)
+        .await
+        .map_err(|e| e.to_string())?;
     let data = recipes_iter
         .iter()
-        .map(async move |recipe| -> Result<RecipeRow, DbErr> {
+        .map(async move |recipe| -> Result<RecipeRow, String> {
             let (result, result_item) = recipe
                 .find_related(db::prelude::ItemWithAmount)
                 .find_also_related(db::prelude::Items)
                 .one(db)
-                .await?
-                .unwrap();
-            let result_item = result_item.unwrap();
+                .await
+                .map_err(|e| e.to_string())?
+                .ok_or("None".to_string())?;
+            let result_item = result_item.ok_or("None".to_string())?;
             Ok(RecipeRow {
                 id: recipe.number as usize,
                 rlv: recipe.recipe_level,
@@ -141,11 +145,13 @@ async fn recipe_table(
             })
         })
         .collect::<FuturesOrdered<_>>();
-    let data: Vec<Result<RecipeRow, DbErr>> = data.collect().await;
-    Ok(data
+    let data: Vec<Result<RecipeRow, String>> = data.collect().await;
+    let data = data
         .into_iter()
-        .collect::<Result<Vec<RecipeRow>, DbErr>>()
-        .unwrap())
+        .flat_map(|x| x.ok())
+        .collect::<Vec<RecipeRow>>();
+    dbg!("after collect");
+    Ok(data)
 }
 
 struct AppState {

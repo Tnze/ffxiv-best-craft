@@ -172,8 +172,8 @@ interface RecipeRow {
   durability_factor: number;
 }
 
-const newRecipeTable = (): Promise<RecipeRow[]> => {
-  return invoke("recipe_table", { pageId: 1 });
+const recipeTable = (pageId: number): Promise<RecipeRow[]> => {
+  return invoke("recipe_table", { pageId });
 };
 
 export {
@@ -184,11 +184,11 @@ export {
   Status,
   Jobs,
   Actions,
+  RecipeRow,
   newRecipe,
   newStatus,
   simulate,
   allowedList,
   craftPointsList,
-  RecipeRow,
-  newRecipeTable,
+  recipeTable,
 };
