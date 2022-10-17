@@ -25,7 +25,10 @@ const pagination = reactive({
 })
 const displayTable = ref<RecipeRow[] | null>([])
 watchEffect(async () => {
-    displayTable.value = await recipeTable(pagination.Page)
+    let [list, totalPages] = await recipeTable(pagination.Page, searchText.value)
+    displayTable.value = list
+    pagination.PageTotal = totalPages
+    console.log("total pages", totalPages)
 })
 
 const emits = defineEmits<{

@@ -172,8 +172,8 @@ interface RecipeRow {
   durability_factor: number;
 }
 
-const recipeTable = (pageId: number): Promise<RecipeRow[]> => {
-  return invoke("recipe_table", { pageId });
+const recipeTable = (page: number, searchName: string): Promise<[RecipeRow[], number]> => {
+  return invoke("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
 };
 
 export {
