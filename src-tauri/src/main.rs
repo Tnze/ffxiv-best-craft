@@ -17,7 +17,7 @@ use futures::{prelude::*, stream::FuturesOrdered};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, DbErr};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
-use tokio::sync::oneshot;
+use tokio::sync::{oneshot, OnceCell};
 
 mod db;
 mod ordinary_solver;
@@ -107,18 +107,16 @@ struct RecipeRow {
 #[tauri::command(async)]
 async fn recipe_table(
     page_id: usize,
+    ref search_name: String,
     app_state: tauri::State<'_, AppState>,
-) -> Result<Vec<RecipeRow>, String> {
-    let db = &{
-        let mut db = app_state.db.lock().await;
-        if let None = *db {
-            let new_db = Database::connect("sqlite:./assets/xiv.db?mode=ro").await;
-            *db = Some(new_db.unwrap());
-        }
-        db.as_ref().unwrap().clone()
-    };
-    let paginate = db::prelude::Recipes::find().paginate(db, 1000);
-    // let p = paginate.num_pages().await;
+) -> Result<(Vec<RecipeRow>, usize), String> {
+    let db = app_state
+        .db
+        .get_or_try_init(|| Database::connect("sqlite:./assets/xiv.db?mode=ro"))
+        .await
+        .map_err(|e| e.to_string())?;
+    let paginate = db::prelude::Recipes::find().paginate(db, 100);
+    let p = paginate.num_pages().await.map_err(|e| e.to_string())?;
     let recipes_iter = paginate
         .fetch_page(page_id)
         .await
@@ -126,9 +124,14 @@ async fn recipe_table(
     let data = recipes_iter
         .iter()
         .map(async move |recipe| -> Result<RecipeRow, String> {
+            let mut conditions = Condition::all();
+            if !search_name.is_empty() {
+                conditions = conditions.add(db::items::Column::Name.like(&search_name));
+            }
             let (result, result_item) = recipe
                 .find_related(db::prelude::ItemWithAmount)
                 .find_also_related(db::prelude::Items)
+                .filter(conditions)
                 .one(db)
                 .await
                 .map_err(|e| e.to_string())?
@@ -145,18 +148,18 @@ async fn recipe_table(
             })
         })
         .collect::<FuturesOrdered<_>>();
-    let data: Vec<Result<RecipeRow, String>> = data.collect().await;
     let data = data
+        .collect::<Vec<Result<RecipeRow, String>>>()
+        .await
         .into_iter()
         .flat_map(|x| x.ok())
         .collect::<Vec<RecipeRow>>();
-    dbg!("after collect");
-    Ok(data)
+    Ok((data, p))
 }
 
 struct AppState {
     solver_list: Mutex<HashMap<ordinary_solver::SolverHash, Option<Box<dyn Solver + Send + Sync>>>>,
-    db: tokio::sync::Mutex<Option<DatabaseConnection>>,
+    db: OnceCell<DatabaseConnection>,
     shutdown_signal: Mutex<Option<oneshot::Sender<()>>>,
 }
 
@@ -164,7 +167,7 @@ impl AppState {
     fn new() -> Self {
         Self {
             solver_list: Mutex::new(HashMap::new()),
-            db: tokio::sync::Mutex::new(None),
+            db: OnceCell::new(),
             shutdown_signal: Mutex::new(None),
         }
     }
