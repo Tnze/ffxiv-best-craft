@@ -4,8 +4,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
 import { Jobs, Recipe, newRecipe, recipeTable, RecipeRow } from '../../Craft'
 
-const xivapiBase = "https://cafemaker.wakingsands.com"
-
 const jobMaps: { [key: string]: Jobs | 'unknown' } = {
     '木工': Jobs.Carpenter,
     '锻冶': Jobs.Blacksmith,

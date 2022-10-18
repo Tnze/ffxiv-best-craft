@@ -12,9 +12,9 @@ use std::{
 };
 
 use axum::{http::StatusCode, routing, Json, Router};
-use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
+use ffxiv_crafting::{data, Attributes, CastActionError, Recipe, Skills, Status};
 use futures::{prelude::*, stream::FuturesOrdered};
-use sea_orm::{entity::*, query::*, Database, DatabaseConnection, DbErr};
+use sea_orm::{entity::*, query::*, Database, DatabaseConnection, DbErr, FromQueryResult};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
 use tokio::sync::{oneshot, OnceCell};
@@ -27,6 +27,7 @@ mod solver;
 use crate::ordinary_solver::{ProgressSolver, QualitySolver};
 use crate::preprogress_solver::PreprogressSolver;
 use crate::solver::Solver;
+use db::{craft_types, item_with_amount, items, prelude::*, recipes};
 
 #[tauri::command(async)]
 fn new_recipe(
@@ -92,13 +93,12 @@ fn craftpoints_list(status: Status, skills: Vec<Skills>) -> Vec<i32> {
     skills.iter().map(|&sk| status.craft_point(sk)).collect()
 }
 
-#[derive(Serialize)]
+#[derive(FromQueryResult, Serialize)]
 struct RecipeRow {
-    id: usize,
+    id: i32,
     rlv: i32,
     name: String,
     job: String,
-
     difficulty_factor: u16,
     quality_factor: u16,
     durability_factor: u16,
@@ -107,7 +107,7 @@ struct RecipeRow {
 #[tauri::command(async)]
 async fn recipe_table(
     page_id: usize,
-    ref search_name: String,
+    search_name: String,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<(Vec<RecipeRow>, usize), String> {
     let db = app_state
@@ -115,45 +115,25 @@ async fn recipe_table(
         .get_or_try_init(|| Database::connect("sqlite:./assets/xiv.db?mode=ro"))
         .await
         .map_err(|e| e.to_string())?;
-    let paginate = db::prelude::Recipes::find().paginate(db, 100);
+    let paginate = Recipes::find()
+        .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
+        .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
+        .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
+        .filter(items::Column::Name.like(&search_name))
+        .column_as(recipes::Column::Id, "id")
+        .column_as(recipes::Column::RecipeLevel, "rlv")
+        .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
+        .column_as(recipes::Column::QualityFactor, "quality_factor")
+        .column_as(recipes::Column::DurabilityFactor, "durability_factor")
+        .column_as(craft_types::Column::Name, "job")
+        .column_as(items::Column::Name, "name")
+        .into_model::<RecipeRow>()
+        .paginate(db, 200);
     let p = paginate.num_pages().await.map_err(|e| e.to_string())?;
-    let recipes_iter = paginate
+    let data = paginate
         .fetch_page(page_id)
         .await
         .map_err(|e| e.to_string())?;
-    let data = recipes_iter
-        .iter()
-        .map(async move |recipe| -> Result<RecipeRow, String> {
-            let mut conditions = Condition::all();
-            if !search_name.is_empty() {
-                conditions = conditions.add(db::items::Column::Name.like(&search_name));
-            }
-            let (result, result_item) = recipe
-                .find_related(db::prelude::ItemWithAmount)
-                .find_also_related(db::prelude::Items)
-                .filter(conditions)
-                .one(db)
-                .await
-                .map_err(|e| e.to_string())?
-                .ok_or("None".to_string())?;
-            let result_item = result_item.ok_or("None".to_string())?;
-            Ok(RecipeRow {
-                id: recipe.number as usize,
-                rlv: recipe.recipe_level,
-                name: result_item.name,
-                job: "".to_string(),
-                difficulty_factor: recipe.difficulty_factor as u16,
-                quality_factor: recipe.quality_factor as u16,
-                durability_factor: recipe.durability_factor as u16,
-            })
-        })
-        .collect::<FuturesOrdered<_>>();
-    let data = data
-        .collect::<Vec<Result<RecipeRow, String>>>()
-        .await
-        .into_iter()
-        .flat_map(|x| x.ok())
-        .collect::<Vec<RecipeRow>>();
     Ok((data, p))
 }
 
