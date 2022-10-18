@@ -10,6 +10,8 @@ pub struct Model {
     pub id: i32,
     #[sea_orm(column_name = "Number")]
     pub number: i32,
+    #[sea_orm(column_name = "CraftTypeId")]
+    pub craft_type_id: Option<i32>,
     #[sea_orm(column_name = "RecipeLevel")]
     pub recipe_level: i32,
     #[sea_orm(column_name = "ItemResultId")]
@@ -40,11 +42,25 @@ pub enum Relation {
         on_delete = "Cascade"
     )]
     ItemWithAmount,
+    #[sea_orm(
+        belongs_to = "super::craft_types::Entity",
+        from = "Column::CraftTypeId",
+        to = "super::craft_types::Column::Id",
+        on_update = "NoAction",
+        on_delete = "NoAction"
+    )]
+    CraftTypes,
 }
 
 impl Related<super::item_with_amount::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::ItemWithAmount.def()
+    }
+}
+
+impl Related<super::craft_types::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::CraftTypes.def()
     }
 }
 

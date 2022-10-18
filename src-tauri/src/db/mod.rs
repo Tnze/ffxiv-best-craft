@@ -3,6 +3,7 @@
 pub mod prelude;
 
 pub mod categories;
+pub mod craft_types;
 pub mod item_with_amount;
 pub mod items;
 pub mod recipes;
