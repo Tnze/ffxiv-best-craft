@@ -20,7 +20,7 @@
 
 ### 安装依赖项
 
-按照这篇教程安装Rust、Node和WebView2等组件：[Tauri](https://tauri.studio/docs/getting-started/prerequisites)
+按照这篇教程安装Rust、Node和WebView2等组件：[Tauri Getting Started](https://tauri.app/zh/v1/guides/getting-started/prerequisites/)
 
 ```bash
 yarn # download requirements
