@@ -130,11 +130,11 @@ const customRecipe = ref({
                                  </template>
                              </el-table-column>
                             -->
-                <el-table-column prop="name" label="名称" width="250" />
                 <el-table-column prop="job" label="类型" />
-                <el-table-column prop="difficulty_factor" label="难度因子" />
-                <el-table-column prop="quality_factor" label="品质因子" />
-                <el-table-column prop="durability_factor" label="耐久因子" />
+                <el-table-column prop="name" label="名称" width="250" />
+                <!-- <el-table-column prop="difficulty_factor" label="难度因子" /> -->
+                <!-- <el-table-column prop="quality_factor" label="品质因子" /> -->
+                <!-- <el-table-column prop="durability_factor" label="耐久因子" /> -->
                 <el-table-column align="right" width="300">
                     <template #header>
                         <el-pagination small layout="prev, pager, next" v-model:current-page="pagination.Page"

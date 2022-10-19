@@ -8,7 +8,7 @@
 use std::{
     collections::{hash_map::Entry, HashMap},
     net::SocketAddr,
-    sync::{Arc, Mutex},
+    sync::Arc,
 };
 
 use axum::{http::StatusCode, routing, Json, Router};
@@ -16,7 +16,7 @@ use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
-use tokio::sync::{oneshot, OnceCell};
+use tokio::sync::{oneshot, Mutex, OnceCell};
 
 mod db;
 mod ordinary_solver;
@@ -153,21 +153,18 @@ impl AppState {
 }
 
 #[tauri::command(async)]
-fn create_solver(
+async fn create_solver(
     status: Status,
     use_muscle_memory: bool,
     use_manipulation: bool,
-    app_state: tauri::State<AppState>,
+    app_state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
     let key = ordinary_solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    {
-        let mut list = app_state
-            .solver_list
-            .lock()
-            .map_err(|err| err.to_string())?;
+    let slot = {
+        let mut list = app_state.solver_list.lock().await;
         match list.entry(key.clone()) {
             Entry::Occupied(e) => match e.get() {
                 Some(_) => Err("solver already exists".to_string()),
@@ -178,8 +175,8 @@ fn create_solver(
                 Ok(())
             }
         }
-    }
-    .and_then(|_| {
+    };
+    if let Ok(()) = slot {
         let solver: Box<dyn Solver + Send + Sync> = if use_muscle_memory {
             let progress_list = preprogress_list(&status);
             if use_manipulation {
@@ -212,13 +209,12 @@ fn create_solver(
                 Box::new(solver)
             }
         };
-        let mut list = app_state
-            .solver_list
-            .lock()
-            .map_err(|err| err.to_string())?;
+        let mut list = app_state.solver_list.lock().await;
         *list.get_mut(&key).unwrap() = Some(solver); // we are sure that there is a None value so we can successfully get it
         Ok(())
-    })
+    } else {
+        slot
+    }
 }
 
 fn preprogress_list(status: &Status) -> Vec<u16> {
@@ -236,15 +232,15 @@ fn preprogress_list(status: &Status) -> Vec<u16> {
 }
 
 #[tauri::command(async)]
-fn read_solver(status: Status, app_state: tauri::State<AppState>) -> Result<Vec<Skills>, String> {
+async fn read_solver(
+    status: Status,
+    app_state: tauri::State<'_, AppState>,
+) -> Result<Vec<Skills>, String> {
     let key = ordinary_solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let mut list = app_state
-        .solver_list
-        .lock()
-        .map_err(|err| err.to_string())?;
+    let mut list = app_state.solver_list.lock().await;
     match list.entry(key) {
         Entry::Occupied(e) => {
             if let Some(v) = e.get() {
@@ -258,12 +254,15 @@ fn read_solver(status: Status, app_state: tauri::State<AppState>) -> Result<Vec<
 }
 
 #[tauri::command(async)]
-fn destroy_solver(status: Status, app_state: tauri::State<AppState>) -> Result<(), String> {
+async fn destroy_solver(
+    status: Status,
+    app_state: tauri::State<'_, AppState>,
+) -> Result<(), String> {
     let key = ordinary_solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let mut list = app_state.solver_list.lock().unwrap();
+    let mut list = app_state.solver_list.lock().await;
     match list.entry(key) {
         Entry::Occupied(e) => match e.get() {
             Some(_) => {
@@ -320,7 +319,7 @@ async fn start_http_server(
 
     println!("starting http server");
     let rx = {
-        let mut current_tx = app_state.shutdown_signal.lock().unwrap();
+        let mut current_tx = app_state.shutdown_signal.lock().await;
         if let Some(_) = *current_tx {
             return Err(String::from("http server is running"));
         }
