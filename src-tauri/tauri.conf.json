@@ -52,6 +52,7 @@
         "updater": {
             "active": true,
             "endpoints": [
+                "https://gitee.com/Tnze/ffxiv-best-craft/raw/main/versions.json",
                 "https://bestcraft.tnze.workers.dev/update/{{target}}/{{current_version}}",
                 "https://bestcraft.tnze.me/update/{{target}}/{{current_version}}"
             ],

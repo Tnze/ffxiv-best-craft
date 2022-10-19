@@ -123,13 +123,12 @@ const customRecipe = ref({
                 <el-table-column prop="id" label="ID" />
                 <el-table-column prop="rlv" label="配方等级" />
                 <!-- <el-table-column prop="Icon" label="图标" width="55">
-                                 <template #default="scope">
-                                     <div style="display: flex; align-items: center">
-                                         <el-image :src="xivapiBase + scope.row.Icon" />
-                                     </div>
-                                 </template>
-                             </el-table-column>
-                            -->
+                    <template #default="scope">
+                        <div style="display: flex; align-items: center">
+                            <el-image :src="'https://garlandtools.cn/files/icons/item/' + scope.row.item +'.png'" />
+                        </div>
+                    </template>
+                </el-table-column> -->
                 <el-table-column prop="job" label="类型" />
                 <el-table-column prop="name" label="名称" width="250" />
                 <!-- <el-table-column prop="difficulty_factor" label="难度因子" /> -->
