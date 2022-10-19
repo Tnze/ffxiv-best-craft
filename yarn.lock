@@ -867,7 +867,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^18.7.18":
+"@types/node@npm:*":
   version: 18.8.4
   resolution: "@types/node@npm:18.8.4"
   checksum: c2b87f6b0b1f02b2ce61ca7cb93ea287119bda086a3f33e48da8f5e70c24ad7141cc3465946e0e36abb7eba70c7b320c7659842096e4aa573b3a8d557322c818
@@ -878,6 +878,13 @@ __metadata:
   version: 16.9.1
   resolution: "@types/node@npm:16.9.1"
   checksum: 41afcf183a22d59323a0199dd7e0f46591247f45fc08a4434edb26d56dc279ae4fdb80f37989ddd7a0f45e3857c4933e6e82057ede09c5a829f77e373e680375
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:18.8.0":
+  version: 18.8.0
+  resolution: "@types/node@npm:18.8.0"
+  checksum: 3433cbc22e90fafb047f93b3ef05ba01a07f780a24ff1af393f435f807537b533fe9e8a816586825f4c5fd5336c3e80225571f44ec3b6479c463408c072773e7
   languageName: node
   linkType: hard
 
@@ -2976,7 +2983,7 @@ __metadata:
     "@tauri-apps/cli": ^1
     "@tauri-apps/tauricon": ^1
     "@types/lodash-es": ^4.17.6
-    "@types/node": ^18.7.18
+    "@types/node": 18.8.0
     "@types/vue-router": ^2.0.0
     "@vitejs/plugin-vue": ^3.1.0
     "@vueuse/core": ^9.2.0
