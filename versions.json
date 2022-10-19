@@ -1,11 +1,11 @@
 {
-    "version": "v0.5.0",
+    "version": "v0.5.1",
     "notes": "- 更新国服最新配方表\n- 优化配方查询速度",
-    "pub_date": "2022-10-19T21:55:26+08:00",
+    "pub_date": "2022-10-20T01:08:15+08:00",
     "platforms": {
       "windows-x86_64": {
-        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnYzQk9KeDlDS1JybnhSZmRGMzZ6c2lXSjN2RWhmY0xxZytMOENtN3FveGhiZUNILzFxQm04M3hXQzFWOHdwMElNOC94dlRYT2FoYnRaR3M1VkRhcWdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY2MTg3MTU4CWZpbGU6QmVzdENyYWZ0XzAuNS4wX3g2NF96aC1DTi5tc2kuemlwCisrL2V3SlVuRVVwL09GMTAxbmpybmpDNTJPb1puM1pJQTN0WXUrTS90UHVSVjNzUU9wbWM3T2hxRHliNHVtTjQzd1dubFlTOC95Z2NVMjVvdmowYUNnPT0K",
-        "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.0/BestCraft_0.5.0_x64_zh-CN.msi.zip"
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smx1bFJuVmh1TFFXVkJ4NXlwb3hwM003MGRvZXNBOFVXRUxIanFkQWs1L0tlYkZTY0E3WGhjMHN5US9qZUpxVHVidkZrZkRoSWtUNjdWWXF0YUNFWlFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY2MTk5MTIxCWZpbGU6QmVzdENyYWZ0XzAuNS4xX3g2NF96aC1DTi5tc2kuemlwCm9oSjZxNHNaMmMraDJTTi9NSnJhZ0VZT1pOSDNua2QrVTdDdnVyM3F3dDJxanR0VzFBM0hlUi91ZVY3aGx6KzRyZkNqVTFLL0lkWkdCRkZtN2NYQURBPT0K",
+        "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.1/BestCraft_0.5.1_x64_zh-CN.msi.zip"
       }
     }
   }
