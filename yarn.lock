@@ -2421,9 +2421,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"element-plus@npm:2.2.17":
-  version: 2.2.17
-  resolution: "element-plus@npm:2.2.17"
+"element-plus@npm:2.2.18":
+  version: 2.2.18
+  resolution: "element-plus@npm:2.2.18"
   dependencies:
     "@ctrl/tinycolor": ^3.4.1
     "@element-plus/icons-vue": ^2.0.6
@@ -2442,7 +2442,7 @@ __metadata:
     normalize-wheel-es: ^1.2.0
   peerDependencies:
     vue: ^3.2.0
-  checksum: d9560e807ff5f2b2c3263dd436b546b029ffd8127e0aa1034b739dd81af929285d6631bc2315d35c2f7c8f0fd42f700e54bfbcc029543257c410a994b0db1010
+  checksum: b9d290283a9586704f918bafe6f4506b2ba4b85b60bd5cd498d4791fcb1a639a86ad64e92a7a7249e5c30cbd0dcb0e17d25014f5017742ece8b785816dfef942
   languageName: node
   linkType: hard
 
@@ -2988,7 +2988,7 @@ __metadata:
     "@vitejs/plugin-vue": ^3.1.0
     "@vueuse/core": ^9.2.0
     blockly: ^8.0.5
-    element-plus: 2.2.17
+    element-plus: 2.2.18
     typescript: ^4.6.3
     unplugin-auto-import: ^0.11.2
     unplugin-vue-components: ^0.22.7
