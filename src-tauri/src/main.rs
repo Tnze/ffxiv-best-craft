@@ -12,9 +12,8 @@ use std::{
 };
 
 use axum::{http::StatusCode, routing, Json, Router};
-use ffxiv_crafting::{data, Attributes, CastActionError, Recipe, Skills, Status};
-use futures::{prelude::*, stream::FuturesOrdered};
-use sea_orm::{entity::*, query::*, Database, DatabaseConnection, DbErr, FromQueryResult};
+use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
+use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
 use tokio::sync::{oneshot, OnceCell};
