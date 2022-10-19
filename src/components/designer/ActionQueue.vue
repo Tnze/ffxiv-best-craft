@@ -26,7 +26,7 @@ const dragOptions = computed(() => {
 })
 
 const isDragging = ref(false)
-const onRightClick = (index: number) => {
+const removeAction = (index: number) => {
     if (!props.disabled)
         props.list.splice(index, 1)
 }
@@ -49,7 +49,7 @@ function calc_effect(index: number): string {
             <template #item="{ element, index }">
                 <div class="list-group-item">
                     <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)"
-                        disabled @click.stop.prevent.right="onRightClick(index)" />
+                        disabled @click.stop.prevent.right="removeAction(index)" @dblclick="removeAction(index)" />
                 </div>
             </template>
         </draggable>
