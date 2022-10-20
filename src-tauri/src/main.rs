@@ -108,10 +108,17 @@ async fn recipe_table(
     page_id: usize,
     search_name: String,
     app_state: tauri::State<'_, AppState>,
+    handle: tauri::AppHandle,
 ) -> Result<(Vec<RecipeRow>, usize), String> {
     let db = app_state
         .db
-        .get_or_try_init(|| Database::connect("sqlite:./assets/xiv.db?mode=ro"))
+        .get_or_try_init(|| {
+            let db_path = handle
+                .path_resolver()
+                .resolve_resource("./assets/xiv.db")
+                .expect("fail to resolve db file path");
+            Database::connect(format!("sqlite:{}?mode=ro", db_path))
+        })
         .await
         .map_err(|e| e.to_string())?;
     let paginate = Recipes::find()
