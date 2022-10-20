@@ -112,13 +112,7 @@ async fn recipe_table(
 ) -> Result<(Vec<RecipeRow>, usize), String> {
     let db = app_state
         .db
-        .get_or_try_init(|| {
-            let db_path = handle
-                .path_resolver()
-                .resolve_resource("./assets/xiv.db")
-                .expect("fail to resolve db file path");
-            Database::connect(format!("sqlite:{}?mode=ro", db_path))
-        })
+        .get_or_try_init(|| Database::connect(format!("sqlite:{}?mode=ro", "./assets/xiv.db")))
         .await
         .map_err(|e| e.to_string())?;
     let paginate = Recipes::find()
