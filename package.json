@@ -16,6 +16,7 @@
         "blockly": "^8.0.5",
         "element-plus": "2.2.18",
         "vue": "3.2.41",
+        "vue-router": "4",
         "vuedraggable": "^4.1.0"
     },
     "devDependencies": {
@@ -24,7 +25,6 @@
         "@tauri-apps/tauricon": "^1",
         "@types/lodash-es": "^4.17.6",
         "@types/node": "18.8.0",
-        "@types/vue-router": "^2.0.0",
         "@vitejs/plugin-vue": "^3.1.0",
         "typescript": "^4.6.3",
         "unplugin-auto-import": "^0.11.2",
