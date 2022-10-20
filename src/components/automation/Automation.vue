@@ -145,7 +145,7 @@ onMounted(async () => {
 async function run() {
     let code = BlocklyJS
         .workspaceToCode(workspace! as Blockly.Workspace)
-        .replace(/(?<=^|\n)function \w+\(.*\)/g, 'async $&')
+        .replace(new RegExp('(?<=^|\n)function \w+\(.*\)', 'g'), 'async $&')
     code = `return (async () => {\n${code}})()`
     console.log(code)
     try {
