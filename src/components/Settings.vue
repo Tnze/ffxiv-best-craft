@@ -58,9 +58,10 @@ const onCheckUpdateClick = () => {
                     <el-button type="primary" @click="onCheckUpdateClick">检查更新</el-button>
                 </el-form-item>
                 <el-form-item label="Auther">
-                    Tnze
+                    Tnze❀潮风亭
                 </el-form-item>
-                <el-form-item label="Repositories">
+                <el-form-item label="Links">
+                    <el-link href="https://pd.qq.com/s/cofwn9zhx">QQ频道</el-link>
                     <el-link href="https://gitee.com/Tnze/ffxiv-best-craft" target="_blank">Gitee</el-link>
                     <el-link href="https://github.com/Tnze/ffxiv-best-craft" target="_blank">Github</el-link>
                 </el-form-item>
@@ -77,5 +78,4 @@ const onCheckUpdateClick = () => {
 .el-link {
     margin-right: 8px;
 }
-
 </style>
