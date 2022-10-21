@@ -21,32 +21,32 @@ const disableAutomation = ref(true)
 </script>
 
 <template>
-    <el-menu :default-active="modelValue" @select="key => emit('update:modelValue', key)" :collapse="true">
-        <el-menu-item index="0">
+    <el-menu :default-active="modelValue" :router="true" @select="key => emit('update:modelValue', key)" :collapse="true">
+        <el-menu-item index="/gearsets">
             <el-icon>
                 <suitcase />
             </el-icon>
             <template #title>装备</template>
         </el-menu-item>
-        <el-menu-item index="1">
+        <el-menu-item index="/recipe">
             <el-icon>
                 <notebook />
             </el-icon>
             <template #title>配方</template>
         </el-menu-item>
-        <el-menu-item index="2">
+        <el-menu-item index="/designer">
             <el-icon>
                 <edit />
             </el-icon>
             <template #title>设计</template>
         </el-menu-item>
-        <el-menu-item index="3" :disabled="disableAutomation"  @click.stop.prevent.right="disableAutomation = false">
+        <el-menu-item index="/automation" :disabled="disableAutomation" @click.stop.prevent.right="disableAutomation = false">
             <el-icon>
                 <magic-stick />
             </el-icon>
             <template #title>自动化</template>
         </el-menu-item>
-        <el-menu-item index="4">
+        <el-menu-item index="/settings">
             <el-icon>
                 <setting />
             </el-icon>
