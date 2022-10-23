@@ -50,8 +50,11 @@ export const store = createStore<State>({
         storeGearsets(state, newGearsets) {
             state.gearsets = newGearsets
         },
-        selectRecipe(state: State, payload: { job: Jobs | 'unknown', itemName: string, recipe: Recipe }) {
-            console.log(payload)
+        selectRecipe(state: State, payload: {
+            job: Jobs | 'unknown',
+            itemName: string,
+            recipe: Recipe
+        }) {
             state.designer = payload
         }
     }

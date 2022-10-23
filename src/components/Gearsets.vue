@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { createDir, readTextFile, writeFile, Dir } from '@tauri-apps/api/fs'
 import { ref, onMounted, onUpdated, computed } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router';
 import { useStore } from '../store'
 
 const jobLabels = new Map([
@@ -25,7 +26,7 @@ const modelValue = computed({
     }
 })
 
-onMounted(async () => {
+async function loadGearsets() {
     try {
         const conf = await readTextFile('gearsets.json', { dir: Dir.App })
         modelValue.value = JSON.parse(conf)
@@ -33,10 +34,11 @@ onMounted(async () => {
         // may be the file is not exist
         console.log(err)
     }
-})
+}
 
-onUpdated(async () => {
+async function storeGearsets() {
     const conf = JSON.stringify(modelValue.value)
+    console.log(conf)
     try {
         await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
     } catch (err) {
@@ -47,7 +49,11 @@ onUpdated(async () => {
             console.log(err)
         }
     }
-})
+}
+
+onMounted(loadGearsets)
+onUpdated(storeGearsets)
+onBeforeRouteLeave((_to, _from) => storeGearsets())
 
 const jobPage = ref('default')
 

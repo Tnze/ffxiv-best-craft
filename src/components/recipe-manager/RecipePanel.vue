@@ -61,9 +61,7 @@ const selectRecipeRow = async (row: RecipeRow) => {
 }
 
 const selectRecipe = (recipe: Recipe, itemName: string, craftType: string) => {
-    const job = jobMaps[craftType]
-    console.log(job)
-    store.commit('selectRecipe', { job, itemName, recipe })
+    store.commit('selectRecipe', { job: jobMaps[craftType], itemName, recipe })
     router.push({ name: "designer" })
     ElMessage({
         type: 'success',

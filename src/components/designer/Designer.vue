@@ -40,12 +40,12 @@ interface Sequence {
     errors: { pos: number; err: string }[];
 }
 
-const store = useStore()
+const { designer, gearsets } = useStore().state
 const attributes = computed(() =>
-    store.state.gearsets.special.find(v => v.name == store.state.designer!.job)?.value || store.state.gearsets.default
+    gearsets.special.find(v => v.name == designer!.job)?.value || gearsets.default
 )
 const displayJob = computed(() =>
-    store.state.designer!.job == "unknown" ? Jobs.Culinarian : store.state.designer!.job
+    designer!.job == "unknown" ? Jobs.Culinarian : designer!.job
 );
 
 // 食物和药水效果
@@ -76,9 +76,9 @@ const enhancedAttributes = computed<Attributes>(() => {
 // Simulation
 const initQuality = ref(0)
 const initStatus = ref<Status>(
-    await newStatus(enhancedAttributes.value, store.state.designer!.recipe, initQuality.value)
+    await newStatus(enhancedAttributes.value, designer!.recipe, initQuality.value)
 );
-watch([store.state.designer!, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
+watch([designer!, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
     initStatus.value = await newStatus(ea, p.recipe, iq);
 });
 // Actions Queue
@@ -217,7 +217,7 @@ async function saveListToJSON() {
         }
         const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
         const path = await save({
-            defaultPath: `${store.state.designer!.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
+            defaultPath: `${designer!.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
             filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
             title: '保存文件'
         })
@@ -280,7 +280,7 @@ async function openListFromJSON() {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
-            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="store.state.designer!.itemName"
+            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="designer!.itemName"
                 @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
         <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="80%">
@@ -290,7 +290,7 @@ async function openListFromJSON() {
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <el-header>
-            <h1>{{ store.state.designer!.itemName }}</h1>
+            <h1>{{ designer!.itemName }}</h1>
         </el-header>
         <el-main>
             <div class="main-page">
