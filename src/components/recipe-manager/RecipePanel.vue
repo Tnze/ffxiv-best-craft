@@ -3,6 +3,11 @@ import { ref, watchEffect, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
 import { Jobs, Recipe, newRecipe, recipeTable, RecipeRow } from '../../Craft'
+import { useRouter } from 'vue-router';
+import { useStore } from '../../store';
+
+const store = useStore()
+const router = useRouter()
 
 const jobMaps: { [key: string]: Jobs | 'unknown' } = {
     '木工': Jobs.Carpenter,
@@ -26,12 +31,8 @@ watchEffect(async () => {
     let [list, totalPages] = await recipeTable(pagination.Page, searchText.value)
     displayTable.value = list
     pagination.PageTotal = totalPages
-    console.log("total pages", totalPages)
 })
 
-const emits = defineEmits<{
-    (event: 'change', job: Jobs | 'unknown', name: string, recipe: Recipe): void
-}>()
 
 const openFilter = ref(false)
 const openCustomlizer = ref(false)
@@ -59,8 +60,11 @@ const selectRecipeRow = async (row: RecipeRow) => {
     }
 }
 
-const selectRecipe = (recipe: Recipe, name: string, job: string) => {
-    emits('change', jobMaps[job], name, recipe)
+const selectRecipe = (recipe: Recipe, itemName: string, craftType: string) => {
+    const job = jobMaps[craftType]
+    console.log(job)
+    store.commit('selectRecipe', { job, itemName, recipe })
+    router.push({ name: "designer" })
     ElMessage({
         type: 'success',
         showClose: true,

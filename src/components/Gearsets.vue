@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { createDir, readTextFile, writeFile, Dir } from '@tauri-apps/api/fs'
-import { ref, onMounted, onUpdated } from 'vue'
-import { Attributes } from '../Craft'
-
-interface GearsetsRow {
-    name: string
-    value: Attributes | null
-}
+import { ref, onMounted, onUpdated, computed } from 'vue'
+import { useStore } from '../store'
 
 const jobLabels = new Map([
     ['carpenter', "刻木匠"],
@@ -19,18 +14,21 @@ const jobLabels = new Map([
     ['culinarian', "烹调师"],
 ])
 
-const props = defineProps<{
-    modelValue: { default: Attributes, special: GearsetsRow[] }
-}>()
+const store = useStore()
 
-const emits = defineEmits<{
-    (event: 'update:modelValue', attr: Attributes): void
-}>()
+const modelValue = computed({
+    get() {
+        return store.state.gearsets;
+    },
+    set(newValue) {
+        store.commit('storeGearsets', newValue)
+    }
+})
 
 onMounted(async () => {
     try {
         const conf = await readTextFile('gearsets.json', { dir: Dir.App })
-        emits('update:modelValue', JSON.parse(conf) as Attributes)
+        modelValue.value = JSON.parse(conf)
     } catch (err) {
         // may be the file is not exist
         console.log(err)
@@ -38,7 +36,7 @@ onMounted(async () => {
 })
 
 onUpdated(async () => {
-    const conf = JSON.stringify(props.modelValue)
+    const conf = JSON.stringify(modelValue.value)
     try {
         await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
     } catch (err) {

@@ -8,20 +8,12 @@ import {
 } from '@element-plus/icons-vue'
 import { ref } from 'vue';
 
-const props = defineProps<{
-    modelValue: string
-}>()
-
-const emit = defineEmits<{
-    (event: 'update:modelValue', page: string): void
-}>()
-
 const disableAutomation = ref(true)
 
 </script>
 
 <template>
-    <el-menu :default-active="modelValue" :router="true" @select="key => emit('update:modelValue', key)" :collapse="true">
+    <el-menu default-active="/gearsets" :router="true" :collapse="true">
         <el-menu-item index="/gearsets">
             <el-icon>
                 <suitcase />
