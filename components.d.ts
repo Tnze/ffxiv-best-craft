@@ -49,6 +49,7 @@ declare module '@vue/runtime-core' {
     Gearsets: typeof import('./src/components/Gearsets.vue')['default']
     MarcoExporter: typeof import('./src/components/designer/MarcoExporter.vue')['default']
     Menu: typeof import('./src/components/Menu.vue')['default']
+    Page: typeof import('./src/components/designer/Page.vue')['default']
     QueueStatus: typeof import('./src/components/designer/QueueStatus.vue')['default']
     RecipePanel: typeof import('./src/components/recipe-manager/RecipePanel.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

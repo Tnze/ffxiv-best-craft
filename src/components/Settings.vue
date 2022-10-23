@@ -3,12 +3,9 @@ import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getName, getVersion, getTauriVersion } from '@tauri-apps/api/app'
 import { checkUpdate } from '@tauri-apps/api/updater'
+import { useStore } from "../store"
 
-const props = defineProps<{
-    settings: {
-        language: string
-    }
-}>()
+const store = useStore()
 
 const appName = ref('')
 const version = ref('')
@@ -42,9 +39,9 @@ const onCheckUpdateClick = () => {
             <h1>设置</h1>
         </el-header>
         <el-main>
-            <el-form class="setting-page" :model="settings" label-width="120px">
+            <el-form class="setting-page" :model="store.state.settings" label-width="120px">
                 <el-form-item label="Language">
-                    <el-select v-model="settings.language">
+                    <el-select v-model="store.state.settings.language">
                         <el-option label="简体中文" value="zh-CN" />
                     </el-select>
                 </el-form-item>

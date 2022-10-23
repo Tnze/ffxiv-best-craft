@@ -17,7 +17,8 @@
         "element-plus": "2.2.18",
         "vue": "3.2.41",
         "vue-router": "4",
-        "vuedraggable": "^4.1.0"
+        "vuedraggable": "^4.1.0",
+        "vuex": "next"
     },
     "devDependencies": {
         "@babel/types": "^7.17.0",

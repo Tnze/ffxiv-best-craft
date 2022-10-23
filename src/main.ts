@@ -1,20 +1,24 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp, ref } from 'vue'
+import { createStore } from 'vuex'
+import { createRouter, createWebHashHistory } from 'vue-router';
+
 import 'element-plus/es/components/message/style/css'
 import 'element-plus/es/components/message-box/style/css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 
-import { createRouter, createWebHashHistory } from 'vue-router';
-import DesignerVue from './components/designer/Designer.vue';
-import GearsetsVue from './components/Gearsets.vue';
-import RecipePanelVue from './components/recipe-manager/RecipePanel.vue';
-import AutomationVue from './components/automation/Automation.vue'
-import SettingsVue from './components/Settings.vue';
+import { store, key } from './store'
+import App from './App.vue'
+
+const GearsetsVue = () => import('./components/Gearsets.vue')
+const RecipePanelVue = () => import('./components/recipe-manager/RecipePanel.vue')
+const DesignerVue = () => import('./components/designer/Page.vue')
+const AutomationVue = () => import('./components/automation/Automation.vue')
+const SettingsVue = () => import('./components/Settings.vue')
 
 const routes = [
     { path: '/gearsets', component: GearsetsVue },
     { path: '/recipe', component: RecipePanelVue },
-    { path: '/designer', component: DesignerVue },
+    { path: '/designer', name: 'designer', component: DesignerVue},
     { path: '/automation', component: AutomationVue },
     { path: '/settings', component: SettingsVue },
 ]
@@ -24,4 +28,4 @@ const router = createRouter({
     routes
 })
 
-createApp(App).use(router).mount('#app')
+createApp(App).use(store, key).use(router).mount('#app')
