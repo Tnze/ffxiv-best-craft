@@ -28,6 +28,7 @@ use crate::preprogress_solver::PreprogressSolver;
 use crate::solver::Solver;
 use db::{craft_types, item_with_amount, items, prelude::*, recipes};
 
+/// 创建新的Recipe对象，蕴含了模拟一次制作过程所必要的全部配方信息
 #[tauri::command(async)]
 fn new_recipe(
     rlv: i32,
@@ -38,6 +39,7 @@ fn new_recipe(
     Recipe::new(rlv, difficulty_factor, quality_factor, durability_factor)
 }
 
+/// 初始化一个表示一次制作的初始状态的Status对象，包含玩家属性、配方信息和初期品质
 #[tauri::command(async)]
 fn new_status(attrs: Attributes, recipe: Recipe, init_quality: u32) -> Result<Status, String> {
     if recipe.job_level > attrs.level + 5 {
@@ -61,6 +63,8 @@ struct SimulateResult {
     errors: Vec<CastErrorPos>,
 }
 
+/// 模拟以指定初始状态按顺序执行一个技能序列后的结果，
+/// 返回值`SimulateResult`包含了最终状态以及模拟过程中每个技能失败的位置及原因
 #[tauri::command(async)]
 fn simulate(status: Status, skills: Vec<Skills>) -> SimulateResult {
     let mut result = SimulateResult {
@@ -76,6 +80,7 @@ fn simulate(status: Status, skills: Vec<Skills>) -> SimulateResult {
     result
 }
 
+/// 计算当前状态下可以释放技能的集合，用于模拟界面将不可释放技能置灰
 #[tauri::command(async)]
 fn allowed_list(status: Status, skills: Vec<Skills>) -> Vec<String> {
     skills
@@ -87,6 +92,8 @@ fn allowed_list(status: Status, skills: Vec<Skills>) -> Vec<String> {
         .collect()
 }
 
+/// 计算当前状态下，传入的技能列表中每个技能需要消耗的制作力，
+/// 技能消耗的制作力会受到技能连击和当前制作状态（球色—）的影响
 #[tauri::command(async)]
 fn craftpoints_list(status: Status, skills: Vec<Skills>) -> Vec<i32> {
     skills.iter().map(|&sk| status.craft_point(sk)).collect()
@@ -153,6 +160,7 @@ impl AppState {
     }
 }
 
+/// 创建生产求解器
 #[tauri::command(async)]
 async fn create_solver(
     status: Status,
@@ -232,6 +240,7 @@ fn preprogress_list(status: &Status) -> Vec<u16> {
     ]
 }
 
+/// 调用求解器
 #[tauri::command(async)]
 async fn read_solver(
     status: Status,
@@ -254,6 +263,7 @@ async fn read_solver(
     }
 }
 
+/// 释放求解器
 #[tauri::command(async)]
 async fn destroy_solver(
     status: Status,
