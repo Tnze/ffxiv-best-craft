@@ -7,13 +7,15 @@ import {
     Setting,
 } from '@element-plus/icons-vue'
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const disableAutomation = ref(true)
 
 </script>
 
 <template>
-    <el-menu default-active="/gearsets" :router="true" :collapse="true">
+    <el-menu :default-active="router.currentRoute.value.path" :router="true" :collapse="true">
         <el-menu-item index="/gearsets">
             <el-icon>
                 <suitcase />
@@ -32,7 +34,8 @@ const disableAutomation = ref(true)
             </el-icon>
             <template #title>设计</template>
         </el-menu-item>
-        <el-menu-item index="/automation" :disabled="disableAutomation" @click.stop.prevent.right="disableAutomation = false">
+        <el-menu-item index="/automation" :disabled="disableAutomation"
+            @click.stop.prevent.right="disableAutomation = false">
             <el-icon>
                 <magic-stick />
             </el-icon>
