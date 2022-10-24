@@ -1,5 +1,4 @@
 import { createApp, ref } from 'vue'
-import { createStore } from 'vuex'
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 import 'element-plus/es/components/message/style/css'

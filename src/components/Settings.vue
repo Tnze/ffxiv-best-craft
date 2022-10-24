@@ -40,24 +40,24 @@ const onCheckUpdateClick = () => {
         </el-header>
         <el-main>
             <el-form class="setting-page" :model="store.state.settings" label-width="120px">
-                <el-form-item label="Language">
+                <el-form-item label="语言">
                     <el-select v-model="store.state.settings.language">
                         <el-option label="简体中文" value="zh-CN" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="Version">
+                <el-form-item label="版本号">
                     {{ version }}
                 </el-form-item>
-                <el-form-item label="Tauri Version">
+                <el-form-item label="Tauri">
                     {{ tauriVersion }}
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onCheckUpdateClick">检查更新</el-button>
                 </el-form-item>
-                <el-form-item label="Auther">
+                <el-form-item label="开发者">
                     Tnze❀潮风亭
                 </el-form-item>
-                <el-form-item label="Links">
+                <el-form-item label="反馈问题">
                     <el-link href="https://pd.qq.com/s/cofwn9zhx">QQ频道</el-link>
                     <el-link href="https://gitee.com/Tnze/ffxiv-best-craft" target="_blank">Gitee</el-link>
                     <el-link href="https://github.com/Tnze/ffxiv-best-craft" target="_blank">Github</el-link>
