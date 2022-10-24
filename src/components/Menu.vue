@@ -5,6 +5,7 @@ import {
     Edit,
     MagicStick,
     Setting,
+    Box,
 } from '@element-plus/icons-vue'
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -27,6 +28,12 @@ const disableAutomation = ref(true)
                 <notebook />
             </el-icon>
             <template #title>配方</template>
+        </el-menu-item>
+        <el-menu-item index="/bom">
+            <el-icon>
+                <box />
+            </el-icon>
+            <template #title>物料</template>
         </el-menu-item>
         <el-menu-item index="/designer">
             <el-icon>

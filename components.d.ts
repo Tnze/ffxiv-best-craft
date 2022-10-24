@@ -12,6 +12,7 @@ declare module '@vue/runtime-core' {
     ActionQueue: typeof import('./src/components/designer/ActionQueue.vue')['default']
     AttrEnhSelector: typeof import('./src/components/attr-enhancer/AttrEnhSelector.vue')['default']
     Automation: typeof import('./src/components/automation/Automation.vue')['default']
+    BillOfMaterial: typeof import('./src/components/BillOfMaterial.vue')['default']
     Buffs: typeof import('./src/components/designer/Buffs.vue')['default']
     Condition: typeof import('./src/components/designer/Condition.vue')['default']
     Designer: typeof import('./src/components/designer/Designer.vue')['default']
