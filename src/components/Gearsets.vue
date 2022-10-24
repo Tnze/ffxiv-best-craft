@@ -38,7 +38,6 @@ async function loadGearsets() {
 
 async function storeGearsets() {
     const conf = JSON.stringify(modelValue.value)
-    console.log(conf)
     try {
         await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
     } catch (err) {
@@ -46,7 +45,7 @@ async function storeGearsets() {
             await createDir('', { dir: Dir.App })
             await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
         } catch (err) {
-            console.log(err)
+            console.error(err)
         }
     }
 }

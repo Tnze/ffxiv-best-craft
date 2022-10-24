@@ -16,9 +16,10 @@ const AutomationVue = () => import('./components/automation/Automation.vue')
 const SettingsVue = () => import('./components/Settings.vue')
 
 const routes = [
+    { path: '/', redirect: '/gearsets' },
     { path: '/gearsets', component: GearsetsVue },
     { path: '/recipe', component: RecipePanelVue },
-    { path: '/designer', name: 'designer', component: DesignerVue},
+    { path: '/designer', name: 'designer', component: DesignerVue },
     { path: '/automation', component: AutomationVue },
     { path: '/settings', component: SettingsVue },
 ]
