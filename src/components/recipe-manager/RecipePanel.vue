@@ -136,13 +136,9 @@ const customRecipe = ref({
                 <!-- <el-table-column prop="difficulty_factor" label="难度因子" /> -->
                 <!-- <el-table-column prop="quality_factor" label="品质因子" /> -->
                 <!-- <el-table-column prop="durability_factor" label="耐久因子" /> -->
-                <el-table-column align="right" width="300">
-                    <template #header>
-                        <el-pagination small layout="prev, pager, next" v-model:current-page="pagination.Page"
-                            :page-count="pagination.PageTotal" />
-                    </template>
-                </el-table-column>
             </el-table>
+            <el-pagination layout="prev, pager, next" v-model:current-page="pagination.Page"
+                :page-count="pagination.PageTotal" />
         </el-main>
     </el-container>
 </template>
@@ -160,5 +156,9 @@ const customRecipe = ref({
 
 .el-table {
     user-select: none;
+}
+.el-pagination {
+    justify-content: center;
+    /* margin-bottom: 10px; */
 }
 </style>
