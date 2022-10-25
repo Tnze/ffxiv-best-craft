@@ -40,7 +40,7 @@ const openCustomlizer = ref(false)
 const selectRecipeRow = async (row: RecipeRow) => {
     try {
         await ElMessageBox.confirm(
-            `将当前配方设置为“${row.name}”吗？`,
+            `将当前配方设置为“${row.item_name}”吗？`,
             '请确认',
             {
                 confirmButtonText: '确认',
@@ -54,7 +54,8 @@ const selectRecipeRow = async (row: RecipeRow) => {
             row.quality_factor,
             row.durability_factor
         )
-        selectRecipe(recipe, row.name, row.job)
+        selectRecipe(recipe, row.item_name, row.job)
+        store.commit('addToChecklist', { ingredient_id: row.item_id, amount: 1 })
     } catch {
         // operation canceled by user
     }
@@ -122,8 +123,8 @@ const customRecipe = ref({
             </el-input>
             <el-table v-loading="displayTable == null" element-loading-text="请稍等..." highlight-current-row
                 @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
-                <el-table-column prop="id" label="ID" />
-                <el-table-column prop="rlv" label="配方等级" />
+                <el-table-column prop="id" label="ID" width="100" />
+                <el-table-column prop="rlv" label="配方等级" width="100" />
                 <!-- <el-table-column prop="Icon" label="图标" width="55">
                     <template #default="scope">
                         <div style="display: flex; align-items: center">
@@ -131,8 +132,8 @@ const customRecipe = ref({
                         </div>
                     </template>
                 </el-table-column> -->
-                <el-table-column prop="job" label="类型" />
-                <el-table-column prop="name" label="名称" width="250" />
+                <el-table-column prop="job" label="类型" width="70" />
+                <el-table-column prop="item_name" label="名称" />
                 <!-- <el-table-column prop="difficulty_factor" label="难度因子" /> -->
                 <!-- <el-table-column prop="quality_factor" label="品质因子" /> -->
                 <!-- <el-table-column prop="durability_factor" label="耐久因子" /> -->
@@ -157,6 +158,7 @@ const customRecipe = ref({
 .el-table {
     user-select: none;
 }
+
 .el-pagination {
     justify-content: center;
     /* margin-bottom: 10px; */

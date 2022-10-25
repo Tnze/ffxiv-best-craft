@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import { useStore } from '../store';
 
+const store = useStore();
 </script>
 
 <template>
     <el-scrollbar>
         <div class="scrollbar-flex-content">
-            <el-card v-for="o in 10" :key="o" class="box-card">
+            <el-card class="box-card">
                 <el-scrollbar>
-                    <p v-for="item in 10" :key="item" class="scrollbar-demo-item">
-                        {{ item }}
+                    <p v-for="item in store.state.checklist" :key="item.ingredient_id" class="scrollbar-demo-item">
+                        {{ item.ingredient_id }} * {{ item.amount }}
                     </p>
                 </el-scrollbar>
             </el-card>

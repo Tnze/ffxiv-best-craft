@@ -1,6 +1,6 @@
 import { InjectionKey } from 'vue'
 import { createStore, useStore as baseUseStore, Store } from 'vuex'
-import { Attributes, Jobs, Recipe } from './Craft'
+import { Attributes, ItemWithAmount, Jobs, Recipe } from './Craft'
 
 export interface GearsetsRow {
     name: string
@@ -9,6 +9,7 @@ export interface GearsetsRow {
 
 export interface State {
     gearsets: { default: Attributes, special: GearsetsRow[] }
+    checklist: ItemWithAmount[]
     designer: null | {
         itemName: string;
         job: Jobs | "unknown";
@@ -41,6 +42,7 @@ export const store = createStore<State>({
                 { name: 'culinarian', value: null },
             ]
         },
+        checklist: [],
         designer: null,
         settings: {
             language: "zh-CN"
@@ -50,7 +52,14 @@ export const store = createStore<State>({
         storeGearsets(state, newGearsets) {
             state.gearsets = newGearsets
         },
-        selectRecipe(state: State, payload: {
+        addToChecklist(state, payload: ItemWithAmount) {
+            const elem = state.checklist.find(v => v.ingredient_id == payload.ingredient_id)
+            if (elem == undefined)
+                state.checklist.push(payload)
+            else
+                elem.amount += payload.amount
+        },
+        selectRecipe(state, payload: {
             job: Jobs | 'unknown',
             itemName: string,
             recipe: Recipe
