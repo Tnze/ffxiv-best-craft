@@ -103,7 +103,8 @@ fn craftpoints_list(status: Status, skills: Vec<Skills>) -> Vec<i32> {
 struct RecipeRow {
     id: i32,
     rlv: i32,
-    name: String,
+    item_id: i32,
+    item_name: String,
     job: String,
     difficulty_factor: u16,
     quality_factor: u16,
@@ -115,13 +116,8 @@ async fn recipe_table(
     page_id: usize,
     search_name: String,
     app_state: tauri::State<'_, AppState>,
-    handle: tauri::AppHandle,
 ) -> Result<(Vec<RecipeRow>, usize), String> {
-    let db = app_state
-        .db
-        .get_or_try_init(|| Database::connect("sqlite:./assets/xiv.db?mode=ro"))
-        .await
-        .map_err(|e| e.to_string())?;
+    let db = app_state.get_db().await.map_err(|e| e.to_string())?;
     let paginate = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
         .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
@@ -133,7 +129,8 @@ async fn recipe_table(
         .column_as(recipes::Column::QualityFactor, "quality_factor")
         .column_as(recipes::Column::DurabilityFactor, "durability_factor")
         .column_as(craft_types::Column::Name, "job")
-        .column_as(items::Column::Name, "name")
+        .column_as(items::Column::Id, "item_id")
+        .column_as(items::Column::Name, "item_name")
         .into_model::<RecipeRow>()
         .paginate(db, 200);
     let p = paginate.num_pages().await.map_err(|e| e.to_string())?;
@@ -142,6 +139,25 @@ async fn recipe_table(
         .await
         .map_err(|e| e.to_string())?;
     Ok((data, p))
+}
+
+#[tauri::command(async)]
+async fn recipe_ingredientions(
+    recipe_id: i32,
+    app_state: tauri::State<'_, AppState>,
+) -> Result<Vec<item_with_amount::Model>, String> {
+    let db = app_state.get_db().await.map_err(|e| e.to_string())?;
+    let r = Recipes::find_by_id(recipe_id)
+        .one(db)
+        .await
+        .map_err(|e| e.to_string())?
+        .ok_or("Recipe not found")?;
+    let ingredientions = r
+        .find_related(ItemWithAmount)
+        .all(db)
+        .await
+        .map_err(|e| e.to_string())?;
+    Ok(ingredientions)
 }
 
 struct AppState {
@@ -157,6 +173,12 @@ impl AppState {
             db: OnceCell::new(),
             shutdown_signal: Mutex::new(None),
         }
+    }
+
+    async fn get_db(&self) -> Result<&DatabaseConnection, sea_orm::DbErr> {
+        self.db
+            .get_or_try_init(|| Database::connect("sqlite:./assets/xiv.db?mode=ro"))
+            .await
     }
 }
 
@@ -363,6 +385,7 @@ fn main() {
             allowed_list,
             craftpoints_list,
             recipe_table,
+            recipe_ingredientions,
             create_solver,
             read_solver,
             destroy_solver,

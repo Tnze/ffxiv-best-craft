@@ -164,7 +164,8 @@ const craftPointsList = (
 interface RecipeRow {
   id: number;
   rlv: number;
-  name: string;
+  item_id: number;
+  item_name: string;
   job: string;
 
   difficulty_factor: number;
@@ -176,6 +177,11 @@ const recipeTable = (page: number, searchName: string): Promise<[RecipeRow[], nu
   return invoke("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
 };
 
+interface ItemWithAmount {
+  ingredient_id: number;
+  amount: number;
+}
+
 export {
   Attributes,
   Buffs,
@@ -185,6 +191,7 @@ export {
   Jobs,
   Actions,
   RecipeRow,
+  ItemWithAmount,
   newRecipe,
   newStatus,
   simulate,
