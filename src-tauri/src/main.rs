@@ -167,7 +167,7 @@ async fn recipes_ingredientions(
                     needs
                         .entry(v.ingredient_id)
                         .and_modify(|e| *e += v.amount)
-                        .or_insert(v.amount);
+                        .or_insert(v.amount * amount);
                 }
             }
             None => {

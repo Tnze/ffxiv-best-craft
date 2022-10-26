@@ -59,6 +59,12 @@ export const store = createStore<State>({
             else
                 elem.amount += payload.amount
         },
+        changeChecklist(state, payload: { idx: number, amount: number }) {
+            if (payload.amount > 0)
+                state.checklist[payload.idx].amount = payload.amount
+            else
+                state.checklist.splice(payload.idx, 1)
+        },
         selectRecipe(state, payload: {
             job: Jobs | 'unknown',
             itemName: string,
