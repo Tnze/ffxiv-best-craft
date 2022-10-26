@@ -6,7 +6,7 @@
 #![feature(async_closure)]
 
 use std::{
-    collections::{hash_map::Entry, HashMap},
+    collections::{hash_map::Entry, BTreeMap, HashMap},
     net::SocketAddr,
     sync::Arc,
 };
@@ -99,6 +99,10 @@ fn craftpoints_list(status: Status, skills: Vec<Skills>) -> Vec<i32> {
     skills.iter().map(|&sk| status.craft_point(sk)).collect()
 }
 
+fn err_to_string<T: ToString>(v: T) -> String {
+    v.to_string()
+}
+
 #[derive(FromQueryResult, Serialize)]
 struct RecipeRow {
     id: i32,
@@ -117,7 +121,7 @@ async fn recipe_table(
     search_name: String,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<(Vec<RecipeRow>, usize), String> {
-    let db = app_state.get_db().await.map_err(|e| e.to_string())?;
+    let db = app_state.get_db().await.map_err(err_to_string)?;
     let paginate = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
         .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
@@ -133,31 +137,61 @@ async fn recipe_table(
         .column_as(items::Column::Name, "item_name")
         .into_model::<RecipeRow>()
         .paginate(db, 200);
-    let p = paginate.num_pages().await.map_err(|e| e.to_string())?;
-    let data = paginate
-        .fetch_page(page_id)
-        .await
-        .map_err(|e| e.to_string())?;
+    let p = paginate.num_pages().await.map_err(err_to_string)?;
+    let data = paginate.fetch_page(page_id).await.map_err(err_to_string)?;
     Ok((data, p))
 }
 
 #[tauri::command(async)]
-async fn recipe_ingredientions(
-    recipe_id: i32,
+async fn recipes_ingredientions(
+    checklist: Vec<(i32, i32)>,
     app_state: tauri::State<'_, AppState>,
-) -> Result<Vec<item_with_amount::Model>, String> {
-    let db = app_state.get_db().await.map_err(|e| e.to_string())?;
-    let r = Recipes::find_by_id(recipe_id)
+) -> Result<Vec<(i32, i32)>, String> {
+    let db = app_state.get_db().await.map_err(err_to_string)?;
+    let mut needs = BTreeMap::new();
+    for (item_id, amount) in checklist {
+        let r = Recipes::find()
+            .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
+            .filter(item_with_amount::Column::IngredientId.eq(item_id))
+            .one(db)
+            .await
+            .map_err(err_to_string)?;
+        match r {
+            Some(r) => {
+                let ing = ItemWithAmount::find()
+                    .filter(item_with_amount::Column::RecipeId.eq(r.id))
+                    .all(db)
+                    .await
+                    .map_err(err_to_string)?;
+                for v in &ing {
+                    needs
+                        .entry(v.ingredient_id)
+                        .and_modify(|e| *e += v.amount)
+                        .or_insert(v.amount);
+                }
+            }
+            None => {
+                needs
+                    .entry(item_id)
+                    .and_modify(|e| *e += amount)
+                    .or_insert(amount);
+            }
+        }
+    }
+    Ok(needs.into_iter().collect())
+}
+
+#[tauri::command(async)]
+async fn item_info(
+    item_id: i32,
+    app_state: tauri::State<'_, AppState>,
+) -> Result<items::Model, String> {
+    let db = app_state.get_db().await.map_err(err_to_string)?;
+    Ok(Items::find_by_id(item_id)
         .one(db)
         .await
-        .map_err(|e| e.to_string())?
-        .ok_or("Recipe not found")?;
-    let ingredientions = r
-        .find_related(ItemWithAmount)
-        .all(db)
-        .await
-        .map_err(|e| e.to_string())?;
-    Ok(ingredientions)
+        .map_err(err_to_string)?
+        .ok_or("Item not found".to_string())?)
 }
 
 struct AppState {
@@ -385,7 +419,8 @@ fn main() {
             allowed_list,
             craftpoints_list,
             recipe_table,
-            recipe_ingredientions,
+            recipes_ingredientions,
+            item_info,
             create_solver,
             read_solver,
             destroy_solver,

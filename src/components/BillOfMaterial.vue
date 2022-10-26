@@ -1,7 +1,27 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
+import { recipesIngredientions, ItemWithAmount, Item } from '../Craft';
 import { useStore } from '../store';
 
 const store = useStore();
+const checklist = ref<{ item: Item, amount: number }[]>([]);
+watch(store.state.checklist, async (newValue, _oldValue) => {
+    checklist.value = newValue.map(v => {
+        return {
+            item: new Item(v.ingredient_id),
+            amount: v.amount
+        }
+    })
+})
+const layers = ref<{ item: Item, amount: number }[]>([]);
+watch(store.state.checklist, async (newValue, _oldValue) => {
+    layers.value = (await recipesIngredientions(newValue)).map(v => {
+        return {
+            item: new Item(v.ingredient_id),
+            amount: v.amount
+        }
+    })
+})
 </script>
 
 <template>
@@ -9,8 +29,16 @@ const store = useStore();
         <div class="scrollbar-flex-content">
             <el-card class="box-card">
                 <el-scrollbar>
-                    <p v-for="item in store.state.checklist" :key="item.ingredient_id" class="scrollbar-demo-item">
-                        {{ item.ingredient_id }} * {{ item.amount }}
+                    <p v-for="item in checklist" :key="item.item.id" class="scrollbar-demo-item">
+                        {{ item.item.name }} × {{ item.amount }}
+                    </p>
+                </el-scrollbar>
+            </el-card>
+
+            <el-card class="box-card">
+                <el-scrollbar>
+                    <p v-for="item in layers" :key="item.item.id" class="scrollbar-demo-item">
+                        {{ item.item.name }} × {{ item.amount }}
                     </p>
                 </el-scrollbar>
             </el-card>
@@ -23,19 +51,6 @@ const store = useStore();
     display: flex;
 }
 
-.scrollbar-demo-item {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100px;
-    height: 100%;
-    margin: 10px;
-    text-align: center;
-    border-radius: 4px;
-    background: var(--el-color-danger-light-9);
-    color: var(--el-color-danger);
-}
 
 .box-card {
     width: 480px;
