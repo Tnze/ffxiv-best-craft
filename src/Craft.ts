@@ -182,10 +182,6 @@ interface ItemWithAmount {
   amount: number;
 }
 
-const recipeIngredientions = (recipeId: number): Promise<ItemWithAmount[]> => {
-  return invoke("recipe_ingredientions", { recipeId });
-}
-
 const recipesIngredientions = async (checklist: ItemWithAmount[]): Promise<ItemWithAmount[]> => {
   const ings = await invoke("recipes_ingredientions", {
     checklist: checklist.map(x => [x.ingredient_id, x.amount])
@@ -195,19 +191,13 @@ const recipesIngredientions = async (checklist: ItemWithAmount[]): Promise<ItemW
   })
 }
 
-class Item {
-  id: number;
-  name?: string;
-  level_equip?: number
-
-  constructor(id: number) {
-    this.id = id
-    invoke("item_info", { itemId: this.id })
-      .then((v: any) => {
-        this.name = v.name
-        this.level_equip = v.level_equip
-      })
-  }
+const itemInfo = (itemId: number): Promise<{
+  id: number,
+  name: string,
+  level_equip: number,
+  category_id: number
+}> => {
+  return invoke("item_info", { itemId });
 }
 
 export {
@@ -220,13 +210,12 @@ export {
   Actions,
   RecipeRow,
   ItemWithAmount,
-  Item,
   newRecipe,
   newStatus,
   simulate,
   allowedList,
   craftPointsList,
   recipeTable,
-  recipeIngredientions,
   recipesIngredientions,
+  itemInfo
 };

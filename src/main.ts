@@ -10,7 +10,7 @@ import App from './App.vue'
 
 const GearsetsVue = () => import('./components/Gearsets.vue')
 const RecipePanelVue = () => import('./components/recipe-manager/RecipePanel.vue')
-const BillOfMaterial = () => import('./components/BillOfMaterial.vue')
+const BillOfMaterial = () => import('./components/bill-of-material/BillOfMaterial.vue')
 const DesignerVue = () => import('./components/designer/Page.vue')
 const AutomationVue = () => import('./components/automation/Automation.vue')
 const SettingsVue = () => import('./components/Settings.vue')
