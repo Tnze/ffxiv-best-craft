@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, reactive, watchEffect } from 'vue'
 import draggable from 'vuedraggable'
 import { Actions, Jobs } from '../../Craft';
 import Action from './Action.vue'
@@ -11,10 +11,14 @@ interface Slot {
 
 const props = defineProps<{
     list: Slot[]
+    solverResult?: Slot[]
+    previewSolver?: boolean
     errList?: { pos: number, err: string }[]
     job: Jobs,
     disabled?: boolean
 }>()
+
+const solverAdds = computed(() => props.solverResult?.slice(props.list.length) ?? [])
 
 const dragOptions = computed(() => {
     return {
@@ -44,12 +48,18 @@ function calc_effect(index: number): string {
 <template>
     <div class="action-queue-container" @click.stop.prevent.right>
         <draggable item-key="id" :component-data="{
-                    name: !isDragging ? 'flip-list' : null, type: 'transtion-group'
+            name: !isDragging ? 'flip-list' : null, type: 'transtion-group'
         }" :list="list" v-bind="dragOptions" @start="isDragging = true" @end="isDragging = false">
             <template #item="{ element, index }">
                 <div class="list-group-item">
                     <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)"
                         disabled @click.stop.prevent.right="removeAction(index)" @dblclick="removeAction(index)" />
+                </div>
+            </template>
+            <template #footer>
+                <div v-for="elem in solverAdds" class="list-group-item">
+                    <Action class="action-icon" :job="job" :action="elem.action" no_hover
+                        :effect="previewSolver ? 'normal' : 'ghost'" disabled />
                 </div>
             </template>
         </draggable>

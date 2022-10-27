@@ -27,7 +27,7 @@ const createSolver = async () => {
         showClose: true,
         duration: 0,
         type: 'info',
-        message: '求解器初始化中，请稍后……',
+        message: '求解器计算中，可能需要消耗大量内存，请稍等……',
     })
     let solver: Solver = {
         initStatus: props.initStatus!,
@@ -47,7 +47,7 @@ const createSolver = async () => {
             showClose: true,
             duration: 0,
             type: 'success',
-            message: `求解器创建成功(${formatDuration(stop_time - start_time)})`,
+            message: `求解器准备已完成(${formatDuration(stop_time - start_time)})`,
         })
         solver.status = 'prepared'
         emits('solverLoad', solver)

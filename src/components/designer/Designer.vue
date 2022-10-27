@@ -40,12 +40,12 @@ interface Sequence {
     errors: { pos: number; err: string }[];
 }
 
-const { designer, gearsets } = useStore().state
+const store = useStore()
 const attributes = computed(() =>
-    gearsets.special.find(v => v.name == designer!.job)?.value || gearsets.default
+    store.state.gearsets.special.find(v => v.name == store.state.designer!.job)?.value || store.state.gearsets.default
 )
 const displayJob = computed(() =>
-    designer!.job == "unknown" ? Jobs.Culinarian : designer!.job
+    store.state.designer!.job == "unknown" ? Jobs.Culinarian : store.state.designer!.job
 );
 
 // 食物和药水效果
@@ -76,9 +76,9 @@ const enhancedAttributes = computed<Attributes>(() => {
 // Simulation
 const initQuality = ref(0)
 const initStatus = ref<Status>(
-    await newStatus(enhancedAttributes.value, designer!.recipe, initQuality.value)
+    await newStatus(enhancedAttributes.value, store.state.designer!.recipe, initQuality.value)
 );
-watch([designer!, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
+watch([store.state.designer!, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
     initStatus.value = await newStatus(ea, p.recipe, iq);
 });
 // Actions Queue
@@ -155,8 +155,11 @@ function clearSequence() {
 }
 
 function saveSequence() {
+    const slots = previewSolver.value
+        ? actionQueue.slots.concat(solverResult.slots)
+        : actionQueue.slots.slice()
     savedQueues.push({
-        slots: actionQueue.slots.slice(),
+        slots,
         maxid: actionQueue.maxid,
         status: actionQueue.status,
         errors: actionQueue.errors,
@@ -217,7 +220,7 @@ async function saveListToJSON() {
         }
         const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
         const path = await save({
-            defaultPath: `${designer!.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
+            defaultPath: `${store.state.designer!.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
             filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
             title: '保存文件'
         })
@@ -280,8 +283,8 @@ async function openListFromJSON() {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
-            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="designer!.itemName"
-                @solver-load="readSolver(actionQueue.status)" />
+            <SolverList :init-status="initStatus" :status="actionQueue.status"
+                :recipe-name="store.state.designer!.itemName" @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
         <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="80%">
             <MarcoExporter :actions="actionQueue.slots.map((v) => v.action)" />
@@ -290,7 +293,7 @@ async function openListFromJSON() {
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <el-header>
-            <h1>{{ designer!.itemName }}</h1>
+            <h1>{{ store.state.designer!.itemName }}</h1>
         </el-header>
         <el-main>
             <div class="main-page">
@@ -306,21 +309,14 @@ async function openListFromJSON() {
                     </el-scrollbar>
                     <div class="actionqueue-and-savedqueue">
                         <div class="action-queue">
-                            <ActionQueue :job="displayJob" :list="actionQueue.slots" :err-list="actionQueue.errors" />
+                            <ActionQueue :job="displayJob" :list="actionQueue.slots" :solver-result="solverResult.slots"
+                                :preview-solver="previewSolver" :err-list="actionQueue.errors" />
                         </div>
                         <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver"
                             @plus="saveSequence" @delete="clearSequence" @solver="openSolverDrawer = true"
                             @print="openExportMarco = true" @save-list="saveListToJSON" @open-list="openListFromJSON" />
                         <el-scrollbar class="solver-and-savedqueue-scrollbar">
                             <ul class="solver-and-savedqueue-list">
-                                <li v-if="solverResult.slots.length > 0" class="solver-and-savedqueue-item"
-                                    v-loading="isReadingSolver > 0">
-                                    <QueueStatus :status="solverResult.status" />
-                                    <ActionQueue :job="displayJob" :list="solverResult.slots"
-                                        :err-list="solverResult.errors" disabled />
-                                    <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                        @click="loadSequence(solverResult)" />
-                                </li>
                                 <li v-for="(sq, i) in savedQueues" class="solver-and-savedqueue-item">
                                     <QueueStatus :status="sq.status" />
                                     <ActionQueue :job="displayJob" :list="sq.slots" :err-list="sq.errors" disabled />
