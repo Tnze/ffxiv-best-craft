@@ -10,6 +10,7 @@ const props = defineProps<{
     action: Actions,
     disabled?: boolean,
     active?: boolean,
+    no_hover?: boolean,
     effect?: string,
     cp?: number
 }>();
@@ -38,6 +39,8 @@ const hoverLayerOffset = computed(() => {
     }
 })
 
+const opacity = computed(() => props.effect == 'ghost' ? 0.4 : 1)
+
 const onClick = (event: MouseEvent) => {
     if (!props.disabled)
         (event.target as HTMLElement).firstElementChild!.classList.add('click-animation')
@@ -49,7 +52,8 @@ const onAnimationEnd = (event: AnimationEvent) => {
 </script>
 
 <template>
-    <div class="action" @click="onClick">
+    <div class="action" @click="onClick" v-bind:class="no_hover ? '' : 'action-hover'"
+        v-bind:style="{opacity: opacity}">
         <div @animationend="onAnimationEnd($event)"></div>
         <div v-if="active" class="active-mask"></div>
         <div v-if="cp != undefined" class="craft-point">{{ cp }}</div>
@@ -62,11 +66,10 @@ const onAnimationEnd = (event: AnimationEvent) => {
     display: inline-block;
     width: 48px;
     height: 48px;
-    background: v-bind("'url('+hoverUrl+') no-repeat '+hoverLayerOffset+', url('+iconUrl+') no-repeat top 3px left 4px'"
-        );
+    background: v-bind("'url('+hoverUrl+') no-repeat '+hoverLayerOffset+', url('+iconUrl+') no-repeat top 3px left 4px'");
 }
 
-.action:hover::after {
+.action-hover:hover::after {
     content: "";
     display: block;
     width: 72px;

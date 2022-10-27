@@ -29,7 +29,7 @@ const disableAutomation = ref(true)
             </el-icon>
             <template #title>配方</template>
         </el-menu-item>
-        <el-menu-item index="/bom">
+        <el-menu-item index="/bom" :disabled="disableAutomation" @click.stop.prevent.right="disableAutomation = false">
             <el-icon>
                 <box />
             </el-icon>
