@@ -41,13 +41,6 @@ const disableAutomation = ref(true)
             </el-icon>
             <template #title>设计</template>
         </el-menu-item>
-        <el-menu-item index="/automation" :disabled="disableAutomation"
-            @click.stop.prevent.right="disableAutomation = false">
-            <el-icon>
-                <magic-stick />
-            </el-icon>
-            <template #title>自动化</template>
-        </el-menu-item>
         <el-menu-item index="/settings">
             <el-icon>
                 <setting />
