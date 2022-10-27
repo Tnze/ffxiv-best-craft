@@ -1,15 +1,15 @@
 {
-    "version": "v0.5.1",
-    "notes": "- 更新国服最新配方表\n- 优化配方查询速度",
-    "pub_date": "2022-10-20T01:08:15+08:00",
+    "version": "v0.5.2",
+    "notes": "- 修复了一些问题\n- 优化了求解结果的显示逻辑，现在使用一种内部称作GhostSlot的技术将补全结果显示在工作区上\n- 开发中的配方计算功能",
+    "pub_date": "2022-10-27T13:54:53+08:00",
     "platforms": {
       "linux-x86_64": {
-        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm1ISTVtZktmRUFRM1pnanBzaWo4bmh3TnoyVlc0TkZIU0ludURmL2YxRzhGSWNOVHlqWENkT0s4NTMwbGZPVXBwWFRIYlMvQW5UQ0lNTVRuRlZXdmdjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY2MjgxODE2CWZpbGU6YmVzdC1jcmFmdF8wLjUuMV9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKY1NOR2dsc0xDaEJtRTB5Z21JZkVURzB3SDl5NGRjTWorSHBZUFlSNHlRNUNwYVY5Z2UxMkUwNUR1OUdqZEV3S1pVeXRxYUY4a2piWEp6c2dxTEMvRGc9PQo=",
-        "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.1/best-craft_0.5.1_amd64.AppImage.tar.gz"
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnZUNDN6Y2FWQ1o5aDFyMlpXQkVqWVNhdVZOTGRYcE5aNDNueEFHS1pFSVZZeFNhVm1hbnRraGN3WTFSSGs1R3piMHVhMkVnZ0FrVEJaZ1dwV0g5VFFJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY2ODQ5OTkyCWZpbGU6YmVzdC1jcmFmdF8wLjUuMl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKSk85V0I2VXlHYjUySS9uQmNjazJCMTdSUDZMcmFsbS9JdElVb3dnMjF2ZWQrK0hKSGREU0tPMUhnbjlYRVlHOTA5OG9sU3kvWFFwd3FzQTc4eGs4REE9PQo=",
+        "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.2/best-craft_0.5.2_amd64.AppImage.tar.gz"
       },
       "windows-x86_64": {
-        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smx1bFJuVmh1TFFXVkJ4NXlwb3hwM003MGRvZXNBOFVXRUxIanFkQWs1L0tlYkZTY0E3WGhjMHN5US9qZUpxVHVidkZrZkRoSWtUNjdWWXF0YUNFWlFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY2MTk5MTIxCWZpbGU6QmVzdENyYWZ0XzAuNS4xX3g2NF96aC1DTi5tc2kuemlwCm9oSjZxNHNaMmMraDJTTi9NSnJhZ0VZT1pOSDNua2QrVTdDdnVyM3F3dDJxanR0VzFBM0hlUi91ZVY3aGx6KzRyZkNqVTFLL0lkWkdCRkZtN2NYQURBPT0K",
-        "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.1/BestCraft_0.5.1_x64_zh-CN.msi.zip"
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm1EVmNJNjNHVkdXcVgwQmNsbmx1d0RtUkNGSTJ5anQrL2NPZzc3bEpaSU8zUlN1STcwRXFaYnF0WXBMRzhNTkVnTkRGQk51LzFydHNkbE5uYkRGMFFRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY2ODQ5MDM3CWZpbGU6QmVzdENyYWZ0XzAuNS4yX3g2NF96aC1DTi5tc2kuemlwCm1laWZjWWJJVlplUmdyNWZUM2FCK3dFTWZpYWtMcnZTYVVWUGx2dDV0NDFYem40dnpZalY1NnJ2MmtRQVIzckhXSmRvakhDcTVUN1lZNitXdmQxNkNBPT0K",
+        "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.2/BestCraft_0.5.2_x64_zh-CN.msi.zip"
       }
     }
   }
