@@ -1,31 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useDark, useToggle } from '@vueuse/core'
+import { useDark } from '@vueuse/core'
 import Menu from './components/Menu.vue';
-import { Attributes, Recipe, Jobs } from './Craft'
-import { useStore } from './store';
 
-const isDark = useDark()
-
-interface GearsetsRow {
-  name: string
-  value: Attributes | null
-}
-
-const store = useStore()
-
-const job = ref<Jobs | 'unknown'>('unknown')
-
-const recipe = ref<Recipe | null>(null)
-
-const recipeName = ref('')
-const onRecipeChange = (j: Jobs | 'unknown', name: string, r: Recipe) => {
-  job.value = j
-  recipe.value = r
-  recipeName.value = name
-  console.log("recipe changed!", r)
-  // currentPage.value = '2'
-}
+useDark()
 
 </script>
 

@@ -9,11 +9,8 @@
         "tauri": "tauri"
     },
     "dependencies": {
-        "@blockly/theme-dark": "^3.0.8",
-        "@blockly/theme-modern": "^2.1.33",
         "@tauri-apps/api": "^1",
         "@vueuse/core": "^9.2.0",
-        "blockly": "^8.0.5",
         "element-plus": "2.2.18",
         "vue": "3.2.41",
         "vue-router": "4",
