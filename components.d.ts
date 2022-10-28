@@ -8,7 +8,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Action: typeof import('./src/components/designer/Action.vue')['default']
-    ActionDescription: typeof import('./src/components/designer/ActionDescription.vue')['default']
     ActionPanel: typeof import('./src/components/designer/ActionPanel.vue')['default']
     ActionQueue: typeof import('./src/components/designer/ActionQueue.vue')['default']
     AttrEnhSelector: typeof import('./src/components/attr-enhancer/AttrEnhSelector.vue')['default']
@@ -50,7 +49,6 @@ declare module '@vue/runtime-core' {
     Gearsets: typeof import('./src/components/Gearsets.vue')['default']
     Item: typeof import('./src/components/bill-of-material/Item.vue')['default']
     MacroExporter: typeof import('./src/components/designer/MacroExporter.vue')['default']
-    MarcoExporter: typeof import('./src/components/designer/MarcoExporter.vue')['default']
     Menu: typeof import('./src/components/Menu.vue')['default']
     Page: typeof import('./src/components/designer/Page.vue')['default']
     QueueStatus: typeof import('./src/components/designer/QueueStatus.vue')['default']
