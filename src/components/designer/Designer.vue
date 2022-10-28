@@ -9,7 +9,6 @@ import {
     Jobs,
     Actions,
     simulate,
-    Recipe,
     Status,
     newStatus,
 } from "../../Craft";
@@ -24,6 +23,7 @@ import QueueStatus from "./QueueStatus.vue";
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import { useStore } from '../../store';
+import { useFluent } from 'fluent-vue';
 
 interface Slot {
     id: number;
@@ -41,6 +41,7 @@ interface Sequence {
 }
 
 const store = useStore()
+const { $t } = useFluent()
 const attributes = computed(() =>
     store.state.gearsets.special.find(v => v.name == store.state.designer!.job)?.value || store.state.gearsets.default
 )
@@ -119,11 +120,9 @@ const openAttrEnhSelector = ref(false);
 
 async function setInitQuality() {
     try {
-        const { value } = await ElMessageBox.prompt('请输入初期品质', '设置初期品质', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+        const { value } = await ElMessageBox.prompt($t('please-input-init-quality'), $t('config-init-quality'), {
             inputPattern: /^[0-9]+$/,
-            inputErrorMessage: '请输入一个整数',
+            inputErrorMessage: $t('please-input-integers'),
         })
         initQuality.value = parseInt(value) || 0
     } catch {
@@ -206,13 +205,9 @@ async function saveListToJSON() {
         try {
             if (queues.length == 0) {
                 await ElMessageBox.confirm(
-                    '当前要保存的宏数量为0，是否继续？',
-                    '警告',
-                    {
-                        confirmButtonText: 'OK',
-                        cancelButtonText: 'Cancel',
-                        type: 'warning',
-                    }
+                    $t('number-of-marcos-is-zero'),
+                    $t('waring'),
+                    { type: 'warning' }
                 )
             }
         } catch {
@@ -221,8 +216,8 @@ async function saveListToJSON() {
         const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
         const path = await save({
             defaultPath: `${store.state.designer!.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
-            filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
-            title: '保存文件'
+            filters: [{ name: $t('marco-file-type-name'), extensions: ['json'] }],
+            title: $t('save-file')
         })
         if (!path) {
             return
@@ -231,22 +226,22 @@ async function saveListToJSON() {
         ElMessage({
             type: "success",
             showClose: true,
-            message: '保存成功',
+            message: $t('save-success'),
         });
     } catch (err) {
         ElMessage({
             type: "error",
             showClose: true,
-            message: '保存失败：' + err as string,
+            message: $t('save-fail', { reason: err as string }),
         });
     }
 }
 
 async function openListFromJSON() {
     const pathlist = <string[]>await open({
-        filters: [{ name: 'BestCraft宏文件', extensions: ['json'] }],
+        filters: [{ name: $t('marco-file-type-name'), extensions: ['json'] }],
         multiple: true,
-        title: '打开文件'
+        title: $t('open-file')
     })
     if (!pathlist)
         return
@@ -267,13 +262,13 @@ async function openListFromJSON() {
             ElMessage({
                 type: "success",
                 showClose: true,
-                message: `读取了 ${queues.length} 个宏`,
+                message: $t('read-n-marcos', { n: queues.length }),
             });
         } catch (err) {
             ElMessage({
                 type: "error",
                 showClose: true,
-                message: `读取失败：` + err as string,
+                message: $t('read-fail', { reason: err as string }),
             });
         }
     }
@@ -282,14 +277,14 @@ async function openListFromJSON() {
 
 <template>
     <el-container>
-        <el-drawer v-model="openSolverDrawer" title="求解器设置" size="45%">
+        <el-drawer v-model="openSolverDrawer" :title="$t('solver-setting')" size="45%">
             <SolverList :init-status="initStatus" :status="actionQueue.status"
                 :recipe-name="store.state.designer!.itemName" @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
-        <el-drawer v-model="openExportMarco" title="导出宏" direction="btt" size="80%">
+        <el-drawer v-model="openExportMarco" :title="$t('export-marco')" direction="btt" size="80%">
             <MarcoExporter :actions="actionQueue.slots.map((v) => v.action)" />
         </el-drawer>
-        <el-dialog v-model="openAttrEnhSelector" title="食物 & 药水">
+        <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <el-header>
@@ -393,3 +388,24 @@ async function openListFromJSON() {
     margin-right: 6px;
 }
 </style>
+
+<fluent locale="zh-CN">
+solver-setting = 求解器设置
+export-marco = 导出宏
+meal-and-potion = 食物 & 药水
+
+please-input-init-quality = 请输入初期品质
+config-init-quality = 设置初期品质
+please-input-integers = 请输入整数
+
+number-of-marcos-is-zero = 当前要保存的宏数量为0，是否继续？
+waring = 警告
+
+marco-file-type-name = BestCraft宏文件
+save-file = 保存文件
+save-success = 保存成功
+save-fail = 保存失败：{ $reason }
+open-file = 打开文件
+read-n-marcos = 读取了 { $n } 个宏
+read-fail = 读取失败：{ $reason }
+</fluent>

@@ -30,12 +30,12 @@ const amountChange = (idx: number, val: number) => {
                     <el-table ref="multipleTableRef" :data="store.state.checklist" style="width: 500px; height: 100%;"
                         @selection-change="handleSelectionChange">
                         <el-table-column type="selection" width="55" />
-                        <el-table-column label="名称">
+                        <el-table-column :label="$t('name')">
                             <template #default="scope">
                                 <item-vue :item_id="scope.row.ingredient_id" />
                             </template>
                         </el-table-column>
-                        <el-table-column label="数量">
+                        <el-table-column :label="$t('amount')">
                             <template #default="scope">
                                 <el-input-number v-model="scope.row.amount"
                                     @change="(val: number) => amountChange(scope.$index, val)" size="small" />
@@ -47,12 +47,12 @@ const amountChange = (idx: number, val: number) => {
                     <el-table ref="multipleTableRef" :data="layers" height="100%" style="width: 500px; height: 100%;"
                         @selection-change="handleSelectionChange">
                         <el-table-column type="selection" width="55" />
-                        <el-table-column label="名称">
+                        <el-table-column :label="$t('name')">
                             <template #default="scope">
                                 <item-vue :item_id="scope.row.ingredient_id" />
                             </template>
                         </el-table-column>
-                        <el-table-column label="数量">
+                        <el-table-column :label="$t('amount')">
                             <template #default="scope">
                                 <el-input-number disabled v-model="scope.row.amount" size="small" />
                             </template>
@@ -69,3 +69,8 @@ const amountChange = (idx: number, val: number) => {
     display: flex;
 }
 </style>
+
+<fluent locale="zh-CN">
+name = 名称
+amount = 数量
+</fluent>

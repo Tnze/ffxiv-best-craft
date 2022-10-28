@@ -5,7 +5,6 @@ import {
     Cpu,
     View,
     Upload,
-    DataAnalysis,
     DocumentAdd,
     Folder
 } from "@element-plus/icons-vue";
@@ -28,44 +27,39 @@ const emits = defineEmits<{
 </script>
 <template>
     <div class="container">
-        <el-tooltip content="暂存工作区" placement="top" :show-after="1000">
+        <el-tooltip :content="$t('save-workspace')" placement="top" :show-after="1000">
             <el-icon class="button" :size="16" @click="emits('plus')">
                 <bottom-right />
             </el-icon>
         </el-tooltip>
-        <el-tooltip content="清空工作区" placement="top" :show-after="1000">
+        <el-tooltip :content="$t('clear-workspace')" placement="top" :show-after="1000">
             <el-icon class="button" :size="16" @click="emits('delete')">
                 <close />
             </el-icon>
         </el-tooltip>
-        <el-tooltip content="求解器设置" placement="top" :show-after="1000">
+        <el-tooltip :content="$t('solver-setting')" placement="top" :show-after="1000">
             <el-icon class="button" :size="16" @click="emits('solver')">
                 <cpu />
             </el-icon>
         </el-tooltip>
-        <el-tooltip content="预览求解结果" placement="top" :show-after="1000">
+        <el-tooltip :content="$t('preview-solver')" placement="top" :show-after="1000">
             <el-icon class="button" :size="16" :color="previewSolver ? '#409EFC' : undefined"
                 @click="emits('update:previewSolver', !previewSolver)">
                 <View />
             </el-icon>
         </el-tooltip>
-        <el-tooltip content="导出宏" placement="top" :show-after="1000">
+        <el-tooltip :content="$t('export-marco')" placement="top" :show-after="1000">
             <el-icon class="button" :size="16" @click="emits('print')">
                 <upload />
             </el-icon>
         </el-tooltip>
-        <!-- <el-tooltip content="宏分析" placement="top" :show-after="1000">
-            <el-icon class="button" :size="16" @click="emits('analysis')">
-                <data-analysis />
-            </el-icon>
-        </el-tooltip> -->
         <div class="end-container">
-            <el-tooltip content="导出暂存库到文件" placement="top" :show-after="1000">
+            <el-tooltip :content="$t('export-saved-to-file')" placement="top" :show-after="1000">
                 <el-icon class="button" :size="16" @click="emits('saveList')">
                     <document-add />
                 </el-icon>
             </el-tooltip>
-            <el-tooltip content="从文件导入暂存库" placement="top" :show-after="1000">
+            <el-tooltip :content="$t('import-saved-from-file')" placement="top" :show-after="1000">
                 <el-icon class="button" :size="16" @click="emits('openList')">
                     <folder />
                 </el-icon>
@@ -73,6 +67,7 @@ const emits = defineEmits<{
         </div>
     </div>
 </template>
+
 <style scoped>
 .container {
     display: flex;
@@ -98,3 +93,13 @@ const emits = defineEmits<{
     cursor: pointer;
 }
 </style>
+
+<fluent locale="zh-CN">
+save-workspace = 暂存工作区
+clear-workspace = 清空工作区
+solver-setting = 求解器设置
+preview-solver = 预览求解结果
+export-marco = 导出宏
+export-saved-to-file = 导出暂存库到文件
+import-saved-from-file = 从文件导入暂存库
+</fluent>

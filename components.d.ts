@@ -8,10 +8,10 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Action: typeof import('./src/components/designer/Action.vue')['default']
+    ActionDescription: typeof import('./src/components/designer/ActionDescription.vue')['default']
     ActionPanel: typeof import('./src/components/designer/ActionPanel.vue')['default']
     ActionQueue: typeof import('./src/components/designer/ActionQueue.vue')['default']
     AttrEnhSelector: typeof import('./src/components/attr-enhancer/AttrEnhSelector.vue')['default']
-    Automation: typeof import('./src/components/automation/Automation.vue')['default']
     BillOfMaterial: typeof import('./src/components/bill-of-material/BillOfMaterial.vue')['default']
     Buffs: typeof import('./src/components/designer/Buffs.vue')['default']
     Condition: typeof import('./src/components/designer/Condition.vue')['default']

@@ -4,17 +4,6 @@ import { ref, onMounted, onUpdated, computed } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router';
 import { useStore } from '../store'
 
-const jobLabels = new Map([
-    ['carpenter', "刻木匠"],
-    ['blacksmith', "锻铁匠"],
-    ['armorer', "铸甲匠"],
-    ['goldsmith', "雕金匠"],
-    ['leatherworker', "制革匠"],
-    ['weaver', "裁衣匠"],
-    ['alchemist', "炼金术士"],
-    ['culinarian', "烹调师"],
-])
-
 const store = useStore()
 
 const modelValue = computed({
@@ -61,28 +50,28 @@ const jobPage = ref('default')
 <template>
     <el-container>
         <el-header>
-            <h1>装备属性</h1>
+            <h1>{{ $t('attributes') }}</h1>
         </el-header>
         <el-main>
             <el-tabs v-model="jobPage" tab-position="left">
-                <el-tab-pane name="default" label="默认">
+                <el-tab-pane name="default" :label="$t('default')">
                     <el-form label-position="right" label-width="100px" :model="modelValue.default"
                         style="max-width: 460px">
-                        <el-form-item label="等级">
+                        <el-form-item :label="$t('level')">
                             <el-input-number v-model="modelValue.default.level" :min="1" :max="90"></el-input-number>
                         </el-form-item>
-                        <el-form-item label="作业精度">
+                        <el-form-item :label="$t('craftsmanship')">
                             <el-input-number v-model="modelValue.default.craftsmanship" :min="0"></el-input-number>
                         </el-form-item>
-                        <el-form-item label="加工精度">
+                        <el-form-item :label="$t('control')">
                             <el-input-number v-model="modelValue.default.control" :min="0"></el-input-number>
                         </el-form-item>
-                        <el-form-item label="制作力">
+                        <el-form-item :label="$t('craft-point')">
                             <el-input-number v-model="modelValue.default.craft_points" :min="0"></el-input-number>
                         </el-form-item>
                     </el-form>
                 </el-tab-pane>
-                <el-tab-pane v-for="v in modelValue.special" :name="v.name" :label="jobLabels.get(v.name)">
+                <el-tab-pane v-for="v in modelValue.special" :name="v.name" :label="$t(v.name)">
                     <el-form label-position="right" label-width="100px" :model="v.value" style="max-width: 460px">
                         <el-form-item label="属性">
                             <el-switch :model-value="v.value == null" active-text="继承自默认"
@@ -116,3 +105,8 @@ const jobPage = ref('default')
     user-select: none;
 }
 </style>
+
+<fluent locale="zh-CN">
+attributes = 装备属性
+default = 默认
+</fluent>

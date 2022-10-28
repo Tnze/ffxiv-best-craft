@@ -1,8 +1,19 @@
 <script setup lang="ts">
 import { useDark } from '@vueuse/core'
+import { ElConfigProvider } from 'element-plus';
+import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+import en from 'element-plus/lib/locale/lang/en'
+import { useStore } from './store';
+
 import Menu from './components/Menu.vue';
 
 useDark()
+const store = useStore()
+
+const languages = new Map([
+  ["zh-CN", zhCn],
+  ["en", en]
+])
 
 </script>
 
@@ -18,6 +29,7 @@ useDark()
         </keep-alive>
       </router-view>
     </el-main>
+    <el-config-provider :locale="languages.get(store.state.settings.language)"></el-config-provider>
   </el-container>
 </template>
 

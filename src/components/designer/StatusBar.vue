@@ -71,7 +71,11 @@ const condition = computed(() => {
     <div class="conatiner">
         <div id="durability-and-condition">
             <div id="durability">
-                耐久{{ status?.durability }} / {{ status?.recipe.durability }}
+                {{ $t('display-durability', {
+                        current: status?.durability,
+                        total: status?.recipe.durability
+                    })
+                }}
                 <el-progress :stroke-width="14" :show-text="false" :percentage="durability" :color="durabilityColor">
                 </el-progress>
             </div>
@@ -80,12 +84,13 @@ const condition = computed(() => {
             </div>
         </div>
         <div id="progress-and-buffs">
-            进展
+            {{ $t('progress') }}
             <el-progress :percentage="progress" :color="progressColor">
                 {{ status?.progress }} /
                 {{ status?.recipe.difficulty }} /
                 {{ status?.recipe.difficulty - status?.progress }}
-            </el-progress>品质
+            </el-progress>
+            {{ $t('quality') }}
             <el-progress :percentage="quality" :color="qualityColor">
                 <el-link @click="emits('click-quality')">
                     {{ status?.quality }} /
@@ -96,36 +101,42 @@ const condition = computed(() => {
         </div>
         <div id="attributes">
             <el-link class="attributes-link" @click="emits('click-attributes')">
-                等级：{{ status?.attributes.level }}
+                {{ $t('display-attrs', { what: $t('level'), value: status?.attributes.level }) }}
                 <br />
-                作业精度：{{ attributes.craftsmanship }}
-                {{ enhancers
-                        .filter(v => v.cm && v.cm_max)
-                        .map(v => Math.min(
-                            status?.attributes.craftsmanship * v.cm!,
-                            v.cm_max!
-                        ))
-                        .map(cm => ` + ${cm}`).join('')
+                {{ $t('display-attrs', {
+                        what: $t('craftsmanship'),
+                        value: attributes.craftsmanship + enhancers
+                            .filter(v => v.cm && v.cm_max)
+                            .map(v => Math.min(
+                                status?.attributes.craftsmanship * v.cm!,
+                                v.cm_max!
+                            ))
+                            .map(cm => ` + ${cm}`).join('')
+                    })
                 }}
                 <br />
-                加工精度：{{ attributes.control }}
-                {{ enhancers
-                        .filter(v => v.ct && v.ct_max)
-                        .map(v => Math.min(
-                            status?.attributes.control * v.ct!,
-                            v.ct_max!
-                        ))
-                        .map(ct => ` + ${ct}`).join('')
+                {{ $t('display-attrs', {
+                        what: $t('control'),
+                        value: attributes.control + enhancers
+                            .filter(v => v.ct && v.ct_max)
+                            .map(v => Math.min(
+                                status?.attributes.control * v.ct!,
+                                v.ct_max!
+                            ))
+                            .map(ct => ` + ${ct}`).join('')
+                    })
                 }}
                 <br />
-                制作力：{{ status?.craft_points }} / {{ attributes.craft_points }}
-                {{ enhancers
-                        .filter(v => v.cp && v.cp_max)
-                        .map(v => Math.min(
-                            status?.attributes.craft_points * v.cp!,
-                            v.cp_max!
-                        ))
-                        .map(cp => ` + ${cp}`).join('')
+                {{ $t('display-craft-point', {
+                        current: status?.craft_points,
+                        total: attributes.craft_points + enhancers
+                            .filter(v => v.cp && v.cp_max)
+                            .map(v => Math.min(
+                                status?.attributes.craft_points * v.cp!,
+                                v.cp_max!
+                            ))
+                            .map(cp => ` + ${cp}`).join('')
+                    })
                 }}
             </el-link>
             <br />
@@ -184,3 +195,9 @@ const condition = computed(() => {
     display: inline-block;
 }
 </style>
+
+<fluent locale="zh-CN">
+display-durability = { durability } { $current } / { $total }
+display-attrs = { $what }：{ $value }
+display-craft-point = { craft-point }：{ $current } / { $total }
+</fluent>
