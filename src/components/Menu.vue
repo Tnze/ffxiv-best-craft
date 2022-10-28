@@ -21,31 +21,31 @@ const disableAutomation = ref(true)
             <el-icon>
                 <suitcase />
             </el-icon>
-            <template #title>装备</template>
+            <template #title>{{ $t('recipe') }}</template>
         </el-menu-item>
         <el-menu-item index="/recipe">
             <el-icon>
                 <notebook />
             </el-icon>
-            <template #title>配方</template>
+            <template #title>{{ $t('recipe') }}</template>
         </el-menu-item>
         <el-menu-item index="/bom" :disabled="disableAutomation" @click.stop.prevent.right="disableAutomation = false">
             <el-icon>
                 <box />
             </el-icon>
-            <template #title>物料</template>
+            <template #title>{{ $t('bom') }}</template>
         </el-menu-item>
         <el-menu-item index="/designer">
             <el-icon>
                 <edit />
             </el-icon>
-            <template #title>设计</template>
+            <template #title>{{ $t('designer') }}</template>
         </el-menu-item>
         <el-menu-item index="/settings">
             <el-icon>
                 <setting />
             </el-icon>
-            <template #title>设置</template>
+            <template #title>{{ $t('settings') }}</template>
         </el-menu-item>
     </el-menu>
 </template>
@@ -55,3 +55,11 @@ const disableAutomation = ref(true)
     height: 100%;
 }
 </style>
+
+<fluent locale="zh-CN">
+gearsets = 配装
+recipe = 配方
+bom = 物料
+designer = 设计
+settings = 设置
+</fluent>

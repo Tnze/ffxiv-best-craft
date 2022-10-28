@@ -126,11 +126,14 @@ watchEffect(() => {
 <template>
     <div class="container" @click.stop.prevent.right>
         <div v-for="group in actions" class="group">
-            <Action :job="job" class="item" v-for="action in group" @click="emit('clickedAction', action)"
-                @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
-                :action="action" :active="isActived(action)"
-                :effect="cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
-                :cp="cachedCraftPointsList.get(action) || undefined" />
+            <el-tooltip v-for="action in group" placement="right" :content="$t(action.replaceAll('_', '-'))"
+                :show-after="1000">
+                <Action :job="job" class="item" @click="emit('clickedAction', action)"
+                    @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
+                    :action="action" :active="isActived(action)"
+                    :effect="cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
+                    :cp="cachedCraftPointsList.get(action) || undefined" />
+            </el-tooltip>
         </div>
         <div class="group">
             <Action :job="job" class="item" v-for="action in fail_actions" @click="emit('clickedAction', action)"
@@ -159,3 +162,7 @@ watchEffect(() => {
     margin: calc(-48px * 0.07);
 }
 </style>
+
+<fluent locale="zh-CN">
+action-panel = 技能面板
+</fluent>

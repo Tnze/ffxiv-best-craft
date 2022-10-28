@@ -7,9 +7,14 @@ const store = useStore()
 <template>
     <Suspense>
         <Designer v-if="store.state.designer != null" />
-        <el-empty v-else description="请先选择配方" style="height: 100%;" />
+        <el-empty v-else :description="$t('not-selected')" style="height: 100%;" />
         <template #fallback>
-            <el-empty description="加载中" style="height: 100%;" />
+            <el-empty :description="$t('loading')" style="height: 100%;" />
         </template>
     </Suspense>
 </template>
+
+<fluent locale="zh-CN">
+not-selected = 请先选择配方
+loading = 加载中
+</fluent>

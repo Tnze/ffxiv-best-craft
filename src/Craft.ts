@@ -47,24 +47,24 @@ interface Status {
 
 enum Conditions {
   // 白：通常
-  Normal,
+  Normal = 'normal',
   // 红：高品质，加工效率1.5倍
-  Good,
+  Good = 'good',
   // 彩：最高品质
-  Excellent,
+  Excellent = 'excellent',
   // 黑：低品质
-  Poor,
+  Poor = 'poor',
 
   // 黄：成功率增加 25%
-  Centered,
+  Centered = 'centered',
   // 蓝：耐久消耗降低 50%, 效果可与俭约叠加
-  Sturdy,
+  Sturdy = 'sturdy',
   // 绿：CP 消耗减少 50%
-  Pliant,
+  Pliant = 'pliant',
   // 深蓝：作业效率1.5倍
-  Malleable,
+  Malleable = 'malleable',
   // 紫：技能效果持续增加两回合
-  Primed,
+  Primed = 'primed',
 }
 
 enum Jobs {

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { h, ref } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Actions, Status } from "../../Craft"
+import { Status } from "../../Craft"
 import { create_solver, destroy_solver } from '../../Solver'
+import { useFluent } from 'fluent-vue';
 
 const props = defineProps<{
     initStatus: Status | undefined,
@@ -12,6 +13,7 @@ const props = defineProps<{
 const emits = defineEmits<{
     (event: 'solverLoad', solver: Solver): void
 }>()
+const { $t } = useFluent()
 
 interface Solver {
     initStatus: Status,
@@ -27,7 +29,7 @@ const createSolver = async () => {
         showClose: true,
         duration: 0,
         type: 'info',
-        message: '求解器计算中，可能需要消耗大量内存，请稍等……',
+        message: $t('solving-info'),
     })
     let solver: Solver = {
         initStatus: props.initStatus!,
@@ -47,7 +49,7 @@ const createSolver = async () => {
             showClose: true,
             duration: 0,
             type: 'success',
-            message: `求解器准备已完成(${formatDuration(stop_time - start_time)})`,
+            message: $t('solve-finished', { solveTime: formatDuration(stop_time - start_time) }),
         })
         solver.status = 'prepared'
         emits('solverLoad', solver)
@@ -55,7 +57,7 @@ const createSolver = async () => {
         solvers.value.splice(solvers.value.indexOf(solver), 1)
         ElMessage({
             type: 'error',
-            message: `错误: ${err}`,
+            message: $t('error-with', { err: err as string }),
         })
         console.error(err)
     } finally {
@@ -70,7 +72,7 @@ const destroySolver = (s: Solver) => {
     } catch (err) {
         ElMessage({
             type: 'error',
-            message: `错误: ${err}`,
+            message: `${err}`,
         })
         console.error(err)
     }
@@ -91,13 +93,13 @@ function formatDuration(u: number): string {
 
 <template>
     <el-scrollbar class="container">
-        <el-checkbox v-model="useManipulation" label="掌握(时间&内存x9)" />
-        <el-checkbox v-model="useMuscleMemory" label="坚信(内存x2)" />
+        <el-checkbox v-model="useManipulation" :label="$t('manipulation-select-info')" />
+        <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory-select-info')" />
         <el-button class="list-item" :disabled="initStatus == undefined" @click="createSolver">
-            启动求解器
+            {{ $t('start-solver') }}
         </el-button>
         <el-button v-for="s in solvers" class="list-item" @click="destroySolver(s)" :disabled="s.status == 'solving'">
-            关闭求解器【{{ s.name }}】
+            {{ $t('close-solver', { solver: s.name }) }}
         </el-button>
     </el-scrollbar>
 </template>
@@ -114,3 +116,14 @@ function formatDuration(u: number): string {
     margin: 0px;
 }
 </style>
+
+<fluent locale="zh-CN">
+manipulation-select-info = { manipulation }(时间&内存x9)
+muscle-memory-select-info = { muscle-memory }(内存x2)
+start-solver = 启动求解器
+close-solver = 关闭求解器【{ $solver }】
+
+solving-info = 求解器计算中，可能需要消耗大量内存，请稍等……
+solve-finished = 求解器准备已完成({ $solveTime })
+error-with = 错误: { $err }
+</fluent>

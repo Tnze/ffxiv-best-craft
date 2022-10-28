@@ -1,23 +1,12 @@
-title = 生产计算器
--level = 等级
--recipe-level = 配方等级
--craftsmanship = 作业精度
--control = 加工精度
--craft-point = 制作力
--difficulty = 难度
+level = 等级
+recipe-level = 配方等级
+craftsmanship = 作业精度
+control = 加工精度
+craft-point = 制作力
+difficulty = 难度
 progress = 进展
 quality = 品质
 durability = 耐久
-
-# 宏设计
-md-title = 宏设计
-md-attrs =
-    { -level }：{ $level }
-    { -craftsmanship }：{ $craftsmanship }
-    { -control }：{ $control }
-    { -craft-point }：{ $craft_point }
-md-durability = { $du } / { $max }
-md-progress = { $value }/{ $max }
 
 # 职业名
 carpenter = 刻木匠

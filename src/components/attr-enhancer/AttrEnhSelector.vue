@@ -32,7 +32,7 @@ const cancelSelection = (e: Enhancer) => {
     <el-table class="enhancer-table" :data="items" max-height="400" @selection-change="handleSelectionChange"
         ref="multipleTableRef">
         <el-table-column type="selection" width="50" />
-        <el-table-column prop="name" label="名称" />
+        <el-table-column prop="name" :label="$t('name')" />
     </el-table>
 </template>
 
@@ -46,3 +46,7 @@ const cancelSelection = (e: Enhancer) => {
     width: 100%;
 }
 </style>
+
+<fluent locale="zh-CN">
+name = 名称
+</fluent>

@@ -3,10 +3,12 @@ import { computed } from 'vue';
 import { ElMessage } from 'element-plus'
 import { writeText } from '@tauri-apps/api/clipboard'
 import { Actions } from '../../Craft';
+import { useFluent } from 'fluent-vue';
 
 const props = defineProps<{
     actions: Actions[]
 }>()
+const { $t } = useFluent()
 
 const chunkedActions = computed(() => {
     const macros = []
@@ -16,9 +18,9 @@ const chunkedActions = computed(() => {
         const section = props.actions.slice(sec * size, Math.min(props.actions.length, (sec + 1) * size))
         let lines = [];
         for (let action of section) {
-            lines.push(`/ac ${names.get(action)} <wait.${waitTimes.get(action)}>`)
+            lines.push(`/ac ${$t(action.replaceAll('_', '-'))} <wait.${waitTimes.get(action)}>`)
         }
-        lines.push(`/echo 宏#${sec + 1} 已完成！<se.1>`)
+        lines.push(`/echo ${$t('marco-finished', { id: sec + 1 })}<se.1>`)
         macros.push(lines)
     }
     return macros
@@ -30,45 +32,9 @@ const copyChunk = async (i: number, macro: string[]) => {
         type: 'success',
         duration: 2000,
         showClose: true,
-        message: `已复制 宏#${i + 1} 到系统剪切板`
+        message: $t('copied-marco', { id: i + 1 })
     })
 }
-
-const names = new Map([
-    [Actions.BasicSynthesis, "制作"],
-    [Actions.BasicTouch, "加工"],
-    [Actions.MastersMend, "精修"],
-    [Actions.HastyTouch, "仓促"],
-    [Actions.RapidSynthesis, "高速制作"],
-    [Actions.Observe, "观察"],
-    [Actions.TricksOfTheTrade, "秘诀"],
-    [Actions.WasteNot, "俭约"],
-    [Actions.Veneration, "崇敬"],
-    [Actions.StandardTouch, "中级加工"],
-    [Actions.GreatStrides, "阔步"],
-    [Actions.Innovation, "改革"],
-    [Actions.FinalAppraisal, "最终确认"],
-    [Actions.WasteNotII, "长期俭约"],
-    [Actions.ByregotsBlessing, "比尔格的祝福"],
-    [Actions.PreciseTouch, "集中加工"],
-    [Actions.MuscleMemory, "坚信"],
-    [Actions.CarefulSynthesis, "模范制作"],
-    [Actions.Manipulation, "掌握"],
-    [Actions.PrudentTouch, "俭约加工"],
-    [Actions.FocusedSynthesis, "注视制作"],
-    [Actions.FocusedTouch, "注视加工"],
-    [Actions.Reflect, "闲静"],
-    [Actions.PreparatoryTouch, "坯料加工"],
-    [Actions.Groundwork, "坯料制作"],
-    [Actions.DelicateSynthesis, "精密制作"],
-    [Actions.IntensiveSynthesis, "集中制作"],
-    [Actions.TrainedEye, "工匠的神速技巧"],
-    [Actions.AdvancedTouch, "上级加工"],
-    [Actions.PrudentSynthesis, "俭约制作"],
-    [Actions.TrainedFinesse, "工匠的神技"],
-    [Actions.CarefulObservation, "设计变动"],
-    [Actions.HeartAndSoul, "专心致志"],
-])
 
 const waitTimes = new Map([
     [Actions.BasicSynthesis, 3],
@@ -133,3 +99,8 @@ const waitTimes = new Map([
     cursor: pointer;
 }
 </style>
+
+<fluent locale="zh-CN">
+copied-marco = 已复制 宏#{ $id } 到系统剪切板
+marco-finished = 宏#{ $id } 已完成！
+</fluent>
