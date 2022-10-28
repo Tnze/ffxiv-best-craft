@@ -8,7 +8,7 @@ progress = Progress
 quality = Quality
 durability = Durability
 
-# 职业名
+# Job names
 carpenter = Carpenter
 blacksmith = Blacksmith
 armorer = Armorer
@@ -18,7 +18,7 @@ weaver = Weaver
 alchemist = Alchemist
 culinarian = Culinarian
 
-# 技能名
+# Action names
 basic-synthesis = Basic Synthesis
 basic-touch = Basic Touch
 masters-mend = Masters Mend
@@ -53,7 +53,7 @@ trained-finesse = Trained Finesse
 careful-observation = Careful Observation
 heart-and-soul = Heart and Soul
 
-# 状态
+# Conditions
 normal = Normal
 good = Good
 excellent = Excellent

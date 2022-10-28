@@ -5,9 +5,11 @@ import { EditPen } from '@element-plus/icons-vue'
 import { Jobs, Recipe, newRecipe, recipeTable, RecipeRow } from '../../Craft'
 import { useRouter } from 'vue-router';
 import { useStore } from '../../store';
+import { useFluent } from 'fluent-vue';
 
 const store = useStore()
 const router = useRouter()
+const { $t } = useFluent()
 
 const jobMaps: { [key: string]: Jobs | 'unknown' } = {
     '木工': Jobs.Carpenter,
@@ -40,13 +42,9 @@ const openCustomlizer = ref(false)
 const selectRecipeRow = async (row: RecipeRow) => {
     try {
         await ElMessageBox.confirm(
-            `将当前配方设置为“${row.item_name}”吗？`,
-            '请确认',
-            {
-                confirmButtonText: '确认',
-                cancelButtonText: '取消',
-                type: 'warning',
-            }
+            $t('confirm-select', { itemName: row.item_name }),
+            $t('please-confirm'),
+            { type: 'warning' }
         )
         const recipe = await newRecipe(
             row.rlv,
@@ -67,7 +65,7 @@ const selectRecipe = (recipe: Recipe, itemName: string, craftType: string) => {
     ElMessage({
         type: 'success',
         showClose: true,
-        message: '配方设置已变更'
+        message: $t('recipe-setting-changed')
     })
 }
 
@@ -166,6 +164,9 @@ const customRecipe = ref({
 </style>
 
 <fluent locale="zh-CN">
+confirm-select = 将当前配方设置为“{ $itemName }”吗？
+please-confirm = 请确认
+recipe-setting-changed = 配方设置已变更
 select-recipe = 选择配方
 custom-recipe = 自定义配方
 
@@ -180,8 +181,11 @@ name = 名称
 </fluent>
 
 <fluent locale="en">
+confirm-select = Set cuurent recipe to "{ $itemName }"?
+please-confirm = Please confirm
+recipe-setting-changed = Recipe is updated
 select-recipe = Select Recipe
-custom-recipe = Custom recipe
+custom-recipe = Custom Recipe
 
 cancel = Cancel
 confirm = Confirm
