@@ -104,3 +104,8 @@ const waitTimes = new Map([
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
 marco-finished = 宏#{ $id } 已完成！
 </fluent>
+
+<fluent locale="en">
+copied-marco = Copied M#{ $id } to system clipboard!
+marco-finished = M#{ $id } is finished!
+</fluent>

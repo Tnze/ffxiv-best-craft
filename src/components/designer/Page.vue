@@ -18,3 +18,8 @@ const store = useStore()
 not-selected = 请先选择配方
 loading = 加载中
 </fluent>
+
+<fluent locale="en">
+not-selected = Please select recipe first
+loading = Loading
+</fluent>

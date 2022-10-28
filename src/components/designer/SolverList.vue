@@ -118,12 +118,23 @@ function formatDuration(u: number): string {
 </style>
 
 <fluent locale="zh-CN">
-manipulation-select-info = { manipulation }(时间&内存x9)
-muscle-memory-select-info = { muscle-memory }(内存x2)
+manipulation-select-info = { manipulation }(时间&内存×9)
+muscle-memory-select-info = { muscle-memory }(内存×2)
 start-solver = 启动求解器
 close-solver = 关闭求解器【{ $solver }】
 
 solving-info = 求解器计算中，可能需要消耗大量内存，请稍等……
 solve-finished = 求解器准备已完成({ $solveTime })
-error-with = 错误: { $err }
+error-with = 错误：{ $err }
+</fluent>
+
+<fluent locale="en">
+manipulation-select-info = { manipulation }(Time & Memory × 9)
+muscle-memory-select-info = { muscle-memory }(Memory × 2)
+start-solver = Create solver
+close-solver = Release solver [{ $solver }]
+
+solving-info = Solving could occupy lots of memory. Please wait...
+solve-finished = Solve finished({ $solveTime })
+error-with = Error: { $err }
 </fluent>

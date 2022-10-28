@@ -166,3 +166,7 @@ watchEffect(() => {
 <fluent locale="zh-CN">
 action-panel = 技能面板
 </fluent>
+
+<fluent locale="en">
+action-panel = Action Panel
+</fluent>

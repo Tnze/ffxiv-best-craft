@@ -55,8 +55,8 @@ const jobPage = ref('default')
         <el-main>
             <el-tabs v-model="jobPage" tab-position="left">
                 <el-tab-pane name="default" :label="$t('default')">
-                    <el-form label-position="right" label-width="100px" :model="modelValue.default"
-                        style="max-width: 460px">
+                    <el-form label-position="right" label-width="130px" :model="modelValue.default"
+                        style="max-width: 500px">
                         <el-form-item :label="$t('level')">
                             <el-input-number v-model="modelValue.default.level" :min="1" :max="90"></el-input-number>
                         </el-form-item>
@@ -72,24 +72,24 @@ const jobPage = ref('default')
                     </el-form>
                 </el-tab-pane>
                 <el-tab-pane v-for="v in modelValue.special" :name="v.name" :label="$t(v.name)">
-                    <el-form label-position="right" label-width="100px" :model="v.value" style="max-width: 460px">
-                        <el-form-item label="属性">
-                            <el-switch :model-value="v.value == null" active-text="继承自默认"
+                    <el-form label-position="right" label-width="130px" :model="v.value" style="max-width: 500px">
+                        <el-form-item :label="$t('attributes')">
+                            <el-switch :model-value="v.value == null" :active-text="$t('inherit-from-default')"
                                 @change="v.value = v.value == null ? { ...modelValue.default } : null" />
                         </el-form-item>
-                        <el-form-item label="等级">
+                        <el-form-item :label="$t('level')">
                             <el-input-number v-model="(v.value || modelValue.default).level" :disabled="v.value == null"
                                 :min="0" :max="90"></el-input-number>
                         </el-form-item>
-                        <el-form-item label="作业精度">
+                        <el-form-item :label="$t('craftsmanship')">
                             <el-input-number v-model="(v.value || modelValue.default).craftsmanship"
                                 :disabled="v.value == null" :min="0"></el-input-number>
                         </el-form-item>
-                        <el-form-item label="加工精度">
+                        <el-form-item :label="$t('control')">
                             <el-input-number v-model="(v.value || modelValue.default).control"
                                 :disabled="v.value == null" :min="0"></el-input-number>
                         </el-form-item>
-                        <el-form-item label="制作力">
+                        <el-form-item :label="$t('craft-point')">
                             <el-input-number v-model="(v.value || modelValue.default).craft_points"
                                 :disabled="v.value == null" :min="0"></el-input-number>
                         </el-form-item>
@@ -109,4 +109,11 @@ const jobPage = ref('default')
 <fluent locale="zh-CN">
 attributes = 装备属性
 default = 默认
+inherit-from-default = 继承自默认
+</fluent>
+
+<fluent locale="en">
+attributes = Attributes
+default = Default
+inherit-from-default = Inherit from default
 </fluent>
