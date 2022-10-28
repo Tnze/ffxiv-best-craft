@@ -32,19 +32,25 @@ const onCheckUpdateClick = () => {
         })
 }
 
+const languageChanged = (newLang: string) => {
+    console.log("language switched to", newLang)
+    store.commit('selectLanguage', newLang)
+}
+
 </script>
 
 
 <template>
     <el-container>
         <el-header>
-            <h1>设置</h1>
+            <h1>{{ $t('settings') }}</h1>
         </el-header>
         <el-main>
             <el-form class="setting-page" :model="store.state.settings" label-width="120px">
                 <el-form-item :label="$t('language')">
-                    <el-select v-model="store.state.settings.language">
+                    <el-select v-model="store.state.settings.language" @change="languageChanged">
                         <el-option label="简体中文" value="zh-CN" />
+                        <el-option label="English" value="en" />
                     </el-select>
                 </el-form-item>
                 <el-form-item :label="$t('version-number')">
@@ -81,6 +87,7 @@ const onCheckUpdateClick = () => {
 
 
 <fluent locale="zh-CN">
+settings = 设置
 language = 语言
 version-number = 版本号
 tauri = Tauri
@@ -89,4 +96,16 @@ feedback = 反馈
 
 check-update = 检查更新
 check-update-success = 检查更新成功
+</fluent>
+
+<fluent locale="en">
+settings = Settings
+language = Language
+version-number = Version
+tauri = Tauri
+developer = Developer
+feedback = Feedback
+
+check-update = Check Update
+check-update-success = Check update success
 </fluent>

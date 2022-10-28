@@ -201,3 +201,9 @@ display-durability = { durability } { $current } / { $total }
 display-attrs = { $what }：{ $value }
 display-craft-point = { craft-point }：{ $current } / { $total }
 </fluent>
+
+<fluent locale="en">
+display-durability = { durability } { $current } / { $total }
+display-attrs = { $what }: { $value }
+display-craft-point = { craft-point }: { $current } / { $total }
+</fluent>

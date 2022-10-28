@@ -50,3 +50,7 @@ const cancelSelection = (e: Enhancer) => {
 <fluent locale="zh-CN">
 name = 名称
 </fluent>
+
+<fluent locale="en">
+name = Name
+</fluent>

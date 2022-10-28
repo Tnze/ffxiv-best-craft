@@ -74,3 +74,8 @@ const amountChange = (idx: number, val: number) => {
 name = 名称
 amount = 数量
 </fluent>
+
+<fluent locale="en">
+name = Name
+amount = Amount
+</fluent>

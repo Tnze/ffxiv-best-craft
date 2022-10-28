@@ -1,6 +1,7 @@
 import { InjectionKey } from 'vue'
 import { createStore, useStore as baseUseStore, Store } from 'vuex'
 import { Attributes, ItemWithAmount, Jobs, Recipe } from './Craft'
+import { fluent, zhCNBundle, enBundle } from './fluent'
 
 export interface GearsetsRow {
     name: string
@@ -49,6 +50,17 @@ export const store = createStore<State>({
         }
     },
     mutations: {
+        selectLanguage(state, newLang) {
+            state.settings.language = newLang
+            switch (newLang) {
+                case 'zh-CN':
+                    fluent.bundles = [zhCNBundle, enBundle]
+                    break;
+                case 'en':
+                    fluent.bundles = [enBundle, zhCNBundle]
+                    break;
+            }
+        },
         storeGearsets(state, newGearsets) {
             state.gearsets = newGearsets
         },

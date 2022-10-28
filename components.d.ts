@@ -49,6 +49,7 @@ declare module '@vue/runtime-core' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Gearsets: typeof import('./src/components/Gearsets.vue')['default']
     Item: typeof import('./src/components/bill-of-material/Item.vue')['default']
+    MacroExporter: typeof import('./src/components/designer/MacroExporter.vue')['default']
     MarcoExporter: typeof import('./src/components/designer/MarcoExporter.vue')['default']
     Menu: typeof import('./src/components/Menu.vue')['default']
     Page: typeof import('./src/components/designer/Page.vue')['default']

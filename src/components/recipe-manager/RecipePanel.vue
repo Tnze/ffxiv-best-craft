@@ -85,46 +85,46 @@ const customRecipe = ref({
 <template>
     <el-container>
         <el-header>
-            <h1>选择配方</h1>
+            <h1>{{ $t('select-recipe') }}</h1>
         </el-header>
         <el-main class="container">
-            <el-dialog v-model="openCustomlizer" title="自定义配方">
+            <el-dialog v-model="openCustomlizer" :title="$t('custom-recipe')">
                 <el-form :model="customRecipe" label-position="right" label-width="100px" style="max-width: 460px">
-                    <el-form-item label="rlv">
+                    <el-form-item :label="$t('recipe-level')">
                         <el-input-number v-model="customRecipe.rlv" :min="1"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="等级">
+                    <el-form-item :label="$t('level')">
                         <el-input-number v-model="customRecipe.job_level" :min="1"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="难度">
+                    <el-form-item :label="$t('difficulty')">
                         <el-input-number v-model="customRecipe.difficulty" :min="1"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="品质">
+                    <el-form-item :label="$t('quality')">
                         <el-input-number v-model="customRecipe.quality" :min="1"></el-input-number>
                     </el-form-item>
-                    <el-form-item label="耐久">
+                    <el-form-item :label="$t('durability')">
                         <el-input-number v-model="customRecipe.durability" :min="1"></el-input-number>
                     </el-form-item>
                 </el-form>
                 <template #footer>
                     <span class="dialog-footer">
-                        <el-button @click="openCustomlizer = false">取消</el-button>
+                        <el-button @click="openCustomlizer = false">{{ $t('cancel') }}</el-button>
                         <el-button type="primary"
-                            @click="openCustomlizer = false; selectRecipe(customRecipe, 'Recipe#' + customRecipe.rlv, '自定义')">
-                            确认
+                            @click="openCustomlizer = false; selectRecipe(customRecipe, 'Recipe#' + customRecipe.rlv, $t('custom-recipe'))">
+                            {{ $t('confirm') }}
                         </el-button>
                     </span>
                 </template>
             </el-dialog>
-            <el-input v-model="searchText" class="search-input" placeholder="键入以搜索" clearable>
+            <el-input v-model="searchText" class="search-input" :placeholder="$t('search')" clearable>
                 <template #append>
                     <el-button :icon="EditPen" @click="openCustomlizer = true" />
                 </template>
             </el-input>
-            <el-table v-loading="displayTable == null" element-loading-text="请稍等..." highlight-current-row
+            <el-table v-loading="displayTable == null" :element-loading-text="$t('please-wait')" highlight-current-row
                 @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
                 <el-table-column prop="id" label="ID" width="100" />
-                <el-table-column prop="rlv" label="配方等级" width="100" />
+                <el-table-column prop="rlv" :label="$t('recipe-level')" width="100" />
                 <!-- <el-table-column prop="Icon" label="图标" width="55">
                     <template #default="scope">
                         <div style="display: flex; align-items: center">
@@ -132,8 +132,8 @@ const customRecipe = ref({
                         </div>
                     </template>
                 </el-table-column> -->
-                <el-table-column prop="job" label="类型" width="70" />
-                <el-table-column prop="item_name" label="名称" />
+                <el-table-column prop="job" :label="$t('type')" width="70" />
+                <el-table-column prop="item_name" :label="$t('name')" />
                 <!-- <el-table-column prop="difficulty_factor" label="难度因子" /> -->
                 <!-- <el-table-column prop="quality_factor" label="品质因子" /> -->
                 <!-- <el-table-column prop="durability_factor" label="耐久因子" /> -->
@@ -164,3 +164,31 @@ const customRecipe = ref({
     /* margin-bottom: 10px; */
 }
 </style>
+
+<fluent locale="zh-CN">
+select-recipe = 选择配方
+custom-recipe = 自定义配方
+
+cancel = 取消
+confirm = 确认
+
+search = 键入以搜索
+please-wait = 请稍等...
+
+type = 类型
+name = 名称
+</fluent>
+
+<fluent locale="en">
+select-recipe = Select Recipe
+custom-recipe = Custom recipe
+
+cancel = Cancel
+confirm = Confirm
+
+search = Search
+please-wait = Please wait...
+
+type = Type
+name = Name
+</fluent>

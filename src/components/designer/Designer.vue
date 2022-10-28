@@ -18,7 +18,7 @@ import ActionQueue from "./ActionQueue.vue";
 import StatusBar from "./StatusBar.vue";
 import Sidebar from "./Sidebar.vue";
 import SolverList from "./SolverList.vue";
-import MarcoExporter from "./MarcoExporter.vue";
+import MacroExporter from "./MacroExporter.vue";
 import QueueStatus from "./QueueStatus.vue";
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
@@ -115,7 +115,7 @@ const solverResult = reactive<Sequence>({
 watch(() => actionQueue.status, readSolver);
 // Drawer status
 const openSolverDrawer = ref(false);
-const openExportMarco = ref(false);
+const openExportMacro = ref(false);
 const openAttrEnhSelector = ref(false);
 
 async function setInitQuality() {
@@ -205,7 +205,7 @@ async function saveListToJSON() {
         try {
             if (queues.length == 0) {
                 await ElMessageBox.confirm(
-                    $t('number-of-marcos-is-zero'),
+                    $t('number-of-macros-is-zero'),
                     $t('waring'),
                     { type: 'warning' }
                 )
@@ -216,7 +216,7 @@ async function saveListToJSON() {
         const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
         const path = await save({
             defaultPath: `${store.state.designer!.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
-            filters: [{ name: $t('marco-file-type-name'), extensions: ['json'] }],
+            filters: [{ name: $t('macro-file-type-name'), extensions: ['json'] }],
             title: $t('save-file')
         })
         if (!path) {
@@ -239,7 +239,7 @@ async function saveListToJSON() {
 
 async function openListFromJSON() {
     const pathlist = <string[]>await open({
-        filters: [{ name: $t('marco-file-type-name'), extensions: ['json'] }],
+        filters: [{ name: $t('macro-file-type-name'), extensions: ['json'] }],
         multiple: true,
         title: $t('open-file')
     })
@@ -262,7 +262,7 @@ async function openListFromJSON() {
             ElMessage({
                 type: "success",
                 showClose: true,
-                message: $t('read-n-marcos', { n: queues.length }),
+                message: $t('read-n-macros', { n: queues.length }),
             });
         } catch (err) {
             ElMessage({
@@ -281,8 +281,8 @@ async function openListFromJSON() {
             <SolverList :init-status="initStatus" :status="actionQueue.status"
                 :recipe-name="store.state.designer!.itemName" @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
-        <el-drawer v-model="openExportMarco" :title="$t('export-marco')" direction="btt" size="80%">
-            <MarcoExporter :actions="actionQueue.slots.map((v) => v.action)" />
+        <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
+            <MacroExporter :actions="actionQueue.slots.map((v) => v.action)" />
         </el-drawer>
         <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
             <AttrEnhSelector v-model="attributesEnhancers" />
@@ -309,7 +309,7 @@ async function openListFromJSON() {
                         </div>
                         <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver"
                             @plus="saveSequence" @delete="clearSequence" @solver="openSolverDrawer = true"
-                            @print="openExportMarco = true" @save-list="saveListToJSON" @open-list="openListFromJSON" />
+                            @print="openExportMacro = true" @save-list="saveListToJSON" @open-list="openListFromJSON" />
                         <el-scrollbar class="solver-and-savedqueue-scrollbar">
                             <ul class="solver-and-savedqueue-list">
                                 <li v-for="(sq, i) in savedQueues" class="solver-and-savedqueue-item">
@@ -391,21 +391,45 @@ async function openListFromJSON() {
 
 <fluent locale="zh-CN">
 solver-setting = 求解器设置
-export-marco = 导出宏
+export-macro = 导出宏
 meal-and-potion = 食物 & 药水
 
 please-input-init-quality = 请输入初期品质
 config-init-quality = 设置初期品质
 please-input-integers = 请输入整数
 
-number-of-marcos-is-zero = 当前要保存的宏数量为0，是否继续？
+number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
 waring = 警告
 
-marco-file-type-name = BestCraft宏文件
+macro-file-type-name = BestCraft宏文件
 save-file = 保存文件
 save-success = 保存成功
 save-fail = 保存失败：{ $reason }
 open-file = 打开文件
-read-n-marcos = 读取了 { $n } 个宏
+read-n-macros = 读取了 { $n } 个宏
 read-fail = 读取失败：{ $reason }
+</fluent>
+
+<fluent locale="en">
+solver-setting = Solver setting
+export-macro = Export
+meal-and-potion = Meal & Potions
+
+please-input-init-quality = Please input initial quality
+config-init-quality = Set initial quality
+please-input-integers = Please input a integer
+
+number-of-macros-is-zero = Number of macros is 0, continue?
+waring = Warning
+
+macro-file-type-name = BestCraft saved macros file
+save-file = Save file
+save-success = Saving successed
+save-fail = Saving failed: { $reason }
+open-file = Open file
+read-n-macros = Read { $n -> 
+    [one] one macro
+    *[other] { $n } macros
+}
+read-fail = Reading failed: { $reason }
 </fluent>

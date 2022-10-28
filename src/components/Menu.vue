@@ -21,7 +21,7 @@ const disableAutomation = ref(true)
             <el-icon>
                 <suitcase />
             </el-icon>
-            <template #title>{{ $t('recipe') }}</template>
+            <template #title>{{ $t('gearsets') }}</template>
         </el-menu-item>
         <el-menu-item index="/recipe">
             <el-icon>
@@ -62,4 +62,12 @@ recipe = 配方
 bom = 物料
 designer = 设计
 settings = 设置
+</fluent>
+
+<fluent locale="en">
+gearsets = Gearsets
+recipe = Recipe
+bom = BOM
+designer = Designer
+settings = Settings
 </fluent>
