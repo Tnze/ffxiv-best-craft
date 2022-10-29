@@ -84,7 +84,7 @@ const emits = defineEmits<{
 }
 
 .button:hover {
-    background-color: #ecf5ff;
+    background-color: var(--el-color-primary-light-9);
     transition: all var(--el-transition-duration);
 }
 

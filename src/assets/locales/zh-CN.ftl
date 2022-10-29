@@ -7,6 +7,7 @@ difficulty = 难度
 progress = 进展
 quality = 品质
 durability = 耐久
+steps = 步数
 
 # 职业名
 carpenter = 刻木匠

@@ -45,6 +45,20 @@ interface Status {
   condition: string;
 }
 
+function isBetterThan(s1: Status, s2: Status): boolean {
+  if (s1.progress < s1.recipe.difficulty)
+    return false;
+  if (s2.progress < s2.recipe.difficulty)
+    return true;
+  if (s1.quality < s2.quality)
+    return false;
+  if (s1.quality > s2.quality)
+    return true;
+  if (s1.step < s2.step)
+    return true;
+  return false
+}
+
 enum Conditions {
   // 白：通常
   Normal = 'normal',
@@ -217,5 +231,6 @@ export {
   craftPointsList,
   recipeTable,
   recipesIngredientions,
-  itemInfo
+  itemInfo,
+  isBetterThan,
 };
