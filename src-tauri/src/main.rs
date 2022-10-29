@@ -13,6 +13,7 @@ use std::{
 
 use axum::{http::StatusCode, routing, Json, Router};
 use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
+use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
@@ -120,8 +121,9 @@ async fn recipe_table(
     page_id: u64,
     search_name: String,
     app_state: tauri::State<'_, AppState>,
+    app_handle: tauri::AppHandle,
 ) -> Result<(Vec<RecipeRow>, u64), String> {
-    let db = app_state.get_db().await.map_err(err_to_string)?;
+    let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
     let paginate = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
         .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
@@ -146,8 +148,9 @@ async fn recipe_table(
 async fn recipes_ingredientions(
     checklist: Vec<(i32, i32)>,
     app_state: tauri::State<'_, AppState>,
+    app_handle: tauri::AppHandle,
 ) -> Result<Vec<(i32, i32)>, String> {
-    let db = app_state.get_db().await.map_err(err_to_string)?;
+    let db = app_state.get_db(app_handle).await?;
     let mut needs = BTreeMap::new();
     for (item_id, amount) in checklist {
         let r = Recipes::find()
@@ -185,8 +188,9 @@ async fn recipes_ingredientions(
 async fn item_info(
     item_id: i32,
     app_state: tauri::State<'_, AppState>,
+    app_handle: tauri::AppHandle,
 ) -> Result<items::Model, String> {
-    let db = app_state.get_db().await.map_err(err_to_string)?;
+    let db = app_state.get_db(app_handle).await?;
     Ok(Items::find_by_id(item_id)
         .one(db)
         .await
@@ -209,10 +213,17 @@ impl AppState {
         }
     }
 
-    async fn get_db(&self) -> Result<&DatabaseConnection, sea_orm::DbErr> {
+    async fn get_db(&self, app_handle: tauri::AppHandle) -> Result<&DatabaseConnection, String> {
+        const ESCAPE_SET: &AsciiSet = &CONTROLS.add(b'?').add(b'#');
+        let path = app_handle
+            .path_resolver()
+            .resolve_resource("assets/xiv.db")
+            .ok_or("database file not found")?;
+        let path = utf8_percent_encode(&path.to_string_lossy(), ESCAPE_SET).to_string();
         self.db
-            .get_or_try_init(|| Database::connect("sqlite:./assets/xiv.db?mode=ro"))
+            .get_or_try_init(|| Database::connect(format!("sqlite:{}?mode=ro", path)))
             .await
+            .map_err(err_to_string)
     }
 }
 
