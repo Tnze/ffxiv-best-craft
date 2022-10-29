@@ -16,20 +16,23 @@ getName().then(n => appName.value = n)
 getVersion().then(v => version.value = v)
 getTauriVersion().then(t => tauriVersion.value = t)
 
-const onCheckUpdateClick = () => {
-    checkUpdate()
-        .then(v => {
-            ElMessage({
-                type: 'success',
-                message: $t('check-update-success'),
-            })
+const checkingUpdate = ref(false)
+const onCheckUpdateClick = async () => {
+    try {
+        checkingUpdate.value = true
+        await checkUpdate()
+        ElMessage({
+            type: 'success',
+            message: $t('check-update-success'),
         })
-        .catch(err => {
-            ElMessage({
-                type: 'error',
-                message: err as string,
-            })
+    } catch (err) {
+        ElMessage({
+            type: 'error',
+            message: err as string,
         })
+    } finally {
+        checkingUpdate.value = false
+    }
 }
 
 const languageChanged = (newLang: string) => {
@@ -60,7 +63,9 @@ const languageChanged = (newLang: string) => {
                     {{ tauriVersion }}
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="onCheckUpdateClick">{{ $t('check-update') }}</el-button>
+                    <el-button type="primary" @click="onCheckUpdateClick" :loading="checkingUpdate">{{
+                            checkingUpdate ? $t('checking-update') : $t('check-update')
+                    }}</el-button>
                 </el-form-item>
                 <el-form-item :label="$t('developer')">
                     Tnze❀潮风亭
@@ -95,6 +100,7 @@ developer = 开发者
 feedback = 反馈
 
 check-update = 检查更新
+checking-update = 正在检查更新
 check-update-success = 检查更新成功
 </fluent>
 
@@ -107,5 +113,6 @@ developer = Developer
 feedback = Feedback
 
 check-update = Check Update
+checking-update = Checking Update
 check-update-success = Check update success
 </fluent>
