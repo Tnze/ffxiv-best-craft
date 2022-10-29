@@ -126,7 +126,7 @@ watchEffect(() => {
 <template>
     <div class="container" @click.stop.prevent.right>
         <div v-for="group in actions" class="group">
-            <el-tooltip v-for="action in group" placement="right" :content="$t(action.replaceAll('_', '-'))"
+            <el-tooltip v-for="action in group" :hide-after="0" :enterable="false" :content="$t(action.replaceAll('_', '-'))"
                 :show-after="1000">
                 <Action :job="job" class="item" @click="emit('clickedAction', action)"
                     @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"

@@ -11,6 +11,7 @@ import {
     simulate,
     Status,
     newStatus,
+    isBetterThan,
 } from "../../Craft";
 import { read_solver } from "../../Solver";
 import ActionPanel from "./ActionPanel.vue";
@@ -113,6 +114,7 @@ const solverResult = reactive<Sequence>({
     errors: [],
 });
 watch(() => actionQueue.status, readSolver);
+
 // Drawer status
 const openSolverDrawer = ref(false);
 const openExportMacro = ref(false);
@@ -144,6 +146,16 @@ watch(initStatus, (newInitStatus) => {
     }
 });
 
+function pushSequence(seq: Sequence) {
+    for (const i in savedQueues) {
+        if (isBetterThan(seq.status, savedQueues[i].status)) {
+            savedQueues.splice(Number.parseInt(i), 0, seq)
+            return;
+        }
+    }
+    savedQueues.push(seq)
+}
+
 function pushAction(action: Actions) {
     actionQueue.slots.push({ id: actionQueue.maxid++, action });
 }
@@ -154,14 +166,14 @@ function clearSequence() {
 }
 
 function saveSequence() {
-    const slots = previewSolver.value
-        ? actionQueue.slots.concat(solverResult.slots)
-        : actionQueue.slots.slice()
-    savedQueues.push({
-        slots,
-        maxid: actionQueue.maxid,
-        status: actionQueue.status,
-        errors: actionQueue.errors,
+    const queue = previewSolver.value
+        ? solverResult
+        : actionQueue
+    pushSequence({
+        slots: queue.slots.slice(),
+        maxid: queue.maxid,
+        status: queue.status,
+        errors: queue.errors,
     });
 }
 
@@ -172,6 +184,18 @@ function loadSequence(seq: Sequence) {
 
 const isReadingSolver = ref(0);
 const previewSolver = ref(false);
+
+const displayedStatus = computed(() => {
+    return previewSolver.value && solverResult.slots.length > 0
+        ? solverResult.status
+        : actionQueue.status
+})
+watch(displayedStatus, (status) => {
+    const cond1 = savedQueues.length == 0 && status.progress == status.recipe.difficulty;
+    const cond2 = savedQueues.length > 0 && isBetterThan(status, savedQueues[0].status);
+    if (cond1 || cond2)
+        saveSequence()
+})
 
 async function readSolver(s: Status) {
     try {
@@ -201,7 +225,7 @@ async function readSolver(s: Status) {
 
 async function saveListToJSON() {
     try {
-        const queues = [actionQueue].concat(savedQueues).map(v => v.slots.map(s => s.action)).filter(v => v.length > 0)
+        const queues = savedQueues.map(v => v.slots.map(s => s.action)).filter(v => v.length > 0)
         try {
             if (queues.length == 0) {
                 await ElMessageBox.confirm(
@@ -252,7 +276,7 @@ async function openListFromJSON() {
             for (const actions of queues) {
                 const slots = actions.map((action, index) => { return { id: index, action } })
                 const { status, errors } = await simulate(initStatus.value, actions)
-                savedQueues.push({
+                pushSequence({
                     slots,
                     maxid: slots.length - 1,
                     status,
@@ -293,9 +317,7 @@ async function openListFromJSON() {
         <el-main>
             <div class="main-page">
                 <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers" :status="
-                    previewSolver && solverResult.slots.length > 0
-                        ? solverResult.status
-                        : actionQueue.status
+                    displayedStatus
                 " @click-attributes="openAttrEnhSelector = true" @click-quality="setInitQuality" />
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">
@@ -311,8 +333,8 @@ async function openListFromJSON() {
                             @plus="saveSequence" @delete="clearSequence" @solver="openSolverDrawer = true"
                             @print="openExportMacro = true" @save-list="saveListToJSON" @open-list="openListFromJSON" />
                         <el-scrollbar class="solver-and-savedqueue-scrollbar">
-                            <ul class="solver-and-savedqueue-list">
-                                <li v-for="(sq, i) in savedQueues" class="solver-and-savedqueue-item">
+                            <TransitionGroup class="solver-and-savedqueue-list" name="savedqueues" tag="ul">
+                                <li v-for="(sq, i) in savedQueues" :key="sq.maxid" class="solver-and-savedqueue-item">
                                     <QueueStatus :status="sq.status" />
                                     <ActionQueue :job="displayJob" :list="sq.slots" :err-list="sq.errors" disabled />
                                     <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
@@ -320,7 +342,7 @@ async function openListFromJSON() {
                                     <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
                                         @click="savedQueues.splice(i, 1)" />
                                 </li>
-                            </ul>
+                            </TransitionGroup>
                         </el-scrollbar>
                     </div>
                 </div>
@@ -386,6 +408,17 @@ async function openListFromJSON() {
 
 .savedqueue-item-button {
     margin-right: 6px;
+}
+
+.savedqueues-enter-active,
+.list-leave-active {
+    transition: all 0.5s ease;
+}
+
+.savedqueues-enter-from,
+.savedqueues-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
 }
 </style>
 

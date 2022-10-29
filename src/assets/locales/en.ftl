@@ -7,6 +7,7 @@ difficulty = Difficulty
 progress = Progress
 quality = Quality
 durability = Durability
+steps = Steps
 
 # Job names
 carpenter = Carpenter

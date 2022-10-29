@@ -8,7 +8,6 @@ const props = defineProps<{
 }>()
 
 const color = computed(() => {
-    console.log('computing color', props.status)
     if (props.status.progress < props.status.recipe.difficulty)
         return '#F56C6C'
     else if (props.status.quality < props.status.recipe.quality)
@@ -20,10 +19,18 @@ const color = computed(() => {
 </script>
 
 <template>
-    <el-icon v-if="status != undefined" :color="color" class="savedqueue-status">
-        <success-filled v-if="color == '#67C23A'" />
-        <warning-filled v-else-if="color != undefined" />
-    </el-icon>
+    <el-tooltip :hide-after="0" placement="left" :content="$t('status-text', {
+        progress: status.progress,
+        quality: status.quality,
+        craftPoint: status.craft_points,
+        durability: status.durability,
+        steps: status.step
+    })">
+        <el-icon v-if="status != undefined" :color="color" class="savedqueue-status">
+            <success-filled v-if="color == '#67C23A'" />
+            <warning-filled v-else-if="color != undefined" />
+        </el-icon>
+    </el-tooltip>
 </template>
 
 <style scoped>
@@ -31,3 +38,13 @@ const color = computed(() => {
     margin: 0 -6px 0 8px;
 }
 </style>
+
+<fluent locale="zh-CN">
+status-text = { quality }：{ $quality }
+    { steps }：{ $steps }
+</fluent>
+
+<fluent locale="en">
+status-text = { quality }: { $quality }
+    { steps }: { $steps }
+</fluent>
