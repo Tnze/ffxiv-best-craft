@@ -85,6 +85,7 @@ dependencies = [
  "ffxiv-crafting",
  "futures",
  "msgbox",
+ "percent-encoding",
  "rayon",
  "sea-orm",
  "serde",
