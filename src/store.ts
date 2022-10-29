@@ -13,7 +13,7 @@ export interface State {
     checklist: ItemWithAmount[]
     designer: null | {
         itemName: string;
-        job: Jobs | "unknown";
+        job: Jobs;
         recipe: Recipe;
     }
     settings: {
@@ -78,7 +78,7 @@ export const store = createStore<State>({
                 state.checklist.splice(payload.idx, 1)
         },
         selectRecipe(state, payload: {
-            job: Jobs | 'unknown',
+            job: Jobs,
             itemName: string,
             recipe: Recipe
         }) {

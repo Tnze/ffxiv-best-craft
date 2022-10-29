@@ -11,7 +11,7 @@ const store = useStore()
 const router = useRouter()
 const { $t } = useFluent()
 
-const jobMaps: { [key: string]: Jobs | 'unknown' } = {
+const jobMaps: { [key: string]: Jobs } = {
     '木工': Jobs.Carpenter,
     '锻冶': Jobs.Blacksmith,
     '铸甲': Jobs.Armorer,
@@ -20,7 +20,6 @@ const jobMaps: { [key: string]: Jobs | 'unknown' } = {
     '裁缝': Jobs.Weaver,
     '炼金': Jobs.Alchemist,
     '烹调': Jobs.Culinarian,
-    '自定义': 'unknown',
 }
 
 const searchText = ref('')
@@ -60,7 +59,7 @@ const selectRecipeRow = async (row: RecipeRow) => {
 }
 
 const selectRecipe = (recipe: Recipe, itemName: string, craftType: string) => {
-    store.commit('selectRecipe', { job: jobMaps[craftType], itemName, recipe })
+    store.commit('selectRecipe', { job: jobMaps[craftType] ?? Jobs.Culinarian, itemName, recipe })
     router.push({ name: "designer" })
     ElMessage({
         type: 'success',
@@ -108,7 +107,7 @@ const customRecipe = ref({
                     <span class="dialog-footer">
                         <el-button @click="openCustomlizer = false">{{ $t('cancel') }}</el-button>
                         <el-button type="primary"
-                            @click="openCustomlizer = false; selectRecipe(customRecipe, 'Recipe#' + customRecipe.rlv, $t('custom-recipe'))">
+                            @click="openCustomlizer = false; selectRecipe(customRecipe, $t('custom-recipe', {rlv: customRecipe.rlv}), '')">
                             {{ $t('confirm') }}
                         </el-button>
                     </span>
@@ -168,7 +167,7 @@ confirm-select = 将当前配方设置为“{ $itemName }”吗？
 please-confirm = 请确认
 recipe-setting-changed = 配方设置已变更
 select-recipe = 选择配方
-custom-recipe = 自定义配方
+custom-recipe = 自定义配方 #{ $rlv }
 
 cancel = 取消
 confirm = 确认
@@ -185,7 +184,7 @@ confirm-select = Set cuurent recipe to "{ $itemName }"?
 please-confirm = Please confirm
 recipe-setting-changed = Recipe is updated
 select-recipe = Select Recipe
-custom-recipe = Custom Recipe
+custom-recipe = Custom Recipe #{ $rlv }
 
 cancel = Cancel
 confirm = Confirm

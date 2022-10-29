@@ -47,7 +47,7 @@ const attributes = computed(() =>
     store.state.gearsets.special.find(v => v.name == store.state.designer!.job)?.value || store.state.gearsets.default
 )
 const displayJob = computed(() =>
-    store.state.designer!.job == "unknown" ? Jobs.Culinarian : store.state.designer!.job
+    store.state.designer!.job
 );
 
 // 食物和药水效果
