@@ -253,37 +253,28 @@ async fn create_solver(
         }
     };
     if let Ok(()) = slot {
-        let solver: Box<dyn Solver + Send + Sync> = if use_muscle_memory {
-            let progress_list = preprogress_list(&status);
-            if use_manipulation {
+        macro_rules! build_solver {
+            ($mn:literal, $wn:literal, $pl:expr) => {{
                 let mut driver = ProgressSolver::new(status.clone());
                 driver.init();
-                let mut solver =
-                    PreprogressSolver::<8, 8>::new(status, progress_list, Arc::new(driver));
+                let mut solver = PreprogressSolver::<$mn, $wn>::new(status, $pl, Arc::new(driver));
                 solver.init();
                 Box::new(solver)
-            } else {
+            }};
+            ($mn:literal, $wn:literal) => {{
                 let mut driver = ProgressSolver::new(status.clone());
                 driver.init();
-                let mut solver =
-                    PreprogressSolver::<0, 8>::new(status, progress_list, Arc::new(driver));
+                let mut solver = QualitySolver::<$mn, $wn>::new(status, Arc::new(driver));
                 solver.init();
                 Box::new(solver)
-            }
-        } else {
-            if use_manipulation {
-                let mut driver = ProgressSolver::new(status.clone());
-                driver.init();
-                let mut solver = QualitySolver::<8, 8>::new(status, Arc::new(driver));
-                solver.init();
-                Box::new(solver)
-            } else {
-                let mut driver = ProgressSolver::new(status.clone());
-                driver.init();
-                let mut solver = QualitySolver::<0, 8>::new(status, Arc::new(driver));
-                solver.init();
-                Box::new(solver)
-            }
+            }};
+        }
+        let progress_list = preprogress_list(&status);
+        let solver: Box<dyn Solver + Send + Sync> = match (use_muscle_memory, use_manipulation) {
+            (true, true) => build_solver!(8, 8, progress_list),
+            (true, false) => build_solver!(0, 8, progress_list),
+            (false, true) => build_solver!(8, 8),
+            (false, false) => build_solver!(0, 8),
         };
         let mut list = app_state.solver_list.lock().await;
         *list.get_mut(&key).unwrap() = Some(solver); // we are sure that there is a None value so we can successfully get it
@@ -294,16 +285,18 @@ async fn create_solver(
 }
 
 fn preprogress_list(status: &Status) -> Vec<u16> {
-    let level_based = |level, e1, e2| {
-        if status.attributes.level < level {
-            e1
-        } else {
-            e2
-        }
-    };
+    macro_rules! level_based {
+        ($level:literal, $e1:literal, $e2:literal) => {
+            if status.attributes.level < $level {
+                $e1
+            } else {
+                $e2
+            }
+        };
+    }
     vec![
-        status.calc_synthesis(level_based(31, 1.0, 1.2)), // basic synth
-        status.calc_synthesis(level_based(82, 1.5, 1.8)), // careful synth
+        status.calc_synthesis(level_based!(31, 1.0, 1.2)), // basic synth
+        status.calc_synthesis(level_based!(82, 1.5, 1.8)), // careful synth
     ]
 }
 
