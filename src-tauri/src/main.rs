@@ -117,10 +117,10 @@ struct RecipeRow {
 
 #[tauri::command(async)]
 async fn recipe_table(
-    page_id: usize,
+    page_id: u64,
     search_name: String,
     app_state: tauri::State<'_, AppState>,
-) -> Result<(Vec<RecipeRow>, usize), String> {
+) -> Result<(Vec<RecipeRow>, u64), String> {
     let db = app_state.get_db().await.map_err(err_to_string)?;
     let paginate = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())

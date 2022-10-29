@@ -20,7 +20,7 @@ ffxiv-crafting = { version = "6.0.12", features = ["serde-support"] }
 futures = "0.3"
 msgbox = "0.7.0"
 rayon = "1.5.3"
-sea-orm = { version = "0.9", features = [
+sea-orm = { version = "0.10", features = [
     "sqlx-sqlite",
     "runtime-tokio-native-tls",
     "macros",
