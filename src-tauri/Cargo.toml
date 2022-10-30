@@ -27,7 +27,7 @@ sea-orm = { version = "0.10", features = [
 ] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tauri = { version = "1.1", features = ["api-all", "devtools", "updater"] }
+tauri = { version = "1.1", features = ["api-all", "updater"] }
 tokio = "1.20"
 anyhow = "1.0.65"
 percent-encoding = "2.2.0"
