@@ -1,15 +1,15 @@
 {
-  "version": "v0.5.4",
-  "notes": "- 宏自动暂存、自动排序功能\n- 将鼠标悬停在暂存区状态图标上可以查看模拟结果\n- 修复深色模式hover颜色不对的问题\n- 升级sea-orm版本",
-  "pub_date": "2022-10-29T15:07:32+08:00",
+  "version": "v0.5.5",
+  "notes": "修复\n- 修复Linux与Mac特定情况下找不到db数据库的问题\n- 修复重选配方的问题\n- 修复自定义配方问题\n\n更新\n- 更新自定义配方的默认值\n- 更新部分日语翻译\n- 添加初期品质计算功能\n\n优化\n- 代码结构优化",
+  "pub_date": "2022-10-30T18:38:08+08:00",
   "platforms": {
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smh5Y3BHY3pjM21OcjNqdytnalRaUHN1NlRVRU11dHlUeDNHRnZXSW52OVVlR3RlOVBScGdvaG94Nlk1b0dpSlU1TlpLa2lTaGtvTmx5ZHZBcmpoSUEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY3MDI5NjczCWZpbGU6YmVzdC1jcmFmdF8wLjUuNF9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKdG83RUIvUjBjUjRZYitTbHYrcHZhcWZTZnlRaUoxTUN2ZkhUakEyM1lvZkhVSFFISXJIWnAwcFVHY3ZJY1BmOE1rSjFGQnBBWndzUU11am1yZktIRGc9PQo=",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.4/best-craft_0.5.4_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnR5NjV0MFNOd0lVNkxKdG9aN3VFMjZyNmJGQjFReUhJeXZoY0dibWhyS3N2bUE4TGtKSGZkQjNURVFRVFJLTWg5eEl1MjhoOXowZmVYSmozQzhVOGdnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY3MTI3ODkzCWZpbGU6YmVzdC1jcmFmdF8wLjUuNV9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKc0IrWHQ5MzhzOWF5TXIzMGlPSXBKOTZ5VE5qVExjdE0xbzBnMTZ4Z0NyYVhHUUR2YklsY0lGTVhPdGpZSkhFclcwZHBWUkFHVVlnc3MzSC9tMklnQ0E9PQo=",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.5/best-craft_0.5.5_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smx5VDdyVTV0ZU1ueDh6MXhyOEl2dWl6cjMxTDlHaE83WHRtcGFxQWxwVXQ2dm1KVWUvNWIvQ1JZb0wxbVdiN2hWS2RFUDA3bDBZaEdaVUVWdVBuUEFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY3MDI3NDQwCWZpbGU6QmVzdENyYWZ0XzAuNS40X3g2NF96aC1DTi5tc2kuemlwCmVUWUpRVUJnWXpMa2lPTnhueEQxelBpQ1FtMkRKbGpTZ2MvcDdGZTBHVFZKbjBjVmpaamxhaENHQUtXZ0FLaXNSU05kTnQ4LzZzZ3NKa1ZtMFAwZEJRPT0K",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.4/BestCraft_0.5.4_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnVJZVcreFZoVEh2WktMK2Q1MHlZemRLVS9DYjU3UjNIcGtmKzN5M3ltb0NYMkw1dzFQZWVyd1I4dzNycjlJV0NxbEhpeG9zaDgrOVYyRDdoUkVxYmdRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY3MTI2NTE5CWZpbGU6QmVzdENyYWZ0XzAuNS41X3g2NF96aC1DTi5tc2kuemlwCjdBck9zTzZjaWJKOExLS2E2a3dRUkxEMHIxRUVsSzBpU3FxNmV3UVpwazRqUDJWVXNrcXZzVnlUQ2Q5dkp4Z0RlbGNlUGgvOVlQMmRIc1dPNEVDdUN3PT0K",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.5/BestCraft_0.5.5_x64_zh-CN.msi.zip"
     }
   }
 }

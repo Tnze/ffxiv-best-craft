@@ -48,7 +48,6 @@ declare module '@vue/runtime-core' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Gearsets: typeof import('./src/components/Gearsets.vue')['default']
-    HQSelectRow: typeof import('./src/components/designer/HQSelectRow.vue')['default']
     InitialQualitySetting: typeof import('./src/components/designer/InitialQualitySetting.vue')['default']
     Item: typeof import('./src/components/bill-of-material/Item.vue')['default']
     MacroExporter: typeof import('./src/components/designer/MacroExporter.vue')['default']
