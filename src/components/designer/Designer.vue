@@ -6,7 +6,6 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
 import {
     Attributes,
-    Jobs,
     Actions,
     simulate,
     Status,
@@ -121,10 +120,14 @@ const openAttrEnhSelector = ref(false);
 
 async function setInitQuality() {
     try {
-        const { value } = await ElMessageBox.prompt($t('please-input-init-quality'), $t('config-init-quality'), {
-            inputPattern: /^[0-9]+$/,
-            inputErrorMessage: $t('please-input-integers'),
-        })
+        const { value } = await ElMessageBox.prompt(
+            $t('please-input-init-quality'),
+            $t('config-init-quality'),
+            {
+                inputPattern: /^[0-9]+$/,
+                inputErrorMessage: $t('please-input-integers'),
+            }
+        )
         initQuality.value = parseInt(value) || 0
     } catch {
         // canceled
