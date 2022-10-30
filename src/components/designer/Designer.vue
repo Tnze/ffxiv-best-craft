@@ -12,6 +12,7 @@ import {
     Status,
     newStatus,
     isBetterThan,
+    Recipe,
 } from "../../Craft";
 import { read_solver } from "../../Solver";
 import ActionPanel from "./ActionPanel.vue";
@@ -23,7 +24,6 @@ import MacroExporter from "./MacroExporter.vue";
 import QueueStatus from "./QueueStatus.vue";
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
-import { useStore } from '../../store';
 import { useFluent } from 'fluent-vue';
 
 interface Slot {
@@ -41,19 +41,18 @@ interface Sequence {
     errors: { pos: number; err: string }[];
 }
 
-const store = useStore()
+const props = defineProps<{
+    recipe: Recipe,
+    itemName: string,
+    attributes: Attributes,
+    displayJob: Jobs,
+}>()
 const { $t } = useFluent()
-const attributes = computed(() =>
-    store.state.gearsets.special.find(v => v.name == store.state.designer!.job)?.value || store.state.gearsets.default
-)
-const displayJob = computed(() =>
-    store.state.designer!.job
-);
 
 // 食物和药水效果
 const attributesEnhancers = ref<Enhancer[]>([]);
 const enhancedAttributes = computed<Attributes>(() => {
-    let { level, craftsmanship, control, craft_points } = attributes.value;
+    let { level, craftsmanship, control, craft_points } = props.attributes;
     const sum = (prev: number, curr: number) => prev + curr;
     craftsmanship += attributesEnhancers.value
         .filter((v) => v.cm && v.cm_max)
@@ -78,9 +77,9 @@ const enhancedAttributes = computed<Attributes>(() => {
 // Simulation
 const initQuality = ref(0)
 const initStatus = ref<Status>(
-    await newStatus(enhancedAttributes.value, store.state.designer!.recipe, initQuality.value)
+    await newStatus(enhancedAttributes.value, props.recipe, initQuality.value)
 );
-watch([store.state.designer!, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
+watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
     initStatus.value = await newStatus(ea, p.recipe, iq);
 });
 // Actions Queue
@@ -239,7 +238,7 @@ async function saveListToJSON() {
         }
         const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
         const path = await save({
-            defaultPath: `${store.state.designer!.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
+            defaultPath: `${props.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
             filters: [{ name: $t('macro-file-type-name'), extensions: ['json'] }],
             title: $t('save-file')
         })
@@ -302,8 +301,8 @@ async function openListFromJSON() {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" :title="$t('solver-setting')" size="45%">
-            <SolverList :init-status="initStatus" :status="actionQueue.status"
-                :recipe-name="store.state.designer!.itemName" @solver-load="readSolver(actionQueue.status)" />
+            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="itemName"
+                @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
         <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
             <MacroExporter :actions="actionQueue.slots.map((v) => v.action)" />
@@ -312,7 +311,7 @@ async function openListFromJSON() {
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <el-header>
-            <h1>{{ store.state.designer!.itemName }}</h1>
+            <h1>{{ itemName }}</h1>
         </el-header>
         <el-main>
             <div class="main-page">
