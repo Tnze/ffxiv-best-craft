@@ -10,8 +10,10 @@ pub struct Model {
     pub id: i32,
     #[sea_orm(column_name = "Name")]
     pub name: String,
-    #[sea_orm(column_name = "LevelEquip")]
-    pub level_equip: i32,
+    #[sea_orm(column_name = "Level")]
+    pub level: i32,
+    #[sea_orm(column_name = "CanBeHQ")]
+    pub can_be_hq: i32,
     #[sea_orm(column_name = "CategoryId")]
     pub category_id: Option<i32>,
 }

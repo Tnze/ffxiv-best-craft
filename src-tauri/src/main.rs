@@ -227,7 +227,6 @@ impl AppState {
     }
 }
 
-/// 创建生产求解器
 #[tauri::command(async)]
 async fn create_solver(
     status: Status,
