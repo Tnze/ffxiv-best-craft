@@ -13,6 +13,7 @@ import {
     isBetterThan,
     Recipe,
     Jobs,
+    Item,
 } from "../../Craft";
 import { read_solver } from "../../Solver";
 import ActionPanel from "./ActionPanel.vue";
@@ -22,6 +23,7 @@ import Sidebar from "./Sidebar.vue";
 import SolverList from "./SolverList.vue";
 import MacroExporter from "./MacroExporter.vue";
 import QueueStatus from "./QueueStatus.vue";
+import InitialQualitySetting from './InitialQualitySetting.vue'
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import { useFluent } from 'fluent-vue';
@@ -43,7 +45,7 @@ interface Sequence {
 
 const props = defineProps<{
     recipe: Recipe,
-    itemName: string,
+    item: Item,
     attributes: Attributes,
     displayJob: Jobs,
 }>()
@@ -115,11 +117,14 @@ const solverResult = reactive<Sequence>({
 watch(() => actionQueue.status, readSolver);
 
 // Drawer status
+const openInitQualitySet = ref(false);
 const openSolverDrawer = ref(false);
 const openExportMacro = ref(false);
 const openAttrEnhSelector = ref(false);
 
 async function setInitQuality() {
+    openInitQualitySet.value = true;
+    return;
     try {
         const { value } = await ElMessageBox.prompt(
             $t('please-input-init-quality'),
@@ -242,7 +247,7 @@ async function saveListToJSON() {
         }
         const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
         const path = await save({
-            defaultPath: `${props.itemName}-${level}-${craftsmanship}-${control}-${craft_points}`,
+            defaultPath: `${props.item.name}-${level}-${craftsmanship}-${control}-${craft_points}`,
             filters: [{ name: $t('macro-file-type-name'), extensions: ['json'] }],
             title: $t('save-file')
         })
@@ -305,7 +310,7 @@ async function openListFromJSON() {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" :title="$t('solver-setting')" size="45%">
-            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="itemName"
+            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="item.name"
                 @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
         <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
@@ -314,8 +319,10 @@ async function openListFromJSON() {
         <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
+        <InitialQualitySetting v-model="initQuality" :open="openInitQualitySet" @close="openInitQualitySet = false"
+            :item="item" :recipe="recipe" />
         <el-header>
-            <h1>{{ itemName }}</h1>
+            <h1>{{ item.name }}</h1>
         </el-header>
         <el-main>
             <div class="main-page">

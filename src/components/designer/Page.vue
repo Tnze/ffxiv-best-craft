@@ -17,7 +17,7 @@ const attributes = computed(() => {
 
 <template>
     <Suspense>
-        <Designer v-if="store.state.designer != null" :item-name="store.state.designer.itemName"
+        <Designer v-if="store.state.designer != null" :item="store.state.designer.item"
             :recipe="store.state.designer.recipe" :attributes="attributes" :display-job="displayJob" />
         <el-empty v-else :description="$t('not-selected')" style="height: 100%;" />
         <template #fallback>

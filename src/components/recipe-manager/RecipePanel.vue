@@ -2,7 +2,7 @@
 import { ref, watchEffect, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
-import { Jobs, Recipe, newRecipe, recipeTable, RecipeRow } from '../../Craft'
+import { Jobs, Recipe, newRecipe, recipeTable, RecipeRow, Item, itemInfo } from '../../Craft'
 import { useRouter } from 'vue-router';
 import { useStore } from '../../store';
 import { useFluent } from 'fluent-vue';
@@ -51,15 +51,19 @@ const selectRecipeRow = async (row: RecipeRow) => {
             row.quality_factor,
             row.durability_factor
         )
-        selectRecipe(recipe, row.item_name, row.job)
+        selectRecipe(recipe, await itemInfo(row.item_id), row.job)
         store.commit('addToChecklist', { ingredient_id: row.item_id, amount: 1 })
     } catch {
         // operation canceled by user
     }
 }
 
-const selectRecipe = (recipe: Recipe, itemName: string, craftType: string) => {
-    store.commit('selectRecipe', { job: jobMaps[craftType] ?? Jobs.Culinarian, itemName, recipe })
+const selectRecipe = (recipe: Recipe, item: Item, craftType: string) => {
+    store.commit('selectRecipe', {
+        job: jobMaps[craftType] ?? Jobs.Culinarian,
+        item,
+        recipe,
+    })
     router.push({ name: "designer" })
     ElMessage({
         type: 'success',
@@ -85,7 +89,7 @@ const customRecipe = ref({
             <h1>{{ $t('select-recipe') }}</h1>
         </el-header>
         <el-main class="container">
-            <el-dialog v-model="openCustomlizer" :title="$t('custom-recipe')">
+            <el-dialog v-model="openCustomlizer" :title="$t('custom-recipe', { rlv: customRecipe.rlv })">
                 <el-form :model="customRecipe" label-position="right" label-width="100px" style="max-width: 460px">
                     <el-form-item :label="$t('recipe-level')">
                         <el-input-number v-model="customRecipe.rlv" :min="1"></el-input-number>
@@ -106,8 +110,12 @@ const customRecipe = ref({
                 <template #footer>
                     <span class="dialog-footer">
                         <el-button @click="openCustomlizer = false">{{ $t('cancel') }}</el-button>
-                        <el-button type="primary"
-                            @click="openCustomlizer = false; selectRecipe(customRecipe, $t('custom-recipe', {rlv: customRecipe.rlv}), '')">
+                        <el-button type="primary" @click="openCustomlizer = false; selectRecipe(customRecipe, {
+                            id: -1,
+                            name: $t('custom-recipe', { rlv: customRecipe.rlv }),
+                            level: customRecipe.rlv,
+                            can_be_hq: true
+                        }, '')">
                             {{ $t('confirm') }}
                         </el-button>
                     </span>

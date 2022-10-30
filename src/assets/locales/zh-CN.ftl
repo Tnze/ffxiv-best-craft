@@ -9,6 +9,9 @@ quality = 品质
 durability = 耐久
 steps = 步数
 
+name = 名称
+amount = 数量
+
 # 职业名
 carpenter = 刻木匠
 blacksmith = 锻铁匠

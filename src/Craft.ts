@@ -7,6 +7,14 @@ interface Attributes {
   craft_points: number;
 }
 
+interface Item {
+  id: number,
+  name: string,
+  level: number,
+  can_be_hq: boolean,
+  category_id?: number,
+}
+
 interface Recipe {
   rlv: number;
   job_level: number;
@@ -205,19 +213,22 @@ const recipesIngredientions = async (checklist: ItemWithAmount[]): Promise<ItemW
   })
 }
 
-const itemInfo = (itemId: number): Promise<{
-  id: number,
-  name: string,
-  level_equip: number,
-  category_id: number
-}> => {
-  return invoke("item_info", { itemId });
+const itemInfo = async (itemId: number): Promise<Item> => {
+  const { id, name, level, can_be_hq, category_id } = await invoke("item_info", { itemId }) as {
+    id: number,
+    name: string,
+    level: number,
+    can_be_hq: number,
+    category_id?: number,
+  };
+  return { id, name, level, can_be_hq: can_be_hq != 0, category_id };
 }
 
 export {
   Attributes,
   Buffs,
   Conditions,
+  Item,
   Recipe,
   Status,
   Jobs,
