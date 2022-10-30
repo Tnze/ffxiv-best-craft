@@ -54,6 +54,7 @@ const languageChanged = (newLang: string) => {
                     <el-select v-model="store.state.settings.language" @change="languageChanged">
                         <el-option label="简体中文" value="zh-CN" />
                         <el-option label="English" value="en" />
+                        <el-option label="日本語" value="ja" />
                     </el-select>
                 </el-form-item>
                 <el-form-item :label="$t('version-number')">
@@ -90,10 +91,9 @@ const languageChanged = (newLang: string) => {
 }
 </style>
 
-
 <fluent locale="zh-CN">
 settings = 设置
-language = 语言
+# language =
 version-number = 版本号
 tauri = Tauri
 developer = 开发者
@@ -115,4 +115,17 @@ feedback = Feedback
 check-update = Check Update
 checking-update = Checking Update
 check-update-success = Check update success
+</fluent>
+
+<fluent locale="ja">
+settings = 設定
+# language =
+version-number = バージョン
+tauri = Tauri
+developer = 開発者
+feedback = フィードバック
+
+check-update = 更新のチェック
+checking-update = 更新をチェックしています
+check-update-success = 更新のチェックに成功しました
 </fluent>

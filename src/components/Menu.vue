@@ -71,3 +71,11 @@ bom = BOM
 designer = Designer
 settings = Settings
 </fluent>
+
+<fluent locale="ja">
+gearsets = 装備
+recipe = フォーミュラ
+bom = 材料リスト
+designer = デザイナ
+settings = 設定
+</fluent>
