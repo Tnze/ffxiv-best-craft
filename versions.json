@@ -3,6 +3,10 @@
   "notes": "修复\n- 修复Linux与Mac特定情况下找不到db数据库的问题\n- 修复重选配方的问题\n- 修复自定义配方问题\n\n更新\n- 更新自定义配方的默认值\n- 更新部分日语翻译\n- 添加初期品质计算功能\n\n优化\n- 代码结构优化",
   "pub_date": "2022-10-30T18:38:08+08:00",
   "platforms": {
+    "darwin-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnAxMFlZRTIrWU0xNTA5VUZtT3BKSzdNZXk0SHgydzdOWmgyOThya3QzN0tJWjZuLzlWcFlwQXkzbUFjdXRLZHNFeTBmWUZUczA5Z1Rvazk4TFM4aUE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY3MTM1Njc0CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKNUY1TkEyR01tYk4vTk1ZYjQyVzNMODJ5SkpmNklVMmlIWU5FWGNOS1JoUFRCZHVaOGJUSFIrYUxmaWZOb1FnTEpCKy9oc0F5Rm1wSVZxL3ZONi9OQ2c9PQo=",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.5/BestCraft.app.tar.gz"
+    },
     "linux-x86_64": {
       "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnR5NjV0MFNOd0lVNkxKdG9aN3VFMjZyNmJGQjFReUhJeXZoY0dibWhyS3N2bUE4TGtKSGZkQjNURVFRVFJLTWg5eEl1MjhoOXowZmVYSmozQzhVOGdnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY3MTI3ODkzCWZpbGU6YmVzdC1jcmFmdF8wLjUuNV9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKc0IrWHQ5MzhzOWF5TXIzMGlPSXBKOTZ5VE5qVExjdE0xbzBnMTZ4Z0NyYVhHUUR2YklsY0lGTVhPdGpZSkhFclcwZHBWUkFHVVlnc3MzSC9tMklnQ0E9PQo=",
       "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.5/best-craft_0.5.5_amd64.AppImage.tar.gz"
