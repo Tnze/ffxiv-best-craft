@@ -24,7 +24,7 @@ export function selectLanguage(newLang: string) {
             fluent.bundles = [enBundle, jaBundle, zhCNBundle]
             break;
         case 'ja':
-            fluent.bundles = [jaBundle, zhCNBundle, enBundle]
+            fluent.bundles = [jaBundle, enBundle, zhCNBundle]
             break;
     }
 }

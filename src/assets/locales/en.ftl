@@ -9,6 +9,9 @@ quality = Quality
 durability = Durability
 steps = Steps
 
+name = Name
+amount = Amount
+
 # Job names
 carpenter = Carpenter
 blacksmith = Blacksmith

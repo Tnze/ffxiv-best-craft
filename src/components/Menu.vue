@@ -39,7 +39,7 @@ const disableAutomation = ref(true)
             <el-icon>
                 <edit />
             </el-icon>
-            <template #title>{{ $t('designer') }}</template>
+            <template #title>{{ $t('simulator') }}</template>
         </el-menu-item>
         <el-menu-item index="/settings">
             <el-icon>
@@ -60,7 +60,7 @@ const disableAutomation = ref(true)
 gearsets = 配装
 recipe = 配方
 bom = 物料
-designer = 设计
+simulator = 模拟
 settings = 设置
 </fluent>
 
@@ -68,7 +68,7 @@ settings = 设置
 gearsets = Gearsets
 recipe = Recipe
 bom = BOM
-designer = Designer
+simulator = Simulator
 settings = Settings
 </fluent>
 
@@ -76,6 +76,6 @@ settings = Settings
 gearsets = 装備
 recipe = フォーミュラ
 bom = 材料リスト
-designer = デザイナ
+# simulator = デザイン
 settings = 設定
 </fluent>

@@ -113,7 +113,7 @@ inherit-from-default = 继承自默认
 </fluent>
 
 <fluent locale="en">
-attributes = Attributes
+attributes = Crafter Attributes
 default = Default
 inherit-from-default = Inherit from default
 </fluent>
