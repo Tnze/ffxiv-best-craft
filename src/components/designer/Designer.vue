@@ -12,6 +12,7 @@ import {
     newStatus,
     isBetterThan,
     Recipe,
+    Jobs,
 } from "../../Craft";
 import { read_solver } from "../../Solver";
 import ActionPanel from "./ActionPanel.vue";
