@@ -3,6 +3,7 @@ import { useDark } from '@vueuse/core'
 import { ElConfigProvider } from 'element-plus';
 import zhCn from 'element-plus/lib/locale/lang/zh-cn'
 import en from 'element-plus/lib/locale/lang/en'
+import ja from 'element-plus/lib/locale/lang/ja'
 import { useStore } from './store';
 
 import Menu from './components/Menu.vue';
@@ -12,7 +13,8 @@ const store = useStore()
 
 const languages = new Map([
   ["zh-CN", zhCn],
-  ["en", en]
+  ["en", en],
+  ["ja", ja],
 ])
 
 </script>
