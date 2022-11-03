@@ -122,24 +122,6 @@ const openSolverDrawer = ref(false);
 const openExportMacro = ref(false);
 const openAttrEnhSelector = ref(false);
 
-async function setInitQuality() {
-    openInitQualitySet.value = true;
-    return;
-    try {
-        const { value } = await ElMessageBox.prompt(
-            $t('please-input-init-quality'),
-            $t('config-init-quality'),
-            {
-                inputPattern: /^[0-9]+$/,
-                inputErrorMessage: $t('please-input-integers'),
-            }
-        )
-        initQuality.value = parseInt(value) || 0
-    } catch {
-        // canceled
-    }
-}
-
 const savedQueues = reactive<Sequence[]>([]);
 watch(initStatus, (newInitStatus) => {
     // recalculate all results of savedQueues
@@ -193,6 +175,11 @@ function loadSequence(seq: Sequence) {
 const isReadingSolver = ref(0);
 const previewSolver = ref(false);
 
+const displayActions = computed(() => {
+    return previewSolver.value && solverResult.slots.length > 0
+        ? solverResult.slots.map(v => v.action)
+        : actionQueue.slots.map(v => v.action)
+})
 const displayedStatus = computed(() => {
     return previewSolver.value && solverResult.slots.length > 0
         ? solverResult.status
@@ -314,7 +301,7 @@ async function openListFromJSON() {
                 @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
         <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
-            <MacroExporter :actions="actionQueue.slots.map((v) => v.action)" />
+            <MacroExporter :actions="displayActions" />
         </el-drawer>
         <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
             <AttrEnhSelector v-model="attributesEnhancers" />
@@ -328,7 +315,7 @@ async function openListFromJSON() {
             <div class="main-page">
                 <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers" :status="
                     displayedStatus
-                " @click-attributes="openAttrEnhSelector = true" @click-quality="setInitQuality" />
+                " @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true" />
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">
                         <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="actionQueue.status"
