@@ -126,14 +126,16 @@ watchEffect(() => {
 <template>
     <div class="container" @click.stop.prevent.right>
         <div v-for="group in actions" class="group">
-            <el-tooltip v-for="action in group" :hide-after="0" :enterable="false" :content="$t(action.replaceAll('_', '-'))"
-                :show-after="1000">
-                <Action :job="job" class="item" @click="emit('clickedAction', action)"
-                    @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
-                    :action="action" :active="isActived(action)"
-                    :effect="cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
-                    :cp="cachedCraftPointsList.get(action) || undefined" />
-            </el-tooltip>
+            <el-popover v-for="action in group" :show-after="1000" :hide-after="0"
+                :title="$t(action.replaceAll('_', '-'))" :content="$t('desc-' + action.replaceAll('_', '-'))">
+                <template #reference>
+                    <Action :job="job" class="item" @click="emit('clickedAction', action)"
+                        @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
+                        :action="action" :active="isActived(action)"
+                        :effect="cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
+                        :cp="cachedCraftPointsList.get(action) || undefined" />
+                </template>
+            </el-popover>
         </div>
         <div class="group">
             <Action :job="job" class="item" v-for="action in fail_actions" @click="emit('clickedAction', action)"
@@ -165,8 +167,4 @@ watchEffect(() => {
 
 <fluent locale="zh-CN">
 action-panel = 技能面板
-</fluent>
-
-<fluent locale="en">
-action-panel = Action Panel
 </fluent>
