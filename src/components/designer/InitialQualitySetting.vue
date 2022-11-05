@@ -30,8 +30,9 @@ const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
     }
 ))
 const items = ref<{ item: Item, amount: number, hqAmount: number }[]>([])
-watch(() => props.item.id, async (newId) => {
-    const ri = props.item.id == -1 ? null : await recipesIngredientions([{ ingredient_id: newId, amount: 1 }])
+watchEffect(async () => {
+    const newId = props.item.id
+    const ri = newId == -1 ? null : await recipesIngredientions([{ ingredient_id: newId, amount: 1 }])
     items.value = ri == null ? [] : reactive(await calcItems(ri))
 })
 watchEffect(() => {
