@@ -88,7 +88,7 @@ desc-intensive-synthesis = 推动进展，效率：400，只有在“高品质�
 desc-trained-eye = 仅可在首次作业且用于等级低了10级及以上的配方时发动，提高最大品质的100%
 desc-advanced-touch = 提高品质，效率：150，与中级加工连击可降低制作力消耗。
 desc-prudent-synthesis = 推动进展，效率：180，只消耗5点耐久，无法在俭约状态下使用。
-desc-trained-finesse = 只有内静的档数为10时才可以使用，提高品质，不消耗耐久。
+desc-trained-finesse = 只有内静的档数为10时才可以使用，提高品质，效率：100，不消耗耐久。
 desc-careful-observation = 消耗一个能工巧匠图纸，改变作业状态，一次作业最多可使用3次，目前模拟器UI不支持切换制作状态。
 desc-heart-and-soul = 消耗一个能工巧匠图纸，允许使用一次集中加工、集中制作或秘诀，一次作业最多可使用1次。
 
