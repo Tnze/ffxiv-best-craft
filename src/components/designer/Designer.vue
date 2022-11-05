@@ -297,7 +297,7 @@ async function openListFromJSON() {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" :title="$t('solver-setting')" size="45%">
-            <SolverList :init-status="initStatus" :status="actionQueue.status" :recipe-name="item.name"
+            <SolverList :init-status="initStatus" :recipe-name="item.name"
                 @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
         <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
@@ -306,8 +306,10 @@ async function openListFromJSON() {
         <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
-        <InitialQualitySetting v-model="initQuality" :open="openInitQualitySet" @close="openInitQualitySet = false"
-            :item="item" :recipe="recipe" />
+        <KeepAlive>
+            <InitialQualitySetting v-model="initQuality" :open="openInitQualitySet" @close="openInitQualitySet = false"
+                :item="item" :recipe="recipe" />
+        </KeepAlive>
         <el-header>
             <h1>{{ item.name }}</h1>
         </el-header>

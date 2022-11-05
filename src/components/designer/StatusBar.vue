@@ -4,6 +4,7 @@ import { Attributes, Conditions, Status } from '../../Craft';
 import Condition from './Condition.vue'
 import Buffs from './Buffs.vue';
 import { Enhancer } from '../attr-enhancer/Enhancer';
+import { Setting } from '@element-plus/icons-vue';
 
 const props = defineProps<{
     status: Status;
@@ -92,7 +93,7 @@ const condition = computed(() => {
             </el-progress>
             {{ $t('quality') }}
             <el-progress :percentage="quality" :color="qualityColor">
-                <el-link @click="emits('click-quality')">
+                <el-link @click="emits('click-quality')" :icon="Setting">
                     {{ status?.quality }} /
                     {{ status?.recipe.quality }}
                 </el-link>
@@ -100,7 +101,7 @@ const condition = computed(() => {
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
         <div id="attributes">
-            <el-link class="attributes-link" @click="emits('click-attributes')">
+            <el-link class="attributes-link" @click="emits('click-attributes')" :icon="Setting">
                 {{ $t('display-attrs', { what: $t('level'), value: status?.attributes.level }) }}
                 <br />
                 {{ $t('display-attrs', {

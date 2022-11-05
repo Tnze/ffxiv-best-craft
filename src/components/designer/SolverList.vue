@@ -6,8 +6,7 @@ import { create_solver, destroy_solver } from '../../Solver'
 import { useFluent } from 'fluent-vue';
 
 const props = defineProps<{
-    initStatus: Status | undefined,
-    status: Status | undefined,
+    initStatus: Status,
     recipeName: string
 }>()
 const emits = defineEmits<{
@@ -32,7 +31,10 @@ const createSolver = async () => {
         message: $t('solving-info'),
     })
     let solver: Solver = {
-        initStatus: props.initStatus!,
+        initStatus: {
+            ...props.initStatus!,
+            quality: 0,// bypass the solver bug that we can't handle the initial quality
+        },
         name: props.recipeName,
         status: 'solving'
     }
