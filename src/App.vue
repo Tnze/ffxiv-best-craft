@@ -31,7 +31,7 @@ const languages = new Map([
         </keep-alive>
       </router-view>
     </el-main>
-    <el-config-provider :locale="languages.get(store.state.settings.language)"></el-config-provider>
+    <el-config-provider :locale="languages.get(store.state.settings.language)" />
   </el-container>
 </template>
 
