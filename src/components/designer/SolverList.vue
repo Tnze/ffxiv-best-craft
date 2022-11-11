@@ -123,7 +123,7 @@ function formatDuration(u: number): string {
                     <el-table-column align="right">
                         <template #default="scope">
                             <el-button size="small" type="danger" @click="destroySolver(scope.row)"
-                                :disabled="scope.row.status == 'solving'">
+                                :disabled="scope.row.status == 'solving'" :loading="scope.row.status == 'solving'">
                                 {{ $t('release-solver') }}
                             </el-button>
                         </template>
