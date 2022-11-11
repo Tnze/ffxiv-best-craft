@@ -99,7 +99,6 @@ function formatDuration(u: number): string {
     <el-scrollbar class="container">
         <el-collapse v-model="activeNames">
             <el-collapse-item :title="$t('dp-solver')" name="dp">
-
                 <el-button-group>
                     <el-button type="primary" :disabled="initStatus == undefined" @click="createSolver">
                         {{ $t('start-solver') }}
@@ -113,8 +112,7 @@ function formatDuration(u: number): string {
                         <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory-select-info')" />
                     </el-popover>
                 </el-button-group>
-                <el-table :data="solvers" :show-header="true" :empty-text="$t('dp-solver-empty-text')"
-                    style="width: 100%">
+                <el-table :data="solvers" :empty-text="$t('dp-solver-empty-text')" style="width: 100%">
                     <el-table-column>
                         <template #default="scope">
                             {{ scope.row.name }}
@@ -130,8 +128,7 @@ function formatDuration(u: number): string {
                     </el-table-column>
                 </el-table>
             </el-collapse-item>
-            <el-collapse-item :title="$t('dfs-solver')" name="dfs">
-
+            <el-collapse-item :title="$t('dfs-solver')" name="dfs" disabled>
             </el-collapse-item>
         </el-collapse>
     </el-scrollbar>
@@ -146,7 +143,7 @@ function formatDuration(u: number): string {
 
 <fluent locale="zh-CN">
 dp-solver = 动态规划求解
-dfs-solver = 深度优先搜索
+dfs-solver = 深度优先搜索（敬请期待）
 
 manipulation-select-info = { manipulation }（时间&内存×9）
 muscle-memory-select-info = { muscle-memory }（内存×2）
@@ -161,7 +158,7 @@ error-with = 错误：{ $err }
 
 <fluent locale="en">
 dp-solver = Dynamic Programing
-dfs-solver = Depth First Search
+dfs-solver = Depth First Search (Coming soon)
 
 manipulation-select-info = { manipulation }(Time & Memory × 9)
 muscle-memory-select-info = { muscle-memory }(Memory × 2)
