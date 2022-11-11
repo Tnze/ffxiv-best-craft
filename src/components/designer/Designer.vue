@@ -296,7 +296,7 @@ async function openListFromJSON() {
 
 <template>
     <el-container>
-        <el-drawer v-model="openSolverDrawer" :title="$t('solver-setting')" size="45%">
+        <el-drawer v-model="openSolverDrawer" :title="$t('solvers')" size="45%">
             <SolverList :init-status="initStatus" :recipe-name="item.name"
                 @solver-load="readSolver(actionQueue.status)" />
         </el-drawer>
@@ -331,9 +331,9 @@ async function openListFromJSON() {
                         <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver"
                             @plus="saveSequence" @delete="clearSequence" @solver="openSolverDrawer = true"
                             @print="openExportMacro = true" @save-list="saveListToJSON" @open-list="openListFromJSON" />
-                        <el-scrollbar class="solver-and-savedqueue-scrollbar">
-                            <TransitionGroup class="solver-and-savedqueue-list" name="savedqueues" tag="ul">
-                                <li v-for="(sq, i) in savedQueues" :key="sq.maxid" class="solver-and-savedqueue-item">
+                        <el-scrollbar class="savedqueue-scrollbar">
+                            <TransitionGroup class="savedqueue-list" name="savedqueues" tag="ul">
+                                <li v-for="(sq, i) in savedQueues" :key="sq.maxid" class="savedqueue-item">
                                     <QueueStatus :status="sq.status" />
                                     <ActionQueue :job="displayJob" :list="sq.slots" :err-list="sq.errors" disabled />
                                     <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
@@ -383,7 +383,7 @@ async function openListFromJSON() {
     flex: auto;
 }
 
-.solver-and-savedqueue-scrollbar {
+.savedqueue-scrollbar {
     flex: auto;
 }
 
@@ -393,12 +393,12 @@ async function openListFromJSON() {
     max-width: 25%;
 }
 
-.solver-and-savedqueue-list {
+.savedqueue-list {
     margin: 0px;
     padding: 0px;
 }
 
-.solver-and-savedqueue-item {
+.savedqueue-item {
     display: flex;
     align-items: center;
     border-bottom: 1px solid var(--el-border-color);
@@ -422,7 +422,7 @@ async function openListFromJSON() {
 </style>
 
 <fluent locale="zh-CN">
-solver-setting = 求解器设置
+solvers = 求解器
 export-macro = 导出宏
 meal-and-potion = 食物 & 药水
 
@@ -443,7 +443,7 @@ read-fail = 读取失败：{ $reason }
 </fluent>
 
 <fluent locale="en">
-solver-setting = Solver setting
+solvers = Solvers
 export-macro = Export
 meal-and-potion = Meal & Potions
 
