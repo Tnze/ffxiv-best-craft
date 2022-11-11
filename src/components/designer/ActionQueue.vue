@@ -53,7 +53,7 @@ function calc_effect(index: number): string {
             <template #item="{ element, index }">
                 <div class="list-group-item">
                     <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)"
-                        disabled @click.stop.prevent.right="removeAction(index)" @dblclick="removeAction(index)" />
+                        disabled @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)" />
                 </div>
             </template>
             <template #footer>
