@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 import { Status } from "../../Craft"
 import { create_solver, destroy_solver } from '../../Solver'
 import { useFluent } from 'fluent-vue';
+import { ArrowRight } from '@element-plus/icons-vue';
 
 const props = defineProps<{
     initStatus: Status,
@@ -22,6 +23,7 @@ interface Solver {
 const solvers = ref<Solver[]>([])
 const useManipulation = ref(false)
 const useMuscleMemory = ref(false)
+const activeNames = ref<string[]>([])
 
 const createSolver = async () => {
     const msg1 = ElMessage({
@@ -33,7 +35,7 @@ const createSolver = async () => {
     let solver: Solver = {
         initStatus: {
             ...props.initStatus!,
-            quality: 0,// bypass the solver bug that we can't handle the initial quality
+            quality: 0, // bypass the solver bug that we can't handle the initial quality
         },
         name: props.recipeName,
         status: 'solving'
@@ -95,14 +97,43 @@ function formatDuration(u: number): string {
 
 <template>
     <el-scrollbar class="container">
-        <el-checkbox v-model="useManipulation" :label="$t('manipulation-select-info')" />
-        <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory-select-info')" />
-        <el-button class="list-item" :disabled="initStatus == undefined" @click="createSolver">
-            {{ $t('start-solver') }}
-        </el-button>
-        <el-button v-for="s in solvers" class="list-item" @click="destroySolver(s)" :disabled="s.status == 'solving'">
-            {{ $t('close-solver', { solver: s.name }) }}
-        </el-button>
+        <el-collapse v-model="activeNames">
+            <el-collapse-item :title="$t('dp-solver')" name="dp">
+
+                <el-button-group>
+                    <el-button type="primary" :disabled="initStatus == undefined" @click="createSolver">
+                        {{ $t('start-solver') }}
+                    </el-button>
+                    <el-popover placement="bottom" width="300px" trigger="click">
+                        <template #reference>
+                            <el-button type="primary" :icon="ArrowRight" />
+                        </template>
+                        <el-checkbox v-model="useManipulation" :label="$t('manipulation-select-info')" />
+                        <br />
+                        <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory-select-info')" />
+                    </el-popover>
+                </el-button-group>
+                <el-table :data="solvers" :show-header="true" :empty-text="$t('dp-solver-empty-text')"
+                    style="width: 100%">
+                    <el-table-column>
+                        <template #default="scope">
+                            {{ scope.row.name }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="right">
+                        <template #default="scope">
+                            <el-button size="small" type="danger" @click="destroySolver(scope.row)"
+                                :disabled="scope.row.status == 'solving'">
+                                {{ $t('release-solver') }}
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-collapse-item>
+            <el-collapse-item :title="$t('dfs-solver')" name="dfs">
+
+            </el-collapse-item>
+        </el-collapse>
     </el-scrollbar>
 </template>
 
@@ -111,32 +142,34 @@ function formatDuration(u: number): string {
     display: flex;
     flex-direction: column;
 }
-
-.list-item {
-    height: 50px;
-    width: 100%;
-    margin: 0px;
-}
 </style>
 
 <fluent locale="zh-CN">
-manipulation-select-info = { manipulation }(时间&内存×9)
-muscle-memory-select-info = { muscle-memory }(内存×2)
+dp-solver = 动态规划求解
+dfs-solver = 深度优先搜索
+
+manipulation-select-info = { manipulation }（时间&内存×9）
+muscle-memory-select-info = { muscle-memory }（内存×2）
 start-solver = 启动求解器
-close-solver = 关闭求解器【{ $solver }】
+release-solver = 释放
 
 solving-info = 求解器计算中，可能需要消耗大量内存，请稍等……
 solve-finished = 求解器准备已完成({ $solveTime })
+dp-solver-empty-text = 无求解器已加载
 error-with = 错误：{ $err }
 </fluent>
 
 <fluent locale="en">
+dp-solver = Dynamic Programing
+dfs-solver = Depth First Search
+
 manipulation-select-info = { manipulation }(Time & Memory × 9)
 muscle-memory-select-info = { muscle-memory }(Memory × 2)
 start-solver = Create solver
-close-solver = Release solver [{ $solver }]
+release-solver = Release
 
 solving-info = Solving could occupy lots of memory. Please wait...
 solve-finished = Solve finished({ $solveTime })
+dp-solver-empty-text = No solver is loaded
 error-with = Error: { $err }
 </fluent>
