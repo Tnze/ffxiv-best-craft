@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use ffxiv_crafting::{Skills, Status};
+use ffxiv_crafting::{Actions, Status};
 use rayon::iter::{IntoParallelRefMutIterator, ParallelIterator};
 
 use super::{ProgressSolver, QualitySolver, Solver};
@@ -61,13 +61,13 @@ where
         self.quality_solvers.par_iter_mut().for_each(|qs| qs.init());
     }
 
-    fn read(&self, s: &Status) -> Option<Skills> {
+    fn read(&self, s: &Status) -> Option<Actions> {
         let left_progress = s.recipe.difficulty - s.progress;
         let i = *self.progress_index.get(left_progress as usize)?;
         self.quality_solvers.get(i)?.read(s)
     }
 
-    fn read_all(&self, s: &Status) -> Vec<Skills> {
+    fn read_all(&self, s: &Status) -> Vec<Actions> {
         let left_progress = s.recipe.difficulty - s.progress;
         self.progress_index
             .get(left_progress as usize)
