@@ -1,13 +1,15 @@
-level = Level
-recipe-level = RLv
+level = Lv.
+recipe-level = Recipe Lv.
 craftsmanship = Craftsmanship
 control = Control
-craft-point = Craft Point
-difficulty = Difficulty
+craft-point = CP
 progress = Progress
 quality = Quality
 durability = Durability
-steps = Steps
+steps = Step
+condition = Condition
+difficulty = Difficulty
+initial-quality = Quality
 
 name = Name
 amount = Amount

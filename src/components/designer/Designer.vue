@@ -442,7 +442,7 @@ read-n-macros = 读取了 { $n } 个宏
 read-fail = 读取失败：{ $reason }
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 solvers = Solvers
 export-macro = Export
 meal-and-potion = Meal & Potions

@@ -156,7 +156,7 @@ dp-solver-empty-text = 无求解器已加载
 error-with = 错误：{ $err }
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 dp-solver = Dynamic Programing
 dfs-solver = Depth First Search (Coming soon)
 

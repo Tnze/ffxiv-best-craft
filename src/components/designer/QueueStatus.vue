@@ -44,7 +44,7 @@ status-text = { quality }：{ $quality }
     { steps }：{ $steps }
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 status-text = { quality }: { $quality }
     { steps }: { $steps }
 </fluent>

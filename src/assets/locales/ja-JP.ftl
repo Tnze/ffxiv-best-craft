@@ -1,4 +1,15 @@
-level = 等級
+level = Lv
+recipe-level = Recipe Lv
+craftsmanship = 作業精度
+control = 加工精度
+craft-point = CP
+progress = 工数
+quality = 品質
+durability = 耐久
+steps = TURN
+condition = 状態
+difficulty = 必要工数
+initial-quality = 初期品質
 
 carpenter = 木工師
 blacksmith = 鍛冶師
@@ -42,3 +53,13 @@ prudent-synthesis = 倹約作業
 trained-finesse = 匠の神業
 careful-observation = 設計変更
 heart-and-soul = 一心不乱
+
+normal = 通常
+good = 高品質
+excellent = 最高品質
+poor = 低品質
+centered = 安定
+sturdy = 頑丈
+pliant = 高能率
+malleable = 高進捗
+primed = 長持続

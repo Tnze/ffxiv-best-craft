@@ -187,7 +187,7 @@ type = 类型
 name = 名称
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 confirm-select = Set cuurent recipe to "{ $itemName }"?
 please-confirm = Please confirm
 recipe-setting-changed = Recipe is updated

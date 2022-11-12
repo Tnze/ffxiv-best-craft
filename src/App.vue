@@ -1,21 +1,26 @@
 <script setup lang="ts">
-import { useDark } from '@vueuse/core'
+import { ref, watchEffect } from 'vue';
+import { useDark, usePreferredLanguages } from '@vueuse/core'
 import { ElConfigProvider } from 'element-plus';
-import zhCn from 'element-plus/lib/locale/lang/zh-cn'
-import en from 'element-plus/lib/locale/lang/en'
-import ja from 'element-plus/lib/locale/lang/ja'
-import { useStore } from './store';
+import { elementPlusLang, languages } from './lang';
+import { selectLanguage } from './fluent'
 
 import Menu from './components/Menu.vue';
+import { useStore } from './store';
 
 useDark()
 const store = useStore()
+const preferredLang = usePreferredLanguages()
 
-const languages = new Map([
-  ["zh-CN", zhCn],
-  ["en", en],
-  ["ja", ja],
-])
+const lang = ref('zh-CN')
+watchEffect(() => {
+  let settingLang: string | null = store.state.settings.language
+  if (settingLang == 'system') settingLang = null
+  const systemLang = preferredLang.value.find(v => languages.has(v))
+  lang.value = settingLang ?? systemLang ?? 'zh-CN'
+  selectLanguage(lang.value)
+  console.log("language switched to", lang.value)
+})
 
 </script>
 
@@ -31,7 +36,7 @@ const languages = new Map([
         </keep-alive>
       </router-view>
     </el-main>
-    <el-config-provider :locale="languages.get(store.state.settings.language)" />
+    <el-config-provider :locale="elementPlusLang.get(lang)" />
   </el-container>
 </template>
 

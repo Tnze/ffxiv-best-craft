@@ -112,13 +112,13 @@ default = 默认
 inherit-from-default = 继承自默认
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 attributes = Crafter Attributes
 default = Default
 inherit-from-default = Inherit from default
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 attributes = 属性
 default = デフォルト
 inherit-from-default = デフォルトから継承

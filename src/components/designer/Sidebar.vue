@@ -104,7 +104,7 @@ export-saved-to-file = 导出暂存库到文件
 import-saved-from-file = 从文件导入暂存库
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 save-workspace = Save
 clear-workspace = Clear
 solver-setting = Solver

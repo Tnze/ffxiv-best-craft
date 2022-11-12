@@ -74,10 +74,10 @@ const amountChange = (idx: number, val: number) => {
 bom = 材料表
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 bom = Bill of Material
 </fluent>
 
-<fluent locale="ja">
+<fluent locale="ja-JP">
 # bom = 
 </fluent>
