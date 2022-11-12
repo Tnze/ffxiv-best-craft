@@ -59,8 +59,9 @@ watchEffect(() => {
 <template>
     <el-dialog v-model="dialogOpen">
         <div style="display: flex; flex-direction: column;">
-            <el-input-number :disabled="props.item.id != -1" v-model="initQuality" :min="0" :max="recipe.quality"
-                class="initial-quality-input" />
+            <el-form-item :label="$t('initial-quality')" class="initial-quality-input">
+                <el-input-number :disabled="props.item.id != -1" v-model="initQuality" :min="0" :max="recipe.quality" />
+            </el-form-item>
             <el-table v-if="props.item.id != -1" :data="items">
                 <el-table-column :label="$t('name')" prop="item.name" />
                 <el-table-column :label="$t('amount')">
