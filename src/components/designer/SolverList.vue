@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Status } from "../../Craft"
-import { create_solver, destroy_solver } from '../../Solver'
+import { Actions, Status } from "../../Craft"
+import { create_solver, destroy_solver, rika_solve } from '../../Solver'
 import { useFluent } from 'fluent-vue';
 import { ArrowRight } from '@element-plus/icons-vue';
 
@@ -12,6 +12,7 @@ const props = defineProps<{
 }>()
 const emits = defineEmits<{
     (event: 'solverLoad', solver: Solver): void
+    (event: 'solverResult', result: Actions[]): void
 }>()
 const { $t } = useFluent()
 
@@ -24,6 +25,7 @@ const solvers = ref<Solver[]>([])
 const useManipulation = ref(false)
 const useMuscleMemory = ref(false)
 const activeNames = ref<string[]>([])
+const rikaIsSolving = ref(false)
 
 const createSolver = async () => {
     const msg1 = ElMessage({
@@ -93,6 +95,21 @@ function formatDuration(u: number): string {
     }
 }
 
+async function runRikaSolver() {
+    rikaIsSolving.value = true
+    const start_time = new Date().getTime()
+    const result = await rika_solve(props.initStatus)
+    const stop_time = new Date().getTime()
+    rikaIsSolving.value = false
+    emits('solverResult', result)
+    ElMessage({
+        showClose: true,
+        duration: 0,
+        type: 'success',
+        message: $t('solve-finished', { solveTime: formatDuration(stop_time - start_time) }),
+    })
+}
+
 </script>
 
 <template>
@@ -128,7 +145,12 @@ function formatDuration(u: number): string {
                     </el-table-column>
                 </el-table>
             </el-collapse-item>
-            <el-collapse-item :title="$t('dfs-solver')" name="dfs" disabled>
+            <el-collapse-item :title="$t('bfs-solver')" name="dfs">
+                该算法由Rika提供<br />
+                速度较快但不一定找到最优解，适用范围仅限于560以上70耐久配方<br />
+                <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving">
+                    {{ $t('start-solver') }}
+                </el-button>
             </el-collapse-item>
         </el-collapse>
     </el-scrollbar>
@@ -143,7 +165,7 @@ function formatDuration(u: number): string {
 
 <fluent locale="zh-CN">
 dp-solver = 动态规划求解
-dfs-solver = 深度优先搜索（敬请期待）
+bfs-solver = 广度优先搜索
 
 manipulation-select-info = { manipulation }（时间&内存×9）
 muscle-memory-select-info = { muscle-memory }（内存×2）
@@ -151,14 +173,14 @@ start-solver = 启动求解器
 release-solver = 释放
 
 solving-info = 求解器计算中，可能需要消耗大量内存，请稍等……
-solve-finished = 求解器准备已完成({ $solveTime })
+solve-finished = 求解已完成({ $solveTime })
 dp-solver-empty-text = 无求解器已加载
 error-with = 错误：{ $err }
 </fluent>
 
 <fluent locale="en-US">
 dp-solver = Dynamic Programing
-dfs-solver = Depth First Search (Coming soon)
+bfs-solver = Breadth First Search
 
 manipulation-select-info = { manipulation }(Time & Memory × 9)
 muscle-memory-select-info = { muscle-memory }(Memory × 2)

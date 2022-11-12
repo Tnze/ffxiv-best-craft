@@ -12,7 +12,7 @@ use std::{
 };
 
 use axum::{http::StatusCode, routing, Json, Router};
-use ffxiv_crafting::{Attributes, CastActionError, Recipe, Actions, Status};
+use ffxiv_crafting::{Actions, Attributes, CastActionError, Recipe, Status};
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::{Deserialize, Serialize};
@@ -22,8 +22,8 @@ use tokio::sync::{oneshot, Mutex, OnceCell};
 mod db;
 mod ordinary_solver;
 mod preprogress_solver;
-mod solver;
 mod rika_solver;
+mod solver;
 
 use crate::ordinary_solver::{ProgressSolver, QualitySolver};
 use crate::preprogress_solver::PreprogressSolver;
@@ -323,6 +323,11 @@ async fn read_solver(
     }
 }
 
+#[tauri::command(async)]
+fn rika_solve(status: Status) -> Vec<Actions> {
+    rika_solver::solve(status)
+}
+
 /// 释放求解器
 #[tauri::command(async)]
 async fn destroy_solver(
@@ -428,6 +433,7 @@ fn main() {
             create_solver,
             read_solver,
             destroy_solver,
+            rika_solve,
             start_http_server,
         ])
         .run(tauri::generate_context!())
