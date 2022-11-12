@@ -157,7 +157,8 @@ async function runRikaSolver() {
                     </template>
                     <template #startButton>
                         <br /> <br />
-                        <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving">
+                        <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving"
+                            :disabled="initStatus.recipe.rlv < 560 || initStatus.recipe.durability < 70">
                             {{ $t('start-solver') }}
                         </el-button>
                     </template>
