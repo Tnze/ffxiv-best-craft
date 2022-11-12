@@ -12,7 +12,7 @@ use std::{
 };
 
 use axum::{http::StatusCode, routing, Json, Router};
-use ffxiv_crafting::{Attributes, CastActionError, Recipe, Skills, Status};
+use ffxiv_crafting::{Attributes, CastActionError, Recipe, Actions, Status};
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::{Deserialize, Serialize};
@@ -23,6 +23,7 @@ mod db;
 mod ordinary_solver;
 mod preprogress_solver;
 mod solver;
+mod rika_solver;
 
 use crate::ordinary_solver::{ProgressSolver, QualitySolver};
 use crate::preprogress_solver::PreprogressSolver;
@@ -67,7 +68,7 @@ struct SimulateResult {
 /// 模拟以指定初始状态按顺序执行一个技能序列后的结果，
 /// 返回值`SimulateResult`包含了最终状态以及模拟过程中每个技能失败的位置及原因
 #[tauri::command(async)]
-fn simulate(status: Status, skills: Vec<Skills>) -> SimulateResult {
+fn simulate(status: Status, skills: Vec<Actions>) -> SimulateResult {
     let mut result = SimulateResult {
         status,
         errors: Vec::new(),
@@ -83,7 +84,7 @@ fn simulate(status: Status, skills: Vec<Skills>) -> SimulateResult {
 
 /// 计算当前状态下可以释放技能的集合，用于模拟界面将不可释放技能置灰
 #[tauri::command(async)]
-fn allowed_list(status: Status, skills: Vec<Skills>) -> Vec<String> {
+fn allowed_list(status: Status, skills: Vec<Actions>) -> Vec<String> {
     skills
         .iter()
         .map(|&sk| match status.is_action_allowed(sk) {
@@ -96,7 +97,7 @@ fn allowed_list(status: Status, skills: Vec<Skills>) -> Vec<String> {
 /// 计算当前状态下，传入的技能列表中每个技能需要消耗的制作力，
 /// 技能消耗的制作力会受到技能连击和当前制作状态（球色—）的影响
 #[tauri::command(async)]
-fn craftpoints_list(status: Status, skills: Vec<Skills>) -> Vec<i32> {
+fn craftpoints_list(status: Status, skills: Vec<Actions>) -> Vec<i32> {
     skills.iter().map(|&sk| status.craft_point(sk)).collect()
 }
 
@@ -304,7 +305,7 @@ fn preprogress_list(status: &Status) -> Vec<u16> {
 async fn read_solver(
     status: Status,
     app_state: tauri::State<'_, AppState>,
-) -> Result<Vec<Skills>, String> {
+) -> Result<Vec<Actions>, String> {
     let key = ordinary_solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
@@ -361,7 +362,7 @@ async fn start_http_server(
     }
     #[derive(Serialize, Clone)]
     struct ActionStepJS {
-        action: Skills,
+        action: Actions,
         progress: u16,
         quality: u32,
         durability: u16,

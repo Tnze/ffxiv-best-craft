@@ -4,40 +4,40 @@ use super::solver::{
     Solver, SolverSlot, MAX_GREAT_STRIDES, MAX_INNER_QUIET, MAX_INNOVATION, MAX_MUSCLE_MEMORY,
     MAX_VENERATION,
 };
-use ffxiv_crafting::{Attributes, Recipe, Skills, Status};
+use ffxiv_crafting::{Attributes, Recipe, Actions, Status};
 
-const SYNTH_SKILLS: [Skills; 9] = [
-    Skills::BasicSynthesis,
-    Skills::WasteNot,
-    Skills::Veneration,
-    Skills::WasteNotII,
-    Skills::CarefulSynthesis,
-    Skills::Groundwork,
-    Skills::DelicateSynthesis,
-    Skills::IntensiveSynthesis,
-    Skills::PrudentSynthesis,
+const SYNTH_SKILLS: [Actions; 9] = [
+    Actions::BasicSynthesis,
+    Actions::WasteNot,
+    Actions::Veneration,
+    Actions::WasteNotII,
+    Actions::CarefulSynthesis,
+    Actions::Groundwork,
+    Actions::DelicateSynthesis,
+    Actions::IntensiveSynthesis,
+    Actions::PrudentSynthesis,
 ];
 
-const TOUCH_SKILLS: [Skills; 19] = [
-    Skills::BasicSynthesis,
-    Skills::BasicTouch,
-    Skills::MastersMend,
-    Skills::WasteNot,
-    Skills::Veneration,
-    Skills::StandardTouch,
-    Skills::GreatStrides,
-    Skills::Innovation,
-    Skills::WasteNotII,
-    Skills::ByregotsBlessing,
-    Skills::CarefulSynthesis,
-    Skills::PrudentTouch,
-    Skills::PreparatoryTouch,
-    Skills::Groundwork,
-    Skills::DelicateSynthesis,
-    Skills::AdvancedTouch,
-    Skills::PrudentSynthesis,
-    Skills::TrainedFinesse,
-    Skills::Manipulation,
+const TOUCH_SKILLS: [Actions; 19] = [
+    Actions::BasicSynthesis,
+    Actions::BasicTouch,
+    Actions::MastersMend,
+    Actions::WasteNot,
+    Actions::Veneration,
+    Actions::StandardTouch,
+    Actions::GreatStrides,
+    Actions::Innovation,
+    Actions::WasteNotII,
+    Actions::ByregotsBlessing,
+    Actions::CarefulSynthesis,
+    Actions::PrudentTouch,
+    Actions::PreparatoryTouch,
+    Actions::Groundwork,
+    Actions::DelicateSynthesis,
+    Actions::AdvancedTouch,
+    Actions::PrudentSynthesis,
+    Actions::TrainedFinesse,
+    Actions::Manipulation,
 ];
 
 pub struct QualitySolver<const MN: usize, const WN: usize>
@@ -57,7 +57,7 @@ where
     const DEFAULT_SLOT: SolverSlot<u32> = SolverSlot {
         value: 0,
         step: 0,
-        skill: None,
+        action: None,
     };
     const DEFAULT_ARY: [[[[[[SolverSlot<u32>; 3]; WN + 1]; MN + 1]; 4]; 5]; 11] =
         [[[[[[Self::DEFAULT_SLOT; 3]; WN + 1]; MN + 1]; 4]; 5]; 11];
@@ -154,7 +154,7 @@ where
                                                             *slot = SolverSlot {
                                                                 value: quality,
                                                                 step,
-                                                                skill: Some(*sk),
+                                                                action: Some(*sk),
                                                             }
                                                         }
                                                     }
@@ -171,11 +171,11 @@ where
         }
     }
 
-    fn read(&self, s: &Status) -> Option<Skills> {
-        self.get(s)?.skill
+    fn read(&self, s: &Status) -> Option<Actions> {
+        self.get(s)?.action
     }
 
-    fn read_all(&self, s: &Status) -> Vec<Skills> {
+    fn read_all(&self, s: &Status) -> Vec<Actions> {
         let max_quality = s.recipe.quality;
         let mut new_s = s.clone();
         let mut list = Vec::new();
@@ -186,7 +186,7 @@ where
                 if let Some(&SolverSlot {
                     value: quality,
                     step,
-                    skill,
+                    action: skill,
                 }) = self.get(&new_s)
                 {
                     let quality = quality.min(max_addon);
@@ -206,7 +206,7 @@ where
                     if let Some(&SolverSlot {
                         value: quality,
                         step,
-                        skill,
+                        action: skill,
                     }) = self.get(&new_s2)
                     {
                         let quality = quality.min(max_addon);
@@ -250,7 +250,7 @@ where
     const DEFAULT_SLOT: SolverSlot<u16> = SolverSlot {
         value: 0,
         step: 0,
-        skill: None,
+        action: None,
     };
     const DEFAULT_ARY: [[[[SolverSlot<u16>; WN + 1]; MN + 1]; 6]; 5] =
         [[[[Self::DEFAULT_SLOT; WN + 1]; MN + 1]; 6]; 5];
@@ -328,7 +328,7 @@ where
                                         *slot = SolverSlot {
                                             value: progress,
                                             step,
-                                            skill: Some(*sk),
+                                            action: Some(*sk),
                                         };
                                     }
                                 }
@@ -339,13 +339,13 @@ where
             }
         }
     }
-    fn read(&self, s: &Status) -> Option<Skills> {
+    fn read(&self, s: &Status) -> Option<Actions> {
         self.results[s.durability as usize / 5][s.craft_points as usize]
             [s.buffs.veneration as usize][s.buffs.muscle_memory as usize]
             [s.buffs.manipulation as usize][s.buffs.wast_not as usize]
-            .skill
+            .action
     }
-    fn read_all(&self, s: &Status) -> Vec<Skills> {
+    fn read_all(&self, s: &Status) -> Vec<Actions> {
         let difficulty = s.recipe.difficulty;
         let mut new_s = s.clone();
         let mut list = Vec::new();
@@ -356,7 +356,7 @@ where
                 let &SolverSlot {
                     value: progress,
                     step,
-                    skill,
+                    action: skill,
                 } = self.get(&new_s);
                 let progress = progress.min(max_addon);
                 (
@@ -372,7 +372,7 @@ where
                     let &SolverSlot {
                         value: progress,
                         step,
-                        skill,
+                        action: skill,
                     } = self.get(&new_s2);
                     let progress = progress.min(max_addon);
                     if progress >= best.0 .0 && step < best.0 .1 {

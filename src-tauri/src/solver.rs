@@ -1,4 +1,4 @@
-use ffxiv_crafting::{Skills, Status};
+use ffxiv_crafting::{Actions, Status};
 
 pub(crate) const MAX_GREAT_STRIDES: u8 = 3;
 pub(crate) const MAX_VENERATION: u8 = 4;
@@ -10,11 +10,11 @@ pub(crate) const MAX_INNER_QUIET: u8 = 10;
 pub(crate) struct SolverSlot<V> {
     pub(crate) value: V,
     pub(crate) step: u8,
-    pub(crate) skill: Option<Skills>,
+    pub(crate) action: Option<Actions>,
 }
 
 pub trait Solver {
     fn init(&mut self);
-    fn read(&self, s: &Status) -> Option<Skills>;
-    fn read_all(&self, s: &Status) -> Vec<Skills>;
+    fn read(&self, s: &Status) -> Option<Actions>;
+    fn read_all(&self, s: &Status) -> Vec<Actions>;
 }
