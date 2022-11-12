@@ -2,24 +2,26 @@ import { Actions, Attributes, Recipe, Status } from "./Craft";
 import { emit, listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 
-const create_solver = (
-  s: Status,
+export const create_solver = (
+  status: Status,
   useMuscleMemory: boolean,
   useManipulation: boolean
 ) => {
   return invoke("create_solver", {
-    status: s,
+    status,
     useMuscleMemory,
     useManipulation,
   });
 };
 
-const destroy_solver = (s: Status) => {
-  return invoke("destroy_solver", { status: s });
+export const destroy_solver = (status: Status) => {
+  return invoke("destroy_solver", { status });
 };
 
-const read_solver = (s: Status): Promise<Actions[]> => {
-  return invoke("read_solver", { status: s });
+export const read_solver = (status: Status): Promise<Actions[]> => {
+  return invoke("read_solver", { status });
 };
 
-export { create_solver, read_solver, destroy_solver };
+export const rika_solve = (status: Status): Promise<Actions[]> => {
+  return invoke("rika_solve", { status })
+}

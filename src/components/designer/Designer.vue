@@ -218,6 +218,19 @@ async function readSolver(s: Status) {
     }
 }
 
+async function handleSolverResult(actions: Actions[]) {
+    let slots: Slot[] = [];
+    for (const i in actions)
+        slots.push({ action: actions[i], id: Number.parseInt(i) })
+    const { status, errors } = await simulate(initStatus.value, actions)
+    pushSequence({
+        slots,
+        maxid: actions.length,
+        status,
+        errors,
+    });
+}
+
 async function saveListToJSON() {
     try {
         const queues = savedQueues.map(v => v.slots.map(s => s.action)).filter(v => v.length > 0)
@@ -297,8 +310,8 @@ async function openListFromJSON() {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" :title="$t('solvers')" size="45%">
-            <SolverList :init-status="initStatus" :recipe-name="item.name"
-                @solver-load="readSolver(actionQueue.status)" />
+            <SolverList :init-status="initStatus" :recipe-name="item.name" @solver-load="readSolver(actionQueue.status)"
+                @solver-result="handleSolverResult" />
         </el-drawer>
         <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
             <MacroExporter :actions="displayActions" />
