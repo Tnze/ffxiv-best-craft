@@ -146,11 +146,25 @@ async function runRikaSolver() {
                 </el-table>
             </el-collapse-item>
             <el-collapse-item :title="$t('bfs-solver')" name="dfs">
-                该算法由Rika提供<br />
-                速度较快但不一定找到最优解，适用范围仅限于560以上70耐久配方<br />
-                <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving">
-                    {{ $t('start-solver') }}
-                </el-button>
+                <i18n path="rika-solver-info" tag="span">
+                    <template #newLine>
+                        <br />
+                    </template>
+                    <template #rikaRepoLink="{ designByRika }">
+                        <el-link type="primary" href="https://github.com/RikaKagurasaka/xiv_craft_solver">
+                            {{ designByRika }}
+                        </el-link>
+                    </template>
+                    <template #startButton>
+                        <br /> <br />
+                        <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving">
+                            {{ $t('start-solver') }}
+                        </el-button>
+                    </template>
+                    <template #rikaSaidLine="{ rikaSaid }">
+                        <br /><br />{{ rikaSaid }}
+                    </template>
+                </i18n>
             </el-collapse-item>
         </el-collapse>
     </el-scrollbar>
@@ -176,6 +190,16 @@ solving-info = 求解器计算中，可能需要消耗大量内存，请稍等�
 solve-finished = 求解已完成({ $solveTime })
 dp-solver-empty-text = 无求解器已加载
 error-with = 错误：{ $err }
+
+rika-solver-info =
+    由{$rikaRepoLink}，作者同意后移植至本应用。
+    {$newLine}
+    注：该算法通过激进的剪枝策略暴力搜索求解，
+    其中剪枝策略由作者根据经验手工指定，适用于特定版本的配方。
+    {$startButton}
+    {$rikaSaidLine}
+    .design-by-rika = Rika设计的算法
+    .rika-said =「速度较快但不一定找到最优解，适用范围仅限于560以上70耐久配方」—— Rika
 </fluent>
 
 <fluent locale="en-US">
@@ -191,4 +215,15 @@ solving-info = Solving could occupy lots of memory. Please wait...
 solve-finished = Solve finished({ $solveTime })
 dp-solver-empty-text = No solver is loaded
 error-with = Error: { $err }
+
+rika-solver-info =
+    {$rikaRepoLink}. Transplant with the consent of the author.
+    {$newLine}
+    P.S: The algorithm uses radical pruning strategy for solving,
+    The pruning strategy is manually specified by the author based on experience,
+    and is applicable to specific versions of the recipe.
+    {$startButton}
+    {$rikaSaidLine}
+    .design-by-rika = Designed by Rika
+    .rika-said =「速度较快但不一定找到最优解，适用范围仅限于560以上70耐久配方」—— Rika
 </fluent>
