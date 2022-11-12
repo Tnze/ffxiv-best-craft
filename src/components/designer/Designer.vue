@@ -307,8 +307,8 @@ async function openListFromJSON() {
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <KeepAlive>
-            <InitialQualitySetting v-model="initQuality" :open="openInitQualitySet" @close="openInitQualitySet = false"
-                :item="item" :recipe="recipe" />
+            <InitialQualitySetting v-model="initQuality" v-model:open="openInitQualitySet" :item="item"
+                :recipe="recipe" />
         </KeepAlive>
         <el-header>
             <h1>{{ item.name }}</h1>
