@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useFluent } from 'fluent-vue'
 import { getName, getVersion, getTauriVersion } from '@tauri-apps/api/app'
 import { checkUpdate } from '@tauri-apps/api/updater'
 import { useStore } from '../store'
-import { useFluent } from 'fluent-vue'
+import { languages } from '../lang'
 
 const store = useStore()
 const { $t } = useFluent()
@@ -36,7 +37,6 @@ const onCheckUpdateClick = async () => {
 }
 
 const languageChanged = (newLang: string) => {
-    console.log("language switched to", newLang)
     store.commit('selectLanguage', newLang)
 }
 
@@ -52,9 +52,8 @@ const languageChanged = (newLang: string) => {
             <el-form class="setting-page" :model="store.state.settings" label-width="120px">
                 <el-form-item :label="$t('language')">
                     <el-select v-model="store.state.settings.language" @change="languageChanged">
-                        <el-option label="简体中文" value="zh-CN" />
-                        <el-option label="English" value="en" />
-                        <el-option label="日本語" value="ja" />
+                        <el-option :label="$t('system-lang')" value="system" />
+                        <el-option v-for="[v, name] in languages" :label="name" :value="v" />
                     </el-select>
                 </el-form-item>
                 <el-form-item :label="$t('version-number')">
@@ -94,6 +93,7 @@ const languageChanged = (newLang: string) => {
 <fluent locale="zh-CN">
 settings = 设置
 # language =
+system-lang = 跟随系统
 version-number = 版本号
 tauri = Tauri
 developer = 开发者
@@ -104,9 +104,10 @@ checking-update = 正在检查更新
 check-update-success = 检查更新成功
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 settings = Settings
 language = Language
+system-lang = System
 version-number = Version
 tauri = Tauri
 developer = Developer
@@ -117,9 +118,10 @@ checking-update = Checking Update
 check-update-success = Check update success
 </fluent>
 
-<fluent locale="ja">
+<fluent locale="ja-JP">
 settings = 設定
 # language =
+# system-lang = 
 version-number = バージョン
 tauri = Tauri
 developer = 開発者

@@ -64,7 +64,7 @@ simulator = 模拟
 settings = 设置
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 gearsets = Gearsets
 recipe = Recipe
 bom = BOM
@@ -72,7 +72,7 @@ simulator = Simulator
 settings = Settings
 </fluent>
 
-<fluent locale="ja">
+<fluent locale="ja-JP">
 gearsets = 装備
 recipe = フォーミュラ
 bom = 材料リスト

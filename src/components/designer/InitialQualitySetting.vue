@@ -49,7 +49,6 @@ watchEffect(() => {
         reduce(([totalPrev, prevHq], [total, hq]) =>
             [totalPrev + total, prevHq + hq]
         )
-    console.log(hqLvCount, totalLvCount)
     const r = totalLvCount == 0 ? 0 : hqLvCount / totalLvCount
     initQuality.value = Math.floor(props.recipe.quality / 2 * r)
 })
@@ -69,11 +68,11 @@ watchEffect(() => {
                         <el-button-group v-if="scope.row.item.can_be_hq" class="ml-4">
                             <el-button :icon="ArrowUp" size="small" :disabled="scope.row.hqAmount <= 0"
                                 @click="scope.row.hqAmount -= 1">
-                                NQ {{ scope.row.amount - scope.row.hqAmount }}
+                                {{ $t('nq') }} {{ scope.row.amount - scope.row.hqAmount }}
                             </el-button>
                             <el-button size="small" :disabled="scope.row.hqAmount >= scope.row.amount"
                                 @click="scope.row.hqAmount += 1">
-                                HQ {{ scope.row.hqAmount }}
+                                {{ $t('hq') }} {{ scope.row.hqAmount }}
                                 <el-icon class="el-icon--right">
                                     <ArrowUp />
                                 </el-icon>
@@ -94,9 +93,16 @@ watchEffect(() => {
 </style>
 
 <fluent locale="zh-CN">
-initial-quality = 初期品质
+nq = 普通
+hq = 优质
 </fluent>
 
-<fluent locale="en">
-initial-quality = Initial Quality
+<fluent locale="en-US">
+nq = NQ
+hq = HQ
+</fluent>
+
+<fluent locale="ja-JP">
+nq = NQ
+hq = HQ
 </fluent>

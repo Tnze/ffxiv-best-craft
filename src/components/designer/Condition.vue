@@ -102,6 +102,6 @@ const props = defineProps<{
 condition = 制作状态
 </fluent>
 
-<fluent locale="en">
+<fluent locale="en-US">
 condition = Condition
 </fluent>

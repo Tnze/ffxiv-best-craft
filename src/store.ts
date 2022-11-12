@@ -1,7 +1,6 @@
 import { InjectionKey } from 'vue'
 import { createStore, useStore as baseUseStore, Store } from 'vuex'
 import { Attributes, Item, ItemWithAmount, Jobs, Recipe } from './Craft'
-import { selectLanguage } from './fluent'
 
 export interface GearsetsRow {
     name: string
@@ -46,13 +45,12 @@ export const store = createStore<State>({
         checklist: [],
         designer: null,
         settings: {
-            language: "zh-CN"
+            language: 'system'
         }
     },
     mutations: {
         selectLanguage(state, newLang) {
             state.settings.language = newLang
-            selectLanguage(newLang)
         },
         storeGearsets(state, newGearsets) {
             state.gearsets = newGearsets
