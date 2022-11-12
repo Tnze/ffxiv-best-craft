@@ -11,13 +11,18 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-    (e: 'close'): void
     (e: 'update:modelValue', value: number): void
+    (e: 'update:open', value: boolean): void
 }>()
 
 const initQuality = computed({
     get() { return props.modelValue },
     set(v: number) { emits('update:modelValue', v) }
+})
+
+const dialogOpen = computed({
+    get() { return props.open },
+    set(v: boolean) { emits('update:open', v) }
 })
 
 const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
@@ -52,7 +57,7 @@ watchEffect(() => {
 </script>
 
 <template>
-    <el-dialog v-model="open" @close="$emit('close')">
+    <el-dialog v-model="dialogOpen">
         <div style="display: flex; flex-direction: column;">
             <el-input-number :disabled="props.item.id != -1" v-model="initQuality" :min="0" :max="recipe.quality"
                 class="initial-quality-input" />
