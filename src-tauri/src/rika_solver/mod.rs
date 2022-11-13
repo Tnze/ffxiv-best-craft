@@ -1,4 +1,5 @@
 use ffxiv_crafting::{Actions, Status};
+use std::cmp::Ordering;
 
 mod solver;
 use solver::*;
@@ -11,10 +12,16 @@ pub fn solve(craft: Status) -> Vec<Actions> {
             phase2_routes.push(route);
         }
     }
-    let (ref craft, ref content) = phase2_routes
-        .iter()
-        .max_by_key(|route| route.0.quality)
-        .unwrap();
+    let res = phase2_routes.iter().max_by(|a, b| {
+        a.0.progress
+            .cmp(&b.0.progress)
+            .then(a.0.quality.cmp(&b.0.quality))
+            .then(a.0.step.cmp(&b.0.step).reverse())
+    });
+    let (ref craft, ref content) = match res {
+        None => return vec![],
+        Some(x) => x,
+    };
     let mut content = content.clone();
     let prog_120 = craft.calc_synthesis(1.2);
     let prog_180 = craft.calc_synthesis(1.8);

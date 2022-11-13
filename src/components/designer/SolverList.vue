@@ -96,18 +96,28 @@ function formatDuration(u: number): string {
 }
 
 async function runRikaSolver() {
-    rikaIsSolving.value = true
-    const start_time = new Date().getTime()
-    const result = await rika_solve(props.initStatus)
-    const stop_time = new Date().getTime()
-    rikaIsSolving.value = false
-    emits('solverResult', result)
-    ElMessage({
-        showClose: true,
-        duration: 0,
-        type: 'success',
-        message: $t('solve-finished', { solveTime: formatDuration(stop_time - start_time) }),
-    })
+    try {
+        rikaIsSolving.value = true
+        const start_time = new Date().getTime()
+        const result = await rika_solve(props.initStatus)
+        const stop_time = new Date().getTime()
+        ElMessage({
+            showClose: true,
+            duration: 0,
+            type: 'success',
+            message: $t('solve-finished', { solveTime: formatDuration(stop_time - start_time) }),
+        })
+        emits('solverResult', result)
+    } catch (err) {
+        ElMessage({
+            showClose: true,
+            duration: 0,
+            type: 'error',
+            message: $t('error-with', { err: err as string }),
+        })
+    } finally {
+        rikaIsSolving.value = false
+    }
 }
 
 </script>
@@ -157,8 +167,7 @@ async function runRikaSolver() {
                     </template>
                     <template #startButton>
                         <br /> <br />
-                        <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving"
-                            :disabled="initStatus.recipe.rlv < 560 || initStatus.recipe.durability < 70">
+                        <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving">
                             {{ $t('start-solver') }}
                         </el-button>
                     </template>

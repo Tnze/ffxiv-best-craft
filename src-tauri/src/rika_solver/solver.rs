@@ -162,8 +162,7 @@ pub fn generate_routes_phase2(
     let mut queue = VecDeque::new();
     queue.push_back((craft, route));
     let mut top_route: Option<(Status, Vec<Actions>)> = None;
-    while !queue.is_empty() {
-        let (_craft, _route) = queue.pop_front().unwrap();
+    while let Some((_craft, _route)) = queue.pop_front() {
         for action in next_action_phase_2(&_craft) {
             if _craft.is_finished() || _craft.is_action_allowed(action).is_err() {
                 continue;
