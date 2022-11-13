@@ -1,15 +1,15 @@
 {
-  "version": "v0.5.7",
-  "notes": "更新求解器UI\n更新Tauri版本\n更新其他依赖项版本\n优化初期品质设置UI\n优化翻译",
-  "pub_date": "2022-11-06T00:16:07+08:00",
+  "version": "v0.5.8",
+  "notes": "更新内容\n添加【广度优先搜索（BFS）】求解器\n\n算法来源\nRika的NGA帖子：https://bbs.nga.cn/read.php?tid=34226165\nRika的在线版求解器：https://xiv.rika.link/#/craft-sim\nRika的算法Github：https://github.com/RikaKagurasaka/xiv_craft_solver\n\n算法修改点\n原算法经过少许修改以移植到本应用，包括如下变更：\n底层模拟器改为使用ffxiv-crafting\n计算剩余进展时，由技能效率判断改为实际进展值判断。\n优化phase2宏比较条件\n优化搜索过程内存分配次数\n优化代码细节",
+  "pub_date": "2022-11-13T12:56:32+08:00",
   "platforms": {
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm0yTFhuTnZkMzBOQmxqTnNGTjNncHI1VGo0b3o1U1dFSWtuKy9WNXRaVHZiYkZ6ZXV1VzBNUDdaL0Ftc3hTYm94dGM5U2FON2tNQVR2aTFZcGtLamdZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY4MjMzNTEyCWZpbGU6YmVzdC1jcmFmdF8wLjUuN19hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKdGcwMDk3ek9NeVcxcUd4NUZ6OFdPUjl1azAvWGU1OUlrbmtvQkxvYTFZSU80Mmcvc1NpNUpzWWxlSHV0TlU4ZDdtNkRnZkNUSkZiaFdTQnpTQzJ2RHc9PQo=",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.7/best-craft_0.5.7_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smo0akdDM1o2Mk8rSXlQVWtTMjJDRzJZM01XbU0vODdtYkZrNFl2anFLM3dnTnUxd3piOEU3dnpid01XY2l0OFVRL2NjWGxLQkJrd3I4bFU4dTB4ZlFJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY4MzE0NzgzCWZpbGU6YmVzdC1jcmFmdF8wLjUuOF9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKcTNURWtTZTVuaCs3Nm1vd2VQdGY5MExMak9tZkRvajM4Uy84bEY4ODlzQ05pVEFSbWFGWkFiOUdhbW92bVRtb1h4VTRUQWJsMzBWaE9rY3FGY2M4Qmc9PQo=",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.8/best-craft_0.5.8_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmxNa0UvYS9mSXhqUm5CMHpTT2YzYkhBc0tTTU5HMWF0U3JZVkY2M3crL0NsQ0FOMjRUNzU4aTN4NFBNdVlxaVBUWGUrQnJDQjdXdDdxYUFkRHFjTEEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY4MjMzNTE4CWZpbGU6QmVzdENyYWZ0XzAuNS43X3g2NF96aC1DTi5tc2kuemlwCmhCUzNlZWRab3ZQTFQ5WW9CL0FGbm9FQ3JUVE9udzRiQlVlV3NVcnREbHlVK0IyZVZMRGhVaHRNTWNqK2lxSWZCNVdKRkhqcVo5ckZ0UU5pSHZqS0FnPT0K",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.7/BestCraft_0.5.7_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnFxL2tkc1VOeWlia1hyMW9xOVN4S21MVC85b2ViN0R5aGxSUCtGbnpIKzhuNTVDLzMrdVZCd3FYYlo5R29zTUpKSTNVV3QwRFVKdWI0YmtHNzNpandvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY4MzEzODM1CWZpbGU6QmVzdENyYWZ0XzAuNS44X3g2NF96aC1DTi5tc2kuemlwCnVkSThWR0ZZckN2SlVEUHFEOFdpdk40dy9NK3ljSFFKNGpiSTdBRkpldFRUUXFZUldqZklLVHFnM3lNTGE1K3JBNytvazVOVk9IM0JEY1dxSFVwc0FBPT0K",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.8/BestCraft_0.5.8_x64_zh-CN.msi.zip"
     }
   }
 }
