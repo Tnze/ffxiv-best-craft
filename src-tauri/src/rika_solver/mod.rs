@@ -1,5 +1,4 @@
 use ffxiv_crafting::{Actions, Status};
-use std::cmp::Ordering;
 
 mod solver;
 use solver::*;
