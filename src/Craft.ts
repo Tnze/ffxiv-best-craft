@@ -158,8 +158,7 @@ const newRecipe = async (
 const newStatus = (
   attrs: Attributes,
   recipe: Recipe,
-  initQuality: number = 0
-): Promise<Status> => invoke("new_status", { attrs, recipe, initQuality });
+): Promise<Status> => invoke("new_status", { attrs, recipe });
 
 interface SimulateResult {
   status: Status;

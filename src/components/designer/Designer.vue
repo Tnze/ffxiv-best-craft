@@ -76,28 +76,48 @@ const enhancedAttributes = computed<Attributes>(() => {
     };
 });
 
-// Simulation
+// UI State
+const isReadingSolver = ref(0);
+const previewSolver = ref(false);
+const openInitQualitySet = ref(false);
+const openSolverDrawer = ref(false);
+const openExportMacro = ref(false);
+const openAttrEnhSelector = ref(false);
+
+// Simulation Input
 const initQuality = ref(0)
-const initStatus = ref<Status>(
-    await newStatus(enhancedAttributes.value, props.recipe, initQuality.value)
-);
-watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
-    initStatus.value = await newStatus(ea, p.recipe, iq);
-});
-// Actions Queue
-const actionQueue = reactive<Sequence>({
+const initStatus = ref<Status>({ ...await newStatus(enhancedAttributes.value, props.recipe), quality: initQuality.value });
+watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => { initStatus.value = { ...await newStatus(ea, p.recipe), quality: iq } });
+
+// Active Sequence
+const activeSeq = reactive<Sequence>({
     slots: [],
     maxid: 0,
     status: initStatus.value,
     errors: [],
 });
-const actions = computed(() => actionQueue.slots.map((slot) => slot.action));
-
+const actions = computed(() => activeSeq.slots.map(slot => slot.action));
+const displayActions = computed(() => {
+    return previewSolver.value && solverResult.slots.length > 0
+        ? solverResult.slots.map(v => v.action)
+        : activeSeq.slots.map(v => v.action)
+})
+function pushAction(action: Actions) {
+    activeSeq.slots.push({ id: activeSeq.maxid++, action });
+}
+function loadSeq(seq: Sequence) {
+    activeSeq.slots = seq.slots.slice();
+    activeSeq.maxid = seq.maxid;
+}
+function clearSeq() {
+    activeSeq.slots = [];
+    activeSeq.maxid = 0;
+}
 watch([initStatus, actions], async ([s, a]) => {
     try {
         let result = await simulate(s, a);
-        actionQueue.status = result.status;
-        actionQueue.errors = result.errors;
+        activeSeq.status = result.status;
+        activeSeq.errors = result.errors;
     } catch (err) {
         ElMessage({
             type: "error",
@@ -114,51 +134,28 @@ const solverResult = reactive<Sequence>({
     status: initStatus.value,
     errors: [],
 });
-watch(() => actionQueue.status, readSolver);
+watch(() => activeSeq.status, readSolver);
 
-// Drawer status
-const openInitQualitySet = ref(false);
-const openSolverDrawer = ref(false);
-const openExportMacro = ref(false);
-const openAttrEnhSelector = ref(false);
 
-const savedQueues = reactive<Sequence[]>([]);
+// Saved Sequence
+const savedSeqs = reactive<{ maxid: number, ary: { key: number, seq: Sequence }[] }>({ maxid: 0, ary: [] });
 watch(initStatus, (newInitStatus) => {
     // recalculate all results of savedQueues
-    for (let q of savedQueues) {
+    for (let { seq } of savedSeqs.ary) {
         simulate(
             newInitStatus,
-            q.slots.map((x) => x.action)
+            seq.slots.map((x) => x.action)
         ).then((result) => {
-            q.status = result.status;
-            q.errors = result.errors;
+            seq.status = result.status;
+            seq.errors = result.errors;
         });
     }
+    savedSeqs.ary.sort(({ seq: a }, { seq: b }) => isBetterThan(a.status, b.status) ? 1 : -1)
 });
-
-function pushSequence(seq: Sequence) {
-    for (const i in savedQueues) {
-        if (isBetterThan(seq.status, savedQueues[i].status)) {
-            savedQueues.splice(Number.parseInt(i), 0, seq)
-            return;
-        }
-    }
-    savedQueues.push(seq)
-}
-
-function pushAction(action: Actions) {
-    actionQueue.slots.push({ id: actionQueue.maxid++, action });
-}
-
-function clearSequence() {
-    actionQueue.slots = [];
-    actionQueue.maxid = 0;
-}
-
 function saveSequence() {
     const queue = previewSolver.value
         ? solverResult
-        : actionQueue
+        : activeSeq
     pushSequence({
         slots: queue.slots.slice(),
         maxid: queue.maxid,
@@ -166,28 +163,21 @@ function saveSequence() {
         errors: queue.errors,
     });
 }
-
-function loadSequence(seq: Sequence) {
-    actionQueue.slots = seq.slots.slice();
-    actionQueue.maxid = seq.maxid;
+function pushSequence(seq: Sequence) {
+    const key = savedSeqs.maxid++;
+    let pos = savedSeqs.ary.findIndex(v => isBetterThan(seq.status, v.seq.status))
+    if (pos = -1) pos = savedSeqs.ary.length;
+    savedSeqs.ary.splice(pos, 0, { key, seq })
 }
 
-const isReadingSolver = ref(0);
-const previewSolver = ref(false);
-
-const displayActions = computed(() => {
-    return previewSolver.value && solverResult.slots.length > 0
-        ? solverResult.slots.map(v => v.action)
-        : actionQueue.slots.map(v => v.action)
-})
 const displayedStatus = computed(() => {
     return previewSolver.value && solverResult.slots.length > 0
         ? solverResult.status
-        : actionQueue.status
+        : activeSeq.status
 })
 watch(displayedStatus, (status) => {
-    const cond1 = savedQueues.length == 0 && status.progress == status.recipe.difficulty;
-    const cond2 = savedQueues.length > 0 && isBetterThan(status, savedQueues[0].status);
+    const cond1 = savedSeqs.ary.length == 0 && status.progress == status.recipe.difficulty;
+    const cond2 = savedSeqs.ary.length > 0 && isBetterThan(status, savedSeqs.ary[0].seq.status);
     if (cond1 || cond2)
         saveSequence()
 })
@@ -233,7 +223,7 @@ async function handleSolverResult(actions: Actions[]) {
 
 async function saveListToJSON() {
     try {
-        const queues = savedQueues.map(v => v.slots.map(s => s.action)).filter(v => v.length > 0)
+        const queues = savedSeqs.ary.map(v => v.seq.slots.map(s => s.action)).filter(v => v.length > 0)
         try {
             if (queues.length == 0) {
                 await ElMessageBox.confirm(
@@ -280,8 +270,8 @@ async function openListFromJSON() {
     for (const filepath of pathlist) {
         try {
             const content = await readTextFile(filepath)
-            const queues = <Actions[][]>JSON.parse(content)
-            for (const actions of queues) {
+            const sequences = <Actions[][]>JSON.parse(content)
+            for (const actions of sequences) {
                 const slots = actions.map((action, index) => { return { id: index, action } })
                 const { status, errors } = await simulate(initStatus.value, actions)
                 pushSequence({
@@ -294,7 +284,7 @@ async function openListFromJSON() {
             ElMessage({
                 type: "success",
                 showClose: true,
-                message: $t('read-n-macros', { n: queues.length }),
+                message: $t('read-n-macros', { n: sequences.length }),
             });
         } catch (err) {
             ElMessage({
@@ -310,7 +300,7 @@ async function openListFromJSON() {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" :title="$t('solvers')" size="45%">
-            <SolverList :init-status="initStatus" :recipe-name="item.name" @solver-load="readSolver(actionQueue.status)"
+            <SolverList :init-status="initStatus" :recipe-name="item.name" @solver-load="readSolver(activeSeq.status)"
                 @solver-result="handleSolverResult" />
         </el-drawer>
         <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
@@ -333,26 +323,25 @@ async function openListFromJSON() {
                 " @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true" />
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">
-                        <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="actionQueue.status"
-                            #lower />
+                        <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
                     </el-scrollbar>
                     <div class="actionqueue-and-savedqueue">
                         <div class="action-queue">
-                            <ActionQueue :job="displayJob" :list="actionQueue.slots" :solver-result="solverResult.slots"
-                                :preview-solver="previewSolver" :err-list="actionQueue.errors" />
+                            <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
+                                :preview-solver="previewSolver" :err-list="activeSeq.errors" />
                         </div>
                         <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver"
-                            @plus="saveSequence" @delete="clearSequence" @solver="openSolverDrawer = true"
+                            @plus="saveSequence" @delete="clearSeq" @solver="openSolverDrawer = true"
                             @print="openExportMacro = true" @save-list="saveListToJSON" @open-list="openListFromJSON" />
                         <el-scrollbar class="savedqueue-scrollbar">
                             <TransitionGroup class="savedqueue-list" name="savedqueues" tag="ul">
-                                <li v-for="(sq, i) in savedQueues" :key="sq.maxid" class="savedqueue-item">
-                                    <QueueStatus :status="sq.status" />
-                                    <ActionQueue :job="displayJob" :list="sq.slots" :err-list="sq.errors" disabled />
+                                <li v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" class="savedqueue-item">
+                                    <QueueStatus :status="seq.status" />
+                                    <ActionQueue :job="displayJob" :list="seq.slots" :err-list="seq.errors" disabled />
                                     <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                        @click="loadSequence(sq)" />
+                                        @click="loadSeq(seq)" />
                                     <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
-                                        @click="savedQueues.splice(i, 1)" />
+                                        @click="savedSeqs.ary.splice(i, 1)" />
                                 </li>
                             </TransitionGroup>
                         </el-scrollbar>
