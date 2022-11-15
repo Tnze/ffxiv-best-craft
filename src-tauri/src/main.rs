@@ -43,13 +43,11 @@ fn new_recipe(
 
 /// 初始化一个表示一次制作的初始状态的Status对象，包含玩家属性、配方信息和初期品质
 #[tauri::command(async)]
-fn new_status(attrs: Attributes, recipe: Recipe, init_quality: u32) -> Result<Status, String> {
+fn new_status(attrs: Attributes, recipe: Recipe) -> Result<Status, String> {
     if recipe.job_level > attrs.level + 5 {
         Err("Player level lower than recipe's require".to_string())
     } else {
-        let mut s = Status::new(attrs, recipe);
-        s.quality = init_quality;
-        Ok(s)
+        Ok(Status::new(attrs, recipe))
     }
 }
 
