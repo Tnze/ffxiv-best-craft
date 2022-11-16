@@ -10,7 +10,7 @@ import {
     simulate,
     Status,
     newStatus,
-    isBetterThan,
+    compareStatus,
     Recipe,
     Jobs,
     Item,
@@ -150,7 +150,10 @@ watch(initStatus, (newInitStatus) => {
             seq.errors = result.errors;
         });
     }
-    savedSeqs.ary.sort(({ seq: a }, { seq: b }) => isBetterThan(a.status, b.status) ? 1 : -1)
+    savedSeqs.ary.sort((a, b) => {
+        const ord = compareStatus(b.seq.status, a.seq.status)
+        return ord != 0 ? ord : a.key - b.key
+    });
 });
 function saveSequence() {
     const queue = previewSolver.value
@@ -165,9 +168,11 @@ function saveSequence() {
 }
 function pushSequence(seq: Sequence) {
     const key = savedSeqs.maxid++;
-    let pos = savedSeqs.ary.findIndex(v => isBetterThan(seq.status, v.seq.status))
-    if (pos = -1) pos = savedSeqs.ary.length;
-    savedSeqs.ary.splice(pos, 0, { key, seq })
+    savedSeqs.ary.push({ key, seq });
+    savedSeqs.ary.sort((a, b) => {
+        const ord = compareStatus(b.seq.status, a.seq.status)
+        return ord != 0 ? ord : a.key - b.key
+    });
 }
 
 const displayedStatus = computed(() => {
@@ -176,10 +181,11 @@ const displayedStatus = computed(() => {
         : activeSeq.status
 })
 watch(displayedStatus, (status) => {
-    const cond1 = savedSeqs.ary.length == 0 && status.progress == status.recipe.difficulty;
-    const cond2 = savedSeqs.ary.length > 0 && isBetterThan(status, savedSeqs.ary[0].seq.status);
-    if (cond1 || cond2)
-        saveSequence()
+    if (status.progress < status.recipe.difficulty)
+        return;
+    if (savedSeqs.ary.find(v => compareStatus(v.seq.status, status) >= 0) != undefined)
+        return;
+    saveSequence()
 })
 
 async function readSolver(s: Status) {
