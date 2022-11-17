@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import { useDark, usePreferredLanguages } from '@vueuse/core'
+import { useDark, usePreferredLanguages } from '@vueuse/core';
+import { Dir, readTextFile } from '@tauri-apps/api/fs';
 import { ElConfigProvider } from 'element-plus';
 import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
@@ -21,6 +22,15 @@ watchEffect(() => {
   selectLanguage(lang.value)
   console.log("language switched to", lang.value)
 })
+
+async function loadSetting() {
+  try {
+    const str = await readTextFile("settings.json", { dir: Dir.App })
+    store.commit('loadSettings', JSON.parse(str))
+  } catch (err) {
+  }
+}
+loadSetting()
 
 </script>
 
