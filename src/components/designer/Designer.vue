@@ -27,6 +27,7 @@ import InitialQualitySetting from './InitialQualitySetting.vue'
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import { useFluent } from 'fluent-vue';
+import { result } from 'lodash';
 
 interface Slot {
     id: number;
@@ -113,19 +114,6 @@ function clearSeq() {
     activeSeq.slots = [];
     activeSeq.maxid = 0;
 }
-watch([initStatus, actions], async ([s, a]) => {
-    try {
-        let result = await simulate(s, a);
-        activeSeq.status = result.status;
-        activeSeq.errors = result.errors;
-    } catch (err) {
-        ElMessage({
-            type: "error",
-            showClose: true,
-            message: err as string,
-        });
-    }
-});
 
 // Solver result
 const solverResult = reactive<Sequence>({
@@ -136,24 +124,34 @@ const solverResult = reactive<Sequence>({
 });
 watch(() => activeSeq.status, readSolver);
 
-
 // Saved Sequence
 const savedSeqs = reactive<{ maxid: number, ary: { key: number, seq: Sequence }[] }>({ maxid: 0, ary: [] });
-watch(initStatus, (newInitStatus) => {
-    // recalculate all results of savedQueues
-    for (let { seq } of savedSeqs.ary) {
-        simulate(
+watch(initStatus, async (newInitStatus) => {
+    // re-simulate all savedQueues
+    const results = await Promise.all(
+        savedSeqs.ary.map(({ seq }) => simulate(
             newInitStatus,
             seq.slots.map((x) => x.action)
-        ).then((result) => {
-            seq.status = result.status;
-            seq.errors = result.errors;
-        });
-    }
+        ))
+    )
+    savedSeqs.ary.forEach(({ seq }, i) => {
+        seq.status = results[i].status;
+        seq.errors = results[i].errors;
+    })
     savedSeqs.ary.sort((a, b) => {
         const ord = compareStatus(b.seq.status, a.seq.status)
         return ord != 0 ? ord : a.key - b.key
     });
+
+    // re-simulate activeSeq
+    let result = await simulate(newInitStatus, actions.value);
+    activeSeq.status = result.status;
+    activeSeq.errors = result.errors;
+});
+watch(actions, async (a) => {
+    let result = await simulate(initStatus.value, a);
+    activeSeq.status = result.status;
+    activeSeq.errors = result.errors;
 });
 function saveSequence() {
     const queue = previewSolver.value
