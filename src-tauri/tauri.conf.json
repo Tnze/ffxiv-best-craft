@@ -65,7 +65,7 @@
                 "scope": [
                     "$APP",
                     "$APP/gearsets.json",
-                    "$APP/automation.json"
+                    "$APP/settings.json"
                 ]
             },
             "dialog": {

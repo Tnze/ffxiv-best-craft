@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Jobs } from '../../Craft';
 import { useStore } from '../../store';
 
 const store = useStore()
@@ -11,8 +10,7 @@ const attributes = computed(() => {
         return store.state.gearsets.default
     const special = store.state.gearsets.special.find(v => v.name == store.state.designer!.job)
     return special?.value ?? store.state.gearsets.default
-}
-)
+})
 </script>
 
 <template>

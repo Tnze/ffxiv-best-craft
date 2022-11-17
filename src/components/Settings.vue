@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useFluent } from 'fluent-vue'
 import { getName, getVersion, getTauriVersion } from '@tauri-apps/api/app'
@@ -36,9 +36,14 @@ const onCheckUpdateClick = async () => {
     }
 }
 
-const languageChanged = (newLang: string) => {
-    store.commit('selectLanguage', newLang)
-}
+const languageStore = computed({
+    get() {
+        return store.state.settings.language;
+    },
+    set(v: string) {
+        store.commit('selectLanguage', v)
+    }
+})
 
 </script>
 
@@ -51,7 +56,7 @@ const languageChanged = (newLang: string) => {
         <el-main>
             <el-form class="setting-page" :model="store.state.settings" label-width="120px">
                 <el-form-item :label="$t('language')">
-                    <el-select v-model="store.state.settings.language" @change="languageChanged">
+                    <el-select v-model="languageStore">
                         <el-option :label="$t('system-lang')" value="system" />
                         <el-option v-for="[v, name] in languages" :label="name" :value="v" />
                     </el-select>

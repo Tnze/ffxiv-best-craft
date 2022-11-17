@@ -49,6 +49,9 @@ export const store = createStore<State>({
         }
     },
     mutations: {
+        loadSettings(state, localSettings) {
+            state.settings = localSettings
+        },
         selectLanguage(state, newLang) {
             state.settings.language = newLang
         },
@@ -75,7 +78,8 @@ export const store = createStore<State>({
         }) {
             state.designer = payload
         }
-    }
+    },
+    strict: import.meta.env.DEV,
 })
 
 export function useStore() {
