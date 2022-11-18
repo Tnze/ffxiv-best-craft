@@ -11,6 +11,7 @@ use std::{
     sync::Arc,
 };
 
+use anyhow::anyhow;
 use axum::{http::StatusCode, routing, Json, Router};
 use ffxiv_crafting::{Actions, Attributes, CastActionError, Recipe, Status};
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
@@ -434,6 +435,19 @@ fn main() {
             rika_solve,
             start_http_server,
         ])
+        .setup(|app| {
+            let window = app.get_window("main").unwrap();
+            window.set_decorations(true)?;
+            #[cfg(target_os = "macos")]
+            window_vibrancy::apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
+                .map_err(|e| anyhow!("set vibrancy error: {}", e))?;
+
+            #[cfg(target_os = "windows")]
+            window_vibrancy::apply_mica(&window)
+                .map_err(|e| anyhow!("set acrylic error: {}", e))?;
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .map_err(|err| {
             msgbox::create(
