@@ -53,6 +53,7 @@ const disableAutomation = ref(true)
 <style>
 .el-menu {
     height: 100%;
+    border: none;
 }
 </style>
 
