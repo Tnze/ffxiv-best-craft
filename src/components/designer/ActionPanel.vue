@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElPopover } from 'element-plus';
 import { reactive, watchEffect } from 'vue'
 import Action from './Action.vue'
 import { Jobs, Actions, Status, allowedList, craftPointsList } from '../../Craft'

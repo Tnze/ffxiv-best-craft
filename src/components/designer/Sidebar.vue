@@ -1,13 +1,6 @@
 <script setup lang="ts">
-import {
-    BottomRight,
-    Close,
-    Cpu,
-    View,
-    Upload,
-    DocumentAdd,
-    Folder
-} from "@element-plus/icons-vue";
+import { ElTooltip, ElIcon } from "element-plus";
+import { BottomRight, Close, Cpu, View, Upload, DocumentAdd, Folder } from "@element-plus/icons-vue";
 
 const props = defineProps<{
     previewSolver: boolean;

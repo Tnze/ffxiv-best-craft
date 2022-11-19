@@ -2,14 +2,14 @@
 import { ref, watchEffect } from 'vue';
 import { useDark, usePreferredLanguages } from '@vueuse/core';
 import { Dir, readTextFile } from '@tauri-apps/api/fs';
-import { ElConfigProvider } from 'element-plus';
+import { ElContainer, ElAside, ElMain, ElConfigProvider } from 'element-plus';
 import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
 
 import Menu from './components/Menu.vue';
 import { useStore } from './store';
 
-useDark()
+const isDark = useDark()
 const store = useStore()
 const preferredLang = usePreferredLanguages()
 
@@ -36,7 +36,7 @@ loadSetting()
 
 <template>
   <el-container>
-    <el-aside width="64px">
+    <el-aside width="130px">
       <Menu></Menu>
     </el-aside>
     <el-main>
@@ -66,5 +66,25 @@ loadSetting()
 
 .el-main {
   padding: 0;
+}
+
+.el-menu:not(.el-menu--collapse) {
+  width: 130px;
+  min-height: 400px;
+}
+
+:root {
+  --el-color-primary: rgb(11, 91, 11);
+  /* --el-bg-color: transparent; */
+  --el-fill-color-blank: transparent;
+}
+
+:root.dark {
+  /* --el-bg-color: transparent; */
+}
+
+.el-dialog {
+  -webkit-backdrop-filter: blur(150px);
+  backdrop-filter: blur(150px);
 }
 </style>

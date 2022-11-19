@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElScrollbar, ElCollapse, ElCollapseItem, ElButtonGroup, ElButton, ElPopover, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage } from 'element-plus'
 import { Actions, Status } from "../../Craft"
 import { create_solver, destroy_solver, rika_solve } from '../../Solver'
 import { useFluent } from 'fluent-vue';

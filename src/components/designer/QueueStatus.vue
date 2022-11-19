@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElTooltip, ElIcon } from 'element-plus';
 import { SuccessFilled, WarningFilled } from '@element-plus/icons-vue'
 import { computed } from 'vue';
 import { Status } from '../../Craft';

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElDialog, ElFormItem, ElInputNumber, ElTable, ElTableColumn, ElButton, ElButtonGroup } from 'element-plus';
 import { ArrowUp } from '@element-plus/icons-vue';
 import { computed, reactive, ref, watch, watchEffect } from 'vue';
 import { Item, itemInfo, ItemWithAmount, Recipe, recipesIngredientions } from '../../Craft';
