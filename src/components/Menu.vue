@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { ElMenu, ElMenuItem, ElIcon } from 'element-plus'
 import {
     Notebook,
     Suitcase,
     Edit,
-    MagicStick,
     Setting,
     Box,
 } from '@element-plus/icons-vue'
@@ -16,7 +16,7 @@ const disableAutomation = ref(true)
 </script>
 
 <template>
-    <el-menu :default-active="router.currentRoute.value.path" :router="true" :collapse="true">
+    <el-menu :default-active="router.currentRoute.value.path" :router="true" :collapse="false">
         <el-menu-item index="/gearsets">
             <el-icon>
                 <suitcase />

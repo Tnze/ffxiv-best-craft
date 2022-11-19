@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect, reactive } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElInput, ElInputNumber, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
 import { Jobs, Recipe, newRecipe, recipeTable, RecipeRow, Item, itemInfo } from '../../Craft'
 import { useRouter } from 'vue-router';
@@ -35,7 +35,6 @@ watchEffect(async () => {
 })
 
 
-const openFilter = ref(false)
 const openCustomlizer = ref(false)
 
 const selectRecipeRow = async (row: RecipeRow) => {

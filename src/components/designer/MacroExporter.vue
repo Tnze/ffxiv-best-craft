@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ElMessage } from 'element-plus'
+import { ElSpace, ElCard, ElMessage } from 'element-plus'
 import { writeText } from '@tauri-apps/api/clipboard'
 import { Actions } from '../../Craft';
 import { useFluent } from 'fluent-vue';

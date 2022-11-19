@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElTable } from 'element-plus';
+import { ElSpace, ElScrollbar, ElTable, ElTableColumn, ElInputNumber } from 'element-plus';
 import { ref, watchEffect } from 'vue';
 import { recipesIngredientions, ItemWithAmount } from '../../Craft';
 import { useStore } from '../../store';

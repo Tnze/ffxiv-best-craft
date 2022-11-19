@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElContainer, ElHeader, ElMain, ElTabs, ElTabPane, ElForm, ElFormItem, ElInputNumber, ElSwitch } from 'element-plus'
 import { createDir, readTextFile, writeFile, Dir } from '@tauri-apps/api/fs'
 import { ref, onMounted, onUpdated, computed } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router';

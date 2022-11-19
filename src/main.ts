@@ -3,9 +3,9 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import { store, key } from './store'
 import { fluent } from './fluent'
 
+import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'element-plus/es/components/message/style/css'
 import 'element-plus/es/components/message-box/style/css'
-import 'element-plus/theme-chalk/dark/css-vars.css'
 
 import App from './App.vue'
 

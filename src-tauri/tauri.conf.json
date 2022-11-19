@@ -78,8 +78,8 @@
         "windows": [
             {
                 "title": "BestCraft",
-                "width": 950,
-                "height": 700,
+                "width": 1152,
+                "height": 757,
                 "resizable": true,
                 "fullscreen": false,
                 "transparent": true,

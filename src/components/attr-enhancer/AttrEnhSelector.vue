@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElTable } from 'element-plus';
+import { ElTag, ElTable, ElTableColumn } from 'element-plus';
 import { ref } from 'vue'
 import meal from '../../assets/data/meal.json'
 import potions from '../../assets/data/potions.json'

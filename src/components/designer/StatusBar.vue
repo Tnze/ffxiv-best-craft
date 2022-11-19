@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ElProgress, ElLink } from 'element-plus';
 import { computed } from 'vue'
 import { Attributes, Conditions, Status } from '../../Craft';
 import Condition from './Condition.vue'
