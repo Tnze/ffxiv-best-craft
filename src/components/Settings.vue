@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElButton, ElLink, ElMessage } from 'element-plus'
+import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElMessage } from 'element-plus'
 import { useFluent } from 'fluent-vue'
 import { getName, getVersion, getTauriVersion } from '@tauri-apps/api/app'
 import { checkUpdate } from '@tauri-apps/api/updater'

@@ -27,7 +27,7 @@ const pagination = reactive({
     Page: 1,
     PageTotal: 1
 })
-const displayTable = ref<RecipeRow[] | null>([])
+const displayTable = ref<RecipeRow[]>([])
 watchEffect(async () => {
     let [list, totalPages] = await recipeTable(pagination.Page, searchText.value)
     displayTable.value = list
@@ -125,7 +125,7 @@ const customRecipe = ref({
                     <el-button :icon="EditPen" @click="openCustomlizer = true" />
                 </template>
             </el-input>
-            <el-table v-loading="displayTable == null" :element-loading-text="$t('please-wait')" highlight-current-row
+            <el-table :element-loading-text="$t('please-wait')" highlight-current-row
                 @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
                 <el-table-column prop="id" label="ID" width="100" />
                 <el-table-column prop="rlv" :label="$t('recipe-level')" width="100" />
@@ -161,6 +161,7 @@ const customRecipe = ref({
 
 .el-table {
     user-select: none;
+    --el-table-header-bg-color: transparent;
 }
 
 .el-pagination {

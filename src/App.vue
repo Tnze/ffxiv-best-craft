@@ -36,7 +36,7 @@ loadSetting()
 
 <template>
   <el-container>
-    <el-aside width="130px">
+    <el-aside width="150px">
       <Menu></Menu>
     </el-aside>
     <el-main>
@@ -69,22 +69,17 @@ loadSetting()
 }
 
 .el-menu:not(.el-menu--collapse) {
-  width: 130px;
-  min-height: 400px;
+  width: 150px;
 }
 
 :root {
   --el-color-primary: rgb(11, 91, 11);
   /* --el-bg-color: transparent; */
-  --el-fill-color-blank: transparent;
+  /* --el-fill-color-blank: transparent; */
 }
 
 :root.dark {
+  --el-color-primary: rgb(49, 180, 49);
   /* --el-bg-color: transparent; */
-}
-
-.el-dialog {
-  -webkit-backdrop-filter: blur(150px);
-  backdrop-filter: blur(150px);
 }
 </style>
