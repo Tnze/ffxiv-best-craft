@@ -10,9 +10,10 @@ import { selectLanguage } from './fluent'
 import Menu from './components/Menu.vue';
 import { useStore } from './store';
 
-const isDark = useDark()
+useDark()
 const store = useStore()
 const preferredLang = usePreferredLanguages()
+const bgColor = useCssVar('--app-bg-color', ref(null))
 
 const lang = ref('zh-CN')
 watchEffect(() => {
@@ -24,17 +25,14 @@ watchEffect(() => {
   console.log("language switched to", lang.value)
 })
 
-async function loadSetting() {
-  try {
-    const str = await readTextFile("settings.json", { dir: Dir.App })
-    store.commit('loadSettings', JSON.parse(str))
-  } catch (err) {
-  }
-}
-loadSetting()
+readTextFile("settings.json", { dir: Dir.App }).then(str => {
+  store.commit('loadSettings', JSON.parse(str))
+}).catch(_err => { })
 
-const bgColor = useCssVar('--app-bg-color', ref(null))
-platform().then(v => bgColor.value = ['darwin', 'win32'].includes(v) ? 'transparent' : 'white')
+platform().then(pf => {
+  console.log("platform:", pf)
+  bgColor.value = ['darwin', 'win32'].includes(pf) ? 'transparent' : 'white'
+})
 
 </script>
 
