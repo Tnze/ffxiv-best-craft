@@ -4,7 +4,7 @@ use super::solver::{
     Solver, SolverSlot, MAX_GREAT_STRIDES, MAX_INNER_QUIET, MAX_INNOVATION, MAX_MUSCLE_MEMORY,
     MAX_VENERATION,
 };
-use ffxiv_crafting::{Attributes, Recipe, Actions, Status};
+use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
 
 const SYNTH_SKILLS: [Actions; 9] = [
     Actions::BasicSynthesis,
@@ -279,7 +279,6 @@ where
             [s.buffs.veneration as usize][s.buffs.muscle_memory as usize]
             [s.buffs.manipulation as usize][s.buffs.wast_not as usize]
     }
-
 }
 
 impl<const MN: usize, const WN: usize> Solver for ProgressSolver<MN, WN>
