@@ -5,11 +5,9 @@
 #![feature(generic_const_exprs)]
 #![feature(async_closure)]
 
-use std::{
-    collections::{hash_map::Entry, BTreeMap, HashMap},
-    net::SocketAddr,
-    sync::Arc,
-};
+use std::collections::{hash_map::Entry, BTreeMap, HashMap};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::{net::SocketAddr, sync::Arc};
 
 use axum::{http::StatusCode, routing, Json, Router};
 use ffxiv_crafting::{Actions, Attributes, CastActionError, Recipe, Status};
@@ -201,6 +199,7 @@ struct AppState {
     solver_list: Mutex<HashMap<ordinary_solver::SolverHash, Option<Box<dyn Solver + Send + Sync>>>>,
     db: OnceCell<DatabaseConnection>,
     shutdown_signal: Mutex<Option<oneshot::Sender<()>>>,
+    should_be_transparent: AtomicBool,
 }
 
 impl AppState {
@@ -209,6 +208,7 @@ impl AppState {
             solver_list: Mutex::new(HashMap::new()),
             db: OnceCell::new(),
             shutdown_signal: Mutex::new(None),
+            should_be_transparent: AtomicBool::new(false),
         }
     }
 
@@ -349,6 +349,10 @@ async fn destroy_solver(
     }
 }
 
+#[tauri::command]
+fn should_be_transparent(app_state: tauri::State<AppState>) -> bool {
+    app_state.should_be_transparent.load(Ordering::SeqCst)
+}
 #[tauri::command(async)]
 async fn start_http_server(
     addr: String,
@@ -432,19 +436,38 @@ fn main() {
             read_solver,
             destroy_solver,
             rika_solve,
+            should_be_transparent,
             start_http_server,
         ])
         .setup(|app| {
             let window = app.get_window("main").unwrap();
             window.set_decorations(true)?;
 
+            let state = app.state::<AppState>();
+
+            #[allow(unused_mut)]
+            let mut sbt = false;
             #[cfg(target_os = "macos")]
-            window_vibrancy::apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
-                .map_err(|e| anyhow::anyhow!("set vibrancy error: {}", e))?;
+            {
+                use window_vibrancy::NSVisualEffectMaterial;
+                sbt = window_vibrancy::apply_vibrancy(
+                    &window,
+                    NSVisualEffectMaterial::HudWindow,
+                    None,
+                    None,
+                )
+                .is_ok();
+            }
 
             #[cfg(target_os = "windows")]
-            window_vibrancy::apply_mica(&window)
-                .map_err(|e| anyhow::anyhow!("set acrylic error: {}", e))?;
+            {
+                sbt = window_vibrancy::apply_mica(&window).is_ok();
+            }
+
+            state
+                .inner()
+                .should_be_transparent
+                .store(sbt, Ordering::SeqCst);
 
             Ok(())
         })

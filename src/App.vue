@@ -2,7 +2,7 @@
 import { ref, watchEffect } from 'vue';
 import { useDark, usePreferredLanguages, useCssVar } from '@vueuse/core';
 import { Dir, readTextFile } from '@tauri-apps/api/fs';
-import { platform } from '@tauri-apps/api/os'
+import { invoke } from "@tauri-apps/api/tauri";
 import { ElContainer, ElAside, ElMain, ElConfigProvider } from 'element-plus';
 import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
@@ -26,12 +26,11 @@ watchEffect(() => {
 })
 
 readTextFile("settings.json", { dir: Dir.App }).then(str => {
-  store.commit('loadSettings', JSON.parse(str))
+  return store.commit('loadSettings', JSON.parse(str))
 }).catch(_err => { })
 
-platform().then(pf => {
-  console.log("platform:", pf)
-  bgColor.value = ['darwin', 'win32'].includes(pf) ? 'transparent' : 'white'
+invoke('should_be_transparent').then(v => {
+  bgColor.value = v ? 'transparent' : 'white'
 })
 
 </script>
