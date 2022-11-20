@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import { useDark, usePreferredLanguages } from '@vueuse/core';
+import { useDark, usePreferredLanguages, useCssVar } from '@vueuse/core';
 import { Dir, readTextFile } from '@tauri-apps/api/fs';
+import { platform } from '@tauri-apps/api/os'
 import { ElContainer, ElAside, ElMain, ElConfigProvider } from 'element-plus';
 import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
@@ -32,6 +33,9 @@ async function loadSetting() {
 }
 loadSetting()
 
+const bgColor = useCssVar('--app-bg-color', ref(null))
+platform().then(v => bgColor.value = ['darwin', 'win32'].includes(v) ? 'transparent' : 'white')
+
 </script>
 
 <template>
@@ -58,6 +62,7 @@ loadSetting()
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
   margin: 0;
+  background: var(--app-bg-color);
 }
 
 .el-container {
@@ -75,7 +80,7 @@ loadSetting()
 :root {
   --el-color-primary: rgb(11, 91, 11);
   /* --el-bg-color: transparent; */
-  /* --el-fill-color-blank: transparent; */
+  --el-fill-color-blank: transparent;
 }
 
 :root.dark {
