@@ -11,7 +11,6 @@ use std::{
     sync::Arc,
 };
 
-use anyhow::anyhow;
 use axum::{http::StatusCode, routing, Json, Router};
 use ffxiv_crafting::{Actions, Attributes, CastActionError, Recipe, Status};
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
@@ -438,23 +437,18 @@ fn main() {
         .setup(|app| {
             let window = app.get_window("main").unwrap();
             window.set_decorations(true)?;
+
             #[cfg(target_os = "macos")]
             window_vibrancy::apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None)
-                .map_err(|e| anyhow!("set vibrancy error: {}", e))?;
+                .map_err(|e| anyhow::anyhow!("set vibrancy error: {}", e))?;
 
             #[cfg(target_os = "windows")]
             window_vibrancy::apply_mica(&window)
-                .map_err(|e| anyhow!("set acrylic error: {}", e))?;
+                .map_err(|e| anyhow::anyhow!("set acrylic error: {}", e))?;
 
             Ok(())
         })
         .run(tauri::generate_context!())
-        .map_err(|err| {
-            msgbox::create(
-                "错误",
-                format!("error while running tauri application: {}", err).as_str(),
-                msgbox::IconType::Error,
-            )
-        })
+        .map_err(|err| msgbox::create("Error", err.to_string().as_str(), msgbox::IconType::Error))
         .unwrap();
 }
