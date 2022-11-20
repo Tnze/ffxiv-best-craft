@@ -1,15 +1,15 @@
 {
-  "version": "v0.5.9",
-  "notes": "-优化宏列表排序功能\n -修复切换配方引起误插入问题\n -更新依赖项",
-  "pub_date": "2022-11-18T13:36:27+08:00",
+  "version": "v0.6.1",
+  "notes": "- 美化用户界面",
+  "pub_date": "2022-11-20T10:44:25+08:00",
   "platforms": {
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnQxOE9VaE9qb2crNVJMdU9vbnlJVDJBN1puUWdBVmlXbW1tamc1Q3NVdXlDd3VCMHhlQ044VkVIY0dIalFWNU4zWnVEbXcwemV1UFZ2cUR6QTE5MGd3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY4NzQ5MjA0CWZpbGU6YmVzdC1jcmFmdF8wLjUuOV9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKQVhzVlFKSXJlZDVEemlmOHRSVDJ0Z3AyQ1FKZS9GZlRRRmtSWmNtRDUzMmZUcFd6ZU5ZdHVHTVg3SjJnM0Z1RUhkR2pjQkhOWVplaGxwSnBFSEE4QlE9PQo=",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.9/best-craft_0.5.9_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnZzREdqZCtGVTBqenBValBzSExudndSdmQ0V0lvYzF6RllpQVo1bFptZXZXa2RWVzIyWDJGeEErcEM0amM3NmV2NmxDaXlpZkhSbmxxbFBnQS9lVUFNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY4OTEyMTY4CWZpbGU6YmVzdC1jcmFmdF8wLjYuMV9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKQ3pGcG4zZTZBcjF5S3RsRzZCTW0rNkNzeFRDa3h2dUZ4V0RzNVVjWmVJbFZnZDh6eFlKbGptMkVYMDdmTWptQnJUSXdCa1ViZUZHT0dvUUtmWXBlQ1E9PQo=",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.1/best-craft_0.6.1_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm1ZOVBWV3pSd3FaMDlVWlJ5WlFrYzBuc1F5Y0ZNUG5pOXc1T0V1SDJDeGNiNkV6ejlyNXJtTE9NMXc1WkhPVGRNbWVSVFpBN1lLRVJxSXJKSFRIYkE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY4NzQ3Nzc5CWZpbGU6QmVzdENyYWZ0XzAuNS45X3g2NF96aC1DTi5tc2kuemlwCmEzSXpWUGc2ZWhvZ2d2eU1QczRDNXVQc2NMamVRWnRwSFdYa3E2TDMvK1EyZ3Mzcm1wTUNScmRBZWZZZzU3bFhhYldZcW5tM0RIVm4zd1d5QkladkNnPT0K",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.5.9/BestCraft_0.5.9_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnBYNmVMRm9XYXZDYlQ2RUM4a1pvUUt0NWw4eXg1YjB4ZC85Mm5TcXEwTFByNFhSNkU2aS9EdmVKYUNteGVtT3FsRkQvZTUyVk05eTNlSFprREJCWVFNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY4OTEyMDk1CWZpbGU6QmVzdENyYWZ0XzAuNi4xX3g2NF96aC1DTi5tc2kuemlwClhFUVFiYldPNDJWeTJNaUlXWUEwQ3lMRXBnbkpncEhlcXUxUURrMVlrQ3lBaEdCTi9qYlFuenZCSWN3aDZpcU53UlB0MkEvbk9PdEtSbG4zYkd4RUR3PT0K",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.1/BestCraft_0.6.1_x64_zh-CN.msi.zip"
     }
   }
 }
