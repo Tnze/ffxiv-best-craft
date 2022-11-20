@@ -119,7 +119,7 @@ default = Default
 inherit-from-default = Inherit from default
 </fluent>
 
-<fluent locale="en-US">
+<fluent locale="ja-JP">
 attributes = 属性
 default = デフォルト
 inherit-from-default = デフォルトから継承
