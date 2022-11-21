@@ -445,7 +445,7 @@ fn main() {
 
             let state = app.state::<AppState>();
 
-            #[allow(unused_mut)]
+            #[allow(unused_mut, unused_assignments)]
             let mut sbt = false;
             #[cfg(target_os = "macos")]
             {
