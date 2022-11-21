@@ -1,15 +1,11 @@
 {
-  "version": "v0.6.1",
-  "notes": "- 美化用户界面",
-  "pub_date": "2022-11-20T10:44:25+08:00",
+  "version": "v0.6.2",
+  "notes": "修复Win10系统下深色模式白色背景的问题",
+  "pub_date": "2022-11-21T23:22:19+08:00",
   "platforms": {
-    "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnZzREdqZCtGVTBqenBValBzSExudndSdmQ0V0lvYzF6RllpQVo1bFptZXZXa2RWVzIyWDJGeEErcEM0amM3NmV2NmxDaXlpZkhSbmxxbFBnQS9lVUFNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY4OTEyMTY4CWZpbGU6YmVzdC1jcmFmdF8wLjYuMV9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKQ3pGcG4zZTZBcjF5S3RsRzZCTW0rNkNzeFRDa3h2dUZ4V0RzNVVjWmVJbFZnZDh6eFlKbGptMkVYMDdmTWptQnJUSXdCa1ViZUZHT0dvUUtmWXBlQ1E9PQo=",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.1/best-craft_0.6.1_amd64.AppImage.tar.gz"
-    },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnBYNmVMRm9XYXZDYlQ2RUM4a1pvUUt0NWw4eXg1YjB4ZC85Mm5TcXEwTFByNFhSNkU2aS9EdmVKYUNteGVtT3FsRkQvZTUyVk05eTNlSFprREJCWVFNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY4OTEyMDk1CWZpbGU6QmVzdENyYWZ0XzAuNi4xX3g2NF96aC1DTi5tc2kuemlwClhFUVFiYldPNDJWeTJNaUlXWUEwQ3lMRXBnbkpncEhlcXUxUURrMVlrQ3lBaEdCTi9qYlFuenZCSWN3aDZpcU53UlB0MkEvbk9PdEtSbG4zYkd4RUR3PT0K",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.1/BestCraft_0.6.1_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5NaE1tRW9YL1RxdTBhRm1UU0ptUWVlbFlrdVZXejlHeCt5c2FMYUNhaC8wTS9MRlpiQ25UQU5uajEvRDBsMU9oL0Q0bG1NcmpieDhWTWlnRWh5aXdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY5MDQ0MDE4CWZpbGU6QmVzdENyYWZ0XzAuNi4yX3g2NF96aC1DTi5tc2kuemlwClB0Uk9HWlNnRGlGY0ZxSmE1djkzRlUva1A2WnVJUnE4Q0RQWUpzM0pvTEx1dnZKNzEzaE5xUmFtRHl3eUpmYWNIbm13YmJCOTNWWU9KT3NOZU8rZUR3PT0K",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.2/BestCraft_0.6.2_x64_zh-CN.msi.zip"
     }
   }
 }
