@@ -30,7 +30,7 @@ readTextFile("settings.json", { dir: Dir.App }).then(str => {
 }).catch(_err => { })
 
 invoke('should_be_transparent').then(v => {
-  bgColor.value = v ? 'transparent' : 'white'
+  bgColor.value = v ? 'transparent' : 'var(--el-bg-color)'
 })
 
 </script>
