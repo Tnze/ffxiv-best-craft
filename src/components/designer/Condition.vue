@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import { useDark } from '@vueuse/core';
 import { Conditions } from '../../Craft'
 
 const props = defineProps<{
     cond: Conditions
 }>();
 
+const dark = useDark()
 
 </script>
 
 <template>
-    <span id="icon" :class="props.cond.toLowerCase()">{{ cond == Conditions.Normal ? "○" : "●" }}</span>
+    <span id="icon" :class="props.cond.toLowerCase()">{{ cond == Conditions.Normal && !dark ? "○" : "●" }}</span>
     <br />
     <span id="text">{{ $t(cond) }}</span>
 </template>
@@ -25,9 +27,9 @@ const props = defineProps<{
     vertical-align: middle;
 }
 
-.normal {
-    color: black;
-}
+/* .normal {
+    color: var(--el-text-color-primary);
+} */
 
 .good {
     color: red;
