@@ -881,9 +881,9 @@ dependencies = [
 
 [[package]]
 name = "ffxiv-crafting"
-version = "6.1.0"
+version = "6.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "309592c95dfd8921d073e4935f570f01a1a67786ca6b41e2d64732930123730c"
+checksum = "42c5f65c739febf83398e680b9f44bf07bedc1ca815cba2350ec94756c7d244c"
 dependencies = [
  "serde",
 ]
@@ -4364,7 +4364,8 @@ checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 [[package]]
 name = "window-vibrancy"
 version = "0.3.2"
-source = "git+https://github.com/tauri-apps/window-vibrancy#f3afebba173af4a7212d3bfe0f04c03fc256964f"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2f762d9cc392fb85e6b1b5eed1ef13d73fed5149a5cbb017a7137497d14ef612"
 dependencies = [
  "cocoa",
  "objc",

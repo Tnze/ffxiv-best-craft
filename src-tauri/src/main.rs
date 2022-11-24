@@ -18,6 +18,7 @@ use tauri::Manager;
 use tokio::sync::{oneshot, Mutex, OnceCell};
 
 mod db;
+mod hard_recipe;
 mod ordinary_solver;
 mod preprogress_solver;
 mod rika_solver;
@@ -377,21 +378,21 @@ async fn start_http_server(
     }
     let action = async move |Json(payload): Json<ActionStep>| {
         println!("{:?}", payload);
-        match ffxiv_crafting::data::action_table(payload.action) {
-            Some(sk) => app_handle
-                .emit_all(
-                    "action-step",
-                    ActionStepJS {
-                        action: sk,
-                        progress: payload.progress,
-                        quality: payload.quality,
-                        durability: payload.durability,
-                        condition: payload.condition,
-                    },
-                )
-                .unwrap(),
-            None => return (StatusCode::BAD_REQUEST, ()),
+        let Some(sk) = ffxiv_crafting::data::action_table(payload.action) else {
+            return (StatusCode::BAD_REQUEST, ())
         };
+        app_handle
+            .emit_all(
+                "action-step",
+                ActionStepJS {
+                    action: sk,
+                    progress: payload.progress,
+                    quality: payload.quality,
+                    durability: payload.durability,
+                    condition: payload.condition,
+                },
+            )
+            .unwrap();
         (StatusCode::NO_CONTENT, ())
     };
 
