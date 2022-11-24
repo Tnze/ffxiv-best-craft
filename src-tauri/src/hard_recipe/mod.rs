@@ -10,20 +10,18 @@ pub struct RedstoneSuan611;
 impl Solver for RedstoneSuan611 {
     fn run(s: &Status) -> (String, Vec<Actions>) {
         let mut sb = String::new();
-        let mut action = match s {
-            s if s.step == 0 || s.buffs.muscle_memory > 0 => {
-                sb.push_str(format!("[Phase 1] 坚信起手，").as_str());
-                vec![match s.step {
-                    0 => Actions::MuscleMemory,
-                    1 => Actions::Veneration,
-                    _ => Actions::RapidSynthesis,
-                }]
+        let action = match s {
+            s if s.step == 0 => vec![Actions::MuscleMemory],
+            s if s.step == 1 => vec![Actions::Veneration],
+            s if s.buffs.muscle_memory > 0 => {
+                sb.push_str(format!("[Phase 1] 坚信内打高速，").as_str());
+                vec![Actions::RapidSynthesis]
             }
-            s if s.progress > 0 && s.progress < 7198 => {
-                sb.push_str(format!("[Phase 2] 崇敬高速、进展{}，", s.progress).as_str());
+            s if s.progress < 7198 => {
+                sb.push_str(format!("[Phase 2] 崇敬内打高速，").as_str());
                 if s.durability < 20 {
                     sb.push_str(format!("耐久 < 20，").as_str());
-                    vec![match s.condition {
+                    let action = match s.condition {
                         Good => {
                             sb.push_str(format!("红球秘诀，").as_str());
                             Actions::TricksOfTheTrade
@@ -33,16 +31,23 @@ impl Solver for RedstoneSuan611 {
                             Actions::PrudentSynthesis
                         }
                         _ => {
-                            if s.buffs.manipulation == 0 {
+                            if s.buffs.manipulation <= 1 {
                                 Actions::Manipulation
                             } else if s.durability <= s.calc_durability(10) {
                                 sb.push_str(format!("耐久不够高速、掌握层数有剩下，").as_str());
+                                // match s.is_action_allowed(Actions::CarefulObservation) {
+                                //     Ok(_) => Actions::CarefulObservation,
+                                //     Err(_) => Actions::Observe,
+                                // }
                                 Actions::Observe
+                            } else if s.progress >= 5710 {
+                                Actions::BasicSynthesis
                             } else {
                                 Actions::RapidSynthesis
                             }
                         }
-                    }]
+                    };
+                    vec![action]
                 } else {
                     sb.push_str(format!("耐久 >= 20，").as_str());
 
@@ -52,7 +57,13 @@ impl Solver for RedstoneSuan611 {
                         Malleable if s.buffs.veneration > 0 => {
                             vec![Actions::FinalAppraisal, Actions::RapidSynthesis]
                         }
-                        Malleable | _ if s.buffs.veneration > 0 => vec![Actions::RapidSynthesis],
+                        Malleable | _ if s.buffs.veneration > 0 => {
+                            vec![if s.progress >= 5710 {
+                                Actions::BasicSynthesis
+                            } else {
+                                Actions::RapidSynthesis
+                            }]
+                        }
                         _ => vec![Actions::Veneration],
                     }
                 }
@@ -65,14 +76,17 @@ impl Solver for RedstoneSuan611 {
                 sb.push_str(format!("额外耐久：{ext_du}，").as_str());
 
                 if s.quality == 0 && s.buffs.manipulation == 0 {
+                    sb.push_str(format!("直接使用掌握后进入本阶段，").as_str());
                     vec![Actions::Manipulation]
                 } else if ext_du > 0 {
+                    sb.push_str(format!("大于0、改革-俭约加工至10内静，").as_str());
                     if s.buffs.innovation > 0 {
                         vec![Actions::PrudentTouch]
                     } else {
                         vec![Actions::Innovation]
                     }
                 } else if s.buffs.innovation == 0 {
+                    sb.push_str(format!("无改革buff，").as_str());
                     vec![match s.condition {
                         Good => Actions::TricksOfTheTrade,
                         Sturdy if s.buffs.inner_quiet == 0 => Actions::PrudentTouch,
@@ -80,6 +94,7 @@ impl Solver for RedstoneSuan611 {
                         _ => Actions::Innovation,
                     }]
                 } else {
+                    sb.push_str(format!("有改革buff，").as_str());
                     vec![match s.condition {
                         Good if s.calc_durability(10) < s.durability => Actions::PreciseTouch,
                         Good => Actions::TricksOfTheTrade,
@@ -120,7 +135,7 @@ impl Solver for RedstoneSuan611 {
             },
             _ if s.buffs.inner_quiet == 10 => {
                 sb.push_str(format!("[Phase 4] 推满加工条，").as_str());
-                vec![match s.condition {
+                let action = match s.condition {
                     Good if s.buffs.innovation == 0 => Actions::TricksOfTheTrade,
                     _ if s.buffs.innovation == 0 => Actions::Innovation,
                     Good if s.calc_durability(10) < s.durability => Actions::PreciseTouch,
@@ -128,29 +143,37 @@ impl Solver for RedstoneSuan611 {
                     Sturdy if s.calc_durability(20) < s.durability => Actions::PreparatoryTouch,
                     Primed if s.buffs.innovation <= 2 => Actions::Innovation,
                     _ => Actions::TrainedFinesse,
-                }]
+                };
+
+                let mut tmp_state = s.clone();
+                tmp_state.cast_action(action);
+                if tmp_state.durability >= 11
+                    && (tmp_state.craft_points >= 74
+                        || (tmp_state.craft_points >= 56 && tmp_state.buffs.innovation >= 2))
+                {
+                    vec![action]
+                } else {
+                    sb.push_str(format!("收尾，").as_str());
+                    if s.craft_points >= 74 {
+                        vec![
+                            Actions::GreatStrides,
+                            Actions::Innovation,
+                            Actions::ByregotsBlessing,
+                            Actions::BasicSynthesis,
+                        ]
+                    } else if s.craft_points >= 56 && s.buffs.innovation >= 2 {
+                        vec![
+                            Actions::GreatStrides,
+                            Actions::ByregotsBlessing,
+                            Actions::BasicSynthesis,
+                        ]
+                    } else {
+                        vec![]
+                    }
+                }
             }
-            _ => vec![Actions::BasicSynthesis],
+            _ => vec![],
         };
-        if action.len() > 0 {
-            let mut tmp_state = s.clone();
-            tmp_state.cast_action(action[0]);
-            action = if tmp_state.craft_points >= 74
-                || tmp_state.craft_points >= 56 && tmp_state.buffs.innovation >= 2
-            {
-                action
-            } else if s.craft_points >= 74 {
-                vec![
-                    Actions::GreatStrides,
-                    Actions::Innovation,
-                    Actions::ByregotsBlessing,
-                ]
-            } else if s.craft_points >= 56 && s.buffs.innovation >= 2 {
-                vec![Actions::GreatStrides, Actions::ByregotsBlessing]
-            } else {
-                vec![]
-            }
-        }
         (sb, action)
     }
 }
@@ -180,7 +203,10 @@ mod test {
         };
         let conditions =
             ConditionIterator::new(r.conditions_flag as i32, a.level as i32).collect::<Vec<_>>();
-        for i in 0..30 {
+        let mut sum = 0;
+        let mut full = 0;
+        const total: i32 = 100;
+        for i in 0..total {
             println!("running simulation {i}");
             let mut status = Status::new(a, r);
             'solve: while !status.is_finished() {
@@ -195,7 +221,7 @@ mod test {
                 for next_action in next_actions.into_iter() {
                     print!("{next_action:?}");
                     if let Err(e) = status.is_action_allowed(next_action) {
-                        println!("技能错误：{e:?}");
+                        println!("\n无法使用{next_action:?}：{e:?}");
                         break 'solve;
                     }
                     if status.success_rate(next_action) as f32 / 100.0 > random() {
@@ -216,9 +242,16 @@ mod test {
                 println!();
             }
             println!(
-                "simulation {i} result: 进展{}/品质{}",
-                status.progress, status.quality
-            )
+                "simulation {i} result: 进展{}/品质{}/耐久{}",
+                status.progress, status.quality, status.durability
+            );
+            if status.progress == r.difficulty {
+                sum += status.quality;
+                if status.quality == r.quality {
+                    full += 1;
+                }
+            }
         }
+        println!("avg: {}, full: {full}", sum as f32 / total as f32);
     }
 }
