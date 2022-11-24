@@ -79,7 +79,7 @@ export const store = createStore<State>({
             state.designer = payload
         }
     },
-    strict: import.meta.env.DEV,
+    // strict: import.meta.env.DEV,
 })
 
 export function useStore() {
