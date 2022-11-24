@@ -72,12 +72,12 @@ const selectRecipe = (recipe: Recipe, item: Item, craftType: string) => {
 }
 
 const customRecipe = ref({
-    rlv: 610,
+    rlv: 611,
     job_level: 90,
-    difficulty: 5060,
-    quality: 12628,
-    durability: 70,
-    conditions_flag: 15,
+    difficulty: 7480,
+    quality: 13620,
+    durability: 60,
+    conditions_flag: 435,
 })
 
 </script>
