@@ -65,24 +65,24 @@ export const compareStatus = (s1: Status, s2: Status): number => {
 
 export enum Conditions {
   // 白：通常
-  Normal = 'normal',
+  Normal = 'Normal',
   // 红：高品质，加工效率1.5倍
-  Good = 'good',
+  Good = 'Good',
   // 彩：最高品质
-  Excellent = 'excellent',
+  Excellent = 'Excellent',
   // 黑：低品质
-  Poor = 'poor',
+  Poor = 'Poor',
 
   // 黄：成功率增加 25%
-  Centered = 'centered',
+  Centered = 'Centered',
   // 蓝：耐久消耗降低 50%, 效果可与俭约叠加
-  Sturdy = 'sturdy',
+  Sturdy = 'Sturdy',
   // 绿：CP 消耗减少 50%
-  Pliant = 'pliant',
+  Pliant = 'Pliant',
   // 深蓝：作业效率1.5倍
-  Malleable = 'malleable',
+  Malleable = 'Malleable',
   // 紫：技能效果持续增加两回合
-  Primed = 'primed',
+  Primed = 'Primed',
 }
 
 export enum Jobs {

@@ -137,6 +137,7 @@ const isActived = (action: Actions) => {
         case Actions.TricksOfTheTrade:
         case Actions.IntensiveSynthesis:
         case Actions.PreciseTouch:
+            console.log(props.status.condition, Conditions.Good, Conditions.Excellent)
             return props.status.condition == Conditions.Good ||
                 props.status.condition == Conditions.Excellent ||
                 props.status.buffs.heart_and_soul > 0

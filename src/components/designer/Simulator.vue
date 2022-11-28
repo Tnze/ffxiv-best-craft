@@ -76,7 +76,7 @@ async function pushAction(action: Actions) {
     } catch (e: unknown) {
         console.error(e)
     } finally {
-        leaveAction()
+        if (timer != null) clearTimeout(timer)
         waiting.value = false
     }
 }
@@ -88,6 +88,7 @@ function restart() {
 }
 
 function hoverAction(action: Actions) {
+    if (timer != null) clearTimeout(timer)
     timer = setTimeout(() => {
         simulateOneStep(currentStatus.value, action, true)
             .then(v => preview.value = v)
