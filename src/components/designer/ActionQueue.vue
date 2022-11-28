@@ -16,6 +16,7 @@ const props = defineProps<{
     errList?: { pos: number, err: string }[]
     job: Jobs,
     disabled?: boolean
+    noHover?: boolean
 }>()
 
 const solverAdds = computed(() => props.solverResult?.slice(props.list.length) ?? [])
@@ -53,7 +54,8 @@ function calc_effect(index: number): string {
             <template #item="{ element, index }">
                 <div class="list-group-item">
                     <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)"
-                        disabled @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)" />
+                        disabled @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)"
+                        :no_hover="noHover" />
                 </div>
             </template>
             <template #footer>
@@ -68,7 +70,6 @@ function calc_effect(index: number): string {
 
 <style scoped>
 .action-queue-container {
-    margin: 7px 10px 3px 10px;
     min-height: 43px;
 }
 

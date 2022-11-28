@@ -10,8 +10,9 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::{net::SocketAddr, sync::Arc};
 
 use axum::{http::StatusCode, routing, Json, Router};
-use ffxiv_crafting::{Actions, Attributes, CastActionError, Recipe, Status};
+use ffxiv_crafting::{Actions, Attributes, CastActionError, ConditionIterator, Recipe, Status};
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
+use rand::{random, seq::SliceRandom, thread_rng};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::{Deserialize, Serialize};
 use tauri::Manager;
@@ -65,18 +66,48 @@ struct SimulateResult {
 /// 模拟以指定初始状态按顺序执行一个技能序列后的结果，
 /// 返回值`SimulateResult`包含了最终状态以及模拟过程中每个技能失败的位置及原因
 #[tauri::command(async)]
-fn simulate(status: Status, skills: Vec<Actions>) -> SimulateResult {
+fn simulate(status: Status, actions: Vec<Actions>) -> SimulateResult {
     let mut result = SimulateResult {
         status,
         errors: Vec::new(),
     };
-    for (pos, sk) in skills.iter().enumerate() {
+    for (pos, sk) in actions.iter().enumerate() {
         match result.status.is_action_allowed(*sk) {
             Ok(_) => result.status.cast_action(*sk),
             Err(err) => result.errors.push(CastErrorPos { pos, err }),
         }
     }
     result
+}
+
+/// 只模拟一步制作，计算技能概率和制作状态，更新制作状态
+#[tauri::command(async)]
+fn simulate_one_step(status: Status, action: Actions) -> Result<Status, String> {
+    let mut rng = thread_rng();
+    let mut status = status.clone();
+    status
+        .is_action_allowed(action)
+        .map_err(|e| e.to_string())?;
+    if status.success_rate(action) as f32 / 100.0 > random() {
+        status.cast_action(action);
+    } else {
+        status.cast_action(match action {
+            Actions::RapidSynthesis => Actions::RapidSynthesisFail,
+            Actions::HastyTouch => Actions::HastyTouchFail,
+            Actions::FocusedSynthesis => Actions::FocusedSynthesisFail,
+            Actions::FocusedTouch => Actions::FocusedTouchFail,
+            _ => unreachable!(),
+        });
+    }
+    status.condition = ConditionIterator::new(
+        status.recipe.conditions_flag as i32,
+        status.attributes.level as i32,
+    )
+    .collect::<Vec<_>>()
+    .choose_weighted(&mut rng, |c| c.1)
+    .unwrap()
+    .0;
+    Ok(status)
 }
 
 /// 计算当前状态下可以释放技能的集合，用于模拟界面将不可释放技能置灰
@@ -428,6 +459,7 @@ fn main() {
             new_recipe,
             new_status,
             simulate,
+            simulate_one_step,
             allowed_list,
             craftpoints_list,
             recipe_table,

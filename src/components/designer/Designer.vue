@@ -17,7 +17,6 @@ import InitialQualitySetting from './InitialQualitySetting.vue'
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import { useFluent } from 'fluent-vue';
-import { result } from 'lodash';
 
 interface Slot {
     id: number;
@@ -360,6 +359,7 @@ async function openListFromJSON() {
 .action-queue {
     border-top: 1px solid var(--el-border-color);
     border-bottom: 1px solid var(--el-border-color);
+    padding: 7px 10px 3px 10px;
 }
 
 .actionpanel-and-savedqueue {
@@ -385,6 +385,7 @@ async function openListFromJSON() {
 
 .action-panel {
     border-top: 1px solid var(--el-border-color);
+    border-right: 1px solid var(--el-border-color);
     margin-bottom: 6px;
     max-width: 25%;
 }
