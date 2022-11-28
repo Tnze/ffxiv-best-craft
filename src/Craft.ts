@@ -168,8 +168,8 @@ export const simulate = (status: Status, actions: Actions[]): Promise<SimulateRe
   return invoke("simulate", { status, actions });
 };
 
-export const simulateOneStep = (status: Status, action: Actions): Promise<Status> => {
-  return invoke("simulate_one_step", { status, action });
+export const simulateOneStep = (status: Status, action: Actions, forceSuccess: boolean): Promise<Status> => {
+  return invoke("simulate_one_step", { status, action, forceSuccess });
 };
 
 export const allowedList = (status: Status, actions: Actions[]): Promise<string[]> => {
