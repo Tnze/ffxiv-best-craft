@@ -1,13 +1,13 @@
 import { invoke } from "@tauri-apps/api/tauri";
 
-interface Attributes {
+export interface Attributes {
   level: number;
   craftsmanship: number;
   control: number;
   craft_points: number;
 }
 
-interface Item {
+export interface Item {
   id: number,
   name: string,
   level: number,
@@ -15,7 +15,7 @@ interface Item {
   category_id?: number,
 }
 
-interface Recipe {
+export interface Recipe {
   rlv: number;
   job_level: number;
   difficulty: number;
@@ -24,7 +24,7 @@ interface Recipe {
   conditions_flag: number;
 }
 
-interface Buffs {
+export interface Buffs {
   muscle_memory: number;
   great_strides: number;
   veneration: number;
@@ -40,7 +40,7 @@ interface Buffs {
   observed: number;
 }
 
-interface Status {
+export interface Status {
   buffs: Buffs;
   attributes: Attributes;
   recipe: Recipe;
@@ -50,10 +50,10 @@ interface Status {
   progress: number;
   quality: number;
   step: number;
-  condition: string;
+  condition: Conditions;
 }
 
-function compareStatus(s1: Status, s2: Status): number {
+export const compareStatus = (s1: Status, s2: Status): number => {
   if (s1.progress != s1.recipe.difficulty)
     return s1.progress - s1.recipe.difficulty;
   if (s1.quality != s2.quality)
@@ -63,7 +63,7 @@ function compareStatus(s1: Status, s2: Status): number {
   return 0
 }
 
-enum Conditions {
+export enum Conditions {
   // 白：通常
   Normal = 'normal',
   // 红：高品质，加工效率1.5倍
@@ -85,7 +85,7 @@ enum Conditions {
   Primed = 'primed',
 }
 
-enum Jobs {
+export enum Jobs {
   Carpenter = "carpenter",
   Blacksmith = "blacksmith",
   Armorer = "armorer",
@@ -96,7 +96,7 @@ enum Jobs {
   Culinarian = "culinarian",
 }
 
-enum Actions {
+export enum Actions {
   BasicSynthesis = "basic_synthesis",
   BasicTouch = "basic_touch",
   MastersMend = "masters_mend",
@@ -137,7 +137,7 @@ enum Actions {
   FocusedTouchFail = "focused_touch_fail",
 }
 
-const newRecipe = async (
+export const newRecipe = async (
   rlv: number,
   difficultyFactor: number,
   qualityFactor: number,
@@ -151,12 +151,12 @@ const newRecipe = async (
   });
 };
 
-const newStatus = (
+export const newStatus = (
   attrs: Attributes,
   recipe: Recipe,
 ): Promise<Status> => invoke("new_status", { attrs, recipe });
 
-interface SimulateResult {
+export interface SimulateResult {
   status: Status;
   errors: {
     pos: number;
@@ -164,21 +164,26 @@ interface SimulateResult {
   }[];
 }
 
-const simulate = (s: Status, actions: Actions[]): Promise<SimulateResult> => {
-  return invoke("simulate", { status: s, skills: actions });
+export const simulate = (status: Status, actions: Actions[]): Promise<SimulateResult> => {
+  return invoke("simulate", { status, actions });
 };
 
-const allowedList = (status: Status, actions: Actions[]): Promise<string[]> => {
+export const simulateOneStep = (status: Status, action: Actions): Promise<Status> => {
+  return invoke("simulate_one_step", { status, action });
+};
+
+export const allowedList = (status: Status, actions: Actions[]): Promise<string[]> => {
   return invoke("allowed_list", { status, skills: actions });
 };
-const craftPointsList = (
+
+export const craftPointsList = (
   status: Status,
   actions: Actions[]
 ): Promise<number[]> => {
   return invoke("craftpoints_list", { status, skills: actions });
 };
 
-interface RecipeRow {
+export interface RecipeRow {
   id: number;
   rlv: number;
   item_id: number;
@@ -190,16 +195,16 @@ interface RecipeRow {
   durability_factor: number;
 }
 
-const recipeTable = (page: number, searchName: string): Promise<[RecipeRow[], number]> => {
+export const recipeTable = (page: number, searchName: string): Promise<[RecipeRow[], number]> => {
   return invoke("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
 };
 
-interface ItemWithAmount {
+export interface ItemWithAmount {
   ingredient_id: number;
   amount: number;
 }
 
-const recipesIngredientions = async (checklist: ItemWithAmount[]): Promise<ItemWithAmount[]> => {
+export const recipesIngredientions = async (checklist: ItemWithAmount[]): Promise<ItemWithAmount[]> => {
   const ings = await invoke("recipes_ingredientions", {
     checklist: checklist.map(x => [x.ingredient_id, x.amount])
   }) as [number, number][];
@@ -208,7 +213,7 @@ const recipesIngredientions = async (checklist: ItemWithAmount[]): Promise<ItemW
   })
 }
 
-const itemInfo = async (itemId: number): Promise<Item> => {
+export const itemInfo = async (itemId: number): Promise<Item> => {
   const { id, name, level, can_be_hq, category_id } = await invoke("item_info", { itemId }) as {
     id: number,
     name: string,
@@ -218,25 +223,3 @@ const itemInfo = async (itemId: number): Promise<Item> => {
   };
   return { id, name, level, can_be_hq: can_be_hq != 0, category_id };
 }
-
-export {
-  Attributes,
-  Buffs,
-  Conditions,
-  Item,
-  Recipe,
-  Status,
-  Jobs,
-  Actions,
-  RecipeRow,
-  ItemWithAmount,
-  newRecipe,
-  newStatus,
-  simulate,
-  allowedList,
-  craftPointsList,
-  recipeTable,
-  recipesIngredientions,
-  itemInfo,
-  compareStatus,
-};

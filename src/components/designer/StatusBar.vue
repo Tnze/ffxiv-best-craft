@@ -11,6 +11,8 @@ const props = defineProps<{
     status: Status;
     attributes: Attributes;
     enhancers: Enhancer[];
+    disabledInitQuality?: boolean;
+    disabledEnhancer?: boolean;
 }>()
 
 const emits = defineEmits<{
@@ -94,7 +96,11 @@ const condition = computed(() => {
             </el-progress>
             {{ $t('quality') }}
             <el-progress :percentage="quality" :color="qualityColor">
-                <el-link @click="emits('click-quality')" :icon="Setting">
+                <template v-if="disabledInitQuality">
+                    {{ status?.quality }} /
+                    {{ status?.recipe.quality }}
+                </template>
+                <el-link v-else @click="emits('click-quality')" :icon="Setting">
                     {{ status?.quality }} /
                     {{ status?.recipe.quality }}
                 </el-link>
@@ -102,7 +108,8 @@ const condition = computed(() => {
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
         <div id="attributes">
-            <el-link class="attributes-link" @click="emits('click-attributes')" :icon="Setting">
+            <el-link class="attributes-link" @click="emits('click-attributes')" :icon="Setting"
+                :disabled="disabledEnhancer">
                 {{ $t('display-attrs', { what: $t('level'), value: status?.attributes.level }) }}
                 <br />
                 {{ $t('display-attrs', {

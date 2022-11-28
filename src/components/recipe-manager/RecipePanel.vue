@@ -105,6 +105,9 @@ const customRecipe = ref({
                     <el-form-item :label="$t('durability')">
                         <el-input-number v-model="customRecipe.durability" :min="1"></el-input-number>
                     </el-form-item>
+                    <el-form-item :label="$t('conditions-flag')">
+                        <el-input-number v-model="customRecipe.conditions_flag"></el-input-number>
+                    </el-form-item>
                 </el-form>
                 <template #footer>
                     <span class="dialog-footer">
@@ -176,6 +179,7 @@ please-confirm = 请确认
 recipe-setting-changed = 配方设置已变更
 select-recipe = 选择配方
 custom-recipe = 自定义配方 #{ $rlv }
+conditions-flag = 球色标志
 
 cancel = 取消
 confirm = 确认
@@ -193,6 +197,7 @@ please-confirm = Please confirm
 recipe-setting-changed = Recipe is updated
 select-recipe = Select Recipe
 custom-recipe = Custom Recipe #{ $rlv }
+conditions-flag = Cond. Flag
 
 cancel = Cancel
 confirm = Confirm

@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ElPopover } from 'element-plus';
-import { reactive, watchEffect } from 'vue'
+import { ElPopover, ElDivider } from 'element-plus';
+import { computed, reactive, watchEffect } from 'vue'
 import Action from './Action.vue'
 import { Jobs, Actions, Status, allowedList, craftPointsList } from '../../Craft'
 
 const props = defineProps<{
     job: Jobs,
-    status?: Status
+    status?: Status,
+    simulatorMode?: boolean,
+    disable?: boolean,
 }>()
 
 const emit = defineEmits<{
@@ -67,6 +69,56 @@ const actions: Actions[][] = [
     ]
 ]
 
+const actionsForSimulator: Actions[][] = [
+    [
+        Actions.Reflect,
+        Actions.MuscleMemory,
+        Actions.TrainedEye,
+    ],
+    [
+        Actions.Veneration,
+        Actions.RapidSynthesis,
+        Actions.PrudentSynthesis,
+        Actions.Groundwork,
+        Actions.BasicSynthesis,
+        Actions.CarefulSynthesis,
+    ],
+    [
+        Actions.Innovation,
+        Actions.HastyTouch,
+        Actions.PrudentTouch,
+        Actions.PreparatoryTouch,
+        Actions.BasicTouch,
+        Actions.StandardTouch,
+        Actions.AdvancedTouch,
+        Actions.TrainedFinesse,
+        Actions.GreatStrides,
+        Actions.ByregotsBlessing,
+    ],
+    [
+        Actions.FinalAppraisal,
+        Actions.CarefulObservation,
+        Actions.HeartAndSoul,
+        Actions.TricksOfTheTrade,
+        Actions.IntensiveSynthesis,
+        Actions.PreciseTouch,
+    ],
+    [
+        Actions.MastersMend,
+        Actions.WasteNot,
+        Actions.WasteNotII,
+        Actions.Manipulation,
+    ],
+    [
+        Actions.DelicateSynthesis,
+        Actions.Observe,
+        Actions.FocusedSynthesis,
+        Actions.FocusedTouch,
+    ]
+]
+
+const usedActions = computed(() => props.simulatorMode ? actionsForSimulator : actions)
+
 const fail_actions: Actions[] = [
     Actions.RapidSynthesisFail,
     Actions.HastyTouchFail,
@@ -126,23 +178,23 @@ watchEffect(() => {
 
 <template>
     <div class="container" @click.stop.prevent.right>
-        <div v-for="group in actions" class="group">
+        <div v-for="group in usedActions" class="group">
             <el-popover v-for="action in group" :show-after="1000" :hide-after="0"
                 :title="$t(action.replaceAll('_', '-'))" :content="$t('desc-' + action.replaceAll('_', '-'))">
                 <template #reference>
                     <Action :job="job" class="item" @click="emit('clickedAction', action)"
                         @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
                         :action="action" :active="isActived(action)"
-                        :effect="cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
+                        :effect="!disable && cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
                         :cp="cachedCraftPointsList.get(action) || undefined" />
                 </template>
             </el-popover>
         </div>
-        <div class="group">
+        <div class="group" v-if="!simulatorMode">
             <Action :job="job" class="item" v-for="action in fail_actions" @click="emit('clickedAction', action)"
                 @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
                 :action="action" :active="isActived(action)"
-                :effect="cachedAllowedList.get(action) == 'ok' ? 'red-cross' : 'black'"
+                :effect="!disable && cachedAllowedList.get(action) == 'ok' ? 'red-cross' : 'black'"
                 :cp="cachedCraftPointsList.get(action) || undefined" />
         </div>
     </div>
@@ -152,7 +204,6 @@ watchEffect(() => {
 .container {
     box-sizing: border-box;
     padding: 0px 6px;
-    border-right: 1px solid var(--el-border-color);
 }
 
 .group {
