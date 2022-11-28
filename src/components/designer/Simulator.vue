@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ElContainer, ElHeader, ElMain, ElScrollbar, ElDialog, ElButton, ElTable, ElTableColumn } from 'element-plus';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep } from '../../Craft';
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import StatusBarVue from './StatusBar.vue';
@@ -45,32 +45,38 @@ const enhancedAttributes = computed<Attributes>(() => {
     };
 });
 const initStatus = ref<Status>({ ...await newStatus(enhancedAttributes.value, props.recipe), quality: 0 });
+watch([props, enhancedAttributes], async ([p, attr]) => { initStatus.value = { ...await newStatus(attr, p.recipe), quality: 0 } });
+
 const currentStatus = ref<Status>(initStatus.value)
 const seq = ref<Slot[]>([])
 const openAttrEnhSelector = ref(false)
 const results = ref<Status[]>([])
 const waiting = ref(false)
+const preview = ref<Status | null>(null)
+let timer: any;
 
 const sleep = (t: number) => new Promise((resolve) => setTimeout(resolve, t))
 async function pushAction(action: Actions) {
     if (waiting.value) return;
-    seq.value.push({
-        id: seq.value.length, action,
-        condition: currentStatus.value.condition,
-    })
+    leaveAction()
     try {
         waiting.value = true
-        const wait = sleep(1000)
-        const newState = await simulateOneStep(currentStatus.value, action);
+        const wait = sleep(1500)
+        const newState = await simulateOneStep(currentStatus.value, action, false);
         await wait;
         currentStatus.value = newState
+        seq.value.push({
+            id: seq.value.length, action,
+            condition: currentStatus.value.condition,
+        })
         if (newState.progress >= newState.recipe.difficulty || newState.durability <= 0) {
-            await sleep(2000);
+            await sleep(2500);
             restart();
         }
     } catch (e: unknown) {
         console.error(e)
     } finally {
+        leaveAction()
         waiting.value = false
     }
 }
@@ -79,6 +85,19 @@ function restart() {
     results.value.push(currentStatus.value)
     seq.value.splice(0);
     currentStatus.value = initStatus.value
+}
+
+function hoverAction(action: Actions) {
+    timer = setTimeout(() => {
+        simulateOneStep(currentStatus.value, action, true)
+            .then(v => preview.value = v)
+            .catch(null)
+    }, 1000)
+}
+
+function leaveAction() {
+    if (timer != null) clearTimeout(timer)
+    preview.value = null
 }
 
 </script>
@@ -94,7 +113,7 @@ function restart() {
         <el-main>
             <div class="main-page">
                 <StatusBarVue class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
-                    :status="currentStatus" :disabled-init-quality="true"
+                    :status="preview ?? currentStatus" :disabled-init-quality="true"
                     @click-attributes="openAttrEnhSelector = true" />
                 <el-scrollbar class="action-queue">
                     <ActionQueueVue :job="displayJob" :list="seq" disabled no-hover />
@@ -102,7 +121,8 @@ function restart() {
                 <div class="actionpanel">
                     <el-scrollbar class="action-panel">
                         <ActionPanelVue @clicked-action="pushAction" :disable="waiting" :job="displayJob"
-                            :status="currentStatus" simulator-mode #lower />
+                            :status="currentStatus" simulator-mode #lower @mousehover-action="hoverAction"
+                            @mouseleave-action="leaveAction" />
                         <el-button class="drop" @click="restart" type="danger">{{ $t('restart') }}</el-button>
                     </el-scrollbar>
                     <el-scrollbar class="results">
@@ -132,7 +152,7 @@ function restart() {
 }
 
 .action-queue {
-    height: calc(48px * 1);
+    height: calc(48px * 1.7);
     margin: 5px 6px;
     padding: 5px 0px 0px 0px;
     border-top: 1px solid var(--el-border-color);
@@ -141,6 +161,7 @@ function restart() {
 
 .action-panel {
     margin-bottom: 6px;
+    max-width: 50%;
 }
 
 .results {

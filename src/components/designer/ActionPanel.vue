@@ -2,7 +2,7 @@
 import { ElPopover, ElDivider } from 'element-plus';
 import { computed, reactive, watchEffect } from 'vue'
 import Action from './Action.vue'
-import { Jobs, Actions, Status, allowedList, craftPointsList } from '../../Craft'
+import { Jobs, Actions, Status, allowedList, craftPointsList, Conditions } from '../../Craft'
 
 const props = defineProps<{
     job: Jobs,
@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (event: 'clickedAction', action: Actions): void
-    (event: 'mouseoverAction', action: Actions): void
+    (event: 'mousehoverAction', action: Actions): void
     (event: 'mouseleaveAction', action: Actions): void
 }>()
 
@@ -137,8 +137,8 @@ const isActived = (action: Actions) => {
         case Actions.TricksOfTheTrade:
         case Actions.IntensiveSynthesis:
         case Actions.PreciseTouch:
-            return props.status.condition == 'good' ||
-                props.status.condition == 'excellent' ||
+            return props.status.condition == Conditions.Good ||
+                props.status.condition == Conditions.Excellent ||
                 props.status.buffs.heart_and_soul > 0
         case Actions.ByregotsBlessing:
             return props.status.buffs.inner_quiet > 0
@@ -183,7 +183,7 @@ watchEffect(() => {
                 :title="$t(action.replaceAll('_', '-'))" :content="$t('desc-' + action.replaceAll('_', '-'))">
                 <template #reference>
                     <Action :job="job" class="item" @click="emit('clickedAction', action)"
-                        @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
+                        @mouseover="emit('mousehoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
                         :action="action" :active="isActived(action)"
                         :effect="!disable && cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
                         :cp="cachedCraftPointsList.get(action) || undefined" />
@@ -192,7 +192,7 @@ watchEffect(() => {
         </div>
         <div class="group" v-if="!simulatorMode">
             <Action :job="job" class="item" v-for="action in fail_actions" @click="emit('clickedAction', action)"
-                @mouseover="emit('mouseoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
+                @mouseover="emit('mousehoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
                 :action="action" :active="isActived(action)"
                 :effect="!disable && cachedAllowedList.get(action) == 'ok' ? 'red-cross' : 'black'"
                 :cp="cachedCraftPointsList.get(action) || undefined" />

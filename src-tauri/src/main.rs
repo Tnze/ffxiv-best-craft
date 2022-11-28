@@ -10,7 +10,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::{net::SocketAddr, sync::Arc};
 
 use axum::{http::StatusCode, routing, Json, Router};
-use ffxiv_crafting::{Actions, Attributes, CastActionError, ConditionIterator, Recipe, Status};
+use ffxiv_crafting::{Actions, Attributes, CastActionError, ConditionIterator, Recipe, Status, Condition};
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use rand::{random, seq::SliceRandom, thread_rng};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
@@ -82,13 +82,17 @@ fn simulate(status: Status, actions: Vec<Actions>) -> SimulateResult {
 
 /// 只模拟一步制作，计算技能概率和制作状态，更新制作状态
 #[tauri::command(async)]
-fn simulate_one_step(status: Status, action: Actions) -> Result<Status, String> {
+fn simulate_one_step(
+    status: Status,
+    action: Actions,
+    force_success: bool,
+) -> Result<Status, String> {
     let mut rng = thread_rng();
     let mut status = status.clone();
     status
         .is_action_allowed(action)
         .map_err(|e| e.to_string())?;
-    if status.success_rate(action) as f32 / 100.0 > random() {
+    if force_success || status.success_rate(action) as f32 / 100.0 > random() {
         status.cast_action(action);
     } else {
         status.cast_action(match action {
@@ -99,14 +103,18 @@ fn simulate_one_step(status: Status, action: Actions) -> Result<Status, String> 
             _ => unreachable!(),
         });
     }
-    status.condition = ConditionIterator::new(
-        status.recipe.conditions_flag as i32,
-        status.attributes.level as i32,
-    )
-    .collect::<Vec<_>>()
-    .choose_weighted(&mut rng, |c| c.1)
-    .unwrap()
-    .0;
+    status.condition = if force_success {
+        Condition::Normal
+    } else {
+        ConditionIterator::new(
+            status.recipe.conditions_flag as i32,
+            status.attributes.level as i32,
+        )
+        .collect::<Vec<_>>()
+        .choose_weighted(&mut rng, |c| c.1)
+        .unwrap()
+        .0
+    };
     Ok(status)
 }
 
