@@ -10,7 +10,9 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::{net::SocketAddr, sync::Arc};
 
 use axum::{http::StatusCode, routing, Json, Router};
-use ffxiv_crafting::{Actions, Attributes, CastActionError, ConditionIterator, Recipe, Status, Condition};
+use ffxiv_crafting::{
+    Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, Status,
+};
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use rand::{random, seq::SliceRandom, thread_rng};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
@@ -103,18 +105,20 @@ fn simulate_one_step(
             _ => unreachable!(),
         });
     }
-    status.condition = if force_success {
-        Condition::Normal
-    } else {
-        ConditionIterator::new(
-            status.recipe.conditions_flag as i32,
-            status.attributes.level as i32,
-        )
-        .collect::<Vec<_>>()
-        .choose_weighted(&mut rng, |c| c.1)
-        .unwrap()
-        .0
-    };
+    if !matches!(action, Actions::FinalAppraisal | Actions::HeartAndSoul) {
+        status.condition = if force_success {
+            Condition::Normal
+        } else {
+            ConditionIterator::new(
+                status.recipe.conditions_flag as i32,
+                status.attributes.level as i32,
+            )
+            .collect::<Vec<_>>()
+            .choose_weighted(&mut rng, |c| c.1)
+            .unwrap()
+            .0
+        };
+    }
     Ok(status)
 }
 

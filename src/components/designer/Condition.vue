@@ -13,7 +13,7 @@ const dark = useDark()
 <template>
     <span id="icon" :class="props.cond.toLowerCase()">{{ cond == Conditions.Normal && !dark ? "○" : "●" }}</span>
     <br />
-    <span id="text">{{ $t(cond) }}</span>
+    <span id="text">{{ $t(cond.toLowerCase()) }}</span>
 </template>
 
 <style>

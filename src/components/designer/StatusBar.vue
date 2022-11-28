@@ -55,19 +55,7 @@ const durabilityColor = [
     { color: '#62C3FF', percentage: 100 },
 ]
 const condition = computed(() => {
-    if (props.status === undefined)
-        return Conditions.Normal
-    return {
-        "Normal": Conditions.Normal,
-        "Good": Conditions.Good,
-        "Excellent": Conditions.Excellent,
-        "Poor": Conditions.Poor,
-        "Centered": Conditions.Centered,
-        "Sturdy": Conditions.Sturdy,
-        "Pliant": Conditions.Pliant,
-        "Malleable": Conditions.Malleable,
-        "Primed": Conditions.Primed,
-    }[props.status!.condition] || Conditions.Normal
+    return props.status?.condition || Conditions.Normal
 })
 </script>
 
