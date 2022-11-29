@@ -19,54 +19,30 @@ impl Solver for RedstoneSuan611 {
             }
             s if s.progress < 7198 => {
                 sb.push_str(format!("[Phase 2] 崇敬内打高速，").as_str());
-                if s.durability < 20 {
-                    sb.push_str(format!("耐久 < 20，").as_str());
-                    let action = match s.condition {
-                        Good => {
-                            sb.push_str(format!("红球秘诀，").as_str());
-                            Actions::TricksOfTheTrade
-                        }
-                        Sturdy if s.durability % 5 > 3 => {
-                            sb.push_str(format!("蓝球俭约加工把耐久尾数修到2，").as_str());
-                            Actions::PrudentSynthesis
-                        }
-                        _ => {
-                            if s.buffs.manipulation <= 1 {
-                                Actions::Manipulation
-                            } else if s.durability <= s.calc_durability(10) {
-                                sb.push_str(format!("耐久不够高速、掌握层数有剩下，").as_str());
-                                // match s.is_action_allowed(Actions::CarefulObservation) {
-                                //     Ok(_) => Actions::CarefulObservation,
-                                //     Err(_) => Actions::Observe,
-                                // }
-                                Actions::Observe
-                            } else if s.progress >= 5710 {
-                                Actions::BasicSynthesis
-                            } else {
-                                Actions::RapidSynthesis
-                            }
-                        }
-                    };
-                    vec![action]
-                } else {
-                    sb.push_str(format!("耐久 >= 20，").as_str());
-
-                    match s.condition {
-                        Primed if s.buffs.manipulation <= 1 => vec![Actions::Manipulation],
-                        Good => vec![Actions::TricksOfTheTrade],
-                        Malleable if s.buffs.veneration > 0 => {
-                            vec![Actions::FinalAppraisal, Actions::RapidSynthesis]
-                        }
-                        Malleable | _ if s.buffs.veneration > 0 => {
-                            vec![if s.progress >= 5710 {
-                                Actions::BasicSynthesis
-                            } else {
-                                Actions::RapidSynthesis
-                            }]
-                        }
-                        _ => vec![Actions::Veneration],
+                vec![match s.condition {
+                    Centered if s.buffs.veneration > 0 && s.durability > s.calc_durability(10) => {
+                        Actions::RapidSynthesis
                     }
-                }
+                    Malleable if s.durability > s.calc_durability(10) => {
+                        if s.buffs.final_appraisal == 0
+                            && s.calc_synthesis(5.0) + s.progress > s.recipe.difficulty
+                        {
+                            Actions::FinalAppraisal
+                        } else {
+                            Actions::RapidSynthesis
+                        }
+                    }
+                    Good if s.craft_points + 20 <= s.attributes.craft_points => {
+                        Actions::TricksOfTheTrade
+                    }
+                    Primed if s.buffs.manipulation <= 1 => Actions::Manipulation,
+                    Primed if s.buffs.veneration <= 1 => Actions::Veneration,
+                    _ if s.buffs.manipulation == 0 => Actions::Manipulation,
+                    _ if s.buffs.veneration == 0 => Actions::Veneration,
+                    _ if s.durability > s.calc_durability(10) => Actions::RapidSynthesis,
+                    _ if s.buffs.careful_observation_used < 3 => Actions::CarefulObservation,
+                    _ => Actions::Observe,
+                }]
             }
             s if s.buffs.inner_quiet < 8 => {
                 sb.push_str(format!("[Phase 3] 堆叠内静，").as_str());
