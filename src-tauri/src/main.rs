@@ -82,19 +82,24 @@ fn simulate(status: Status, actions: Vec<Actions>) -> SimulateResult {
     result
 }
 
+#[derive(Serialize)]
+struct SimulateOneStepResult {
+    status: Status,
+    is_success: bool,
+}
+
 /// 只模拟一步制作，计算技能概率和制作状态，更新制作状态
 #[tauri::command(async)]
 fn simulate_one_step(
     status: Status,
     action: Actions,
     force_success: bool,
-) -> Result<Status, String> {
+) -> Result<SimulateOneStepResult, String> {
     let mut rng = thread_rng();
     let mut status = status.clone();
-    status
-        .is_action_allowed(action)
-        .map_err(|e| e.to_string())?;
-    if force_success || status.success_rate(action) as f32 / 100.0 > random() {
+    status.is_action_allowed(action).map_err(err_to_string)?;
+    let is_success = force_success || status.success_rate(action) as f32 / 100.0 > random();
+    if is_success {
         status.cast_action(action);
     } else {
         status.cast_action(match action {
@@ -119,7 +124,20 @@ fn simulate_one_step(
             .0
         };
     }
-    Ok(status)
+    Ok(SimulateOneStepResult { status, is_success })
+}
+
+#[tauri::command(async)]
+fn suggess_next(status: Status) -> Vec<Actions> {
+    use hard_recipe::{RedstoneSuan611, Solver};
+    match status {
+        s if s.recipe.rlv == 611 => {
+            let (str, result) = RedstoneSuan611::run(&s);
+            println!("{str}");
+            result
+        }
+        _ => vec![],
+    }
 }
 
 /// 计算当前状态下可以释放技能的集合，用于模拟界面将不可释放技能置灰
@@ -472,6 +490,7 @@ fn main() {
             new_status,
             simulate,
             simulate_one_step,
+            suggess_next,
             allowed_list,
             craftpoints_list,
             recipe_table,
