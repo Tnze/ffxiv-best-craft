@@ -18,24 +18,18 @@ const SYNTH_SKILLS: [Actions; 9] = [
     Actions::PrudentSynthesis,
 ];
 
-const TOUCH_SKILLS: [Actions; 19] = [
-    Actions::BasicSynthesis,
+const TOUCH_SKILLS: [Actions; 13] = [
     Actions::BasicTouch,
     Actions::MastersMend,
     Actions::WasteNot,
-    Actions::Veneration,
     Actions::StandardTouch,
     Actions::GreatStrides,
     Actions::Innovation,
     Actions::WasteNotII,
     Actions::ByregotsBlessing,
-    Actions::CarefulSynthesis,
     Actions::PrudentTouch,
     Actions::PreparatoryTouch,
-    Actions::Groundwork,
-    Actions::DelicateSynthesis,
     Actions::AdvancedTouch,
-    Actions::PrudentSynthesis,
     Actions::TrainedFinesse,
     Actions::Manipulation,
 ];
@@ -72,7 +66,7 @@ where
         }
     }
 
-    fn get(&self, s: &Status) -> Option<&SolverSlot<u32>> {
+    pub(crate) fn get(&self, s: &Status) -> Option<&SolverSlot<u32>> {
         self.results
             .get(s.durability as usize / 5)?
             .get(s.craft_points as usize)?
@@ -123,39 +117,49 @@ where
                                     for touch in 0..3 {
                                         s.buffs.touch_combo_stage = touch as u8;
                                         for sk in &TOUCH_SKILLS {
-                                            if s.is_action_allowed(*sk).is_ok() {
-                                                let mut new_s = s.clone();
-                                                new_s.cast_action(*sk);
-                                                unsafe {
-                                                    let progress =
-                                                        progress_solver.get_unchecked(&new_s).value;
-                                                    if new_s.progress + progress >= difficulty {
-                                                        let mut quality = new_s.quality;
-                                                        let mut step = 1;
-                                                        {
-                                                            let next = self.get_unchecked(&new_s);
-                                                            quality += next.value;
-                                                            step += next.step;
-                                                        }
-                                                        let slot = self
-                                                            .results
-                                                            .get_unchecked_mut(du as usize / 5)
-                                                            .get_unchecked_mut(cp as usize)
-                                                            .get_unchecked_mut(iq as usize)
-                                                            .get_unchecked_mut(iv as usize)
-                                                            .get_unchecked_mut(gs as usize)
-                                                            .get_unchecked_mut(mn as usize)
-                                                            .get_unchecked_mut(wn as usize)
-                                                            .get_unchecked_mut(touch);
-                                                        if (quality == slot.value
-                                                            && step < slot.step)
-                                                            || quality > slot.value
-                                                        {
-                                                            *slot = SolverSlot {
-                                                                value: quality,
-                                                                step,
-                                                                action: Some(*sk),
-                                                            }
+                                            match sk {
+                                                &Actions::Manipulation if MN == 0 => continue,
+                                                &Actions::WasteNot | &Actions::WasteNotII
+                                                    if WN == 0 =>
+                                                {
+                                                    continue
+                                                }
+
+                                                _ => {}
+                                            }
+                                            if s.is_action_allowed(*sk).is_err() {
+                                                continue;
+                                            }
+                                            let mut new_s = s.clone();
+                                            new_s.cast_action(*sk);
+                                            unsafe {
+                                                let progress =
+                                                    progress_solver.get_unchecked(&new_s).value;
+                                                if new_s.progress + progress >= difficulty {
+                                                    let mut quality = new_s.quality;
+                                                    let mut step = 1;
+                                                    {
+                                                        let next = self.get_unchecked(&new_s);
+                                                        quality += next.value;
+                                                        step += next.step;
+                                                    }
+                                                    let slot = self
+                                                        .results
+                                                        .get_unchecked_mut(du as usize / 5)
+                                                        .get_unchecked_mut(cp as usize)
+                                                        .get_unchecked_mut(iq as usize)
+                                                        .get_unchecked_mut(iv as usize)
+                                                        .get_unchecked_mut(gs as usize)
+                                                        .get_unchecked_mut(mn as usize)
+                                                        .get_unchecked_mut(wn as usize)
+                                                        .get_unchecked_mut(touch);
+                                                    if (quality == slot.value && step < slot.step)
+                                                        || quality > slot.value
+                                                    {
+                                                        *slot = SolverSlot {
+                                                            value: quality,
+                                                            step,
+                                                            action: Some(*sk),
                                                         }
                                                     }
                                                 }
@@ -172,7 +176,41 @@ where
     }
 
     fn read(&self, s: &Status) -> Option<Actions> {
-        self.get(s)?.action
+        let max_quality = s.recipe.quality;
+        let mut new_s = s.clone();
+        let max_addon = max_quality - s.quality;
+        let mut best = {
+            let Some(&SolverSlot {
+                value: quality,
+                step,
+                action,
+            }) = self.get(&s) else {
+                return None;
+            };
+            let quality = quality.min(max_addon);
+            ((quality, step), (s.craft_points, s.durability), action)
+        };
+        for cp in 0..=s.craft_points {
+            new_s.craft_points = cp;
+            for du in 1..=s.durability {
+                new_s.durability = du;
+                let Some(&SolverSlot {
+                    value: quality,
+                    step,
+                    action: skill,
+                }) = self.get(&new_s)else {
+                    return None;
+                };
+                let quality = quality.min(max_addon);
+                if quality >= best.0 .0 && step < best.0 .1 {
+                    best = ((quality, step), (cp, du), skill);
+                }
+            }
+        }
+        match best.2 {
+            Some(sk) => Some(sk),
+            None => self.progress_solver.read(&s),
+        }
     }
 
     fn read_all(&self, s: &Status) -> Vec<Actions> {
@@ -183,38 +221,34 @@ where
             let max_addon = max_quality - new_s.quality;
             let mut new_s2 = new_s.clone();
             let mut best = {
-                if let Some(&SolverSlot {
+                let Some(&SolverSlot {
                     value: quality,
                     step,
                     action: skill,
-                }) = self.get(&new_s)
-                {
-                    let quality = quality.min(max_addon);
-                    (
-                        (quality, step),
-                        (new_s.craft_points, new_s.durability),
-                        skill,
-                    )
-                } else {
+                }) = self.get(&new_s)else {
                     return vec![];
-                }
+                };
+                let quality = quality.min(max_addon);
+                (
+                    (quality, step),
+                    (new_s.craft_points, new_s.durability),
+                    skill,
+                )
             };
             for cp in 0..=new_s.craft_points {
                 new_s2.craft_points = cp;
                 for du in 1..=new_s.durability {
                     new_s2.durability = du;
-                    if let Some(&SolverSlot {
+                    let Some(&SolverSlot {
                         value: quality,
                         step,
                         action: skill,
-                    }) = self.get(&new_s2)
-                    {
-                        let quality = quality.min(max_addon);
-                        if quality >= best.0 .0 && step < best.0 .1 {
-                            best = ((quality, step), (cp, du), skill);
-                        }
-                    } else {
+                    }) = self.get(&new_s2) else {
                         return vec![];
+                    };
+                    let quality = quality.min(max_addon);
+                    if quality >= best.0 .0 && step < best.0 .1 {
+                        best = ((quality, step), (cp, du), skill);
                     }
                 }
             }
@@ -300,6 +334,12 @@ where
                             for wn in 0..=WN {
                                 s.buffs.wast_not = wn as u8;
                                 for sk in &SYNTH_SKILLS {
+                                    match sk {
+                                        &Actions::Manipulation if MN < 8 => continue,
+                                        &Actions::WasteNot if WN < 4 => continue,
+                                        &Actions::WasteNotII if WN < 8 => continue,
+                                        _ => {}
+                                    }
                                     if s.is_action_allowed(*sk).is_err() {
                                         continue;
                                     }
@@ -314,6 +354,7 @@ where
                                             [new_s.buffs.muscle_memory as usize]
                                             [new_s.buffs.manipulation as usize]
                                             [new_s.buffs.wast_not as usize];
+
                                         progress += next.value;
                                         progress = progress.min(s.recipe.difficulty);
                                         step += next.step;

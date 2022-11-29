@@ -2,8 +2,7 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-#![feature(generic_const_exprs)]
-#![feature(async_closure)]
+#![feature(generic_const_exprs, async_closure, if_let_guard)]
 
 use std::collections::{hash_map::Entry, BTreeMap, HashMap};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -128,15 +127,39 @@ fn simulate_one_step(
 }
 
 #[tauri::command(async)]
-fn suggess_next(status: Status) -> Vec<Actions> {
-    use hard_recipe::{RedstoneSuan611, Solver};
+async fn suggess_next(
+    status: Status,
+    app_state: tauri::State<'_, AppState>,
+) -> Result<Actions, String> {
+    use hard_recipe::{LycorisSanguinea, Solver};
     match status {
         s if s.recipe.rlv == 611 => {
-            let (str, result) = RedstoneSuan611::run(&s);
+            let init_status = Status::new(s.attributes, s.recipe);
+            println!("start solve");
+            let progress_list = vec![init_status.calc_synthesis(1.2)];
+            let dp_solver = app_state
+                .lycoris_sanguinea
+                .get_or_init(async move || {
+                    println!("creating solver");
+                    let mut driver = ProgressSolver::new(init_status.clone());
+                    driver.init();
+                    let mut solver = PreprogressSolver::<10, 0>::new(
+                        init_status,
+                        progress_list,
+                        Arc::new(driver),
+                    );
+                    solver.init();
+                    println!("solver created");
+                    solver
+                })
+                .await;
+            let solver = LycorisSanguinea::new(dp_solver);
+            let (str, result) = solver.run(&s);
             println!("{str}");
-            result
+            println!("solved result: {:?}", result);
+            Ok(result.get(0).ok_or(String::from("result is empty"))?.clone())
         }
-        _ => vec![],
+        _ => Err(String::from("unsupport recipe")),
     }
 }
 
@@ -259,6 +282,7 @@ async fn item_info(
 
 struct AppState {
     solver_list: Mutex<HashMap<ordinary_solver::SolverHash, Option<Box<dyn Solver + Send + Sync>>>>,
+    lycoris_sanguinea: OnceCell<PreprogressSolver<10, 0>>,
     db: OnceCell<DatabaseConnection>,
     shutdown_signal: Mutex<Option<oneshot::Sender<()>>>,
     should_be_transparent: AtomicBool,
@@ -268,6 +292,7 @@ impl AppState {
     fn new() -> Self {
         Self {
             solver_list: Mutex::new(HashMap::new()),
+            lycoris_sanguinea: OnceCell::new(),
             db: OnceCell::new(),
             shutdown_signal: Mutex::new(None),
             should_be_transparent: AtomicBool::new(false),
@@ -415,6 +440,7 @@ async fn destroy_solver(
 fn should_be_transparent(app_state: tauri::State<AppState>) -> bool {
     app_state.should_be_transparent.load(Ordering::SeqCst)
 }
+
 #[tauri::command(async)]
 async fn start_http_server(
     addr: String,

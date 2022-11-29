@@ -1,14 +1,24 @@
-use ffxiv_crafting::Condition::*;
+use ffxiv_crafting::Condition::{self, *};
 use ffxiv_crafting::{Actions, Status};
 
+use crate::preprogress_solver::PreprogressSolver;
+
 pub trait Solver {
-    fn run(s: &Status) -> (String, Vec<Actions>);
+    fn run(&self, s: &Status) -> (String, Vec<Actions>);
 }
 
-pub struct RedstoneSuan611;
+pub struct LycorisSanguinea<'a> {
+    dp_solver: &'a PreprogressSolver<10, 0>,
+}
 
-impl Solver for RedstoneSuan611 {
-    fn run(s: &Status) -> (String, Vec<Actions>) {
+impl<'a> LycorisSanguinea<'a> {
+    pub fn new(dp_solver: &'a PreprogressSolver<10, 0>) -> Self {
+        Self { dp_solver }
+    }
+}
+
+impl<'a> Solver for LycorisSanguinea<'a> {
+    fn run(&self, s: &Status) -> (String, Vec<Actions>) {
         let mut sb = String::new();
         let action = match s {
             s if s.step == 0 => vec![Actions::MuscleMemory],
@@ -21,7 +31,13 @@ impl Solver for RedstoneSuan611 {
                 sb.push_str(format!("[Phase 2] 崇敬内打高速，").as_str());
                 vec![match s.condition {
                     Centered if s.buffs.veneration > 0 && s.durability > s.calc_durability(10) => {
-                        Actions::RapidSynthesis
+                        if s.buffs.final_appraisal == 0
+                            && s.calc_synthesis(5.0) + s.progress > s.recipe.difficulty
+                        {
+                            Actions::FinalAppraisal
+                        } else {
+                            Actions::RapidSynthesis
+                        }
                     }
                     Malleable if s.durability > s.calc_durability(10) => {
                         if s.buffs.final_appraisal == 0
@@ -39,12 +55,20 @@ impl Solver for RedstoneSuan611 {
                     Primed if s.buffs.veneration <= 1 => Actions::Veneration,
                     _ if s.buffs.manipulation == 0 => Actions::Manipulation,
                     _ if s.buffs.veneration == 0 => Actions::Veneration,
-                    _ if s.durability > s.calc_durability(10) => Actions::RapidSynthesis,
+                    _ if s.durability > s.calc_durability(10) => {
+                        if s.buffs.final_appraisal == 0
+                            && s.calc_synthesis(5.0) + s.progress > s.recipe.difficulty
+                        {
+                            Actions::FinalAppraisal
+                        } else {
+                            Actions::RapidSynthesis
+                        }
+                    }
                     _ if s.buffs.careful_observation_used < 3 => Actions::CarefulObservation,
                     _ => Actions::Observe,
                 }]
             }
-            s if s.buffs.inner_quiet < 8 => {
+            s if s.buffs.inner_quiet < 10 => {
                 sb.push_str(format!("[Phase 3] 堆叠内静，").as_str());
                 let ext_du = s.durability as i32 + 5 * s.buffs.manipulation as i32
                     - 5 * (10 - s.buffs.inner_quiet as i32)
@@ -54,19 +78,12 @@ impl Solver for RedstoneSuan611 {
                 if s.quality == 0 && s.buffs.manipulation == 0 {
                     sb.push_str(format!("直接使用掌握后进入本阶段，").as_str());
                     vec![Actions::Manipulation]
-                } else if ext_du > 0 {
-                    sb.push_str(format!("大于0、改革-俭约加工至10内静，").as_str());
-                    if s.buffs.innovation > 0 {
-                        vec![Actions::PrudentTouch]
-                    } else {
-                        vec![Actions::Innovation]
-                    }
                 } else if s.buffs.innovation == 0 {
                     sb.push_str(format!("无改革buff，").as_str());
                     vec![match s.condition {
                         Good => Actions::TricksOfTheTrade,
                         Sturdy if s.buffs.inner_quiet == 0 => Actions::PrudentTouch,
-                        _ if s.buffs.manipulation <= 1 => Actions::Manipulation,
+                        Primed if s.buffs.manipulation <= 1 => Actions::Manipulation,
                         _ => Actions::Innovation,
                     }]
                 } else {
@@ -85,68 +102,58 @@ impl Solver for RedstoneSuan611 {
                         _ if s.is_action_allowed(Actions::HeartAndSoul).is_ok() => {
                             Actions::HeartAndSoul
                         }
+                        _ if s.buffs.manipulation == 0 && s.durability < 15 => {
+                            Actions::Manipulation
+                        }
                         _ if s.buffs.heart_and_soul > 0 => Actions::PreciseTouch,
+                        _ if s.buffs.careful_observation_used < 3 => Actions::CarefulObservation,
                         _ => Actions::PrudentTouch,
                     }]
                 }
             }
-            s if s.buffs.inner_quiet < 10 => match (s.buffs.manipulation % 2, s.durability % 10) {
-                (1, 1..=5) => vec![
-                    Actions::PrudentTouch,
-                    Actions::Observe,
-                    Actions::FocusedTouch,
-                ],
-                (1, _) | (0, 1..=5) => vec![
-                    Actions::Observe,
-                    Actions::FocusedTouch,
-                    Actions::Observe,
-                    Actions::FocusedTouch,
-                ],
-                (0, _) => vec![
-                    Actions::PrudentTouch,
-                    Actions::Observe,
-                    Actions::FocusedTouch,
-                ],
-                _ => unreachable!(),
-            },
-            _ if s.buffs.inner_quiet == 10 => {
+            s if s.buffs.inner_quiet == 10 => {
+                use crate::solver::Solver;
                 sb.push_str(format!("[Phase 4] 推满加工条，").as_str());
-                let action = match s.condition {
-                    Good if s.buffs.innovation == 0 => Actions::TricksOfTheTrade,
-                    _ if s.buffs.innovation == 0 => Actions::Innovation,
-                    Good if s.calc_durability(10) < s.durability => Actions::PreciseTouch,
-                    Good => Actions::TricksOfTheTrade,
-                    Sturdy if s.calc_durability(20) < s.durability => Actions::PreparatoryTouch,
-                    Primed if s.buffs.innovation <= 2 => Actions::Innovation,
-                    _ => Actions::TrainedFinesse,
-                };
-
-                let mut tmp_state = s.clone();
-                tmp_state.cast_action(action);
-                if tmp_state.durability >= 11
-                    && (tmp_state.craft_points >= 74
-                        || (tmp_state.craft_points >= 56 && tmp_state.buffs.innovation >= 2))
-                {
-                    vec![action]
-                } else {
-                    sb.push_str(format!("收尾，").as_str());
-                    if s.craft_points >= 74 {
-                        vec![
-                            Actions::GreatStrides,
-                            Actions::Innovation,
-                            Actions::ByregotsBlessing,
-                            Actions::BasicSynthesis,
-                        ]
-                    } else if s.craft_points >= 56 && s.buffs.innovation >= 2 {
-                        vec![
-                            Actions::GreatStrides,
-                            Actions::ByregotsBlessing,
-                            Actions::BasicSynthesis,
-                        ]
-                    } else {
-                        vec![]
+                sb.push_str(format!("{:?}", self.dp_solver.read_all(s)).as_str());
+                let best = [
+                    Actions::AdvancedTouch,
+                    Actions::StandardTouch,
+                    Actions::BasicTouch,
+                    Actions::MastersMend,
+                    Actions::WasteNot,
+                    Actions::Veneration,
+                    Actions::GreatStrides,
+                    Actions::Innovation,
+                    Actions::WasteNotII,
+                    Actions::ByregotsBlessing,
+                    Actions::CarefulSynthesis,
+                    Actions::PrudentTouch,
+                    Actions::PreparatoryTouch,
+                    Actions::Groundwork,
+                    Actions::DelicateSynthesis,
+                    Actions::PrudentSynthesis,
+                    Actions::TrainedFinesse,
+                    Actions::Manipulation,
+                ]
+                .into_iter()
+                .filter(|&action| s.is_action_allowed(action).is_ok())
+                .filter_map(|action| {
+                    print!("{:?}，", action);
+                    let mut new_s = s.clone();
+                    new_s.cast_action(action);
+                    new_s.condition = Condition::Normal;
+                    self.dp_solver.get(&new_s)
+                })
+                .inspect(|x| print!("{:?}，", x.value))
+                .max_by_key(|slot| slot.value);
+                let mut result = Vec::with_capacity(1);
+                if let Some(slot) = best {
+                    if let Some(action) = slot.action {
+                        println!("best: {:?}, {}", slot.action, slot.value);
+                        result.push(action)
                     }
                 }
+                result
             }
             _ => vec![],
         };
@@ -156,7 +163,7 @@ impl Solver for RedstoneSuan611 {
 
 #[cfg(test)]
 mod test {
-    use super::{RedstoneSuan611, Solver};
+    use super::{LycorisSanguinea, Solver};
     use ffxiv_crafting::{Actions, Attributes, ConditionIterator, Recipe, Status};
     use rand::prelude::*;
 
@@ -181,14 +188,15 @@ mod test {
             ConditionIterator::new(r.conditions_flag as i32, a.level as i32).collect::<Vec<_>>();
         let mut sum = 0;
         let mut full = 0;
-        const total: i32 = 100;
-        for i in 0..total {
+        const TOTAL: i32 = 100;
+        let solver: LycorisSanguinea;
+        for i in 0..TOTAL {
             println!("running simulation {i}");
             let mut status = Status::new(a, r);
             'solve: while !status.is_finished() {
                 print!("{}/{}，", status.progress, status.quality);
                 print!("球色：{:?}，", status.condition);
-                let (log, next_actions) = RedstoneSuan611::run(&status);
+                let (log, next_actions) = solver::run(&status);
                 if next_actions.len() == 0 {
                     println!("求解结果为空：{status:?}");
                     break;
@@ -213,7 +221,16 @@ mod test {
                             _ => unreachable!(),
                         });
                     }
-                    status.condition = conditions.choose_weighted(&mut rng, |c| c.1).unwrap().0;
+                    if !matches!(next_action, Actions::FinalAppraisal | Actions::HeartAndSoul) {
+                        status.condition = ConditionIterator::new(
+                            status.recipe.conditions_flag as i32,
+                            status.attributes.level as i32,
+                        )
+                        .collect::<Vec<_>>()
+                        .choose_weighted(&mut rng, |c| c.1)
+                        .unwrap()
+                        .0;
+                    }
                 }
                 println!();
             }
@@ -228,6 +245,6 @@ mod test {
                 }
             }
         }
-        println!("avg: {}, full: {full}", sum as f32 / total as f32);
+        println!("avg: {}, full: {full}", sum as f32 / TOTAL as f32);
     }
 }

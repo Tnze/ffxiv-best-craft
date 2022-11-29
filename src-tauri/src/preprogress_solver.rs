@@ -3,6 +3,7 @@ use std::sync::Arc;
 use ffxiv_crafting::{Actions, Status};
 use rayon::iter::{IntoParallelRefMutIterator, ParallelIterator};
 
+use super::solver::SolverSlot;
 use super::{ProgressSolver, QualitySolver, Solver};
 
 pub struct PreprogressSolver<const MN: usize, const WN: usize>
@@ -50,6 +51,12 @@ where
             progress_index,
             quality_solvers,
         }
+    }
+
+    pub(crate) fn get(&self, s: &Status) -> Option<&SolverSlot<u32>> {
+        let left_progress = s.recipe.difficulty - s.progress;
+        let i = *self.progress_index.get(left_progress as usize)?;
+        self.quality_solvers.get(i)?.get(s)
     }
 }
 
