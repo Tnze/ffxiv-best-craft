@@ -127,31 +127,11 @@ fn simulate_one_step(
 }
 
 #[tauri::command(async)]
-async fn suggess_next(
-    status: Status,
-    app_state: tauri::State<'_, AppState>,
-) -> Result<Actions, String> {
+fn suggess_next(status: Status) -> Result<Actions, String> {
     use hard_recipe::{LycorisSanguinea, Solver};
     match status {
         s if s.recipe.rlv == 611 => {
-            let init_status = Status::new(s.attributes, s.recipe);
-            let dp_solver = app_state
-                .lycoris_sanguinea
-                .get_or_init(async move || {
-                    let progress_list = vec![init_status.calc_synthesis(1.2)];
-                    let mut driver = ProgressSolver::new(init_status.clone());
-                    driver.init();
-                    let mut solver = PreprogressSolver::<10, 0>::new(
-                        init_status,
-                        progress_list,
-                        Arc::new(driver),
-                    );
-                    solver.init();
-                    solver
-                })
-                .await;
-            let solver = LycorisSanguinea::new(dp_solver);
-            let (str, result) = solver.run(&s);
+            let (str, result) = LycorisSanguinea::run(&s);
             println!("{str} {:?}", result);
             Ok(result
                 .get(0)
@@ -281,7 +261,6 @@ async fn item_info(
 
 struct AppState {
     solver_list: Mutex<HashMap<ordinary_solver::SolverHash, Option<Box<dyn Solver + Send + Sync>>>>,
-    lycoris_sanguinea: OnceCell<PreprogressSolver<10, 0>>,
     db: OnceCell<DatabaseConnection>,
     shutdown_signal: Mutex<Option<oneshot::Sender<()>>>,
     should_be_transparent: AtomicBool,
@@ -291,7 +270,6 @@ impl AppState {
     fn new() -> Self {
         Self {
             solver_list: Mutex::new(HashMap::new()),
-            lycoris_sanguinea: OnceCell::new(),
             db: OnceCell::new(),
             shutdown_signal: Mutex::new(None),
             should_be_transparent: AtomicBool::new(false),
