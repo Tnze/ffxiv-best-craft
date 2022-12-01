@@ -1,38 +1,14 @@
-use std::iter::once_with;
-
 use ffxiv_crafting::Condition::*;
 use ffxiv_crafting::{Actions, Status};
 
-use crate::preprogress_solver::PreprogressSolver;
-
 pub trait Solver {
-    fn run(&self, s: &Status) -> (String, Vec<Actions>);
+    fn run(s: &Status) -> (String, Vec<Actions>);
 }
 
-pub struct LycorisSanguinea<'a> {
-    dp_solver: &'a PreprogressSolver<10, 0>,
-}
+pub struct LycorisSanguinea;
 
-impl<'a> LycorisSanguinea<'a> {
-    pub fn new(dp_solver: &'a PreprogressSolver<10, 0>) -> Self {
-        Self { dp_solver }
-    }
-}
-
-fn simulate_actions<'a>(s: &Status, actions: impl Iterator<Item = &'a Actions>) -> Status {
-    let mut new_s = s.clone();
-    for action in actions {
-        if new_s.is_finished() || new_s.is_action_allowed(*action).is_err() {
-            break;
-        }
-        new_s.cast_action(*action);
-        new_s.condition = Normal
-    }
-    new_s
-}
-
-impl<'a> Solver for LycorisSanguinea<'a> {
-    fn run(&self, s: &Status) -> (String, Vec<Actions>) {
+impl Solver for LycorisSanguinea {
+    fn run(s: &Status) -> (String, Vec<Actions>) {
         let mut sb = String::new();
         let action = match s {
             s if s.step == 0 => vec![Actions::MuscleMemory],
@@ -129,51 +105,8 @@ impl<'a> Solver for LycorisSanguinea<'a> {
                 }
             }
             s if s.buffs.inner_quiet == 10 => {
-                use crate::solver::Solver;
                 sb.push_str(format!("[Phase 4] 推满加工条，").as_str());
-                let best = [
-                    Actions::TricksOfTheTrade,
-                    Actions::PreciseTouch,
-                    Actions::GreatStrides,
-                    Actions::Innovation,
-                    Actions::Manipulation,
-                    Actions::PrudentTouch,
-                    Actions::PreparatoryTouch,
-                    Actions::AdvancedTouch,
-                    Actions::StandardTouch,
-                    Actions::BasicTouch,
-                    Actions::MastersMend,
-                    Actions::ByregotsBlessing,
-                    Actions::TrainedFinesse,
-                ]
-                .into_iter()
-                .filter(|&action| s.is_action_allowed(action).is_ok())
-                .map(|action| {
-                    let mut new_s = s.clone();
-                    new_s.cast_action(action);
-                    new_s.condition = Normal;
-                    if new_s.durability % 5 != 0 {
-                        new_s.durability += 5 - new_s.durability % 5;
-                    }
-                    let mut solved = self.dp_solver.read_all(&new_s);
-                    let mut skills = Vec::with_capacity(1 + solved.len());
-                    skills.push(action);
-                    let new_s = simulate_actions(&new_s, solved.iter());
-                    skills.append(&mut solved);
-                    (skills, new_s)
-                })
-                .chain(once_with(|| {
-                    let solved = self.dp_solver.read_all(s);
-                    let new_s = simulate_actions(&s, solved.iter());
-                    (solved, new_s)
-                }))
-                .max_by(|(_, a), (_, b)| {
-                    let pg = a.progress.cmp(&b.progress);
-                    let qu = a.quality.cmp(&b.quality);
-                    let st = a.step.cmp(&b.step).reverse();
-                    pg.then(qu).then(st)
-                });
-                best.map(|v| v.0).unwrap_or(Vec::new())
+                vec![]
             }
             _ => vec![],
         };
