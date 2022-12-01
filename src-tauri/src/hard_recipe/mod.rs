@@ -1,4 +1,6 @@
-use ffxiv_crafting::Condition::{self, *};
+use std::iter::once_with;
+
+use ffxiv_crafting::Condition::*;
 use ffxiv_crafting::{Actions, Status};
 
 use crate::preprogress_solver::PreprogressSolver;
@@ -15,6 +17,18 @@ impl<'a> LycorisSanguinea<'a> {
     pub fn new(dp_solver: &'a PreprogressSolver<10, 0>) -> Self {
         Self { dp_solver }
     }
+}
+
+fn simulate_actions<'a>(s: &Status, actions: impl Iterator<Item = &'a Actions>) -> Status {
+    let mut new_s = s.clone();
+    for action in actions {
+        if new_s.is_finished() || new_s.is_action_allowed(*action).is_err() {
+            break;
+        }
+        new_s.cast_action(*action);
+        new_s.condition = Normal
+    }
+    new_s
 }
 
 impl<'a> Solver for LycorisSanguinea<'a> {
@@ -68,7 +82,10 @@ impl<'a> Solver for LycorisSanguinea<'a> {
                     _ => Actions::Observe,
                 }]
             }
-            s if s.buffs.inner_quiet < 10 => {
+            s if s.buffs.inner_quiet < 10
+                && s.quality < s.recipe.quality
+                && s.craft_points > 100 =>
+            {
                 sb.push_str(format!("[Phase 3] 堆叠内静，").as_str());
                 let ext_du = s.durability as i32 + 5 * s.buffs.manipulation as i32
                     - 5 * (10 - s.buffs.inner_quiet as i32)
@@ -114,46 +131,49 @@ impl<'a> Solver for LycorisSanguinea<'a> {
             s if s.buffs.inner_quiet == 10 => {
                 use crate::solver::Solver;
                 sb.push_str(format!("[Phase 4] 推满加工条，").as_str());
-                sb.push_str(format!("{:?}", self.dp_solver.read_all(s)).as_str());
                 let best = [
+                    Actions::TricksOfTheTrade,
+                    Actions::PreciseTouch,
+                    Actions::GreatStrides,
+                    Actions::Innovation,
+                    Actions::Manipulation,
+                    Actions::PrudentTouch,
+                    Actions::PreparatoryTouch,
                     Actions::AdvancedTouch,
                     Actions::StandardTouch,
                     Actions::BasicTouch,
                     Actions::MastersMend,
-                    Actions::WasteNot,
-                    Actions::Veneration,
-                    Actions::GreatStrides,
-                    Actions::Innovation,
-                    Actions::WasteNotII,
                     Actions::ByregotsBlessing,
-                    Actions::CarefulSynthesis,
-                    Actions::PrudentTouch,
-                    Actions::PreparatoryTouch,
-                    Actions::Groundwork,
-                    Actions::DelicateSynthesis,
-                    Actions::PrudentSynthesis,
                     Actions::TrainedFinesse,
-                    Actions::Manipulation,
                 ]
                 .into_iter()
                 .filter(|&action| s.is_action_allowed(action).is_ok())
-                .filter_map(|action| {
-                    print!("{:?}，", action);
+                .map(|action| {
                     let mut new_s = s.clone();
                     new_s.cast_action(action);
-                    new_s.condition = Condition::Normal;
-                    self.dp_solver.get(&new_s)
-                })
-                .inspect(|x| print!("{:?}，", x.value))
-                .max_by_key(|slot| slot.value);
-                let mut result = Vec::with_capacity(1);
-                if let Some(slot) = best {
-                    if let Some(action) = slot.action {
-                        println!("best: {:?}, {}", slot.action, slot.value);
-                        result.push(action)
+                    new_s.condition = Normal;
+                    if new_s.durability % 5 != 0 {
+                        new_s.durability += 5 - new_s.durability % 5;
                     }
-                }
-                result
+                    let mut solved = self.dp_solver.read_all(&new_s);
+                    let mut skills = Vec::with_capacity(1 + solved.len());
+                    skills.push(action);
+                    let new_s = simulate_actions(&new_s, solved.iter());
+                    skills.append(&mut solved);
+                    (skills, new_s)
+                })
+                .chain(once_with(|| {
+                    let solved = self.dp_solver.read_all(s);
+                    let new_s = simulate_actions(&s, solved.iter());
+                    (solved, new_s)
+                }))
+                .max_by(|(_, a), (_, b)| {
+                    let pg = a.progress.cmp(&b.progress);
+                    let qu = a.quality.cmp(&b.quality);
+                    let st = a.step.cmp(&b.step).reverse();
+                    pg.then(qu).then(st)
+                });
+                best.map(|v| v.0).unwrap_or(Vec::new())
             }
             _ => vec![],
         };
@@ -166,9 +186,14 @@ mod test {
     use super::{LycorisSanguinea, Solver};
     use ffxiv_crafting::{Actions, Attributes, ConditionIterator, Recipe, Status};
     use rand::prelude::*;
+    use std::sync::Arc;
 
     #[test]
     fn simulate() {
+        use crate::ordinary_solver::ProgressSolver;
+        use crate::solver::Solver as _;
+        use crate::PreprogressSolver;
+
         let mut rng = thread_rng();
         let r = Recipe {
             rlv: 611,
@@ -188,50 +213,55 @@ mod test {
             ConditionIterator::new(r.conditions_flag as i32, a.level as i32).collect::<Vec<_>>();
         let mut sum = 0;
         let mut full = 0;
-        const TOTAL: i32 = 100;
-        let solver: LycorisSanguinea;
+        const TOTAL: i32 = 1000;
+
+        let init_status = Status::new(a, r);
+        let progress_list = vec![init_status.calc_synthesis(1.2)];
+        let mut driver = ProgressSolver::new(init_status.clone());
+        driver.init();
+        let mut dp_solver =
+            PreprogressSolver::<10, 0>::new(init_status, progress_list, Arc::new(driver));
+        dp_solver.init();
+        let solver = LycorisSanguinea::new(&dp_solver);
+
         for i in 0..TOTAL {
             println!("running simulation {i}");
             let mut status = Status::new(a, r);
             'solve: while !status.is_finished() {
                 print!("{}/{}，", status.progress, status.quality);
                 print!("球色：{:?}，", status.condition);
-                let (log, next_actions) = solver::run(&status);
+                let (log, next_actions) = solver.run(&status);
                 if next_actions.len() == 0 {
                     println!("求解结果为空：{status:?}");
                     break;
                 };
                 print!("{log}");
-                for next_action in next_actions.into_iter() {
-                    print!("{next_action:?}");
-                    if let Err(e) = status.is_action_allowed(next_action) {
-                        println!("\n无法使用{next_action:?}：{e:?}");
-                        break 'solve;
-                    }
-                    if status.success_rate(next_action) as f32 / 100.0 > random() {
-                        print!("，");
-                        status.cast_action(next_action);
-                    } else {
-                        print!("失败，");
-                        status.cast_action(match next_action {
-                            Actions::RapidSynthesis => Actions::RapidSynthesisFail,
-                            Actions::HastyTouch => Actions::HastyTouchFail,
-                            Actions::FocusedSynthesis => Actions::FocusedSynthesisFail,
-                            Actions::FocusedTouch => Actions::FocusedTouchFail,
-                            _ => unreachable!(),
-                        });
-                    }
-                    if !matches!(next_action, Actions::FinalAppraisal | Actions::HeartAndSoul) {
-                        status.condition = ConditionIterator::new(
-                            status.recipe.conditions_flag as i32,
-                            status.attributes.level as i32,
-                        )
-                        .collect::<Vec<_>>()
-                        .choose_weighted(&mut rng, |c| c.1)
-                        .unwrap()
-                        .0;
-                    }
+                let Some(&next_action) = next_actions.get(0) else {
+                    break;
+                };
+                // for next_action in next_actions.into_iter() {
+                print!("{next_action:?}");
+                if let Err(e) = status.is_action_allowed(next_action) {
+                    println!("\n无法使用{next_action:?}：{e:?}");
+                    break 'solve;
                 }
+                if status.success_rate(next_action) as f32 / 100.0 > random() {
+                    print!("，");
+                    status.cast_action(next_action);
+                } else {
+                    print!("失败，");
+                    status.cast_action(match next_action {
+                        Actions::RapidSynthesis => Actions::RapidSynthesisFail,
+                        Actions::HastyTouch => Actions::HastyTouchFail,
+                        Actions::FocusedSynthesis => Actions::FocusedSynthesisFail,
+                        Actions::FocusedTouch => Actions::FocusedTouchFail,
+                        _ => unreachable!(),
+                    });
+                }
+                if !matches!(next_action, Actions::FinalAppraisal | Actions::HeartAndSoul) {
+                    status.condition = conditions.choose_weighted(&mut rng, |c| c.1).unwrap().0;
+                }
+                // }
                 println!();
             }
             println!(

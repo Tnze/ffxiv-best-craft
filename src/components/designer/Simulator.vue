@@ -76,6 +76,9 @@ async function pushAction(action: Actions) {
         suggessNext(status).then(v => {
             console.log(v)
             suggess.value = [v]
+        }).catch(e => {
+            console.log(e)
+            suggess.value.splice(0)
         })
         if (status.progress >= status.recipe.difficulty || status.durability <= 0) {
             await sleep(2500);

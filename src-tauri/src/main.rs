@@ -135,12 +135,10 @@ async fn suggess_next(
     match status {
         s if s.recipe.rlv == 611 => {
             let init_status = Status::new(s.attributes, s.recipe);
-            println!("start solve");
-            let progress_list = vec![init_status.calc_synthesis(1.2)];
             let dp_solver = app_state
                 .lycoris_sanguinea
                 .get_or_init(async move || {
-                    println!("creating solver");
+                    let progress_list = vec![init_status.calc_synthesis(1.2)];
                     let mut driver = ProgressSolver::new(init_status.clone());
                     driver.init();
                     let mut solver = PreprogressSolver::<10, 0>::new(
@@ -149,15 +147,16 @@ async fn suggess_next(
                         Arc::new(driver),
                     );
                     solver.init();
-                    println!("solver created");
                     solver
                 })
                 .await;
             let solver = LycorisSanguinea::new(dp_solver);
             let (str, result) = solver.run(&s);
-            println!("{str}");
-            println!("solved result: {:?}", result);
-            Ok(result.get(0).ok_or(String::from("result is empty"))?.clone())
+            println!("{str} {:?}", result);
+            Ok(result
+                .get(0)
+                .ok_or(String::from("result is empty"))?
+                .clone())
         }
         _ => Err(String::from("unsupport recipe")),
     }
