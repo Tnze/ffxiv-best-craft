@@ -175,7 +175,7 @@ where
         }
     }
 
-    fn read(&self, s: &Status) -> Option<Actions> {
+    fn read(&self, s: &Status) -> Option<(Actions, u32)> {
         let max_quality = s.recipe.quality;
         let mut new_s = s.clone();
         let max_addon = max_quality - s.quality;
@@ -208,7 +208,7 @@ where
             }
         }
         match best.2 {
-            Some(sk) => Some(sk),
+            Some(sk) => Some((sk, best.0.0)),
             None => self.progress_solver.read(&s),
         }
     }
@@ -379,12 +379,45 @@ where
             }
         }
     }
-    fn read(&self, s: &Status) -> Option<Actions> {
-        self.results[s.durability as usize / 5][s.craft_points as usize]
-            [s.buffs.veneration as usize][s.buffs.muscle_memory as usize]
-            [s.buffs.manipulation as usize][s.buffs.wast_not as usize]
-            .action
+
+    fn read(&self, s: &Status) -> Option<(Actions, u32)> {
+        let difficulty = s.recipe.difficulty;
+        let max_addon = difficulty - s.progress;
+        let mut new_s2 = s.clone();
+        let mut best = {
+            let &SolverSlot {
+                value: progress,
+                step,
+                action: skill,
+            } = self.get(&s);
+            let progress = progress.min(max_addon);
+            (
+                (progress, step),
+                (s.craft_points, s.durability),
+                skill,
+            )
+        };
+        for cp in 0..=s.craft_points {
+            new_s2.craft_points = cp;
+            for du in 1..=s.durability {
+                new_s2.durability = du;
+                let &SolverSlot {
+                    value: progress,
+                    step,
+                    action: skill,
+                } = self.get(&new_s2);
+                let progress = progress.min(max_addon);
+                if progress >= best.0 .0 && step < best.0 .1 {
+                    best = ((progress, step), (cp, du), skill);
+                }
+            }
+        }
+        match best.2 {
+            Some(sk) => Some((sk, best.0.0 as u32)),
+            None => None
+        }
     }
+
     fn read_all(&self, s: &Status) -> Vec<Actions> {
         let difficulty = s.recipe.difficulty;
         let mut new_s = s.clone();

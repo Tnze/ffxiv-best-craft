@@ -359,7 +359,6 @@ async function openListFromJSON() {
 .action-queue {
     border-top: 1px solid var(--el-border-color);
     border-bottom: 1px solid var(--el-border-color);
-    padding: 7px 10px 3px 10px;
 }
 
 .actionpanel-and-savedqueue {

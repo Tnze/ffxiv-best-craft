@@ -15,6 +15,6 @@ pub(crate) struct SolverSlot<V> {
 
 pub trait Solver {
     fn init(&mut self);
-    fn read(&self, s: &Status) -> Option<Actions>;
+    fn read(&self, s: &Status) -> Option<(Actions, u32)>;
     fn read_all(&self, s: &Status) -> Vec<Actions>;
 }
