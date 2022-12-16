@@ -43,7 +43,7 @@ where
             .map(|v| {
                 let mut s = init_status.clone();
                 s.progress = s.recipe.difficulty - *v;
-                QualitySolver::new(s, progress_solver.clone())
+                QualitySolver::<MN, WN>::new(s, progress_solver.clone())
             })
             .collect();
         Self {
