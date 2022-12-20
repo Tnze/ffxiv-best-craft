@@ -1,11 +1,15 @@
 {
-  "version": "v0.6.2",
-  "notes": "修复Win10系统下深色模式白色背景的问题",
-  "pub_date": "2022-11-21T23:22:19+08:00",
+  "version": "v0.6.6",
+  "notes": "- 更新国服6.2配方\n- 高难配方新增模拟器模式",
+  "pub_date": "2022-12-20T23:27:12+08:00",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5NaE1tRW9YL1RxdTBhRm1UU0ptUWVlbFlrdVZXejlHeCt5c2FMYUNhaC8wTS9MRlpiQ25UQU5uajEvRDBsMU9oL0Q0bG1NcmpieDhWTWlnRWh5aXdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjY5MDQ0MDE4CWZpbGU6QmVzdENyYWZ0XzAuNi4yX3g2NF96aC1DTi5tc2kuemlwClB0Uk9HWlNnRGlGY0ZxSmE1djkzRlUva1A2WnVJUnE4Q0RQWUpzM0pvTEx1dnZKNzEzaE5xUmFtRHl3eUpmYWNIbm13YmJCOTNWWU9KT3NOZU8rZUR3PT0K",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.2/BestCraft_0.6.2_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmxRVGJWU3dkRURMdXBnRkVRR2REK1RobWQyZU5ObkNlYWYyZVVsMjFVMS9hdm45OXZkYmdaWllmR1N5KzNYTnYyaHBuNzQ3LytpUW5IL3lvZlU0OGc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjcxNTQ5NjM0CWZpbGU6QmVzdENyYWZ0XzAuNi42X3g2NF96aC1DTi5tc2kuemlwCnRZRFNXSGJwMkdhK3JzTXUrUEUvTk5adGozRnRJdkhVWVFRNGw2RUVMem9BOUcyMFNIRGtYZEFqTVo1U1g4bGVRbGh1SmxLUmpSOEtrTVBsbnFUUUR3PT0K",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.6/BestCraft_0.6.6_x64_zh-CN.msi.zip"
+    },
+    "linux-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm80dEJjOW5pMmVOR0VtNmIraXYzNklpelV3S21iQXJmRXlsbHJxNlpoK1A3d3lUSFJ0WmtwV0ZoWmNUL2MyU0pCSVB5c0JGUkF5RVcraktPekNLdEFjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjcxNTUwODE5CWZpbGU6YmVzdC1jcmFmdF8wLjYuNl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKT0xYU21taUZZTm9waklhSDlWNk1sbDBvcDJBdHFHRlA2b0xBbEZKSjJFSVJHZDZHaFJYdE9NZW54ODhRZGNJLzNHUlJ6TFZzOGdRV1RacHdqblBYREE9PQo=",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.6/best-craft_0.6.6_amd64.AppImage.tar.gz"
     }
   }
 }
