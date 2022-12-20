@@ -7,7 +7,7 @@ license = ""
 name = "app"
 repository = ""
 rust-version = "1.57"
-version = "0.6.5"
+version = "0.6.6"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -16,14 +16,14 @@ tauri-build = { version = "1.2", features = [] }
 
 [dependencies]
 anyhow = "1.0.65"
-axum = "0.5"
+axum = "0.6.1"
 ffxiv-crafting = { version = "6.2.2", features = ["serde-support"] }
 futures = "0.3"
 msgbox = "0.7.0"
 percent-encoding = "2.2.0"
 rand = "0.8.5"
 rayon = "1.5.3"
-sea-orm = { version = "0.10", features = [
+sea-orm = { version = "0.10.5", features = [
   "sqlx-sqlite",
   "runtime-tokio-native-tls",
   "macros",
