@@ -18,7 +18,11 @@ const chunkedActions = computed(() => {
         const section = props.actions.slice(sec * size, Math.min(props.actions.length, (sec + 1) * size))
         let lines = [];
         for (let action of section) {
-            lines.push(`/ac ${$t(action.replaceAll('_', '-'))} <wait.${waitTimes.get(action)}>`)
+            let actionName = $t(action.replaceAll('_', '-'))
+            if(actionName.includes(' ')) {
+                actionName = `"${actionName}"`
+            }
+            lines.push(`/ac ${actionName} <wait.${waitTimes.get(action)}>`)
         }
         lines.push(`/echo ${$t('marco-finished', { id: sec + 1 })}<se.1>`)
         macros.push(lines)
