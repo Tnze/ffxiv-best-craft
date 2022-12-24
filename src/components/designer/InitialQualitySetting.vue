@@ -79,6 +79,9 @@ watchEffect(() => {
                                 </el-icon>
                             </el-button>
                         </el-button-group>
+                        <template v-else>
+                            {{ scope.row.amount }}
+                        </template>
                     </template>
                 </el-table-column>
             </el-table>
