@@ -1,6 +1,8 @@
 use ffxiv_crafting::Condition::*;
 use ffxiv_crafting::{Actions, Status};
 
+mod dp;
+
 pub trait Solver {
     fn run(s: &Status) -> (String, Vec<Actions>);
 }
@@ -111,103 +113,5 @@ impl Solver for LycorisSanguinea {
             _ => vec![],
         };
         (sb, action)
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::{LycorisSanguinea, Solver};
-    use ffxiv_crafting::{Actions, Attributes, ConditionIterator, Recipe, Status};
-    use rand::prelude::*;
-    use std::sync::Arc;
-
-    #[test]
-    fn simulate() {
-        use crate::ordinary_solver::ProgressSolver;
-        use crate::solver::Solver as _;
-        use crate::PreprogressSolver;
-
-        let mut rng = thread_rng();
-        let r = Recipe {
-            rlv: 611,
-            job_level: 90,
-            difficulty: 7480,
-            quality: 13620,
-            durability: 60,
-            conditions_flag: 435,
-        };
-        let a = Attributes {
-            level: 90,
-            craftsmanship: 4214,
-            control: 3528,
-            craft_points: 691,
-        };
-        let conditions =
-            ConditionIterator::new(r.conditions_flag as i32, a.level as i32).collect::<Vec<_>>();
-        let mut sum = 0;
-        let mut full = 0;
-        const TOTAL: i32 = 1000;
-
-        let init_status = Status::new(a, r);
-        let progress_list = vec![init_status.calc_synthesis(1.2)];
-        let mut driver = ProgressSolver::new(init_status.clone());
-        driver.init();
-        let mut dp_solver =
-            PreprogressSolver::<10, 0>::new(init_status, progress_list, Arc::new(driver));
-        dp_solver.init();
-        let solver = LycorisSanguinea::new(&dp_solver);
-
-        for i in 0..TOTAL {
-            println!("running simulation {i}");
-            let mut status = Status::new(a, r);
-            'solve: while !status.is_finished() {
-                print!("{}/{}，", status.progress, status.quality);
-                print!("球色：{:?}，", status.condition);
-                let (log, next_actions) = solver.run(&status);
-                if next_actions.len() == 0 {
-                    println!("求解结果为空：{status:?}");
-                    break;
-                };
-                print!("{log}");
-                let Some(&next_action) = next_actions.get(0) else {
-                    break;
-                };
-                // for next_action in next_actions.into_iter() {
-                print!("{next_action:?}");
-                if let Err(e) = status.is_action_allowed(next_action) {
-                    println!("\n无法使用{next_action:?}：{e:?}");
-                    break 'solve;
-                }
-                if status.success_rate(next_action) as f32 / 100.0 > random() {
-                    print!("，");
-                    status.cast_action(next_action);
-                } else {
-                    print!("失败，");
-                    status.cast_action(match next_action {
-                        Actions::RapidSynthesis => Actions::RapidSynthesisFail,
-                        Actions::HastyTouch => Actions::HastyTouchFail,
-                        Actions::FocusedSynthesis => Actions::FocusedSynthesisFail,
-                        Actions::FocusedTouch => Actions::FocusedTouchFail,
-                        _ => unreachable!(),
-                    });
-                }
-                if !matches!(next_action, Actions::FinalAppraisal | Actions::HeartAndSoul) {
-                    status.condition = conditions.choose_weighted(&mut rng, |c| c.1).unwrap().0;
-                }
-                // }
-                println!();
-            }
-            println!(
-                "simulation {i} result: 进展{}/品质{}/耐久{}",
-                status.progress, status.quality, status.durability
-            );
-            if status.progress == r.difficulty {
-                sum += status.quality;
-                if status.quality == r.quality {
-                    full += 1;
-                }
-            }
-        }
-        println!("avg: {}, full: {full}", sum as f32 / TOTAL as f32);
     }
 }
