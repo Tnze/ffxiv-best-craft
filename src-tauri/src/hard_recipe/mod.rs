@@ -1,7 +1,7 @@
 use ffxiv_crafting::Condition::*;
 use ffxiv_crafting::{Actions, Status};
 
-mod dp;
+pub mod dp;
 
 pub trait Solver {
     fn run(s: &Status) -> (String, Vec<Actions>);

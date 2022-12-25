@@ -74,10 +74,9 @@ async function pushAction(action: Actions) {
             condition: currentStatus.value.condition,
         })
         suggessNext(status).then(v => {
-            console.log(v)
             suggess.value = [v]
         }).catch(e => {
-            console.log(e)
+            console.error("suggest next error", e)
             suggess.value.splice(0)
         })
         if (status.progress >= status.recipe.difficulty || status.durability <= 0) {
@@ -104,7 +103,7 @@ function hoverAction(action: Actions) {
     timer = setTimeout(() => {
         simulateOneStep(currentStatus.value, action, true)
             .then(v => preview.value = v.status)
-            .catch(null)
+            .catch(_e => { })
     }, 1000)
 }
 
