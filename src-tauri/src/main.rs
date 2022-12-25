@@ -127,19 +127,38 @@ fn simulate_one_step(
 }
 
 #[tauri::command(async)]
-fn suggess_next(status: Status) -> Result<Actions, String> {
-    use hard_recipe::{LycorisSanguinea, Solver};
-    match status {
-        s if s.recipe.rlv == 611 => {
-            let (str, result) = LycorisSanguinea::run(&s);
-            println!("{str} {:?}", result);
-            Ok(result
-                .get(0)
-                .ok_or(String::from("result is empty"))?
-                .clone())
-        }
-        _ => Err(String::from("unsupport recipe")),
-    }
+async fn suggess_next(
+    status: Status,
+    app_state: tauri::State<'_, AppState>,
+) -> Result<Actions, String> {
+    // use hard_recipe::{LycorisSanguinea, Solver};
+    // match status {
+    //     s if s.recipe.rlv == 611 => {
+    //         let (str, result) = LycorisSanguinea::run(&s);
+    //         println!("{str} {:?}", result);
+    //         Ok(result
+    //             .get(0)
+    //             .ok_or(String::from("result is empty"))?
+    //             .clone())
+    //     }
+    //     _ => Err(String::from("unsupport recipe")),
+    // }
+    let solver = app_state
+        .hard_recipe_solver_list
+        .lock()
+        .await
+        .entry(ordinary_solver::SolverHash {
+            attributes: status.attributes,
+            recipe: status.recipe,
+        })
+        .or_insert_with(|| Arc::new(Mutex::new(hard_recipe::dp::Solver::new(status.clone()))))
+        .clone();
+    let mut solver = solver
+        .try_lock()
+        .map_err(|_| String::from("read on solving"))?;
+    solver
+        .read(status.craft_points, status.durability, status.buffs)
+        .ok_or("no result".into())
 }
 
 /// 计算当前状态下可以释放技能的集合，用于模拟界面将不可释放技能置灰
@@ -261,6 +280,8 @@ async fn item_info(
 
 struct AppState {
     solver_list: Mutex<HashMap<ordinary_solver::SolverHash, Option<Box<dyn Solver + Send + Sync>>>>,
+    hard_recipe_solver_list:
+        Mutex<HashMap<ordinary_solver::SolverHash, Arc<Mutex<hard_recipe::dp::Solver>>>>,
     db: OnceCell<DatabaseConnection>,
     shutdown_signal: Mutex<Option<oneshot::Sender<()>>>,
     should_be_transparent: AtomicBool,
@@ -270,6 +291,7 @@ impl AppState {
     fn new() -> Self {
         Self {
             solver_list: Mutex::new(HashMap::new()),
+            hard_recipe_solver_list: Mutex::new(HashMap::new()),
             db: OnceCell::new(),
             shutdown_signal: Mutex::new(None),
             should_be_transparent: AtomicBool::new(false),
