@@ -192,7 +192,7 @@ name = 名称
 </fluent>
 
 <fluent locale="en-US">
-confirm-select = Set cuurent recipe to "{ $itemName }"?
+confirm-select = Set current recipe to "{ $itemName }"?
 please-confirm = Please confirm
 recipe-setting-changed = Recipe is updated
 select-recipe = Select Recipe
