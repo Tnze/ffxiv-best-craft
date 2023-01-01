@@ -42,18 +42,22 @@ impl Solver {
     }
 
     #[rustfmt::skip]
-    pub fn read(&mut self, craft_points: i32, durability: u16, buffs: Buffs) -> Option<Actions> {
-        if craft_points == 0 || durability == 0 {
-            return None;
-        }
-        if let Some(action) = self.results
+    fn index(&mut self, craft_points: i32, durability: u16, buffs: Buffs) -> &mut Option<Actions> {
+        &mut self.results
             [craft_points as usize * (self.init_status.recipe.durability as usize + 1) + durability as usize]
             [buffs.observed as usize]
             [buffs.touch_combo_stage as usize]
             [buffs.great_strides as usize]
             [buffs.manipulation as usize]
             [buffs.innovation as usize]
-            [buffs.inner_quiet as usize] {
+            [buffs.inner_quiet as usize]
+    }
+
+    pub fn read(&mut self, craft_points: i32, durability: u16, buffs: Buffs) -> Option<Actions> {
+        if craft_points == 0 || durability == 0 {
+            return None;
+        }
+        if let Some(action) = *self.index(craft_points, durability, buffs) {
             return Some(action);
         }
         let mut init_status = self.init_status.clone();
@@ -63,9 +67,10 @@ impl Solver {
         let mut best_action = None;
         let mut best_quality = None;
         for (action, consumed_du) in Self::TOUCH_SKILLS {
-            if init_status.is_action_allowed(action).is_err() ||
-                durability < init_status.calc_durability(consumed_du) ||
-                init_status.success_rate(action) < 100 {
+            if init_status.is_action_allowed(action).is_err()
+                || durability < init_status.calc_durability(consumed_du)
+                || init_status.success_rate(action) < 100
+            {
                 continue;
             }
             let mut s = init_status.clone();
@@ -81,15 +86,13 @@ impl Solver {
                 best_quality = Some(s.quality);
             }
         }
-        self.results
-            [craft_points as usize * (self.init_status.recipe.durability as usize + 1) + durability as usize]
-            [buffs.observed as usize]
-            [buffs.touch_combo_stage as usize]
-            [buffs.great_strides as usize]
-            [buffs.manipulation as usize]
-            [buffs.innovation as usize]
-            [buffs.inner_quiet as usize] = best_action;
+        *self.index(craft_points, durability, buffs) = best_action;
         best_action
+    }
+
+    fn finish_actions_choices(&self, status: Status) -> Vec<Actions> {
+        let left_progress = status.recipe.difficulty - status.progress;
+        todo!()
     }
 }
 
