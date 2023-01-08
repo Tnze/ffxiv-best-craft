@@ -131,18 +131,6 @@ async fn suggess_next(
     status: Status,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<Actions, String> {
-    // use hard_recipe::{LycorisSanguinea, Solver};
-    // match status {
-    //     s if s.recipe.rlv == 611 => {
-    //         let (str, result) = LycorisSanguinea::run(&s);
-    //         println!("{str} {:?}", result);
-    //         Ok(result
-    //             .get(0)
-    //             .ok_or(String::from("result is empty"))?
-    //             .clone())
-    //     }
-    //     _ => Err(String::from("unsupport recipe")),
-    // }
     let solver = app_state
         .hard_recipe_solver_list
         .lock()
