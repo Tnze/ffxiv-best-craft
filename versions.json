@@ -1,15 +1,15 @@
 {
-  "version": "v0.6.7",
-  "notes": "- 修复翻译错误\n- 修复导出英文宏错误",
-  "pub_date": "2022-12-21T23:12:52+08:00",
+  "version": "v0.6.8",
+  "notes": "修复宏优劣排序错误导致的自动保存问题",
+  "pub_date": "2023-02-19T11:29:52+08:00",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmpyV1VWWVJubVY3TWR5NnIzRVUrK3lNUHpPQUNGT2x2U0hreWU4dlM3cVBYVjlBNFdjOXNqT3lEUWc1U2xUWEFBNzlQUGw2K09objNvK0FIV3ZtQXcwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjcxNjM3MzgyCWZpbGU6QmVzdENyYWZ0XzAuNi43X3g2NF96aC1DTi5tc2kuemlwCkxoTC8rT05VQVVoRE9HR0o5aXpzNHVMOW9SZTZndjg4aG1VYUV6RGZlM2dLd0cvM2lWTUJnWHhiWTJGMy9rcGRDUW80clYya04vazVaMUtubTF0R0N3PT0K",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.7/BestCraft_0.6.7_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnRCaTh6SktwWFcwUndCU3J1dEF5MGI5ak5IVlVoTSt1UjJnU0ovUHVQSjJPYzIyMmN2TC9SUHpWZ01lMTdMUXVadEQxckhpNlhkWFMyK2hQSG9TY0FvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjc2Nzc2MTkwCWZpbGU6QmVzdENyYWZ0XzAuNi44X3g2NF96aC1DTi5tc2kuemlwCkpHQWdFZXErQlY0S3QrUW81UXJlNE9tQzBTU0YxZk1ReUF6b0R1eFU1R0k4Q0J5bDJVWUhPdVFwUlJsZkNHQUxIVUdSSlFBUU9SNTFkUjZaYkxRL0FRPT0K",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.8/BestCraft_0.6.8_x64_zh-CN.msi.zip"
     },
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmozZ28wZWlEcmlRa1oxbjZIV3FiRWxNZUxYMDFBWVgxOG52OTFrRmNSY1U3amFLSmJycTc4cVd5cUtRRURhd2N1RW5BempCVGk0M3VmZU13L0s3NEFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjcxNjQxMTI5CWZpbGU6YmVzdC1jcmFmdF8wLjYuN19hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKOWdvd3prYy93b2tvU3o2UXozRmE3b3Jzb0syalJTaXVnNXRjMnpET08wdGJqY3k2dFVYdk16RUQzVDB5K3lZTk1PbS92YWdpajhrV0l5S09jWHJkQXc9PQo=",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.7/best-craft_0.6.7_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smt1dER3QzViZGFvVkIwNlJDaXBpSnExNXIzNDIwajNNUXdYeWVVTTZXWFk4ckw0VGhxN2NoM1oxYUxxd09LV0Y4SUIrb1RYYzV4YXZKVks5N01YZ1F3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjc2Nzc3MTkzCWZpbGU6YmVzdC1jcmFmdF8wLjYuOF9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKVXkwampROTdNQnQ1QTZyNERUa0cwSTRnTGVIaUg1bGgwKzRYaFNHaDZoWGFJZ3FiZTNMb1FQOFpMU3BtbzB6TE5POHkxMlIvYmFKSEt3bmlhc3JEQUE9PQo=",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.6.8/best-craft_0.6.8_amd64.AppImage.tar.gz"
     }
   }
 }
