@@ -170,7 +170,7 @@ const displayedStatus = computed(() => {
 watch(displayedStatus, (status) => {
     if (status.progress < status.recipe.difficulty)
         return;
-    if (savedSeqs.ary.find(v => compareStatus(v.seq.status, status) >= 0) != undefined)
+    if (savedSeqs.ary.some(v => compareStatus(v.seq.status, status) >= 0))
         return;
     saveSequence()
 })
