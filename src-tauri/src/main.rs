@@ -8,7 +8,6 @@ use std::collections::{hash_map::Entry, BTreeMap, HashMap};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::{net::SocketAddr, sync::Arc};
 
-use axum::{http::StatusCode, routing, Json, Router};
 use ffxiv_crafting::{
     Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, Status,
 };
@@ -428,73 +427,6 @@ fn should_be_transparent(app_state: tauri::State<AppState>) -> bool {
     app_state.should_be_transparent.load(Ordering::SeqCst)
 }
 
-#[tauri::command(async)]
-async fn start_http_server(
-    addr: String,
-    app_state: tauri::State<'_, AppState>,
-    app_handle: tauri::AppHandle,
-) -> Result<(), String> {
-    #[derive(Deserialize, Clone, Debug)]
-    struct ActionStep {
-        action: i32,
-        progress: u16,
-        quality: u32,
-        durability: u16,
-        condition: i8,
-    }
-    #[derive(Serialize, Clone)]
-    struct ActionStepJS {
-        action: Actions,
-        progress: u16,
-        quality: u32,
-        durability: u16,
-        condition: i8,
-    }
-    let action = async move |Json(payload): Json<ActionStep>| {
-        println!("{:?}", payload);
-        let Some(sk) = ffxiv_crafting::data::action_table(payload.action) else {
-            return (StatusCode::BAD_REQUEST, ())
-        };
-        app_handle
-            .emit_all(
-                "action-step",
-                ActionStepJS {
-                    action: sk,
-                    progress: payload.progress,
-                    quality: payload.quality,
-                    durability: payload.durability,
-                    condition: payload.condition,
-                },
-            )
-            .unwrap();
-        (StatusCode::NO_CONTENT, ())
-    };
-
-    println!("starting http server");
-    let rx = {
-        let mut current_tx = app_state.shutdown_signal.lock().await;
-        if let Some(_) = *current_tx {
-            return Err(String::from("http server is running"));
-        }
-        let (tx, rx) = oneshot::channel::<()>();
-        *current_tx = Some(tx);
-        rx
-    };
-    let server = Router::new().route("/action", routing::post(action));
-    let addr: SocketAddr = addr.parse().unwrap();
-    axum::Server::bind(&addr)
-        .serve(server.into_make_service())
-        .with_graceful_shutdown(wait_for_shutdown(rx))
-        .await
-        .unwrap();
-    Ok(())
-}
-
-#[allow(unused_must_use)]
-async fn wait_for_shutdown(rx: oneshot::Receiver<()>) {
-    rx.await;
-}
-
 fn main() {
     tauri::Builder::default()
         .manage(AppState::new())
@@ -514,7 +446,6 @@ fn main() {
             destroy_solver,
             rika_solve,
             should_be_transparent,
-            start_http_server,
         ])
         .setup(|app| {
             let window = app.get_window("main").unwrap();
