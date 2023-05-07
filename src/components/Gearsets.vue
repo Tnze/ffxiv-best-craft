@@ -1,40 +1,9 @@
 <script setup lang="ts">
 import { ElContainer, ElHeader, ElMain, ElTabs, ElTabPane, ElForm, ElFormItem, ElInputNumber, ElSwitch } from 'element-plus'
-import { createDir, readTextFile, writeFile, Dir } from '@tauri-apps/api/fs'
-import { ref, onMounted, onUpdated, computed } from 'vue'
-import { onBeforeRouteLeave } from 'vue-router';
+import { ref } from 'vue'
 import { useGearsetsStore } from '../store'
 
 const store = useGearsetsStore()
-
-async function loadGearsets() {
-    try {
-        const conf = await readTextFile('gearsets.json', { dir: Dir.App })
-        store.fromJson(conf)
-    } catch (err) {
-        // may be the file is not exist
-        console.log(err)
-    }
-}
-
-async function storeGearsets() {
-    const conf = store.toJson
-    try {
-        await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
-    } catch (err) {
-        try {
-            await createDir('', { dir: Dir.App })
-            await writeFile({ contents: conf, path: 'gearsets.json' }, { dir: Dir.App })
-        } catch (err) {
-            console.error(err)
-        }
-    }
-}
-
-onMounted(loadGearsets)
-onUpdated(storeGearsets)
-onBeforeRouteLeave((_to, _from) => storeGearsets())
-
 const jobPage = ref('default')
 
 </script>

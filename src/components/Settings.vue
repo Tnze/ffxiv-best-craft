@@ -36,17 +36,7 @@ const onCheckUpdateClick = async () => {
     }
 }
 
-const languageStore = computed({
-    get() {
-        return store.language;
-    },
-    set(v: string) {
-        store.selectLanguage(v)
-    }
-})
-
 </script>
-
 
 <template>
     <el-container>
@@ -56,7 +46,7 @@ const languageStore = computed({
         <el-main>
             <el-form class="setting-page" :model="store" label-width="120px">
                 <el-form-item :label="$t('language')">
-                    <el-select v-model="languageStore">
+                    <el-select v-model="store.language">
                         <el-option :label="$t('system-lang')" value="system" />
                         <el-option v-for="[v, name] in languages" :label="name" :value="v" />
                     </el-select>
@@ -69,7 +59,7 @@ const languageStore = computed({
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onCheckUpdateClick" :loading="checkingUpdate">{{
-                            checkingUpdate ? $t('checking-update') : $t('check-update')
+                        checkingUpdate ? $t('checking-update') : $t('check-update')
                     }}</el-button>
                 </el-form-item>
                 <el-form-item :label="$t('developer')">
