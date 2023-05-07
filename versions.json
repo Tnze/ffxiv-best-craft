@@ -1,15 +1,15 @@
 {
-  "version": "v0.7.1",
-  "notes": "修复了 v0.7.0 由于升级 vuex 导致的问题 #I711QL",
-  "pub_date": "2023-05-07T22:18:38+08:00",
+  "version": "v0.7.2",
+  "notes": "- 修复 Settings 和 Gearsets 持久化问题\n- Custom Updater Dialog",
+  "pub_date": "2023-05-08T02:30:16+08:00",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnJPQi8xUDUvRzRMcUZrY3VSY2dQUmxXTEhhbUw3ZDJ2amN3WEp1akFUVjQ4YmxsTmM4ZnVjeVorTjFlV3AwTEFZVnRDRnNMZFhQbmxhUEtoU1g4RWdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNDY4MjMxCWZpbGU6QmVzdENyYWZ0XzAuNy4xX3g2NF96aC1DTi5tc2kuemlwCk81bVQvMHJUbDIwajFFdGpodEQvT0p3N3VrKzIvSXJrV05XeVMwK0lCTzlicXVNUk5SaHc1NFlFRTVJN3N3MnNjbW13TklXaW5TN3M0aTMza2lRZ0FRPT0K",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.1/BestCraft_0.7.1_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnZRaklCelhXelRkalVMbUNVdHZBSXVoWGNETE5DQTBxVk9NaEpYVFlVQ3p6aGxMVmZjRVBCbkZVMldrMkdiT1M0ZEhLQjZaRHdGMTRyczhzODFHdkE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNDgzOTI5CWZpbGU6QmVzdENyYWZ0XzAuNy4yX3g2NF96aC1DTi5tc2kuemlwClNwL0xXbkx0RWhRRkprdTRhTDF1U3VIQ2lUZ2hlMGtwZEh4ZkpDSVNsOEZzbjRwa0cyT1JrUUVhNmlnZ0l5WlNkZ2lIZjlJTmNtTm5MZEhnUzN2R0JnPT0K",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.2/BestCraft_0.7.2_x64_zh-CN.msi.zip"
     },
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9QSGlkWkIrdHFOdVN3bHJQMStZZGN5K1JCcTQrb0JISlRYanlOK1FZaDQyRHVWYlJHTHprbUpYOGgwdUN6NHNqZmRXRTIzUXRJMGoxUnhneHIrWmdzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNDY4ODg3CWZpbGU6YmVzdC1jcmFmdF8wLjcuMV9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKd2ZnYi9lM2lDTWliUHlJTlhuMTN6T1A3Z2JiSjBxTm0wZUhKSmV6RnR5dlUxU2pIUU00eGJuZHJWb3ZoSXA5aGlHL2FhZU1qRWZvenBBNVVQb3ZxQkE9PQo=",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.1/best-craft_0.7.1_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnB1TTRicU53bnRyRDROU0Q3Q3dpYk4zTWN4SjNTZjc5ai9vRU5kSlE2cFpPQmJZdk45MUNKMEQwVngySkc5QUtHaGpIcWpHbmtEMkpqWnhqbTN6TUFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNDg0MTUxCWZpbGU6YmVzdC1jcmFmdF8wLjcuMl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKcVJweW9NQlhFT00vTkM2VnVKdDZTMGRCLy9tNGZ2bitSMUVPQTBIUWRkNGRPVk5EYUdTZWllclF2c0Evd2RiYVlIckRJNkV3dDlNVFBkNkFxODIzRGc9PQo=",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.2/best-craft_0.7.2_amd64.AppImage.tar.gz"
     }
   }
 }
