@@ -1,15 +1,15 @@
 {
-  "version": "v0.7.0",
-  "notes": "本次主要更新了许多依赖库版本，主要变化如下\n- Tauri 1.2.0 → 1.3.0\n- Vuex → Pinia\n- Typescript 4.8.4 → 5.0.4\n- 其他...\n其他变化：\n- 去除了对一些Rust不稳定feature的依赖\n- 删除了内置的 http server",
-  "pub_date": "2023-05-07T19:43:36+08:00",
+  "version": "v0.7.1",
+  "notes": "修复了 v0.7.0 由于升级 vuex 导致的问题 #I711QL",
+  "pub_date": "2023-05-07T22:18:38+08:00",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmlyVjUrN1I5dXE4bUxMZFlQU2RveHBucWR1cVVxUjBaVmZaU29FV0szdnJwK1loeDc3Z3ZFYk1sSVpUM3laa3VydEprQVYwTW95RGN5RnQ1djFRWGcwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNDU2NzY2CWZpbGU6QmVzdENyYWZ0XzAuNy4wX3g2NF96aC1DTi5tc2kuemlwCnJGbW0rSVVMSktyVG9LYmxzZytucU1tR28zbXAyYXZSa2J6RTR4Zkkvc204bWRJc1J2TXhCNWMwT0I1U3dRZktBT2gvbEZPZW9ScGNzL01BdFhVTENnPT0K",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.0/BestCraft_0.7.0_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnJPQi8xUDUvRzRMcUZrY3VSY2dQUmxXTEhhbUw3ZDJ2amN3WEp1akFUVjQ4YmxsTmM4ZnVjeVorTjFlV3AwTEFZVnRDRnNMZFhQbmxhUEtoU1g4RWdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNDY4MjMxCWZpbGU6QmVzdENyYWZ0XzAuNy4xX3g2NF96aC1DTi5tc2kuemlwCk81bVQvMHJUbDIwajFFdGpodEQvT0p3N3VrKzIvSXJrV05XeVMwK0lCTzlicXVNUk5SaHc1NFlFRTVJN3N3MnNjbW13TklXaW5TN3M0aTMza2lRZ0FRPT0K",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.1/BestCraft_0.7.1_x64_zh-CN.msi.zip"
     },
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9TN0tUbzdnS3ZXRFd4L3FyQVlkbDI3SWdEcmNMRFJITUZtSndpaTViUGZYZUlSNTczTUx5LzNWeE1sNXUxaWlJSVpQTkxlSWF2WmVDTTY2TGVxMkFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNDU4NjA3CWZpbGU6YmVzdC1jcmFmdF8wLjcuMF9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKVzhSK0J2Wm1HSlBPaE9LQWZQZk50ZG9WdWV3bGNFb0VjMExtNEZNdVZIQ0ZDb05wVnFUQ1UxOG9RLzBDTFlEeXhCdS81SG5qZlBQY1htVWZrV3Z1QUE9PQo=",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.0/best-craft_0.7.0_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9QSGlkWkIrdHFOdVN3bHJQMStZZGN5K1JCcTQrb0JISlRYanlOK1FZaDQyRHVWYlJHTHprbUpYOGgwdUN6NHNqZmRXRTIzUXRJMGoxUnhneHIrWmdzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNDY4ODg3CWZpbGU6YmVzdC1jcmFmdF8wLjcuMV9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKd2ZnYi9lM2lDTWliUHlJTlhuMTN6T1A3Z2JiSjBxTm0wZUhKSmV6RnR5dlUxU2pIUU00eGJuZHJWb3ZoSXA5aGlHL2FhZU1qRWZvenBBNVVQb3ZxQkE9PQo=",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.1/best-craft_0.7.1_amd64.AppImage.tar.gz"
     }
   }
 }
