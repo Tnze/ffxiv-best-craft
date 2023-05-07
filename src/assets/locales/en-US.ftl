@@ -69,3 +69,15 @@ sturdy = Sturdy
 pliant = Pliant
 malleable = Malleable
 primed = Primed
+
+# Updater
+update-available = Update Available: v{ $version }
+update-now = Update Now
+update-not-now = Not Now
+update-installing = Updating in progress, please wait patiently.
+update-ask-relaunch = Update installed, relaunch?
+
+update-pending = Updating in progress
+update-error = Update failed: { $error }
+update-done = Update done
+update-uptodate = Up-to-date

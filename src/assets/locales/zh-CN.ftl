@@ -104,3 +104,15 @@ sturdy = 结实
 pliant = 高效
 malleable = 大进展
 primed = 长持续
+
+# 更新器
+update-available = 更新可用：v{ $version }
+update-now = 现在更新
+update-not-now = 下次再说
+update-installing = 正在安装更新，请耐心等待
+update-ask-relaunch = 更新已安装，是否重启应用？
+
+update-pending = 正在更新中
+update-error = 更新失败：{ $error }
+update-done = 更新已完成
+update-uptodate = 已是最新版本

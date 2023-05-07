@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import { useDark, usePreferredLanguages, useCssVar } from '@vueuse/core';
+import { ElContainer, ElAside, ElMain, ElConfigProvider } from 'element-plus';
+import { useFluent } from 'fluent-vue';
+
 import { Dir, exists, createDir, readTextFile, writeTextFile } from '@tauri-apps/api/fs';
 import { invoke } from "@tauri-apps/api/tauri";
-import { ElContainer, ElAside, ElMain, ElConfigProvider } from 'element-plus';
-import { elementPlusLang, languages } from './lang';
-import { selectLanguage } from './fluent'
 
 import Menu from './components/Menu.vue';
 import { useSettingsStore, useGearsetsStore } from './store';
+import { elementPlusLang, languages } from './lang';
+import { selectLanguage } from './fluent'
+import { checkUpdate } from './update'
 
 useDark()
+const { $t } = useFluent()
 const settingStore = useSettingsStore()
 const gearsetsStore = useGearsetsStore()
 const preferredLang = usePreferredLanguages()
@@ -26,8 +30,8 @@ watchEffect(() => {
     console.log("language switched to", lang.value)
 })
 
-readTextFile("settings.json", { dir: Dir.App }).then(settingStore.fromJson).catch(_err => { })
-readTextFile("gearsets.json", { dir: Dir.App }).then(gearsetsStore.fromJson).catch(_err => { })
+readTextFile("settings.json", { dir: Dir.App }).then(settingStore.fromJson).catch(e => console.error(e))
+readTextFile("gearsets.json", { dir: Dir.App }).then(gearsetsStore.fromJson).catch(e => console.error(e))
 
 async function writeJson(name: string, val: any) {
     let jsonStr = JSON.stringify(val)
@@ -45,7 +49,10 @@ gearsetsStore.$subscribe((_mutation, state) => writeJson('gearsets.json', state)
 // Ask the rust size if the window transparent.
 invoke('should_be_transparent').then(v => {
     bgColor.value = v ? 'transparent' : 'var(--el-bg-color)'
-})
+});
+
+// Check update
+onMounted(() => checkUpdate($t))
 
 </script>
 
