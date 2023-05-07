@@ -6,7 +6,7 @@ pub(crate) const MAX_INNOVATION: u8 = 4;
 pub(crate) const MAX_MUSCLE_MEMORY: u8 = 5;
 pub(crate) const MAX_INNER_QUIET: u8 = 10;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub(crate) struct SolverSlot<V> {
     pub(crate) value: V,
     pub(crate) step: u8,

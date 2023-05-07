@@ -36,25 +36,25 @@ const TOUCH_SKILLS: [Actions; 13] = [
 
 pub struct QualitySolver<const MN: usize, const WN: usize>
 where
-    [[(); WN + 1]; MN + 1]:,
+    [[(); WN]; MN]:,
 {
     init_status: Status,
     progress_solver: Arc<ProgressSolver<MN, WN>>,
     // results [d][cp][iq][iv][gs][mn][wn]
-    results: Vec<Vec<[[[[[[SolverSlot<u32>; 3]; WN + 1]; MN + 1]; 4]; 5]; 11]>>,
+    results: Vec<Vec<[[[[[[SolverSlot<u32>; 3]; WN]; MN]; 4]; 5]; 11]>>,
 }
 
 impl<const MN: usize, const WN: usize> QualitySolver<MN, WN>
 where
-    [[(); WN + 1]; MN + 1]:,
+    [[(); WN]; MN]:,
 {
     const DEFAULT_SLOT: SolverSlot<u32> = SolverSlot {
         value: 0,
         step: 0,
         action: None,
     };
-    const DEFAULT_ARY: [[[[[[SolverSlot<u32>; 3]; WN + 1]; MN + 1]; 4]; 5]; 11] =
-        [[[[[[Self::DEFAULT_SLOT; 3]; WN + 1]; MN + 1]; 4]; 5]; 11];
+    const DEFAULT_ARY: [[[[[[SolverSlot<u32>; 3]; WN]; MN]; 4]; 5]; 11] =
+        [[[[[[Self::DEFAULT_SLOT; 3]; WN]; MN]; 4]; 5]; 11];
 
     pub fn new(init_status: Status, progress_solver: Arc<ProgressSolver<MN, WN>>) -> Self {
         let cp = init_status.attributes.craft_points as usize;
@@ -94,7 +94,7 @@ where
 
 impl<const MN: usize, const WN: usize> Solver for QualitySolver<MN, WN>
 where
-    [[(); WN + 1]; MN + 1]:,
+    [[(); WN]; MN]:,
 {
     fn init(&mut self) {
         let mut s = self.init_status.clone();
@@ -110,9 +110,9 @@ where
                         s.buffs.innovation = iv;
                         for gs in 0..=MAX_GREAT_STRIDES {
                             s.buffs.great_strides = gs;
-                            for mn in 0..=MN {
+                            for mn in 0..MN {
                                 s.buffs.manipulation = mn as u8;
-                                for wn in 0..=WN {
+                                for wn in 0..WN {
                                     s.buffs.wast_not = wn as u8;
                                     for touch in 0..3 {
                                         s.buffs.touch_combo_stage = touch as u8;
@@ -208,7 +208,7 @@ where
             }
         }
         match best.2 {
-            Some(sk) => Some((sk, best.0.0)),
+            Some(sk) => Some((sk, best.0 .0)),
             None => self.progress_solver.read(&s),
         }
     }
@@ -270,24 +270,24 @@ where
 /// 对于任意的当前状态，可以以O(1)时间复杂度算出剩余资源最多可推多少进展。
 pub struct ProgressSolver<const MN: usize, const WN: usize>
 where
-    [[(); WN + 1]; MN + 1]:,
+    [[(); WN]; MN]:,
 {
     init_status: Status,
     // results[d][cp][ve][mm][mn][wn]
-    results: Vec<Vec<[[[[SolverSlot<u16>; WN + 1]; MN + 1]; 6]; 5]>>,
+    results: Vec<Vec<[[[[SolverSlot<u16>; WN]; MN]; 6]; 5]>>,
 }
 
 impl<const MN: usize, const WN: usize> ProgressSolver<MN, WN>
 where
-    [[(); WN + 1]; MN + 1]:,
+    [[(); WN]; MN]:,
 {
     const DEFAULT_SLOT: SolverSlot<u16> = SolverSlot {
         value: 0,
         step: 0,
         action: None,
     };
-    const DEFAULT_ARY: [[[[SolverSlot<u16>; WN + 1]; MN + 1]; 6]; 5] =
-        [[[[Self::DEFAULT_SLOT; WN + 1]; MN + 1]; 6]; 5];
+    const DEFAULT_ARY: [[[[SolverSlot<u16>; WN]; MN]; 6]; 5] =
+        [[[[Self::DEFAULT_SLOT; WN]; MN]; 6]; 5];
 
     pub fn new(init_status: Status) -> Self {
         let cp = init_status.attributes.craft_points as usize;
@@ -317,7 +317,7 @@ where
 
 impl<const MN: usize, const WN: usize> Solver for ProgressSolver<MN, WN>
 where
-    [[(); WN + 1]; MN + 1]:,
+    [[(); WN]; MN]:,
 {
     fn init(&mut self) {
         let mut s = self.init_status.clone();
@@ -329,15 +329,15 @@ where
                     s.buffs.veneration = ve;
                     for mm in 0..=MAX_MUSCLE_MEMORY {
                         s.buffs.muscle_memory = mm;
-                        for mn in 0..=MN {
+                        for mn in 0..MN {
                             s.buffs.manipulation = mn as u8;
-                            for wn in 0..=WN {
+                            for wn in 0..WN {
                                 s.buffs.wast_not = wn as u8;
                                 for sk in &SYNTH_SKILLS {
                                     match sk {
-                                        &Actions::Manipulation if MN < 8 => continue,
-                                        &Actions::WasteNot if WN < 4 => continue,
-                                        &Actions::WasteNotII if WN < 8 => continue,
+                                        &Actions::Manipulation if MN < 9 => continue,
+                                        &Actions::WasteNot if WN < 5 => continue,
+                                        &Actions::WasteNotII if WN < 9 => continue,
                                         _ => {}
                                     }
                                     if s.is_action_allowed(*sk).is_err() {
@@ -391,11 +391,7 @@ where
                 action: skill,
             } = self.get(&s);
             let progress = progress.min(max_addon);
-            (
-                (progress, step),
-                (s.craft_points, s.durability),
-                skill,
-            )
+            ((progress, step), (s.craft_points, s.durability), skill)
         };
         for cp in 0..=s.craft_points {
             new_s2.craft_points = cp;
@@ -413,8 +409,8 @@ where
             }
         }
         match best.2 {
-            Some(sk) => Some((sk, best.0.0 as u32)),
-            None => None
+            Some(sk) => Some((sk, best.0 .0 as u32)),
+            None => None,
         }
     }
 
