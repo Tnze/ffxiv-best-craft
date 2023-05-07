@@ -7,7 +7,7 @@ use super::{ProgressSolver, QualitySolver, Solver};
 
 pub struct PreprogressSolver<const MN: usize, const WN: usize>
 where
-    [[(); WN + 1]; MN + 1]:,
+    [[(); WN ]; MN ]:,
 {
     progress_index: Vec<usize>,
     quality_solvers: Vec<QualitySolver<MN, WN>>,
@@ -15,7 +15,7 @@ where
 
 impl<const MN: usize, const WN: usize> PreprogressSolver<MN, WN>
 where
-    [[(); WN + 1]; MN + 1]:,
+    [[(); WN ]; MN ]:,
 {
     pub fn new(
         init_status: Status,
@@ -55,7 +55,7 @@ where
 
 impl<const MN: usize, const WN: usize> Solver for PreprogressSolver<MN, WN>
 where
-    [[(); WN + 1]; MN + 1]:,
+    [[(); WN ]; MN ]:,
 {
     fn init(&mut self) {
         self.quality_solvers.par_iter_mut().for_each(|qs| qs.init());

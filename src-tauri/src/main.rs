@@ -2,11 +2,10 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-#![feature(generic_const_exprs, async_closure, if_let_guard)]
 
 use std::collections::{hash_map::Entry, BTreeMap, HashMap};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::{net::SocketAddr, sync::Arc};
+use std::sync::Arc;
 
 use ffxiv_crafting::{
     Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, Status,
@@ -14,9 +13,9 @@ use ffxiv_crafting::{
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use rand::{random, seq::SliceRandom, thread_rng};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use tauri::Manager;
-use tokio::sync::{oneshot, Mutex, OnceCell};
+use tokio::sync::{Mutex, OnceCell};
 
 mod db;
 mod hard_recipe;
@@ -270,7 +269,6 @@ struct AppState {
     hard_recipe_solver_list:
         Mutex<HashMap<ordinary_solver::SolverHash, Arc<Mutex<hard_recipe::dp::Solver>>>>,
     db: OnceCell<DatabaseConnection>,
-    shutdown_signal: Mutex<Option<oneshot::Sender<()>>>,
     should_be_transparent: AtomicBool,
 }
 
@@ -280,7 +278,6 @@ impl AppState {
             solver_list: Mutex::new(HashMap::new()),
             hard_recipe_solver_list: Mutex::new(HashMap::new()),
             db: OnceCell::new(),
-            shutdown_signal: Mutex::new(None),
             should_be_transparent: AtomicBool::new(false),
         }
     }
@@ -342,10 +339,10 @@ async fn create_solver(
         }
         let progress_list = preprogress_list(&status);
         let solver: Box<dyn Solver + Send + Sync> = match (use_muscle_memory, use_manipulation) {
-            (true, true) => build_solver!(8, 8, progress_list),
-            (true, false) => build_solver!(0, 8, progress_list),
-            (false, true) => build_solver!(8, 8),
-            (false, false) => build_solver!(0, 8),
+            (true, true) => build_solver!(9, 9, progress_list),
+            (true, false) => build_solver!(1, 9, progress_list),
+            (false, true) => build_solver!(9, 9),
+            (false, false) => build_solver!(1, 9),
         };
         let mut list = app_state.solver_list.lock().await;
         *list.get_mut(&key).unwrap() = Some(solver); // we are sure that there is a None value so we can successfully get it
