@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router';
-import { store, key } from './store'
+import { createPinia } from 'pinia'
 import { fluent } from './fluent'
 
 import 'element-plus/theme-chalk/dark/css-vars.css'
@@ -8,6 +8,8 @@ import 'element-plus/es/components/message/style/css'
 import 'element-plus/es/components/message-box/style/css'
 
 import App from './App.vue'
+
+const pinia = createPinia()
 
 const GearsetsVue = () => import('./components/Gearsets.vue')
 const RecipePanelVue = () => import('./components/recipe-manager/RecipePanel.vue')
@@ -27,4 +29,4 @@ const router = createRouter({
     ]
 })
 
-createApp(App).use(store, key).use(router).use(fluent).mount('#app')
+createApp(App).use(pinia).use(router).use(fluent).mount('#app')

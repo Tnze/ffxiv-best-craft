@@ -3,16 +3,16 @@ import { ElContainer, ElHeader, ElMain, ElTabs, ElTabPane, ElForm, ElFormItem, E
 import { createDir, readTextFile, writeFile, Dir } from '@tauri-apps/api/fs'
 import { ref, onMounted, onUpdated, computed } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router';
-import { useStore } from '../store'
+import { useGearsetsStore } from '../store'
 
-const store = useStore()
+const store = useGearsetsStore()
 
 const modelValue = computed({
     get() {
-        return store.state.gearsets;
+        return store;
     },
     set(newValue) {
-        store.commit('storeGearsets', newValue)
+        store.storeGearsets(newValue)
     }
 })
 
@@ -73,7 +73,7 @@ const jobPage = ref('default')
                     </el-form>
                 </el-tab-pane>
                 <el-tab-pane v-for="v in modelValue.special" :name="v.name" :label="$t(v.name)">
-                    <el-form label-position="right" label-width="130px" :model="v.value" style="max-width: 500px">
+                    <el-form label-position="right" label-width="130px" :model="v" style="max-width: 500px">
                         <el-form-item :label="$t('attributes')">
                             <el-switch :model-value="v.value == null" :active-text="$t('inherit-from-default')"
                                 @change="v.value = v.value == null ? { ...modelValue.default } : null" />

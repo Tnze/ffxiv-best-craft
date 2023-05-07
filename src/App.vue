@@ -8,16 +8,16 @@ import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
 
 import Menu from './components/Menu.vue';
-import { useStore } from './store';
+import { useSettingsStore } from './store';
 
 useDark()
-const store = useStore()
+const settingStore = useSettingsStore()
 const preferredLang = usePreferredLanguages()
 const bgColor = useCssVar('--app-bg-color', ref(null))
 
 const lang = ref('zh-CN')
 watchEffect(() => {
-  let settingLang: string | null = store.state.settings.language
+  let settingLang: string | null = settingStore.language
   if (settingLang == 'system') settingLang = null
   const systemLang = preferredLang.value.find(v => languages.has(v))
   lang.value = settingLang ?? systemLang ?? 'zh-CN'
@@ -26,7 +26,7 @@ watchEffect(() => {
 })
 
 readTextFile("settings.json", { dir: Dir.App }).then(str => {
-  return store.commit('loadSettings', JSON.parse(str))
+  return settingStore.loadSettings(JSON.parse(str))
 }).catch(_err => { })
 
 invoke('should_be_transparent').then(v => {

@@ -4,10 +4,11 @@ import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElInput, ElInputNumb
 import { EditPen } from '@element-plus/icons-vue'
 import { Jobs, Recipe, newRecipe, recipeTable, RecipeRow, Item, itemInfo } from '../../Craft'
 import { useRouter } from 'vue-router';
-import { useStore } from '../../store';
+import { useChecklistStore, useDesignerStore } from '../../store';
 import { useFluent } from 'fluent-vue';
 
-const store = useStore()
+const checklistStore = useChecklistStore()
+const designerStore = useDesignerStore()
 const router = useRouter()
 const { $t } = useFluent()
 
@@ -51,14 +52,14 @@ const selectRecipeRow = async (row: RecipeRow) => {
             row.durability_factor
         )
         selectRecipe(recipe, await itemInfo(row.item_id), row.job)
-        store.commit('addToChecklist', { ingredient_id: row.item_id, amount: 1 })
+        checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
     } catch {
         // operation canceled by user
     }
 }
 
 const selectRecipe = (recipe: Recipe, item: Item, craftType: string) => {
-    store.commit('selectRecipe', {
+    designerStore.selectRecipe({
         job: jobMaps[craftType] ?? Jobs.Culinarian,
         item,
         recipe,
