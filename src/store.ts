@@ -100,12 +100,20 @@ export const useSettingsStore = defineStore('settings', {
     state: () => ({
         language: 'system'
     }),
+    getters: {
+        toJson(): string {
+            return JSON.stringify({
+                language: this.language,
+            })
+        }
+    },
     actions: {
-        loadSettings(localSettings: { language: string }) {
+        loadSettings(localSettings: any) {
+            this.$patch(localSettings)
             this.language = localSettings.language
         },
-        selectLanguage(newLang: string) {
-            this.language = newLang
+        fromJson(json: string) {
+            this.$patch(JSON.parse(json))
         },
     }
 })
