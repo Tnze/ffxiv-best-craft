@@ -1,5 +1,5 @@
-import { InjectionKey } from 'vue'
-import { createStore, useStore as baseUseStore, Store } from 'vuex'
+import { ref } from 'vue'
+import { defineStore } from 'pinia'
 import { Attributes, Item, ItemWithAmount, Jobs, Recipe } from './Craft'
 
 export interface GearsetsRow {
@@ -20,68 +20,83 @@ export interface State {
     }
 }
 
-export const key: InjectionKey<Store<State>> = Symbol()
+export const useGearsetsStore = defineStore('gearsets', {
+    state: () => ({
+        default: {
+            level: 90,
+            craftsmanship: 2786,
+            control: 2764,
+            craft_points: 533,
+        },
+        special: [
+            { name: 'carpenter', value: null },
+            { name: 'blacksmith', value: null },
+            { name: 'armorer', value: null },
+            { name: 'goldsmith', value: null },
+            { name: 'leatherworker', value: null },
+            { name: 'weaver', value: null },
+            { name: 'alchemist', value: null },
+            { name: 'culinarian', value: null },
+        ] as GearsetsRow[]
+    }),
+    actions: {
+        storeGearsets(newGearsets: any) {
+            this.default = newGearsets.default
+            this.special = newGearsets.special
+        },
+    }
+})
 
-export const store = createStore<State>({
-    state: {
-        gearsets: {
-            default: {
-                level: 90,
-                craftsmanship: 2786,
-                control: 2764,
-                craft_points: 533,
-            },
-            special: [
-                { name: 'carpenter', value: null },
-                { name: 'blacksmith', value: null },
-                { name: 'armorer', value: null },
-                { name: 'goldsmith', value: null },
-                { name: 'leatherworker', value: null },
-                { name: 'weaver', value: null },
-                { name: 'alchemist', value: null },
-                { name: 'culinarian', value: null },
-            ]
-        },
-        checklist: [],
-        designer: null,
-        settings: {
-            language: 'system'
-        }
-    },
-    mutations: {
-        loadSettings(state, localSettings) {
-            state.settings = localSettings
-        },
-        selectLanguage(state, newLang) {
-            state.settings.language = newLang
-        },
-        storeGearsets(state, newGearsets) {
-            state.gearsets = newGearsets
-        },
-        addToChecklist(state, payload: ItemWithAmount) {
-            const elem = state.checklist.find(v => v.ingredient_id == payload.ingredient_id)
+export const useChecklistStore = defineStore('checklist', {
+    state: () => ({
+        items: [] as ItemWithAmount[],
+    }),
+    actions: {
+        addToChecklist(payload: ItemWithAmount) {
+            const elem = this.items.find(v => v.ingredient_id == payload.ingredient_id)
             if (elem == undefined)
-                state.checklist.push(payload)
+                this.items.push(payload)
             else
                 elem.amount += payload.amount
         },
-        changeChecklist(state, payload: { idx: number, amount: number }) {
+        changeChecklist(payload: { idx: number, amount: number }) {
             if (payload.amount > 0)
-                state.checklist[payload.idx].amount = payload.amount
+                this.items[payload.idx].amount = payload.amount
             else
-                state.checklist.splice(payload.idx, 1)
+                this.items.splice(payload.idx, 1)
         },
-        selectRecipe(state, payload: {
+    },
+})
+
+export const useDesignerStore = defineStore('designer', {
+    state: () => ({
+        content: null as null | {
+            item: Item;
+            job: Jobs;
+            recipe: Recipe;
+        }
+    }),
+    actions: {
+        selectRecipe(payload: {
             job: Jobs,
             item: Item,
             recipe: Recipe
         }) {
-            state.designer = payload
+            this.content = payload
         }
-    },
-    // strict: import.meta.env.DEV,
+    }
 })
 
-export function useStore() {
-    return baseUseStore(key)
-}
+export const useSettingsStore = defineStore('settings', {
+    state: () => ({
+        language: 'system'
+    }),
+    actions: {
+        loadSettings(localSettings: { language: string }) {
+            this.language = localSettings.language
+        },
+        selectLanguage(newLang: string) {
+            this.language = newLang
+        },
+    }
+})

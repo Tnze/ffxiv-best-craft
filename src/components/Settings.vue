@@ -4,10 +4,10 @@ import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, 
 import { useFluent } from 'fluent-vue'
 import { getName, getVersion, getTauriVersion } from '@tauri-apps/api/app'
 import { checkUpdate } from '@tauri-apps/api/updater'
-import { useStore } from '../store'
+import { useSettingsStore } from '../store'
 import { languages } from '../lang'
 
-const store = useStore()
+const store = useSettingsStore()
 const { $t } = useFluent()
 
 const appName = ref('')
@@ -38,10 +38,10 @@ const onCheckUpdateClick = async () => {
 
 const languageStore = computed({
     get() {
-        return store.state.settings.language;
+        return store.language;
     },
     set(v: string) {
-        store.commit('selectLanguage', v)
+        store.selectLanguage(v)
     }
 })
 
@@ -54,7 +54,7 @@ const languageStore = computed({
             <h1>{{ $t('settings') }}</h1>
         </el-header>
         <el-main>
-            <el-form class="setting-page" :model="store.state.settings" label-width="120px">
+            <el-form class="setting-page" :model="store" label-width="120px">
                 <el-form-item :label="$t('language')">
                     <el-select v-model="languageStore">
                         <el-option :label="$t('system-lang')" value="system" />
