@@ -3,12 +3,12 @@ import { ref, computed } from 'vue'
 import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElMessage } from 'element-plus'
 import { useFluent } from 'fluent-vue'
 import { getName, getVersion, getTauriVersion } from '@tauri-apps/api/app'
-import { checkUpdate } from '@tauri-apps/api/updater'
+import { checkUpdate } from '../update'
 import { useSettingsStore } from '../store'
 import { languages } from '../lang'
 
-const store = useSettingsStore()
 const { $t } = useFluent()
+const store = useSettingsStore()
 
 const appName = ref('')
 const version = ref('')
@@ -19,21 +19,9 @@ getTauriVersion().then(t => tauriVersion.value = t)
 
 const checkingUpdate = ref(false)
 const onCheckUpdateClick = async () => {
-    try {
-        checkingUpdate.value = true
-        await checkUpdate()
-        ElMessage({
-            type: 'success',
-            message: $t('check-update-success'),
-        })
-    } catch (err) {
-        ElMessage({
-            type: 'error',
-            message: err as string,
-        })
-    } finally {
-        checkingUpdate.value = false
-    }
+    checkingUpdate.value = true
+    await checkUpdate($t)
+    checkingUpdate.value = false
 }
 
 </script>
@@ -96,7 +84,6 @@ feedback = 反馈
 
 check-update = 检查更新
 checking-update = 正在检查更新
-check-update-success = 检查更新成功
 </fluent>
 
 <fluent locale="en-US">
@@ -110,7 +97,6 @@ feedback = Feedback
 
 check-update = Check Update
 checking-update = Checking Update
-check-update-success = Check update success
 </fluent>
 
 <fluent locale="ja-JP">
@@ -124,5 +110,4 @@ feedback = フィードバック
 
 check-update = 更新のチェック
 checking-update = 更新をチェックしています
-check-update-success = 更新のチェックに成功しました
 </fluent>

@@ -63,3 +63,14 @@ sturdy = 頑丈
 pliant = 高能率
 malleable = 高進捗
 primed = 長持続
+
+update-available = 利用可能なアップデート: v{ $version }
+update-now = 今すぐ更新
+update-not-now = 今じゃない
+update-installing = 更新中です。しばらくお待ちください。
+update-ask-relaunch = アップデートがインストールされています。アプリケーションを再起動しますか？
+
+update-pending = 更新中
+update-error = 更新に失敗しました: { $error }
+update-done = 更新完了
+update-uptodate = すでに最新バージョン
