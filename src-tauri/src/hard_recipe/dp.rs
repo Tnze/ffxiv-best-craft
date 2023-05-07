@@ -2,10 +2,14 @@ use ffxiv_crafting::{Actions, Buffs, Status};
 
 pub struct Solver {
     init_status: Status,
-    results: Vec<
+    touch_caches: Vec<
         [[[[[[Option<Actions>; Self::MAX_INNER_QUIET + 1]; Self::MAX_INNOVATION + 1];
             Self::MAX_MANIPULATION + 1]; Self::MAX_GREAT_STRIDES + 1];
             Self::MAX_TOUCH_COMBO + 1]; Self::MAX_OBSERVE + 1],
+    >,
+    synth_caches: Vec<
+        [[[Option<Actions>; Self::MAX_VENERATION + 1]; Self::MAX_MANIPULATION + 1];
+            Self::MAX_OBSERVE + 1],
     >,
 }
 
@@ -15,6 +19,7 @@ impl Solver {
     const MAX_MANIPULATION: usize = 8 + 2;
     const MAX_GREAT_STRIDES: usize = 3 + 2;
     const MAX_TOUCH_COMBO: usize = 2;
+    const MAX_VENERATION: usize = 4 + 2;
     const MAX_OBSERVE: usize = 1;
     const TOUCH_SKILLS: [(Actions, u16); 13] = [
         (Actions::BasicTouch, 10),
@@ -35,15 +40,18 @@ impl Solver {
     pub fn new(init_status: Status) -> Self {
         let len = (init_status.attributes.craft_points as usize + 1)
             * (init_status.recipe.durability as usize + 1);
+        let default_touch = Default::default();
+        let default_synth = Default::default();
         Self {
             init_status,
-            results: vec![Default::default(); len],
+            touch_caches: vec![default_touch; len],
+            synth_caches: vec![default_synth; len],
         }
     }
 
     #[rustfmt::skip]
     fn index(&mut self, craft_points: i32, durability: u16, buffs: Buffs) -> &mut Option<Actions> {
-        &mut self.results
+        &mut self.touch_caches
             [craft_points as usize * (self.init_status.recipe.durability as usize + 1) + durability as usize]
             [buffs.observed as usize]
             [buffs.touch_combo_stage as usize]
@@ -91,14 +99,14 @@ impl Solver {
     }
 
     fn finish_actions_choices(&self, status: Status) -> Vec<Actions> {
-        let left_progress = status.recipe.difficulty - status.progress;
+        let _left_progress = status.recipe.difficulty - status.progress;
         todo!()
     }
 }
 
 #[cfg(test)]
 mod test {
-    use ffxiv_crafting::{Attributes, ConditionIterator, Recipe, Status};
+    use ffxiv_crafting::{Attributes, Recipe, Status};
     #[test]
     fn test() {
         let r = Recipe {
