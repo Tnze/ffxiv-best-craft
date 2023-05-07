@@ -39,12 +39,21 @@ export const useGearsetsStore = defineStore('gearsets', {
             { name: 'culinarian', value: null },
         ] as GearsetsRow[]
     }),
+    getters: {
+        toJson(): string {
+            return JSON.stringify({
+                default: this.default,
+                special: this.special
+            })
+        }
+    },
     actions: {
-        storeGearsets(newGearsets: any) {
-            this.default = newGearsets.default
-            this.special = newGearsets.special
+        fromJson(json: string) {
+            let v = JSON.parse(json)
+            this.default = v.default
+            this.special = v.special
         },
-    }
+    },
 })
 
 export const useChecklistStore = defineStore('checklist', {
