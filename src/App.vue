@@ -52,7 +52,7 @@ invoke('should_be_transparent').then(v => {
 });
 
 // Check update
-onMounted(() => checkUpdate($t))
+onMounted(() => checkUpdate($t, true))
 
 </script>
 

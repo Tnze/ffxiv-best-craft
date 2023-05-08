@@ -25,9 +25,10 @@ async function updateNow($t: (key: string, value?: Record<string, FluentVariable
     }
 }
 
-export const checkUpdate = async ($t: (key: string, value?: Record<string, FluentVariable>) => string) => {
+export const checkUpdate = async ($t: (key: string, value?: Record<string, FluentVariable>) => string, silent?: boolean) => {
     let privClose = () => { }
     const unlisten = await onUpdaterEvent(({ error, status }) => {
+        if (silent) return;
         // This will log all updater events, including status updates and errors.
         privClose()
         switch (status) {
