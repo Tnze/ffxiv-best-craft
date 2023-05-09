@@ -1,15 +1,11 @@
 {
-  "version": "v0.7.2",
-  "notes": "- 修复 Settings 和 Gearsets 持久化问题\n- Custom Updater Dialog",
-  "pub_date": "2023-05-08T02:30:16+08:00",
+  "version": "v0.7.3",
+  "notes": "更新了国服6.3数据\n其他：\n- 启动时检查更新不再弹出提示消息",
+  "pub_date": "2023-05-09T16:29:17+08:00",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnZRaklCelhXelRkalVMbUNVdHZBSXVoWGNETE5DQTBxVk9NaEpYVFlVQ3p6aGxMVmZjRVBCbkZVMldrMkdiT1M0ZEhLQjZaRHdGMTRyczhzODFHdkE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNDgzOTI5CWZpbGU6QmVzdENyYWZ0XzAuNy4yX3g2NF96aC1DTi5tc2kuemlwClNwL0xXbkx0RWhRRkprdTRhTDF1U3VIQ2lUZ2hlMGtwZEh4ZkpDSVNsOEZzbjRwa0cyT1JrUUVhNmlnZ0l5WlNkZ2lIZjlJTmNtTm5MZEhnUzN2R0JnPT0K",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.2/BestCraft_0.7.2_x64_zh-CN.msi.zip"
-    },
-    "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnB1TTRicU53bnRyRDROU0Q3Q3dpYk4zTWN4SjNTZjc5ai9vRU5kSlE2cFpPQmJZdk45MUNKMEQwVngySkc5QUtHaGpIcWpHbmtEMkpqWnhqbTN6TUFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNDg0MTUxCWZpbGU6YmVzdC1jcmFmdF8wLjcuMl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKcVJweW9NQlhFT00vTkM2VnVKdDZTMGRCLy9tNGZ2bitSMUVPQTBIUWRkNGRPVk5EYUdTZWllclF2c0Evd2RiYVlIckRJNkV3dDlNVFBkNkFxODIzRGc9PQo=",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.2/best-craft_0.7.2_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnY2VlRabHJscHhXRmRTUWZDU0VJZHpyWE45YmNxK2YyN3RLcUthRGFENG9QVTNRdXNFR25ZMjhpN1VrMFZTT1hjczlCVjhRa0ZpdGpCaWphcy9WT3dVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNjM2Njc5CWZpbGU6QmVzdENyYWZ0XzAuNy4zX3g2NC1zZXR1cC5uc2lzLnppcApXL1J5UkxCLzJQL0c4dUhrWkgvUEQzTnhWZFhjbkYvd2RQemtKcDNuQW1ra2ZDcXhJcks0d25hWDJBNDdoYXlLUGZLQVZxbTNzV1RmTzd3VjdtRTREdz09Cg==",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.3/BestCraft_0.7.3_x64_zh-CN.msi.zip"
     }
   }
 }
