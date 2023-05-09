@@ -12,16 +12,21 @@ async function updateNow($t: (key: string, value?: Record<string, FluentVariable
         type: 'info',
         message: $t('update-installing'),
     })
-    // Install the update. This will also restart the app on Windows!
-    await installUpdate()
-    msg1.close()
-    // On macOS and Linux, restart the app manually.
-    // (And we add another confirmation dialog)
     try {
-        ElMessageBox.confirm($t('update-ask-relaunch'))
+        // Install the update. This will also restart the app on Windows!
+        await installUpdate()
+        // On macOS and Linux, restart the app manually.
+        // (And we add another confirmation dialog)
+        await ElMessageBox.confirm($t('update-ask-relaunch'))
         await relaunch()
     } catch (e) {
         // do nothing
+        ElMessage({
+            type: 'error',
+            message: $t('update-error', { error: e as string }),
+        })
+    } finally {
+        msg1.close()
     }
 }
 

@@ -1,11 +1,11 @@
 {
-  "version": "v0.7.3",
+  "version": "v0.7.4",
   "notes": "更新了国服6.3数据\n其他：\n- 启动时检查更新不再弹出提示消息",
-  "pub_date": "2023-05-09T16:29:17+08:00",
+  "pub_date": "2023-05-09T17:04:00+08:00",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnY2VlRabHJscHhXRmRTUWZDU0VJZHpyWE45YmNxK2YyN3RLcUthRGFENG9QVTNRdXNFR25ZMjhpN1VrMFZTT1hjczlCVjhRa0ZpdGpCaWphcy9WT3dVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNjM2Njc5CWZpbGU6QmVzdENyYWZ0XzAuNy4zX3g2NC1zZXR1cC5uc2lzLnppcApXL1J5UkxCLzJQL0c4dUhrWkgvUEQzTnhWZFhjbkYvd2RQemtKcDNuQW1ra2ZDcXhJcks0d25hWDJBNDdoYXlLUGZLQVZxbTNzV1RmTzd3VjdtRTREdz09Cg==",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.3/BestCraft_0.7.3_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmpWVkduT09wMXZDanJVY3RoNXNZbTRQSHJKTjZtWmhXRFdCYXpRcjBta0REMi9TTy8xRWpsZ0o4MlZDZ1RhaVlseGE3SmxJVU9adzBLeHYzeXNIQVFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjgzNjM4NzIyCWZpbGU6QmVzdENyYWZ0XzAuNy40X3g2NF96aC1DTi5tc2kuemlwCkFNZEY0dnM1WW1SRGYyL25EQ2lnTGh0YStzZjByMjJvRTVkQlJJVG1Nc0hMczROT2luZVJ6V3BNbDNwaUNQN1hMOVlhaExCY1VkVWExWERhQmxxQUNnPT0K",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.7.4/BestCraft_0.7.4_x64_zh-CN.msi.zip"
     }
   }
 }
