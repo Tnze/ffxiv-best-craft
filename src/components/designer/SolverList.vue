@@ -161,7 +161,7 @@ async function runRikaSolver() {
                         <br />
                     </template>
                     <template #rikaRepoLink="{ designByRika }">
-                        <el-link type="primary" href="https://github.com/RikaKagurasaka/xiv_craft_solver">
+                        <el-link type="primary" href="https://github.com/RikaKagurasaka/xiv_craft_solver" target="_blank">
                             {{ designByRika }}
                         </el-link>
                     </template>
