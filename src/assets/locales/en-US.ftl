@@ -27,7 +27,7 @@ culinarian = Culinarian
 # Action names
 basic-synthesis = Basic Synthesis
 basic-touch = Basic Touch
-masters-mend = Masters Mend
+masters-mend = Master's Mend
 hasty-touch = Hasty Touch
 rapid-synthesis = Rapid Synthesis
 observe = Observe
