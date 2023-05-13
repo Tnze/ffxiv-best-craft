@@ -2,6 +2,7 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
+#![feature(let_chains)]
 
 use std::collections::{hash_map::Entry, BTreeMap, HashMap};
 use std::sync::atomic::{AtomicBool, Ordering};

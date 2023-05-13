@@ -53,7 +53,6 @@ const createSolver = async () => {
         const stop_time = new Date().getTime();
         ElMessage({
             showClose: true,
-            duration: 0,
             type: 'success',
             message: $t('solve-finished', { solveTime: formatDuration(stop_time - start_time) }),
         })
@@ -196,9 +195,9 @@ muscle-memory-select-info = { muscle-memory }（内存×2）
 start-solver = 启动求解器
 release-solver = 释放
 
-solving-info = 求解器计算中，可能需要消耗大量内存，请稍等……
-solve-finished = 求解已完成({ $solveTime })
-dp-solver-empty-text = 无求解器已加载
+solving-info = 正在创建求解器
+solve-finished = 求解器创建成功({ $solveTime })
+dp-solver-empty-text = 没有已加载的求解器
 error-with = 错误：{ $err }
 
 rika-solver-info =
@@ -221,9 +220,9 @@ muscle-memory-select-info = { muscle-memory }(Memory × 2)
 start-solver = Create solver
 release-solver = Release
 
-solving-info = Solving could occupy lots of memory. Please wait...
-solve-finished = Solve finished({ $solveTime })
-dp-solver-empty-text = No solver is loaded
+solving-info = Creating solver
+solve-finished = Solver successfully created({ $solveTime })
+dp-solver-empty-text = None of solver is loaded
 error-with = Error: { $err }
 
 rika-solver-info =
