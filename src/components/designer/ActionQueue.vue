@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, computed, reactive, watchEffect } from 'vue'
+import { ref, computed } from 'vue'
 import draggable from 'vuedraggable'
 import { Actions, Jobs } from '../../Craft';
 import Action from './Action.vue'
+import { ElIcon } from 'element-plus';
+import { Loading } from "@element-plus/icons-vue";
 
 interface Slot {
     id: number
@@ -12,6 +14,7 @@ interface Slot {
 const props = defineProps<{
     list: Slot[]
     solverResult?: Slot[]
+    loadingSolverResult?: boolean
     previewSolver?: boolean
     errList?: { pos: number, err: string }[]
     job: Jobs,
@@ -53,12 +56,16 @@ function calc_effect(index: number): string {
         }" :list="list" v-bind="dragOptions" @start="isDragging = true" @end="isDragging = false">
             <template #item="{ element, index }">
                 <div class="list-group-item">
-                    <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)"
-                        disabled @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)"
-                        :no_hover="noHover" />
+                    <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)" disabled
+                        @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)" :no_hover="noHover" />
                 </div>
             </template>
             <template #footer>
+                <div v-if="loadingSolverResult" class="list-group-item loading-icon">
+                    <el-icon class="is-loading loading-icon-inner" :size="19.2">
+                        <Loading />
+                    </el-icon>
+                </div>
                 <div v-for="elem in solverAdds" class="list-group-item">
                     <Action class="action-icon" :job="job" :action="elem.action" no_hover
                         :effect="previewSolver ? 'normal' : 'ghost'" disabled />
@@ -96,6 +103,17 @@ function calc_effect(index: number): string {
 
 .list-group-item {
     display: inline-block;
+}
+
+.loading-icon {
+    position: relative;
+    height: calc(48px * 0.8);
+}
+
+.loading-icon-inner {
+    position: absolute;
+    top: 10px;
+    left: 5px;
 }
 
 .action-icon {

@@ -16,8 +16,9 @@ tauri-build = { version = "1.2", features = [] }
 
 [dependencies]
 anyhow = "1.0.69"
-ffxiv-crafting = { version = "6.3.0", features = ["serde-support"] }
+ffxiv-crafting = { version = "6.3.1", features = ["serde-support"] }
 futures = "0.3"
+micro_ndarray = "0.2.7"
 msgbox = "0.7.0"
 percent-encoding = "2.2.0"
 rand = "0.8.5"

@@ -18,14 +18,11 @@ use tauri::Manager;
 use tokio::sync::{Mutex, OnceCell};
 
 mod db;
+mod dp_solver;
 mod hard_recipe;
-mod ordinary_solver;
-mod preprogress_solver;
 mod rika_solver;
 mod solver;
 
-use crate::ordinary_solver::{ProgressSolver, QualitySolver};
-use crate::preprogress_solver::PreprogressSolver;
 use crate::solver::Solver;
 use db::{craft_types, item_with_amount, items, prelude::*, recipes};
 
@@ -133,17 +130,17 @@ async fn suggess_next(
         .hard_recipe_solver_list
         .lock()
         .await
-        .entry(ordinary_solver::SolverHash {
+        .entry(solver::SolverHash {
             attributes: status.attributes,
             recipe: status.recipe,
         })
-        .or_insert_with(|| Arc::new(Mutex::new(hard_recipe::dp::Solver::new(status.clone()))))
+        .or_insert_with(|| Arc::new(Mutex::new(dp_solver::Solver::new(status.clone()))))
         .clone();
     let mut solver = solver
         .try_lock()
         .map_err(|_| String::from("read on solving"))?;
     solver
-        .read(status.craft_points, status.durability, status.buffs)
+        .next_touch(status.craft_points, status.durability, status.buffs)
         .ok_or("no result".into())
 }
 
@@ -265,9 +262,8 @@ async fn item_info(
 }
 
 struct AppState {
-    solver_list: Mutex<HashMap<ordinary_solver::SolverHash, Option<Box<dyn Solver + Send + Sync>>>>,
-    hard_recipe_solver_list:
-        Mutex<HashMap<ordinary_solver::SolverHash, Arc<Mutex<hard_recipe::dp::Solver>>>>,
+    solver_list: Mutex<HashMap<solver::SolverHash, Arc<Mutex<Option<Box<dyn Solver + Send>>>>>>,
+    hard_recipe_solver_list: Mutex<HashMap<solver::SolverHash, Arc<Mutex<dp_solver::Solver>>>>,
     db: OnceCell<DatabaseConnection>,
     should_be_transparent: AtomicBool,
 }
@@ -303,53 +299,26 @@ async fn create_solver(
     use_manipulation: bool,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
-    let key = ordinary_solver::SolverHash {
+    let key = solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let slot = {
+    let solver_slot = {
         let mut list = app_state.solver_list.lock().await;
         match list.entry(key.clone()) {
-            Entry::Occupied(e) => match e.get() {
-                Some(_) => Err("solver already exists".to_string()),
-                None => Err("solver is creating".to_string()),
-            },
-            Entry::Vacant(e) => {
-                e.insert(None); // tell others we are already take this place
-                Ok(())
+            Entry::Vacant(o) => o.insert(Arc::new(Mutex::new(None))).clone(),
+            Entry::Occupied(ref o) => {
+                return match o.get().try_lock() {
+                    Ok(_) => Err("Solver already exist".into()),
+                    Err(_) => Err("Solver is creating".into()),
+                }
             }
         }
     };
-    if let Ok(()) = slot {
-        macro_rules! build_solver {
-            ($mn:literal, $wn:literal, $pl:expr) => {{
-                let mut driver = ProgressSolver::new(status.clone());
-                driver.init();
-                let mut solver = PreprogressSolver::<$mn, $wn>::new(status, $pl, Arc::new(driver));
-                solver.init();
-                Box::new(solver)
-            }};
-            ($mn:literal, $wn:literal) => {{
-                let mut driver = ProgressSolver::new(status.clone());
-                driver.init();
-                let mut solver = QualitySolver::<$mn, $wn>::new(status, Arc::new(driver));
-                solver.init();
-                Box::new(solver)
-            }};
-        }
-        let progress_list = preprogress_list(&status);
-        let solver: Box<dyn Solver + Send + Sync> = match (use_muscle_memory, use_manipulation) {
-            (true, true) => build_solver!(9, 9, progress_list),
-            (true, false) => build_solver!(1, 9, progress_list),
-            (false, true) => build_solver!(9, 9),
-            (false, false) => build_solver!(1, 9),
-        };
-        let mut list = app_state.solver_list.lock().await;
-        *list.get_mut(&key).unwrap() = Some(solver); // we are sure that there is a None value so we can successfully get it
-        Ok(())
-    } else {
-        slot
-    }
+    let progress_list = preprogress_list(&status);
+    let solver: Box<dyn Solver + Send> = Box::new(dp_solver::Solver::new(status));
+    *solver_slot.lock().await = Some(solver);
+    Ok(())
 }
 
 fn preprogress_list(status: &Status) -> Vec<u16> {
@@ -374,21 +343,22 @@ async fn read_solver(
     status: Status,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<Vec<Actions>, String> {
-    let key = ordinary_solver::SolverHash {
+    let key = solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let mut list = app_state.solver_list.lock().await;
-    match list.entry(key) {
-        Entry::Occupied(e) => {
-            if let Some(v) = e.get() {
-                Ok(v.read_all(&status))
-            } else {
-                Err("solver not prepared".to_string())
-            }
-        }
-        _ => Err("solver not exists".to_string()),
-    }
+    let result = app_state
+        .solver_list
+        .lock()
+        .await
+        .get(&key)
+        .ok_or_else(|| "solver doesn't exists".to_string())?
+        .lock()
+        .await
+        .as_ref()
+        .ok_or_else(|| "solver isn't prepared".to_string())?
+        .read_all(&status);
+    Ok(result)
 }
 
 #[tauri::command(async)]
@@ -402,21 +372,17 @@ async fn destroy_solver(
     status: Status,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
-    let key = ordinary_solver::SolverHash {
+    let key = solver::SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
-    let mut list = app_state.solver_list.lock().await;
-    match list.entry(key) {
-        Entry::Occupied(e) => match e.get() {
-            Some(_) => {
-                e.remove();
-                Ok(())
-            }
-            None => Err("solver is creating".to_string()), // we can't take the solver when it is a None, because the creating thread expect it will not be remove
-        },
-        Entry::Vacant(_) => Err("solver not exists".to_string()),
-    }
+    app_state
+        .solver_list
+        .lock()
+        .await
+        .remove(&key)
+        .ok_or_else(|| "solver not exists".to_string())?;
+    Ok(())
 }
 
 #[tauri::command]

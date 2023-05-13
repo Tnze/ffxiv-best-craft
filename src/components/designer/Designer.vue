@@ -321,7 +321,7 @@ async function openListFromJSON() {
                     <div class="actionqueue-and-savedqueue">
                         <div class="action-queue">
                             <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
-                                :preview-solver="previewSolver" :err-list="activeSeq.errors" />
+                                :preview-solver="previewSolver" :err-list="activeSeq.errors" :loading-solver-result="isReadingSolver > 0" />
                         </div>
                         <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver"
                             @plus="saveSequence" @delete="clearSeq" @solver="openSolverDrawer = true"

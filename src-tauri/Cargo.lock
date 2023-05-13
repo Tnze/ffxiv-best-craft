@@ -97,6 +97,7 @@ dependencies = [
  "anyhow",
  "ffxiv-crafting",
  "futures",
+ "micro_ndarray",
  "msgbox",
  "percent-encoding",
  "rand 0.8.5",
@@ -1098,9 +1099,9 @@ dependencies = [
 
 [[package]]
 name = "ffxiv-crafting"
-version = "6.3.0"
+version = "6.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ac41b05b90adca43408a8f11745cbb0cfe878ed81c2fb084926fc8e31ca703e"
+checksum = "d65be0a1139466a4d8ac7c5cad7da1f80d2e841359dd263a2e51312df4226baa"
 dependencies = [
  "serde",
 ]
@@ -2080,6 +2081,12 @@ checksum = "d61c719bcfbcf5d62b3a09efa6088de8c54bc0bfcd3ea7ae39fcc186108b8de1"
 dependencies = [
  "autocfg",
 ]
+
+[[package]]
+name = "micro_ndarray"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39b93908bb5252af456f4347bd26c99208033b48b8d036ee376266a0bf71026b"
 
 [[package]]
 name = "minimal-lexical"

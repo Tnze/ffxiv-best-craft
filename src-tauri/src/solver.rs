@@ -1,20 +1,21 @@
-use ffxiv_crafting::{Actions, Status};
+use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
 
-pub(crate) const MAX_GREAT_STRIDES: u8 = 3;
-pub(crate) const MAX_VENERATION: u8 = 4;
-pub(crate) const MAX_INNOVATION: u8 = 4;
-pub(crate) const MAX_MUSCLE_MEMORY: u8 = 5;
-pub(crate) const MAX_INNER_QUIET: u8 = 10;
-
-#[derive(Copy, Clone, Default)]
-pub(crate) struct SolverSlot<V> {
-    pub(crate) value: V,
-    pub(crate) step: u8,
-    pub(crate) action: Option<Actions>,
+#[derive(Hash, Eq, PartialEq, Clone)]
+pub struct SolverHash {
+    pub attributes: Attributes,
+    pub recipe: Recipe,
 }
 
 pub trait Solver {
     fn init(&mut self);
-    fn read(&self, s: &Status) -> Option<(Actions, u32)>;
-    fn read_all(&self, s: &Status) -> Vec<Actions>;
+    fn read(&self, s: &Status) -> Option<Actions>;
+    fn read_all(&self, s: &Status) -> Vec<Actions> {
+        let mut result = Vec::new();
+        let mut status = s.clone();
+        while let Some(action) = self.read(&status) {
+            status.cast_action(action);
+            result.push(action);
+        }
+        result
+    }
 }
