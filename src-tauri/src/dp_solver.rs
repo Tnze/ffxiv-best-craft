@@ -1,15 +1,17 @@
-use std::cell::{Cell, UnsafeCell};
+use std::cell::{Cell, OnceCell};
 
 use ffxiv_crafting::{Actions, Buffs, Status};
 use micro_ndarray::Array;
 
 pub struct Solver {
     init_status: Status,
+    start_caches: Array<Cell<Option<Actions>>, 7>,
     touch_caches: Array<Cell<Option<Actions>>, 9>,
-    synth_caches: Vec<UnsafeCell<Option<Array<Cell<Option<Actions>>, 6>>>>,
+    synth_caches: Vec<OnceCell<Array<Cell<Option<Actions>>, 6>>>,
 }
 
 impl Solver {
+    const MAX_MUSCLE_MEMORY: usize = 6;
     const MAX_INNER_QUIET: usize = 10;
     const MAX_INNOVATION: usize = 4;
     const MAX_MANIPULATION: usize = 8;
@@ -50,6 +52,15 @@ impl Solver {
 
     pub fn new(init_status: Status) -> Self {
         Self {
+            start_caches: Array::new([
+                init_status.attributes.craft_points as usize + 1,
+                init_status.recipe.durability as usize + 1,
+                Self::MAX_MUSCLE_MEMORY + 1,
+                Self::MAX_VENERATION + 1,
+                Self::MAX_MANIPULATION + 1,
+                Self::MAX_WASTE_NOT + 1,
+                Self::MAX_OBSERVE + 1,
+            ]),
             touch_caches: Array::new([
                 init_status.attributes.craft_points as usize + 1,
                 init_status.recipe.durability as usize + 1,
@@ -61,9 +72,7 @@ impl Solver {
                 Self::MAX_TOUCH_COMBO + 1,
                 Self::MAX_OBSERVE + 1,
             ]),
-            synth_caches: std::iter::from_fn(|| Some(UnsafeCell::new(None)))
-                .take(init_status.recipe.difficulty as usize + 1)
-                .collect(),
+            synth_caches: vec![OnceCell::new(); init_status.recipe.difficulty as usize + 1],
             init_status,
         }
     }
@@ -138,9 +147,10 @@ impl Solver {
             return None;
         }
         let this_cell = unsafe {
-            (*self.synth_caches[progress as usize].get())
-                .get_or_insert_with(|| self.new_synth_table())
-                .get_unchecked_mut([
+            self.synth_caches
+                .get_unchecked(progress as usize)
+                .get_or_init(|| self.new_synth_table())
+                .get_unchecked([
                     craft_points as usize,
                     durability as usize,
                     buffs.veneration as usize,
@@ -167,13 +177,18 @@ impl Solver {
             }
             let mut s = init_status.clone();
             s.cast_action(action);
-            while !s.is_finished() && let Some(action) =
-                self.next_synth(s.progress, s.craft_points, s.durability, s.buffs)
-            {
-                if let Err(e) = s.is_action_allowed(action) {
-                    panic!("not allowed {:?} on {:?}: {:?}", action, s, e);
+            if !s.is_finished() {
+                while let Some(action) =
+                    self.next_synth(s.progress, s.craft_points, s.durability, s.buffs)
+                {
+                    if let Err(e) = s.is_action_allowed(action) {
+                        panic!("not allowed {:?} on {:?}: {:?}", action, s, e);
+                    }
+                    s.cast_action(action);
+                    if s.is_finished() {
+                        break;
+                    }
                 }
-                s.cast_action(action);
             }
             if s.progress > best_progress.unwrap_or_default() {
                 best_action = Some(action);
@@ -201,8 +216,16 @@ impl crate::solver::Solver for Solver {
             for synth_du in 1..s.durability {
                 // 测试此方案是否能推满进展
                 let mut tmp_s = s.clone();
-                while !tmp_s.is_finished() && let Some(action) = self.next_synth(s.progress, synth_cp, synth_du, self.init_status.buffs) {
-                    tmp_s.cast_action(action)
+                while let Some(action) =
+                    self.next_synth(s.progress, synth_cp, synth_du, self.init_status.buffs)
+                {
+                    if let Err(err) = tmp_s.is_action_allowed(action) {
+                        panic!("not allowed on {:?}: {:?}", tmp_s, err);
+                    }
+                    tmp_s.cast_action(action);
+                    if tmp_s.is_finished() {
+                        break;
+                    }
                 }
                 if tmp_s.progress < tmp_s.recipe.difficulty {
                     continue; // 推不满，方案否决
@@ -216,6 +239,9 @@ impl crate::solver::Solver for Solver {
                     tmp_s.durability - synth_du,
                     s.buffs,
                 ) {
+                    if let Err(err) = tmp_s.is_action_allowed(action) {
+                        panic!("not allowed on {:?}: {:?}", tmp_s, err);
+                    }
                     tmp_s.cast_action(action);
                     buffer.push(action);
                 }
@@ -231,7 +257,9 @@ impl crate::solver::Solver for Solver {
 
 #[cfg(test)]
 mod test {
-    use ffxiv_crafting::{Attributes, Recipe, Status};
+    use std::println;
+
+    use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
 
     fn init() -> Status {
         let r = Recipe {
@@ -270,19 +298,74 @@ mod test {
     }
     #[test]
     fn test2() {
-        let mut status = init();
+        let status = init();
         let solver = super::Solver::new(status.clone());
-        while let Some(action) =
-            solver.next_touch(status.craft_points, status.durability, status.buffs)
-        {
-            println!("{:?}", action);
-            if let Err(err) = status.is_action_allowed(action) {
-                panic!("not allowed on {:?}: {:?}", status, err);
+
+        let judge = |du, cp| -> bool {
+            let mut status = status.clone();
+            status.durability = du;
+            status.craft_points = cp;
+            while let Some(action) = solver.next_synth(
+                status.progress,
+                status.craft_points,
+                status.durability,
+                status.buffs,
+            ) {
+                if let Err(err) = status.is_action_allowed(action) {
+                    panic!("not allowed on {:?}: {:?}", status, err);
+                }
+                status.cast_action(action);
+                if status.is_finished() {
+                    break;
+                }
             }
-            status.cast_action(action);
-            if status.is_finished() {
-                break;
+            status.progress >= status.recipe.difficulty
+        };
+        let read_all = |du, cp| -> Vec<Actions> {
+            let mut actions = Vec::new();
+            let mut status = status.clone();
+            status.durability = du;
+            status.craft_points = cp;
+            while let Some(action) = solver.next_synth(
+                status.progress,
+                status.craft_points,
+                status.durability,
+                status.buffs,
+            ) {
+                if let Err(err) = status.is_action_allowed(action) {
+                    panic!("not allowed on {:?}: {:?}", status, err);
+                }
+                status.cast_action(action);
+                actions.push(action);
+                if status.is_finished() {
+                    break;
+                }
             }
+            actions
+        };
+
+        let mut prev = status.attributes.craft_points;
+        for du in (5..=70).filter(|x| x % 5 == 0) {
+            let mut left = 0;
+            let mut right = prev;
+            let mut size = right - left;
+            while left < right {
+                let mid = left + size / 2;
+                let ok = judge(du, mid);
+                if ok {
+                    right = mid;
+                } else {
+                    left = mid + 1;
+                }
+                size = right - left;
+            }
+            println!(
+                "min cp for du{du} is: cp{right}, actions: {:?}",
+                read_all(du, right)
+            );
+            prev = right;
         }
+        let num_of_table = solver.synth_caches.iter().filter(|v| v.get().is_some()).count();
+        println!("number of tables: {num_of_table}");
     }
 }
