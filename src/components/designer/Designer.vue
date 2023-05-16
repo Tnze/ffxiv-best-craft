@@ -512,3 +512,9 @@ attributes-do-not-meet-the-requirements =
     not meet the requirements.
 attributes-requirements = Require: craftsmanship ≥ { $craftsmanship } and control ≥ { $control }
 </fluent>
+
+<fluent locale="ja-JP">
+and = { $a }と{ $b }
+attributes-do-not-meet-the-requirements = { $attribute }が足りないため
+attributes-requirements = 製作可能条件：{ craftsmanship }{ $craftsmanship}以上 と { control }{ $control }以上
+</fluent>
