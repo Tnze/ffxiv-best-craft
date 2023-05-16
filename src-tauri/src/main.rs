@@ -136,7 +136,7 @@ async fn suggess_next(
         })
         .or_insert_with(|| Arc::new(Mutex::new(dp_solver::Solver::new(status.clone()))))
         .clone();
-    let mut solver = solver
+    let solver = solver
         .try_lock()
         .map_err(|_| String::from("read on solving"))?;
     solver
@@ -168,15 +168,21 @@ fn err_to_string<T: ToString>(v: T) -> String {
 }
 
 #[derive(FromQueryResult, Serialize)]
-struct RecipeRow {
+struct RecipeInfo {
     id: i32,
     rlv: i32,
     item_id: i32,
     item_name: String,
     job: String,
+
     difficulty_factor: u16,
     quality_factor: u16,
     durability_factor: u16,
+
+    required_craftsmanship: u16,
+    required_control: u16,
+
+    can_hq: bool,
 }
 
 #[tauri::command(async)]
@@ -185,7 +191,7 @@ async fn recipe_table(
     search_name: String,
     app_state: tauri::State<'_, AppState>,
     app_handle: tauri::AppHandle,
-) -> Result<(Vec<RecipeRow>, u64), String> {
+) -> Result<(Vec<RecipeInfo>, u64), String> {
     let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
     let paginate = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
@@ -194,13 +200,16 @@ async fn recipe_table(
         .filter(items::Column::Name.like(&search_name))
         .column_as(recipes::Column::Id, "id")
         .column_as(recipes::Column::RecipeLevel, "rlv")
+        .column_as(items::Column::Id, "item_id")
+        .column_as(items::Column::Name, "item_name")
+        .column_as(craft_types::Column::Name, "job")
         .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
         .column_as(recipes::Column::QualityFactor, "quality_factor")
         .column_as(recipes::Column::DurabilityFactor, "durability_factor")
-        .column_as(craft_types::Column::Name, "job")
-        .column_as(items::Column::Id, "item_id")
-        .column_as(items::Column::Name, "item_name")
-        .into_model::<RecipeRow>()
+        .column_as(recipes::Column::RequiredCraftsmanship, "required_craftsmanship")
+        .column_as(recipes::Column::RequiredControl, "required_control")
+        .column_as(recipes::Column::CanHq, "can_hq")
+        .into_model::<RecipeInfo>()
         .paginate(db, 200);
     let p = paginate.num_pages().await.map_err(err_to_string)?;
     let data = paginate.fetch_page(page_id).await.map_err(err_to_string)?;

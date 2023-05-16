@@ -8,7 +8,6 @@ import Simulator from './Simulator.vue';
 const gearsetsStore = useGearsetsStore()
 const designerStore = useDesignerStore()
 
-const displayJob = computed(() => designerStore.content!.job);
 const attributes = computed(() => {
     if (designerStore.content == null)
         return gearsetsStore.default
@@ -21,9 +20,10 @@ const attributes = computed(() => {
     <Suspense>
         <template v-if="designerStore.content != null">
             <Designer v-if="(designerStore.content.recipe.conditions_flag & ~15) == 0" :item="designerStore.content.item"
-                :recipe="designerStore.content.recipe" :attributes="attributes" :display-job="displayJob" />
+                :recipe="designerStore.content.recipe" :recipe-info="designerStore.content.recipeInfo"
+                :attributes="attributes" :display-job="designerStore.content!.job" />
             <Simulator v-else :item="designerStore.content.item" :recipe="designerStore.content.recipe"
-                :attributes="attributes" :display-job="displayJob" />
+                :attributes="attributes" :display-job="designerStore.content!.job" />
         </template>
         <el-empty v-else :description="$t('not-selected')" style="height: 100%;" />
         <template #fallback>

@@ -1,23 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { Attributes, Item, ItemWithAmount, Jobs, Recipe } from './Craft'
+import { Attributes, Item, ItemWithAmount, Jobs, Recipe, RecipeInfo } from './Craft'
 
 export interface GearsetsRow {
     name: string
     value: Attributes | null
-}
-
-export interface State {
-    gearsets: { default: Attributes, special: GearsetsRow[] }
-    checklist: ItemWithAmount[]
-    designer: null | {
-        item: Item;
-        job: Jobs;
-        recipe: Recipe;
-    }
-    settings: {
-        language: string
-    }
 }
 
 export const useGearsetsStore = defineStore('gearsets', {
@@ -83,13 +70,15 @@ export const useDesignerStore = defineStore('designer', {
             item: Item;
             job: Jobs;
             recipe: Recipe;
+            recipeInfo?: RecipeInfo
         }
     }),
     actions: {
         selectRecipe(payload: {
             job: Jobs,
             item: Item,
-            recipe: Recipe
+            recipe: Recipe,
+            recipeInfo?: RecipeInfo
         }) {
             this.content = payload
         }

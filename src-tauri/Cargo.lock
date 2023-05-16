@@ -2084,9 +2084,9 @@ dependencies = [
 
 [[package]]
 name = "micro_ndarray"
-version = "0.2.7"
+version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39b93908bb5252af456f4347bd26c99208033b48b8d036ee376266a0bf71026b"
+checksum = "24487d06c5ae197499ec07ceebb6a9b6e030ea91fe67c5724896d7debe1176e0"
 
 [[package]]
 name = "minimal-lexical"

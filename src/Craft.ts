@@ -192,7 +192,7 @@ export const craftPointsList = (
     return invoke("craftpoints_list", { status, skills: actions });
 };
 
-export interface RecipeRow {
+export interface RecipeInfo {
     id: number;
     rlv: number;
     item_id: number;
@@ -202,9 +202,14 @@ export interface RecipeRow {
     difficulty_factor: number;
     quality_factor: number;
     durability_factor: number;
+
+    required_craftsmanship: number;
+    required_control: number;
+
+    can_hq: boolean;
 }
 
-export const recipeTable = (page: number, searchName: string): Promise<[RecipeRow[], number]> => {
+export const recipeTable = (page: number, searchName: string): Promise<[RecipeInfo[], number]> => {
     return invoke("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
 };
 

@@ -7,7 +7,7 @@ pub struct Solver {
     init_status: Status,
     start_caches: Array<Cell<Option<Actions>>, 7>,
     touch_caches: Array<Cell<Option<Actions>>, 9>,
-    synth_caches: Vec<OnceCell<Array<Cell<Option<Actions>>, 6>>>,
+    synth_caches: Array<Cell<Option<Actions>>, 6>,
 }
 
 impl Solver {
@@ -72,37 +72,35 @@ impl Solver {
                 Self::MAX_TOUCH_COMBO + 1,
                 Self::MAX_OBSERVE + 1,
             ]),
-            synth_caches: vec![OnceCell::new(); init_status.recipe.difficulty as usize + 1],
+            synth_caches: Array::new([
+                init_status.attributes.craft_points as usize + 1,
+                init_status.recipe.durability as usize + 1,
+                Self::MAX_VENERATION + 1,
+                Self::MAX_MANIPULATION + 1,
+                Self::MAX_WASTE_NOT + 1,
+                Self::MAX_OBSERVE + 1,
+            ]),
             init_status,
         }
-    }
-
-    fn new_synth_table(&self) -> Array<Cell<Option<Actions>>, 6> {
-        Array::new([
-            self.init_status.attributes.craft_points as usize + 1,
-            self.init_status.recipe.durability as usize + 1,
-            Self::MAX_VENERATION + 1,
-            Self::MAX_MANIPULATION + 1,
-            Self::MAX_WASTE_NOT + 1,
-            Self::MAX_OBSERVE + 1,
-        ])
     }
 
     pub fn next_touch(&self, craft_points: i32, durability: u16, buffs: Buffs) -> Option<Actions> {
         if craft_points == 0 || durability == 0 {
             return None;
         }
-        let this_cell = &self.touch_caches[[
-            craft_points as usize,
-            durability as usize,
-            buffs.inner_quiet as usize,
-            buffs.innovation as usize,
-            buffs.manipulation as usize,
-            buffs.wast_not as usize,
-            buffs.great_strides as usize,
-            buffs.touch_combo_stage as usize,
-            buffs.observed as usize,
-        ]];
+        let this_cell = unsafe {
+            self.touch_caches.get_unchecked([
+                craft_points as usize,
+                durability as usize,
+                buffs.inner_quiet as usize,
+                buffs.innovation as usize,
+                buffs.manipulation as usize,
+                buffs.wast_not as usize,
+                buffs.great_strides as usize,
+                buffs.touch_combo_stage as usize,
+                buffs.observed as usize,
+            ])
+        };
         if let Some(action) = this_cell.get() {
             return Some(action);
         }
@@ -136,28 +134,19 @@ impl Solver {
         best_action
     }
 
-    fn next_synth(
-        &self,
-        progress: u16,
-        craft_points: i32,
-        durability: u16,
-        buffs: Buffs,
-    ) -> Option<Actions> {
+    fn next_synth(&self, craft_points: i32, durability: u16, buffs: Buffs) -> Option<Actions> {
         if craft_points == 0 || durability == 0 {
             return None;
         }
         let this_cell = unsafe {
-            self.synth_caches
-                .get_unchecked(progress as usize)
-                .get_or_init(|| self.new_synth_table())
-                .get_unchecked([
-                    craft_points as usize,
-                    durability as usize,
-                    buffs.veneration as usize,
-                    buffs.manipulation as usize,
-                    buffs.wast_not as usize,
-                    buffs.observed as usize,
-                ])
+            self.synth_caches.get_unchecked([
+                craft_points as usize,
+                durability as usize,
+                buffs.veneration as usize,
+                buffs.manipulation as usize,
+                buffs.wast_not as usize,
+                buffs.observed as usize,
+            ])
         };
         if let Some(action) = this_cell.get() {
             return Some(action);
@@ -166,8 +155,7 @@ impl Solver {
         init_status.craft_points = craft_points;
         init_status.durability = durability;
         init_status.buffs = buffs;
-        let mut best_action = None;
-        let mut best_progress = None;
+        let mut best_progress = 0;
         for (action, consumed_du) in Self::SYNTH_SKILLS {
             if init_status.is_action_allowed(action).is_err()
                 || durability < init_status.calc_durability(consumed_du)
@@ -178,9 +166,7 @@ impl Solver {
             let mut s = init_status.clone();
             s.cast_action(action);
             if !s.is_finished() {
-                while let Some(action) =
-                    self.next_synth(s.progress, s.craft_points, s.durability, s.buffs)
-                {
+                while let Some(action) = self.next_synth(s.craft_points, s.durability, s.buffs) {
                     if let Err(e) = s.is_action_allowed(action) {
                         panic!("not allowed {:?} on {:?}: {:?}", action, s, e);
                     }
@@ -190,13 +176,12 @@ impl Solver {
                     }
                 }
             }
-            if s.progress > best_progress.unwrap_or_default() {
-                best_action = Some(action);
-                best_progress = Some(s.progress);
+            if s.progress > best_progress {
+                this_cell.set(Some(action));
+                best_progress = s.progress;
             }
         }
-        this_cell.set(best_action);
-        best_action
+        this_cell.get()
     }
 }
 
@@ -216,8 +201,7 @@ impl crate::solver::Solver for Solver {
             for synth_du in 1..s.durability {
                 // 测试此方案是否能推满进展
                 let mut tmp_s = s.clone();
-                while let Some(action) =
-                    self.next_synth(s.progress, synth_cp, synth_du, self.init_status.buffs)
+                while let Some(action) = self.next_synth(synth_cp, synth_du, self.init_status.buffs)
                 {
                     if let Err(err) = tmp_s.is_action_allowed(action) {
                         panic!("not allowed on {:?}: {:?}", tmp_s, err);
@@ -306,7 +290,6 @@ mod test {
             status.durability = du;
             status.craft_points = cp;
             while let Some(action) = solver.next_synth(
-                status.progress,
                 status.craft_points,
                 status.durability,
                 status.buffs,
@@ -327,7 +310,6 @@ mod test {
             status.durability = du;
             status.craft_points = cp;
             while let Some(action) = solver.next_synth(
-                status.progress,
                 status.craft_points,
                 status.durability,
                 status.buffs,
@@ -365,7 +347,11 @@ mod test {
             );
             prev = right;
         }
-        let num_of_table = solver.synth_caches.iter().filter(|v| v.get().is_some()).count();
+        let num_of_table = solver
+            .synth_caches
+            .iter()
+            .filter(|(_, v)| v.get().is_some())
+            .count();
         println!("number of tables: {num_of_table}");
     }
 }

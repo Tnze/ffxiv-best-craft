@@ -2,7 +2,7 @@
 import { ref, watchEffect, reactive } from 'vue'
 import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElInput, ElInputNumber, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
-import { Jobs, Recipe, newRecipe, recipeTable, RecipeRow, Item, itemInfo } from '../../Craft'
+import { Jobs, Recipe, newRecipe, recipeTable, RecipeInfo, Item, itemInfo } from '../../Craft'
 import { useRouter } from 'vue-router';
 import { useChecklistStore, useDesignerStore } from '../../store';
 import { useFluent } from 'fluent-vue';
@@ -28,7 +28,7 @@ const pagination = reactive({
     Page: 1,
     PageTotal: 1
 })
-const displayTable = ref<RecipeRow[]>([])
+const displayTable = ref<RecipeInfo[]>([])
 watchEffect(async () => {
     let [list, totalPages] = await recipeTable(pagination.Page, searchText.value)
     displayTable.value = list
@@ -38,7 +38,7 @@ watchEffect(async () => {
 
 const openCustomlizer = ref(false)
 
-const selectRecipeRow = async (row: RecipeRow) => {
+const selectRecipeRow = async (row: RecipeInfo) => {
     try {
         await ElMessageBox.confirm(
             $t('confirm-select', { itemName: row.item_name }),
@@ -51,18 +51,19 @@ const selectRecipeRow = async (row: RecipeRow) => {
             row.quality_factor,
             row.durability_factor
         )
-        selectRecipe(recipe, await itemInfo(row.item_id), row.job)
+        selectRecipe(recipe, row, await itemInfo(row.item_id), row.job)
         checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
     } catch {
         // operation canceled by user
     }
 }
 
-const selectRecipe = (recipe: Recipe, item: Item, craftType: string) => {
+const selectRecipe = (recipe: Recipe, recipeInfo: RecipeInfo | undefined, item: Item, craftType: string) => {
     designerStore.selectRecipe({
         job: jobMaps[craftType] ?? Jobs.Culinarian,
         item,
         recipe,
+        recipeInfo
     })
     router.push({ name: "designer" })
     ElMessage({
@@ -113,7 +114,7 @@ const customRecipe = ref({
                 <template #footer>
                     <span class="dialog-footer">
                         <el-button @click="openCustomlizer = false">{{ $t('cancel') }}</el-button>
-                        <el-button type="primary" @click="openCustomlizer = false; selectRecipe(customRecipe, {
+                        <el-button type="primary" @click="openCustomlizer = false; selectRecipe(customRecipe, undefined, {
                             id: -1,
                             name: $t('custom-recipe', { rlv: customRecipe.rlv }),
                             level: customRecipe.rlv,
@@ -129,14 +130,14 @@ const customRecipe = ref({
                     <el-button :icon="EditPen" @click="openCustomlizer = true" />
                 </template>
             </el-input>
-            <el-table :element-loading-text="$t('please-wait')" highlight-current-row
-                @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
+            <el-table :element-loading-text="$t('please-wait')" highlight-current-row @row-click="selectRecipeRow"
+                :data="displayTable" height="100%" style="width: 100%">
                 <el-table-column prop="id" label="ID" width="100" />
                 <el-table-column prop="rlv" :label="$t('recipe-level')" width="100" />
                 <!-- <el-table-column prop="Icon" label="图标" width="55">
                     <template #default="scope">
                         <div style="display: flex; align-items: center">
-                            <el-image :src="'https://garlandtools.cn/files/icons/item/' + scope.row.item +'.png'" />
+                            <el-image :src="'https://garlandtools.cn/files/icons/item/' + scope.row.number +'.png'" />
                         </div>
                     </template>
                 </el-table-column> -->
@@ -195,7 +196,7 @@ name = 名称
 <fluent locale="en-US">
 confirm-select = Set current recipe to "{ $itemName }"?
 please-confirm = Please confirm
-recipe-setting-changed = Recipe is updated
+recipe-setting-changed = Selected recipe is updated
 select-recipe = Select Recipe
 custom-recipe = Custom Recipe #{ $rlv }
 conditions-flag = Cond. Flag

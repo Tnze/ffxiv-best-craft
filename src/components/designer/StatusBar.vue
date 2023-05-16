@@ -64,9 +64,9 @@ const condition = computed(() => {
         <div id="durability-and-condition">
             <div id="durability">
                 {{ $t('display-durability', {
-                        current: status?.durability,
-                        total: status?.recipe.durability
-                    })
+                    current: status?.durability,
+                    total: status?.recipe.durability
+                })
                 }}
                 <el-progress :stroke-width="14" :show-text="false" :percentage="durability" :color="durabilityColor">
                 </el-progress>
@@ -98,9 +98,10 @@ const condition = computed(() => {
         <div id="attributes">
             <el-link class="attributes-link" @click="emits('click-attributes')" :icon="Setting"
                 :disabled="disabledEnhancer">
-                {{ $t('display-attrs', { what: $t('level'), value: status?.attributes.level }) }}
-                <br />
-                {{ $t('display-attrs', {
+                <div>
+                    {{ $t('display-attrs', { what: $t('level'), value: status?.attributes.level }) }}
+                    <br />
+                    {{ $t('display-attrs', {
                         what: $t('craftsmanship'),
                         value: attributes.craftsmanship + enhancers
                             .filter(v => v.cm && v.cm_max)
@@ -110,9 +111,9 @@ const condition = computed(() => {
                             ))
                             .map(cm => ` + ${cm}`).join('')
                     })
-                }}
-                <br />
-                {{ $t('display-attrs', {
+                    }}
+                    <br />
+                    {{ $t('display-attrs', {
                         what: $t('control'),
                         value: attributes.control + enhancers
                             .filter(v => v.ct && v.ct_max)
@@ -122,9 +123,9 @@ const condition = computed(() => {
                             ))
                             .map(ct => ` + ${ct}`).join('')
                     })
-                }}
-                <br />
-                {{ $t('display-craft-point', {
+                    }}
+                    <br />
+                    {{ $t('display-craft-point', {
                         current: status?.craft_points,
                         total: attributes.craft_points + enhancers
                             .filter(v => v.cp && v.cp_max)
@@ -134,7 +135,8 @@ const condition = computed(() => {
                             ))
                             .map(cp => ` + ${cp}`).join('')
                     })
-                }}
+                    }}
+                </div>
             </el-link>
             <br />
             <el-progress class="craft-points-progressbar"

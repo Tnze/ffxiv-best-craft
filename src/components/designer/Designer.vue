@@ -2,9 +2,9 @@
 import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
-import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox } from "element-plus";
+import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
-import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item } from "../../Craft";
+import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeInfo } from "../../Craft";
 import { read_solver } from "../../Solver";
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
@@ -35,6 +35,7 @@ interface Sequence {
 
 const props = defineProps<{
     recipe: Recipe,
+    recipeInfo?: RecipeInfo,
     item: Item,
     attributes: Attributes,
     displayJob: Jobs,
@@ -66,6 +67,36 @@ const enhancedAttributes = computed<Attributes>(() => {
     };
 });
 
+// Attribution Alert
+var attributionAlert = computed(() => {
+    if (props.recipeInfo == null)
+        return;
+    let { required_craftsmanship, required_control } = props.recipeInfo;
+    let { craftsmanship, control } = enhancedAttributes.value;
+    let notMeet = [] as string[]
+    if (required_craftsmanship > craftsmanship) {
+        notMeet.push($t('craftsmanship'))
+    }
+    if (required_control > control) {
+        notMeet.push($t('control'))
+    }
+    console.log(notMeet)
+    let num = notMeet.length
+    if (num > 0) {
+        let attribute = notMeet[0]
+        if (num > 1) {
+            attribute = $t('and', { a: notMeet[0], b: notMeet[1] })
+        }
+        return {
+            title: $t('attributes-do-not-meet-the-requirements', { num, attribute }),
+            descryption: $t('attributes-requirements', {
+                craftsmanship: required_craftsmanship,
+                control: required_control
+            })
+        }
+    }
+    return;
+})
 // UI State
 const isReadingSolver = ref(0);
 const previewSolver = ref(false);
@@ -303,17 +334,17 @@ async function openListFromJSON() {
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <KeepAlive>
-            <InitialQualitySetting v-model="initQuality" v-model:open="openInitQualitySet" :item="item"
-                :recipe="recipe" />
+            <InitialQualitySetting v-model="initQuality" v-model:open="openInitQualitySet" :item="item" :recipe="recipe" />
         </KeepAlive>
         <el-header>
             <h1>{{ item.name }}</h1>
         </el-header>
         <el-main>
             <div class="main-page">
-                <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers" :status="
-                    displayedStatus
-                " @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true" />
+                <el-alert v-if="attributionAlert != undefined" :title="attributionAlert.title"
+                    :description="attributionAlert.descryption" type="warning" show-icon center :closable="false" />
+                <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers" :status="displayedStatus
+                    " @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true" />
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">
                         <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
@@ -321,11 +352,12 @@ async function openListFromJSON() {
                     <div class="actionqueue-and-savedqueue">
                         <div class="action-queue">
                             <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
-                                :preview-solver="previewSolver" :err-list="activeSeq.errors" :loading-solver-result="isReadingSolver > 0" />
+                                :preview-solver="previewSolver" :err-list="activeSeq.errors"
+                                :loading-solver-result="isReadingSolver > 0" />
                         </div>
-                        <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver"
-                            @plus="saveSequence" @delete="clearSeq" @solver="openSolverDrawer = true"
-                            @print="openExportMacro = true" @save-list="saveListToJSON" @open-list="openListFromJSON" />
+                        <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver" @plus="saveSequence"
+                            @delete="clearSeq" @solver="openSolverDrawer = true" @print="openExportMacro = true"
+                            @save-list="saveListToJSON" @open-list="openListFromJSON" />
                         <el-scrollbar class="savedqueue-scrollbar">
                             <TransitionGroup class="savedqueue-list" name="savedqueues" tag="ul">
                                 <li v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" class="savedqueue-item">
@@ -350,6 +382,11 @@ async function openListFromJSON() {
     height: 100%;
     display: flex;
     flex-direction: column;
+}
+
+.el-alert {
+    margin: 0;
+    padding: 15px;
 }
 
 .status-bar {
@@ -436,6 +473,10 @@ save-fail = 保存失败：{ $reason }
 open-file = 打开文件
 read-n-macros = 读取了 { $n } 个宏
 read-fail = 读取失败：{ $reason }
+
+and = { $a }和{ $b }
+attributes-do-not-meet-the-requirements = 装备{ $attribute }不满足配方要求
+attributes-requirements = 当前配方要求：作业精度 ≥ { $craftsmanship }，加工精度 ≥ { $control }
 </fluent>
 
 <fluent locale="en-US">
@@ -460,4 +501,14 @@ read-n-macros = Read { $n ->
     *[other] { $n } macros
 }
 read-fail = Reading failed: { $reason }
+
+and = { $a } and { $b }
+attributes-do-not-meet-the-requirements = 
+    { $attribute }
+    { $num ->
+        [one] does
+        *[other] do
+    }
+    not meet the requirements.
+attributes-requirements = Require: craftsmanship ≥ { $craftsmanship } and control ≥ { $control }
 </fluent>
