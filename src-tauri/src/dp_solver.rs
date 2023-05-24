@@ -1,7 +1,6 @@
-use std::cell::{Cell, OnceCell};
-
 use ffxiv_crafting::{Actions, Buffs, Status};
 use micro_ndarray::Array;
+use std::cell::Cell;
 
 pub struct Solver {
     init_status: Status,
@@ -134,7 +133,7 @@ impl Solver {
         best_action
     }
 
-    fn next_synth(&self, craft_points: i32, durability: u16, buffs: Buffs) -> Option<Actions> {
+    pub fn next_synth(&self, craft_points: i32, durability: u16, buffs: Buffs) -> Option<Actions> {
         if craft_points == 0 || durability == 0 {
             return None;
         }
@@ -193,56 +192,12 @@ impl crate::solver::Solver for Solver {
     }
 
     fn read_all(&self, s: &Status) -> Vec<Actions> {
-        let mut best = Vec::new();
-        let mut best_quality = 0;
-        let mut buffer = Vec::new();
-        // 尝试所有资源分配组合
-        for synth_cp in 0..s.craft_points {
-            for synth_du in 1..s.durability {
-                // 测试此方案是否能推满进展
-                let mut tmp_s = s.clone();
-                while let Some(action) = self.next_synth(synth_cp, synth_du, self.init_status.buffs)
-                {
-                    if let Err(err) = tmp_s.is_action_allowed(action) {
-                        panic!("not allowed on {:?}: {:?}", tmp_s, err);
-                    }
-                    tmp_s.cast_action(action);
-                    if tmp_s.is_finished() {
-                        break;
-                    }
-                }
-                if tmp_s.progress < tmp_s.recipe.difficulty {
-                    continue; // 推不满，方案否决
-                }
-
-                // 测试该方案能推多少品质
-                buffer.clear();
-                let mut tmp_s = s.clone();
-                while let Some(action) = self.next_touch(
-                    tmp_s.craft_points - synth_cp,
-                    tmp_s.durability - synth_du,
-                    s.buffs,
-                ) {
-                    if let Err(err) = tmp_s.is_action_allowed(action) {
-                        panic!("not allowed on {:?}: {:?}", tmp_s, err);
-                    }
-                    tmp_s.cast_action(action);
-                    buffer.push(action);
-                }
-                if best_quality < tmp_s.quality {
-                    best.clone_from(&buffer);
-                    best_quality = tmp_s.quality;
-                }
-            }
-        }
-        best
+        todo!()
     }
 }
 
 #[cfg(test)]
 mod test {
-    use std::println;
-
     use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
 
     fn init() -> Status {
@@ -289,11 +244,9 @@ mod test {
             let mut status = status.clone();
             status.durability = du;
             status.craft_points = cp;
-            while let Some(action) = solver.next_synth(
-                status.craft_points,
-                status.durability,
-                status.buffs,
-            ) {
+            while let Some(action) =
+                solver.next_synth(status.craft_points, status.durability, status.buffs)
+            {
                 if let Err(err) = status.is_action_allowed(action) {
                     panic!("not allowed on {:?}: {:?}", status, err);
                 }
@@ -309,11 +262,9 @@ mod test {
             let mut status = status.clone();
             status.durability = du;
             status.craft_points = cp;
-            while let Some(action) = solver.next_synth(
-                status.craft_points,
-                status.durability,
-                status.buffs,
-            ) {
+            while let Some(action) =
+                solver.next_synth(status.craft_points, status.durability, status.buffs)
+            {
                 if let Err(err) = status.is_action_allowed(action) {
                     panic!("not allowed on {:?}: {:?}", status, err);
                 }
