@@ -7,10 +7,10 @@ pub struct Solver {
             Self::MAX_MANIPULATION + 1]; Self::MAX_GREAT_STRIDES + 1];
             Self::MAX_TOUCH_COMBO + 1]; Self::MAX_OBSERVE + 1],
     >,
-    synth_caches: Vec<
-        [[[Option<Actions>; Self::MAX_VENERATION + 1]; Self::MAX_MANIPULATION + 1];
-            Self::MAX_OBSERVE + 1],
-    >,
+    // synth_caches: Vec<
+    //     [[[Option<Actions>; Self::MAX_VENERATION + 1]; Self::MAX_MANIPULATION + 1];
+    //         Self::MAX_OBSERVE + 1],
+    // >,
 }
 
 impl Solver {
@@ -19,7 +19,7 @@ impl Solver {
     const MAX_MANIPULATION: usize = 8 + 2;
     const MAX_GREAT_STRIDES: usize = 3 + 2;
     const MAX_TOUCH_COMBO: usize = 2;
-    const MAX_VENERATION: usize = 4 + 2;
+    // const MAX_VENERATION: usize = 4 + 2;
     const MAX_OBSERVE: usize = 1;
     const TOUCH_SKILLS: [(Actions, u16); 13] = [
         (Actions::BasicTouch, 10),
@@ -41,11 +41,11 @@ impl Solver {
         let len = (init_status.attributes.craft_points as usize + 1)
             * (init_status.recipe.durability as usize + 1);
         let default_touch = Default::default();
-        let default_synth = Default::default();
+        // let default_synth = Default::default();
         Self {
             init_status,
             touch_caches: vec![default_touch; len],
-            synth_caches: vec![default_synth; len],
+            // synth_caches: vec![default_synth; len],
         }
     }
 
@@ -98,10 +98,10 @@ impl Solver {
         best_action
     }
 
-    fn finish_actions_choices(&self, status: Status) -> Vec<Actions> {
-        let _left_progress = status.recipe.difficulty - status.progress;
-        todo!()
-    }
+    // fn finish_actions_choices(&self, status: Status) -> Vec<Actions> {
+    //     let _left_progress = status.recipe.difficulty - status.progress;
+    //     todo!()
+    // }
 }
 
 #[cfg(test)]
