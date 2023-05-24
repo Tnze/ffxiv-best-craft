@@ -7,6 +7,17 @@ import { useRouter } from 'vue-router';
 import { useChecklistStore, useDesignerStore } from '../../store';
 import { useFluent } from 'fluent-vue';
 
+
+// let jsonData = JSON.stringify(data.map(elem => ({
+//     cm: elem.craftsmanship_percent,
+//     cm_max: elem.craftsmanship_value,
+//     cp: elem.cp_percent,
+//     cp_max: elem.cp_value,
+//     ct: elem.control_percent,
+//     ct_max: elem.control_value,
+//     name: elem.name.cn + (elem.hq ? " HQ" : "")
+// })), null, '    ')
+
 const checklistStore = useChecklistStore()
 const designerStore = useDesignerStore()
 const router = useRouter()
@@ -129,8 +140,8 @@ const customRecipe = ref({
                     <el-button :icon="EditPen" @click="openCustomlizer = true" />
                 </template>
             </el-input>
-            <el-table :element-loading-text="$t('please-wait')" highlight-current-row
-                @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
+            <el-table :element-loading-text="$t('please-wait')" highlight-current-row @row-click="selectRecipeRow"
+                :data="displayTable" height="100%" style="width: 100%">
                 <el-table-column prop="id" label="ID" width="100" />
                 <el-table-column prop="rlv" :label="$t('recipe-level')" width="100" />
                 <!-- <el-table-column prop="Icon" label="图标" width="55">
