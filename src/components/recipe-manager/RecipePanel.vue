@@ -7,6 +7,17 @@ import { useRouter } from 'vue-router';
 import { useChecklistStore, useDesignerStore } from '../../store';
 import { useFluent } from 'fluent-vue';
 
+
+// let jsonData = JSON.stringify(data.map(elem => ({
+//     cm: elem.craftsmanship_percent,
+//     cm_max: elem.craftsmanship_value,
+//     cp: elem.cp_percent,
+//     cp_max: elem.cp_value,
+//     ct: elem.control_percent,
+//     ct_max: elem.control_value,
+//     name: elem.name.cn + (elem.hq ? " HQ" : "")
+// })), null, '    ')
+
 const checklistStore = useChecklistStore()
 const designerStore = useDesignerStore()
 const router = useRouter()

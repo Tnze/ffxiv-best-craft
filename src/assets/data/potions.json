@@ -1,20 +1,92 @@
 [
-    { "cp": 5, "cp_max": 13, "name": "【ilv.282】魔匠药茶 HQ" },
-    { "cp": 4, "cp_max": 10, "name": "【ilv.282】魔匠药茶" },
-    { "cp": 6, "cp_max": 16, "name": "【ilv.412】魔匠药水 HQ" },
-    { "cp": 5, "cp_max": 13, "name": "【ilv.412】魔匠药水" },
-    { "cm": 3, "cm_max": 25, "name": "【ilv.273】名匠药茶 HQ" },
-    { "cm": 2, "cm_max": 20, "name": "【ilv.273】名匠药茶" },
-    { "cm": 3, "cm_max": 41, "name": "【ilv.406】名匠药水 HQ" },
-    { "cm": 2, "cm_max": 33, "name": "【ilv.406】名匠药水" },
-    { "ct": 3, "ct_max": 25, "name": "【ilv.276】巨匠药茶 HQ" },
-    { "ct": 2, "ct_max": 20, "name": "【ilv.276】巨匠药茶" },
-    { "ct": 3, "ct_max": 42, "name": "【ilv.412】巨匠药水 HQ" },
-    { "ct": 2, "ct_max": 34, "name": "【ilv.412】巨匠药水" },
-    { "cm": 3, "cm_max": 50, "name": "【ilv.527】名匠药酒 HQ" },
-    { "cm": 2, "cm_max": 40, "name": "【ilv.527】名匠药酒" },
-    { "ct": 3, "ct_max": 50, "name": "【ilv.540】巨匠药酒 HQ" },
-    { "ct": 2, "ct_max": 40, "name": "【ilv.540】巨匠药酒" },
-    { "cp": 6, "cp_max": 21, "name": "【ilv.554】魔匠药酒 HQ" },
-    { "cp": 5, "cp_max": 17, "name": "【ilv.554】魔匠药酒" }
+    {
+        "cp": 5,
+        "cp_max": 17,
+        "name": "【ilv.554】魔匠药酒"
+    },
+    {
+        "cp": 6,
+        "cp_max": 21,
+        "name": "【ilv.554】魔匠药酒 HQ"
+    },
+    {
+        "ct": 2,
+        "ct_max": 40,
+        "name": "【ilv.540】巨匠药酒"
+    },
+    {
+        "ct": 3,
+        "ct_max": 50,
+        "name": "【ilv.540】巨匠药酒 HQ"
+    },
+    {
+        "cm": 2,
+        "cm_max": 40,
+        "name": "【ilv.527】名匠药酒"
+    },
+    {
+        "cm": 3,
+        "cm_max": 50,
+        "name": "【ilv.527】名匠药酒 HQ"
+    },
+    {
+        "ct": 2,
+        "ct_max": 34,
+        "name": "【ilv.412】巨匠药水"
+    },
+    {
+        "ct": 3,
+        "ct_max": 42,
+        "name": "【ilv.412】巨匠药水 HQ"
+    },
+    {
+        "ct": 2,
+        "ct_max": 20,
+        "name": "【ilv.276】巨匠药茶"
+    },
+    {
+        "ct": 3,
+        "ct_max": 25,
+        "name": "【ilv.276】巨匠药茶 HQ"
+    },
+    {
+        "cm": 2,
+        "cm_max": 33,
+        "name": "【ilv.406】名匠药水"
+    },
+    {
+        "cm": 3,
+        "cm_max": 41,
+        "name": "【ilv.406】名匠药水 HQ"
+    },
+    {
+        "cm": 2,
+        "cm_max": 20,
+        "name": "【ilv.273】名匠药茶"
+    },
+    {
+        "cm": 3,
+        "cm_max": 25,
+        "name": "【ilv.273】名匠药茶 HQ"
+    },
+    {
+        "cp": 5,
+        "cp_max": 13,
+        "name": "【ilv.412】魔匠药水"
+    },
+    {
+        "cp": 6,
+        "cp_max": 16,
+        "name": "【ilv.412】魔匠药水 HQ"
+    },
+    {
+        "cp": 4,
+        "cp_max": 10,
+        "name": "【ilv.282】魔匠药茶"
+    },
+    {
+        "cp": 5,
+        "cp_max": 13,
+        "name": "【ilv.282】魔匠药茶 HQ"
+    }
 ]
