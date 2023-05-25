@@ -192,13 +192,104 @@ impl crate::solver::Solver for Solver {
     }
 
     fn read_all(&self, s: &Status) -> Vec<Actions> {
-        todo!()
+        let mut actions = Vec::new();
+        if s.is_action_allowed(Actions::Reflect).is_ok() {
+            let mut tmp_s = s.clone();
+            tmp_s.cast_action(Actions::Reflect);
+            actions.push(Actions::Reflect)
+        }
+        actions
+    }
+}
+
+struct SynthIterator<'a> {
+    solver: &'a Solver,
+    status: &'a Status,
+
+    prev: i32,
+    du: u16,
+
+    // inner
+    left: i32,
+    right: i32,
+    size: i32,
+}
+
+impl<'a> SynthIterator<'a> {
+    fn new(solver: &'a Solver, status: &'a Status) -> Self {
+        Self {
+            solver,
+            status,
+
+            prev: status.attributes.craft_points,
+            du: 0,
+
+            left: 0,
+            right: 0,
+            size: 0,
+        }
+    }
+
+    fn inner_next(&mut self) -> Option<i32> {
+        if !self.judge(self.du, self.right) {
+            return None
+        }
+        while self.left < self.right {
+            let mid = self.left + self.size / 2;
+            let ok = self.judge(self.du, mid);
+            if ok {
+                self.right = mid;
+            } else {
+                self.left = mid + 1;
+            }
+            self.size = self.right - self.left;
+        }
+        Some(self.right)
+    }
+
+    fn judge(&self, du: u16, cp: i32) -> bool {
+        let mut status = self.status.clone();
+        status.durability = du;
+        status.craft_points = cp;
+        while let Some(action) =
+            self.solver.next_synth(status.craft_points, status.durability, status.buffs)
+        {
+            if let Err(err) = status.is_action_allowed(action) {
+                panic!("not allowed on {:?}: {:?}", status, err);
+            }
+            status.cast_action(action);
+            if status.is_finished() {
+                break;
+            }
+        }
+        status.progress >= status.recipe.difficulty
+    }
+}
+
+impl Iterator for SynthIterator<'_> {
+    type Item = (u16, i32);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        loop {
+            self.du += 5;
+            self.left = 0;
+            self.right = self.prev;
+            self.size = self.prev;
+            if self.du > self.status.recipe.durability {
+                return None;
+            }
+            if let Some(min_cp) = self.inner_next() {
+                return Some((self.du, min_cp));
+            }
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
+
+    use crate::dp_solver::SynthIterator;
 
     fn init() -> Status {
         let r = Recipe {
@@ -240,23 +331,6 @@ mod test {
         let status = init();
         let solver = super::Solver::new(status.clone());
 
-        let judge = |du, cp| -> bool {
-            let mut status = status.clone();
-            status.durability = du;
-            status.craft_points = cp;
-            while let Some(action) =
-                solver.next_synth(status.craft_points, status.durability, status.buffs)
-            {
-                if let Err(err) = status.is_action_allowed(action) {
-                    panic!("not allowed on {:?}: {:?}", status, err);
-                }
-                status.cast_action(action);
-                if status.is_finished() {
-                    break;
-                }
-            }
-            status.progress >= status.recipe.difficulty
-        };
         let read_all = |du, cp| -> Vec<Actions> {
             let mut actions = Vec::new();
             let mut status = status.clone();
@@ -276,27 +350,11 @@ mod test {
             }
             actions
         };
-
-        let mut prev = status.attributes.craft_points;
-        for du in (5..=70).filter(|x| x % 5 == 0) {
-            let mut left = 0;
-            let mut right = prev;
-            let mut size = right - left;
-            while left < right {
-                let mid = left + size / 2;
-                let ok = judge(du, mid);
-                if ok {
-                    right = mid;
-                } else {
-                    left = mid + 1;
-                }
-                size = right - left;
-            }
+        for (du, cp) in SynthIterator::new(&solver, &status) {
             println!(
-                "min cp for du{du} is: cp{right}, actions: {:?}",
-                read_all(du, right)
+                "min cp for du{du} is: cp{cp}, actions: {:?}",
+                read_all(du, cp)
             );
-            prev = right;
         }
         let num_of_table = solver
             .synth_caches
