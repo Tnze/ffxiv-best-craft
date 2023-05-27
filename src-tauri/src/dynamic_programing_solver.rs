@@ -2,7 +2,7 @@ use crate::solver::Solver;
 use bumpalo::Bump;
 use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
 use micro_ndarray::Array;
-use std::sync::Arc;
+use std::{cell::Cell, sync::Arc};
 
 #[derive(Clone, Copy, Default)]
 struct SolverSlot<T> {
@@ -272,8 +272,8 @@ where
     [[(); WN]; MN]:,
 {
     init_status: Status,
-    // results[d][cp][ve][mm][mn][wn]
-    results: Array<SolverSlot<u16>, 6>,
+    // results[ve][mm][mn][wn][d][cp]
+    results: Array<Cell<SolverSlot<u16>>, 6>,
     slots: Bump,
 }
 
@@ -286,41 +286,30 @@ where
         let du = init_status.recipe.durability as usize;
         Self {
             init_status,
-            results: Array::new([du + 1, cp + 1, 5, 6, MN, WN]),
+            results: Array::new([5, 6, MN, WN, du + 1, cp + 1]),
             slots: Bump::new(),
         }
     }
 
-    unsafe fn get_unchecked(&self, s: &Status) -> &SolverSlot<u16> {
+    unsafe fn get_unchecked(&self, s: &Status) -> &Cell<SolverSlot<u16>> {
         self.results.get_unchecked([
-            s.durability as usize / 5,
-            s.craft_points as usize,
             s.buffs.veneration as usize,
             s.buffs.muscle_memory as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not as usize,
+            s.durability as usize,
+            s.craft_points as usize,
         ])
     }
 
-    fn get(&self, s: &Status) -> &SolverSlot<u16> {
+    fn get(&self, s: &Status) -> &Cell<SolverSlot<u16>> {
         &self.results[[
-            s.durability as usize / 5,
-            s.craft_points as usize,
             s.buffs.veneration as usize,
             s.buffs.muscle_memory as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not as usize,
-        ]]
-    }
-
-    fn get_mut(&mut self, s: &Status) -> &mut SolverSlot<u16> {
-        &mut self.results[[
-            s.durability as usize / 5,
+            s.durability as usize,
             s.craft_points as usize,
-            s.buffs.veneration as usize,
-            s.buffs.muscle_memory as usize,
-            s.buffs.manipulation as usize,
-            s.buffs.wast_not as usize,
         ]]
     }
 }
@@ -330,54 +319,45 @@ where
     [[(); WN]; MN]:,
 {
     fn init(&mut self) {
-        let mut s = self.init_status.clone();
-        for cp in 0..=self.init_status.attributes.craft_points {
-            s.craft_points = cp;
-            for du in (1..=self.init_status.recipe.durability).filter(|v| v % 5 == 0) {
-                s.durability = du;
-                for ve in 0..=4 {
-                    s.buffs.veneration = ve;
-                    for mm in 0..=5 {
-                        s.buffs.muscle_memory = mm;
-                        for mn in 0..MN {
-                            s.buffs.manipulation = mn as u8;
-                            for wn in 0..WN {
-                                s.buffs.wast_not = wn as u8;
-                                for sk in &SYNTH_SKILLS {
-                                    match sk {
-                                        &Actions::Manipulation if MN < 9 => continue,
-                                        &Actions::WasteNot if WN < 5 => continue,
-                                        &Actions::WasteNotII if WN < 9 => continue,
-                                        _ => {}
-                                    }
-                                    if s.is_action_allowed(*sk).is_err() {
-                                        continue;
-                                    }
-                                    let mut new_s = s.clone();
-                                    new_s.cast_action(*sk);
-                                    let mut progress = new_s.progress;
-                                    let mut step = 1;
-                                    if new_s.durability > 0 {
-                                        let next = &self.get(&new_s);
+        for ([ve, mm, mn, wn, du, cp], slot) in self.results.iter() {
+            if du == 0 || du % 5 != 0 {
+                continue;
+            }
+            let mut s = self.init_status.clone();
+            s.durability = du as u16;
+            s.craft_points = cp as i32;
+            s.buffs.veneration = ve as u8;
+            s.buffs.muscle_memory = mm as u8;
+            s.buffs.manipulation = mn as u8;
+            s.buffs.wast_not = wn as u8;
+            for sk in &SYNTH_SKILLS {
+                match sk {
+                    &Actions::Manipulation if MN < 9 => continue,
+                    &Actions::WasteNot if WN < 5 => continue,
+                    &Actions::WasteNotII if WN < 9 => continue,
+                    _ => {}
+                }
+                if s.is_action_allowed(*sk).is_err() {
+                    continue;
+                }
+                let mut new_s = s.clone();
+                new_s.cast_action(*sk);
+                let mut progress = new_s.progress;
+                let mut step = 1;
+                if new_s.durability > 0 {
+                    let next = self.get(&new_s).get();
 
-                                        progress += next.value;
-                                        progress = progress.min(s.recipe.difficulty);
-                                        step += next.step;
-                                    }
-                                    let slot = self.get_mut(&s);
-                                    if progress > slot.value
-                                        || (progress == slot.value && step < slot.step)
-                                    {
-                                        *slot = SolverSlot {
-                                            value: progress,
-                                            step,
-                                            action: Some(*sk),
-                                        };
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    progress += next.value;
+                    progress = progress.min(s.recipe.difficulty);
+                    step += next.step;
+                }
+                let old = slot.get();
+                if progress > old.value || (progress == old.value && step < old.step) {
+                    slot.set(SolverSlot {
+                        value: progress,
+                        step,
+                        action: Some(*sk),
+                    });
                 }
             }
         }
@@ -388,11 +368,11 @@ where
         let max_addon = difficulty - s.progress;
         let mut new_s2 = s.clone();
         let mut best = {
-            let &SolverSlot {
+            let SolverSlot {
                 value: progress,
                 step,
                 action: skill,
-            } = self.get(&s);
+            } = self.get(&s).get();
             let progress = progress.min(max_addon);
             ((progress, step), (s.craft_points, s.durability), skill)
         };
@@ -400,11 +380,11 @@ where
             new_s2.craft_points = cp;
             for du in 1..=s.durability {
                 new_s2.durability = du;
-                let &SolverSlot {
+                let SolverSlot {
                     value: progress,
                     step,
                     action: skill,
-                } = self.get(&new_s2);
+                } = self.get(&new_s2).get();
                 let progress = progress.min(max_addon);
                 if progress >= best.0 .0 && step < best.0 .1 {
                     best = ((progress, step), (cp, du), skill);
