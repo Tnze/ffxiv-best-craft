@@ -59,7 +59,7 @@ impl QualitySolver {
     }
 
     fn get(&self, s: &Status) -> &Cell<Option<SolverSlot<u32>>> {
-        &self.results[[
+        let i = [
             s.buffs.inner_quiet as usize,
             s.buffs.innovation as usize,
             s.buffs.great_strides as usize,
@@ -68,7 +68,13 @@ impl QualitySolver {
             s.buffs.touch_combo_stage as usize,
             s.durability as usize / 5,
             s.craft_points as usize,
-        ]]
+        ];
+        // #[cfg(not(debug_assertions))]
+        // unsafe {
+        //     self.results.get_unchecked(i)
+        // }
+        // #[cfg(debug_assertions)]
+        &self.results[i]
     }
 
     fn inner_read(&self, s: &Status) -> SolverSlot<u32> {
@@ -182,26 +188,21 @@ impl ProgressSolver {
         }
     }
 
-    unsafe fn get_unchecked(&self, s: &Status) -> &Cell<Option<SolverSlot<u16>>> {
-        self.results.get_unchecked([
-            s.buffs.veneration as usize,
-            s.buffs.muscle_memory as usize,
-            s.buffs.manipulation as usize,
-            s.buffs.wast_not as usize,
-            s.durability as usize / 5,
-            s.craft_points as usize,
-        ])
-    }
-
     fn get(&self, s: &Status) -> &Cell<Option<SolverSlot<u16>>> {
-        &self.results[[
+        let i = [
             s.buffs.veneration as usize,
             s.buffs.muscle_memory as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not as usize,
             s.durability as usize / 5,
             s.craft_points as usize,
-        ]]
+        ];
+        // #[cfg(not(debug_assertions))]
+        // unsafe {
+        //     self.results.get_unchecked(i)
+        // }
+        // #[cfg(debug_assertions)]
+        &self.results[i]
     }
 
     fn inner_read(&self, s: &Status) -> SolverSlot<u16> {

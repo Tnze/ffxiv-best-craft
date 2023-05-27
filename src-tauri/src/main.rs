@@ -21,6 +21,7 @@ mod db;
 mod dynamic_programing_solver;
 mod hard_recipe;
 mod memory_search_solver;
+mod preprogress_solver;
 mod rika_solver;
 mod solver;
 
@@ -333,32 +334,26 @@ async fn create_solver(
             }
         }
     };
-    // let progress_list = preprogress_list(&status);
     // let solver: Box<dyn Solver + Send> = Box::new(memory_search_solver::Solver::new(status));
-    let solver: Box<dyn Solver + Send> = Box::new(dynamic_programing_solver::QualitySolver::new(
-        status,
-        use_manipulation as usize * 8,
-        8,
-    ));
+    let solver: Box<dyn Solver + Send> = if use_muscle_memory {
+        let progress_list = preprogress_solver::preprogress_list(&status);
+        Box::new(preprogress_solver::PreprogressSolver::new(
+            status,
+            progress_list,
+            use_manipulation as usize * 8,
+            8,
+        ))
+    } else {
+        Box::new(dynamic_programing_solver::QualitySolver::new(
+            status,
+            use_manipulation as usize * 8,
+            8,
+        ))
+    };
     *solver_slot.lock().await = Some(solver);
     Ok(())
 }
 
-fn preprogress_list(status: &Status) -> Vec<u16> {
-    macro_rules! level_based {
-        ($level:literal, $e1:literal, $e2:literal) => {
-            if status.attributes.level < $level {
-                $e1
-            } else {
-                $e2
-            }
-        };
-    }
-    vec![
-        status.calc_synthesis(level_based!(31, 1.0, 1.2)), // basic synth
-        status.calc_synthesis(level_based!(82, 1.5, 1.8)), // careful synth
-    ]
-}
 
 /// 调用求解器
 #[tauri::command(async)]
