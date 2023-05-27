@@ -1,5 +1,4 @@
 use crate::solver::Solver;
-use bumpalo::Bump;
 use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
 use micro_ndarray::Array;
 use std::{cell::Cell, sync::Arc};
@@ -274,7 +273,6 @@ where
     init_status: Status,
     // results[ve][mm][mn][wn][d][cp]
     results: Array<Cell<SolverSlot<u16>>, 6>,
-    slots: Bump,
 }
 
 impl<const MN: usize, const WN: usize> ProgressSolver<MN, WN>
@@ -286,8 +284,7 @@ where
         let du = init_status.recipe.durability as usize;
         Self {
             init_status,
-            results: Array::new([5, 6, MN, WN, du + 1, cp + 1]),
-            slots: Bump::new(),
+            results: Array::new([5, 6, MN, WN, du / 5 + 1, cp + 1]),
         }
     }
 
@@ -297,7 +294,7 @@ where
             s.buffs.muscle_memory as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not as usize,
-            s.durability as usize,
+            s.durability as usize / 5,
             s.craft_points as usize,
         ])
     }
@@ -308,7 +305,7 @@ where
             s.buffs.muscle_memory as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not as usize,
-            s.durability as usize,
+            s.durability as usize / 5,
             s.craft_points as usize,
         ]]
     }
@@ -320,11 +317,11 @@ where
 {
     fn init(&mut self) {
         for ([ve, mm, mn, wn, du, cp], slot) in self.results.iter() {
-            if du == 0 || du % 5 != 0 {
+            if du == 0 {
                 continue;
             }
             let mut s = self.init_status.clone();
-            s.durability = du as u16;
+            s.durability = du as u16 * 5;
             s.craft_points = cp as i32;
             s.buffs.veneration = ve as u8;
             s.buffs.muscle_memory = mm as u8;
