@@ -119,6 +119,7 @@ impl Solver {
             let mut s = init_status.clone();
             s.cast_action(action);
             while let Some(action) = self.next_touch(s.craft_points, s.durability, s.buffs) {
+                #[cfg(debug_assertions)]
                 if let Err(e) = s.is_action_allowed(action) {
                     panic!("not allowed {:?} on {:?}: {:?}", action, s, e);
                 }
@@ -133,7 +134,7 @@ impl Solver {
         best_action
     }
 
-    pub fn next_synth(&self, craft_points: i32, durability: u16, buffs: Buffs) -> Option<Actions> {
+    fn next_synth(&self, craft_points: i32, durability: u16, buffs: Buffs) -> Option<Actions> {
         if craft_points == 0 || durability == 0 {
             return None;
         }
@@ -166,8 +167,9 @@ impl Solver {
             s.cast_action(action);
             if !s.is_finished() {
                 while let Some(action) = self.next_synth(s.craft_points, s.durability, s.buffs) {
+                    #[cfg(debug_assertions)]
                     if let Err(e) = s.is_action_allowed(action) {
-                        panic!("not allowed {:?} on {:?}: {:?}", action, s, e);
+                        panic!("not allowed {:?} on {:?}: {}", action, s, e);
                     }
                     s.cast_action(action);
                     if s.is_finished() {
@@ -182,6 +184,43 @@ impl Solver {
         }
         this_cell.get()
     }
+
+    fn solve(&self, tmp_s: &Status) -> Vec<Actions> {
+        let mut actions = Vec::new();
+        let mut best_actions = Vec::new();
+        let mut best_score = 0;
+
+        for (du, cp, mut synth) in SynthIterator::new(self, &tmp_s)
+            .filter(|&(du, cp, _)| du <= tmp_s.durability && cp <= tmp_s.craft_points)
+        {
+            println!("synth iter: {du} {cp}");
+            let mut tmp_s = tmp_s.clone();
+            let prev_history_len = actions.len();
+            loop {
+                println!("cur res: {} {}", tmp_s.craft_points, tmp_s.durability);
+                let rem_cp = tmp_s.craft_points - cp;
+                let rem_du = tmp_s.durability - du;
+                println!("rem res: {rem_du} {rem_cp}");
+                let Some(action) = self.next_touch(rem_cp, rem_du, tmp_s.buffs) else {
+                        break;
+                    };
+                #[cfg(debug_assertions)]
+                if let Err(e) = tmp_s.is_action_allowed(action) {
+                    panic!("not allowed {:?} on {:?}: {}", action, tmp_s, e);
+                }
+                tmp_s.cast_action(action);
+                actions.push(action);
+            }
+            actions.append(&mut synth);
+            println!("actions: {actions:?}");
+            if tmp_s.quality > best_score {
+                best_actions = actions.clone();
+                best_score = tmp_s.quality;
+            }
+            actions.truncate(prev_history_len);
+        }
+        best_actions
+    }
 }
 
 impl crate::solver::Solver for Solver {
@@ -192,13 +231,17 @@ impl crate::solver::Solver for Solver {
     }
 
     fn read_all(&self, s: &Status) -> Vec<Actions> {
-        let mut actions = Vec::new();
         if s.is_action_allowed(Actions::Reflect).is_ok() {
             let mut tmp_s = s.clone();
             tmp_s.cast_action(Actions::Reflect);
-            actions.push(Actions::Reflect)
+
+            let mut actions2 = self.solve(&tmp_s);
+            let mut actions1 = vec![Actions::Reflect];
+            actions1.append(&mut actions2);
+            actions1
+        } else {
+            self.solve(&s)
         }
-        actions
     }
 }
 
@@ -231,12 +274,12 @@ impl<'a> SynthIterator<'a> {
     }
 
     fn inner_next(&mut self) -> Option<i32> {
-        if !self.judge(self.du, self.right) {
-            return None
+        if !self.judge(self.du, self.right, None) {
+            return None;
         }
         while self.left < self.right {
             let mid = self.left + self.size / 2;
-            let ok = self.judge(self.du, mid);
+            let ok = self.judge(self.du, mid, None);
             if ok {
                 self.right = mid;
             } else {
@@ -247,27 +290,54 @@ impl<'a> SynthIterator<'a> {
         Some(self.right)
     }
 
-    fn judge(&self, du: u16, cp: i32) -> bool {
-        let mut status = self.status.clone();
-        status.durability = du;
-        status.craft_points = cp;
-        while let Some(action) =
-            self.solver.next_synth(status.craft_points, status.durability, status.buffs)
+    fn judge(&self, du: u16, cp: i32, mut solution: Option<&mut Vec<Actions>>) -> bool {
+        let mut s = self.status.clone();
+        s.durability = du;
+        s.craft_points = cp;
+
+        while let Some(action) = self
+            .solver
+            .next_synth(s.craft_points, s.durability, s.buffs)
         {
-            if let Err(err) = status.is_action_allowed(action) {
-                panic!("not allowed on {:?}: {:?}", status, err);
+            if let Err(err) = s.is_action_allowed(action) {
+                panic!("not allowed on {:?}: {:?}", s, err);
             }
-            status.cast_action(action);
-            if status.is_finished() {
+            s.cast_action(action);
+            if let Some(solution) = &mut solution {
+                solution.push(action);
+            }
+            if s.is_finished() {
                 break;
             }
         }
-        status.progress >= status.recipe.difficulty
+        s.progress >= s.recipe.difficulty
+    }
+
+    fn solution(&self, du: u16, cp: i32) -> Vec<Actions> {
+        let mut solution = Vec::new();
+        let mut s = self.status.clone();
+        s.durability = du;
+        s.craft_points = cp;
+
+        while let Some(action) = self
+            .solver
+            .next_synth(s.craft_points, s.durability, s.buffs)
+        {
+            if let Err(err) = s.is_action_allowed(action) {
+                panic!("not allowed on {:?}: {:?}", s, err);
+            }
+            s.cast_action(action);
+            solution.push(action);
+            if s.is_finished() {
+                break;
+            }
+        }
+        solution
     }
 }
 
 impl Iterator for SynthIterator<'_> {
-    type Item = (u16, i32);
+    type Item = (u16, i32, Vec<Actions>);
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -279,7 +349,8 @@ impl Iterator for SynthIterator<'_> {
                 return None;
             }
             if let Some(min_cp) = self.inner_next() {
-                return Some((self.du, min_cp));
+                let solution = self.solution(self.du, min_cp);
+                return Some((self.du, min_cp, solution));
             }
         }
     }
@@ -287,9 +358,9 @@ impl Iterator for SynthIterator<'_> {
 
 #[cfg(test)]
 mod test {
-    use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
+    use ffxiv_crafting::{Attributes, Recipe, Status};
 
-    use crate::dp_solver::SynthIterator;
+    use crate::Solver;
 
     fn init() -> Status {
         let r = Recipe {
@@ -331,36 +402,17 @@ mod test {
         let status = init();
         let solver = super::Solver::new(status.clone());
 
-        let read_all = |du, cp| -> Vec<Actions> {
-            let mut actions = Vec::new();
-            let mut status = status.clone();
-            status.durability = du;
-            status.craft_points = cp;
-            while let Some(action) =
-                solver.next_synth(status.craft_points, status.durability, status.buffs)
-            {
-                if let Err(err) = status.is_action_allowed(action) {
-                    panic!("not allowed on {:?}: {:?}", status, err);
-                }
-                status.cast_action(action);
-                actions.push(action);
-                if status.is_finished() {
-                    break;
-                }
-            }
-            actions
-        };
-        for (du, cp) in SynthIterator::new(&solver, &status) {
-            println!(
-                "min cp for du{du} is: cp{cp}, actions: {:?}",
-                read_all(du, cp)
-            );
-        }
+        let actions = solver.read_all(&status);
+        println!("{actions:?}");
         let num_of_table = solver
             .synth_caches
             .iter()
             .filter(|(_, v)| v.get().is_some())
             .count();
-        println!("number of tables: {num_of_table}");
+        let total_tables = solver.synth_caches.iter().count();
+        println!(
+            "number of tables: {num_of_table}/{total_tables}, {:.2}%",
+            num_of_table as f32 / total_tables as f32 * 1e2
+        );
     }
 }
