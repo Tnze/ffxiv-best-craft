@@ -338,7 +338,7 @@ async fn create_solver(
     let solver: Box<dyn Solver + Send> = Box::new(dynamic_programing_solver::QualitySolver::new(
         status,
         use_manipulation as usize * 8,
-        use_muscle_memory as usize * 8,
+        8,
     ));
     *solver_slot.lock().await = Some(solver);
     Ok(())

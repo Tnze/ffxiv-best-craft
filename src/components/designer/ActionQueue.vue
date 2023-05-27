@@ -42,12 +42,19 @@ const removeAction = (index: number) => {
 }
 
 let startTime = 0;
+let stopTimer: NodeJS.Timeout | null = null;
 const solveTime = ref(0) // in micro second
+const hideSolverResult = ref(false)
 watch(() => props.loadingSolverResult, (newVal, oldVal) => {
-    if (newVal)
+    if (newVal) {
         startTime = new Date().getTime()
-    else if (oldVal)
+        stopTimer = setTimeout(() => { hideSolverResult.value = true }, 500)
+    }
+    else if (oldVal) {
         solveTime.value = new Date().getTime() - startTime
+        if (stopTimer) clearTimeout(stopTimer)
+        hideSolverResult.value = false
+    }
 })
 
 function calc_effect(index: number): string {
@@ -77,11 +84,11 @@ function calc_effect(index: number): string {
                         <Loading />
                     </el-icon>
                 </div>
-                <div v-for="elem in solverAdds" class="list-group-item">
+                <div v-if="!hideSolverResult" v-for="elem in solverAdds" class="list-group-item">
                     <Action class="action-icon" :job="job" :action="elem.action" no_hover
                         :effect="previewSolver ? 'normal' : 'ghost'" disabled />
                 </div>
-                <span v-if="solverResult && solverResult.length > 0" class="solve-time">
+                <span v-if="!loadingSolverResult && solverResult && solverResult.length > 0" class="solve-time">
                     {{ $t('solved-in', { 'time': formatDuration(solveTime) }) }}
                 </span>
             </template>
