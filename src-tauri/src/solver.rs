@@ -13,8 +13,14 @@ pub trait Solver {
         let mut result = Vec::new();
         let mut status = s.clone();
         while let Some(action) = self.read(&status) {
+            if status.is_action_allowed(action).is_err() {
+                break;
+            }
             status.cast_action(action);
             result.push(action);
+            if status.is_finished() {
+                break;
+            }
         }
         result
     }

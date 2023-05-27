@@ -272,7 +272,7 @@ where
 {
     init_status: Status,
     // results[ve][mm][mn][wn][d][cp]
-    results: Array<Cell<SolverSlot<u16>>, 6>,
+    results: Array<Cell<Option<SolverSlot<u16>>>, 6>,
 }
 
 impl<const MN: usize, const WN: usize> ProgressSolver<MN, WN>
@@ -288,7 +288,7 @@ where
         }
     }
 
-    unsafe fn get_unchecked(&self, s: &Status) -> &Cell<SolverSlot<u16>> {
+    unsafe fn get_unchecked(&self, s: &Status) -> &Cell<Option<SolverSlot<u16>>> {
         self.results.get_unchecked([
             s.buffs.veneration as usize,
             s.buffs.muscle_memory as usize,
@@ -299,7 +299,7 @@ where
         ])
     }
 
-    fn get(&self, s: &Status) -> &Cell<SolverSlot<u16>> {
+    fn get(&self, s: &Status) -> &Cell<Option<SolverSlot<u16>>> {
         &self.results[[
             s.buffs.veneration as usize,
             s.buffs.muscle_memory as usize,
@@ -309,56 +309,64 @@ where
             s.craft_points as usize,
         ]]
     }
+
+    fn inner_read(&self, s: &Status) -> SolverSlot<u16> {
+        let slot = self.get(s);
+        if let Some(result) = slot.get() {
+            return result;
+        }
+        if s.durability == 0 {
+            let result = SolverSlot {
+                value: 0,
+                step: 0,
+                action: None,
+            };
+            slot.set(Some(result));
+            return result;
+        }
+        let mut best = SolverSlot {
+            value: 0,
+            step: 0,
+            action: None,
+        };
+        for sk in &SYNTH_SKILLS {
+            match sk {
+                &Actions::Manipulation if MN < 9 => continue,
+                &Actions::WasteNot if WN < 5 => continue,
+                &Actions::WasteNotII if WN < 9 => continue,
+                _ => {}
+            }
+            if s.is_action_allowed(*sk).is_err() {
+                continue;
+            }
+            let mut new_s = s.clone();
+            new_s.progress = 0;
+            new_s.cast_action(*sk);
+            let mut progress = new_s.progress;
+            let mut step = 1;
+            if new_s.durability > 0 {
+                let next = self.inner_read(&new_s);
+                progress += next.value;
+                step += next.step;
+            }
+            if progress > best.value || (progress == best.value && step < best.step) {
+                best = SolverSlot {
+                    value: progress,
+                    step,
+                    action: Some(*sk),
+                }
+            }
+        }
+        slot.set(Some(best));
+        best
+    }
 }
 
 impl<const MN: usize, const WN: usize> Solver for ProgressSolver<MN, WN>
 where
     [[(); WN]; MN]:,
 {
-    fn init(&mut self) {
-        for ([ve, mm, mn, wn, du, cp], slot) in self.results.iter() {
-            if du == 0 {
-                continue;
-            }
-            let mut s = self.init_status.clone();
-            s.durability = du as u16 * 5;
-            s.craft_points = cp as i32;
-            s.buffs.veneration = ve as u8;
-            s.buffs.muscle_memory = mm as u8;
-            s.buffs.manipulation = mn as u8;
-            s.buffs.wast_not = wn as u8;
-            for sk in &SYNTH_SKILLS {
-                match sk {
-                    &Actions::Manipulation if MN < 9 => continue,
-                    &Actions::WasteNot if WN < 5 => continue,
-                    &Actions::WasteNotII if WN < 9 => continue,
-                    _ => {}
-                }
-                if s.is_action_allowed(*sk).is_err() {
-                    continue;
-                }
-                let mut new_s = s.clone();
-                new_s.cast_action(*sk);
-                let mut progress = new_s.progress;
-                let mut step = 1;
-                if new_s.durability > 0 {
-                    let next = self.get(&new_s).get();
-
-                    progress += next.value;
-                    progress = progress.min(s.recipe.difficulty);
-                    step += next.step;
-                }
-                let old = slot.get();
-                if progress > old.value || (progress == old.value && step < old.step) {
-                    slot.set(SolverSlot {
-                        value: progress,
-                        step,
-                        action: Some(*sk),
-                    });
-                }
-            }
-        }
-    }
+    fn init(&mut self) {}
 
     fn read(&self, s: &Status) -> Option<Actions> {
         let difficulty = s.recipe.difficulty;
@@ -369,7 +377,7 @@ where
                 value: progress,
                 step,
                 action: skill,
-            } = self.get(&s).get();
+            } = self.inner_read(&s);
             let progress = progress.min(max_addon);
             ((progress, step), (s.craft_points, s.durability), skill)
         };
@@ -381,7 +389,7 @@ where
                     value: progress,
                     step,
                     action: skill,
-                } = self.get(&new_s2).get();
+                } = self.inner_read(&new_s2);
                 let progress = progress.min(max_addon);
                 if progress >= best.0 .0 && step < best.0 .1 {
                     best = ((progress, step), (cp, du), skill);
