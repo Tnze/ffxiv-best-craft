@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import draggable from 'vuedraggable'
-import { Actions, Jobs } from '../../Craft';
-import Action from './Action.vue'
 import { ElIcon } from 'element-plus';
 import { Loading } from "@element-plus/icons-vue";
+
+import { Actions, Jobs } from '../../Craft';
+import { formatDuration } from "../../Solver";
+import Action from './Action.vue'
 
 interface Slot {
     id: number
@@ -39,6 +41,15 @@ const removeAction = (index: number) => {
         props.list.splice(index, 1)
 }
 
+let startTime = 0;
+const solveTime = ref(0) // in micro second
+watch(() => props.loadingSolverResult, (newVal, oldVal) => {
+    if (newVal)
+        startTime = new Date().getTime()
+    else if (oldVal)
+        solveTime.value = new Date().getTime() - startTime
+})
+
 function calc_effect(index: number): string {
     if (props.errList?.find((v) => v.pos == index) !== undefined)
         return 'black'
@@ -70,6 +81,9 @@ function calc_effect(index: number): string {
                     <Action class="action-icon" :job="job" :action="elem.action" no_hover
                         :effect="previewSolver ? 'normal' : 'ghost'" disabled />
                 </div>
+                <span v-if="solverResult && solverResult.length > 0" class="solve-time">
+                    {{ $t('solved-in', { 'time': formatDuration(solveTime) }) }}
+                </span>
             </template>
         </draggable>
     </div>
@@ -120,4 +134,20 @@ function calc_effect(index: number): string {
     transform: scale(0.8);
     margin: calc(-48px * 0.1);
 }
+
+.solve-time {
+    font-size: small;
+    user-select: none;
+    white-space: nowrap;
+    color: var(--el-text-color-secondary);
+}
 </style>
+
+
+<fluent locale="zh-CN">
+solved-in = 求解完成（{ $time }）
+</fluent>
+
+<fluent locale="en-US">
+solved-in = Solved ({ $time })
+</fluent>

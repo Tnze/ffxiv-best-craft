@@ -63,11 +63,15 @@ const condition = computed(() => {
     <div class="conatiner">
         <div id="durability-and-condition">
             <div id="durability">
-                {{ $t('display-durability', {
-                    current: status?.durability,
-                    total: status?.recipe.durability
-                })
-                }}
+                <span class="no-select">
+                    {{
+                        $t('display-durability', {
+                            current: status?.durability,
+                            total: status?.recipe.durability
+                        })
+                    }}
+                </span>
+
                 <el-progress :stroke-width="14" :show-text="false" :percentage="durability" :color="durabilityColor">
                 </el-progress>
             </div>
@@ -76,13 +80,13 @@ const condition = computed(() => {
             </div>
         </div>
         <div id="progress-and-buffs">
-            {{ $t('progress') }}
+            <span class="no-select">{{ $t('progress') }}</span>
             <el-progress :percentage="progress" :color="progressColor">
                 {{ status?.progress }} /
                 {{ status?.recipe.difficulty }} /
                 {{ status?.recipe.difficulty - status?.progress }}
             </el-progress>
-            {{ $t('quality') }}
+            <span class="no-select">{{ $t('quality') }}</span>
             <el-progress :percentage="quality" :color="qualityColor">
                 <template v-if="disabledInitQuality">
                     {{ status?.quality }} /
@@ -193,18 +197,16 @@ const condition = computed(() => {
     width: 120px;
     display: inline-block;
 }
+
+.no-select {
+    user-select: none;
+}
 </style>
 
 <fluent locale="zh-CN">
 display-durability = { durability } { $current } / { $total }
 display-attrs = { $what }：{ $value }
 display-craft-point = { craft-point }：{ $current } / { $total }
-</fluent>
-
-<fluent locale="en-US">
-display-durability = { durability } { $current } / { $total }
-display-attrs = { $what }: { $value }
-display-craft-point = { craft-point }: { $current } / { $total }
 </fluent>
 
 <fluent locale="en-US">

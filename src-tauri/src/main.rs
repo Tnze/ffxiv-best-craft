@@ -335,7 +335,11 @@ async fn create_solver(
     };
     // let progress_list = preprogress_list(&status);
     // let solver: Box<dyn Solver + Send> = Box::new(memory_search_solver::Solver::new(status));
-    let solver: Box<dyn Solver + Send> = Box::new(dynamic_programing_solver::QualitySolver::new(status, 8, 8));
+    let solver: Box<dyn Solver + Send> = Box::new(dynamic_programing_solver::QualitySolver::new(
+        status,
+        use_manipulation as usize * 8,
+        use_muscle_memory as usize * 8,
+    ));
     *solver_slot.lock().await = Some(solver);
     Ok(())
 }

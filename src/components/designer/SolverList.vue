@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { ElScrollbar, ElCollapse, ElCollapseItem, ElButtonGroup, ElButton, ElPopover, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage } from 'element-plus'
 import { Actions, Status } from "../../Craft"
-import { create_solver, destroy_solver, rika_solve } from '../../Solver'
+import { create_solver, destroy_solver, formatDuration, rika_solve } from '../../Solver'
 import { useFluent } from 'fluent-vue';
 import { ArrowRight } from '@element-plus/icons-vue';
 
@@ -80,17 +80,6 @@ const destroySolver = (s: Solver) => {
             message: `${err}`,
         })
         console.error(err)
-    }
-}
-
-function formatDuration(u: number): string {
-    if (u < 1000) {
-        return u + "ms"
-    } else {
-        const h = Math.floor(u / 1000 / 3600)
-        const m = Math.floor(u / 1000 / 60) - h * 60
-        const s = (u / 1000 - h * 3600 - m * 60).toFixed(3)
-        return (h > 0 ? h + 'h' : '') + (m > 0 ? m + 'm' : '') + (s + 's')
     }
 }
 
