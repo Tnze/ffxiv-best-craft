@@ -193,14 +193,11 @@ impl Solver {
         for (du, cp, mut synth) in SynthIterator::new(self, &tmp_s)
             .filter(|&(du, cp, _)| du <= tmp_s.durability && cp <= tmp_s.craft_points)
         {
-            println!("synth iter: {du} {cp}");
             let mut tmp_s = tmp_s.clone();
             let prev_history_len = actions.len();
             loop {
-                println!("cur res: {} {}", tmp_s.craft_points, tmp_s.durability);
                 let rem_cp = tmp_s.craft_points - cp;
                 let rem_du = tmp_s.durability - du;
-                println!("rem res: {rem_du} {rem_cp}");
                 let Some(action) = self.next_touch(rem_cp, rem_du, tmp_s.buffs) else {
                         break;
                     };

@@ -18,8 +18,9 @@ use tauri::Manager;
 use tokio::sync::{Mutex, OnceCell};
 
 mod db;
-mod dp_solver;
+mod dynamic_programing_solver;
 mod hard_recipe;
+mod memory_search_solver;
 mod rika_solver;
 mod solver;
 
@@ -134,7 +135,11 @@ async fn suggess_next(
             attributes: status.attributes,
             recipe: status.recipe,
         })
-        .or_insert_with(|| Arc::new(Mutex::new(dp_solver::Solver::new(status.clone()))))
+        .or_insert_with(|| {
+            Arc::new(Mutex::new(memory_search_solver::Solver::new(
+                status.clone(),
+            )))
+        })
         .clone();
     let solver = solver
         .try_lock()
@@ -206,7 +211,10 @@ async fn recipe_table(
         .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
         .column_as(recipes::Column::QualityFactor, "quality_factor")
         .column_as(recipes::Column::DurabilityFactor, "durability_factor")
-        .column_as(recipes::Column::RequiredCraftsmanship, "required_craftsmanship")
+        .column_as(
+            recipes::Column::RequiredCraftsmanship,
+            "required_craftsmanship",
+        )
         .column_as(recipes::Column::RequiredControl, "required_control")
         .column_as(recipes::Column::CanHq, "can_hq")
         .into_model::<RecipeInfo>()
@@ -272,7 +280,8 @@ async fn item_info(
 
 struct AppState {
     solver_list: Mutex<HashMap<solver::SolverHash, Arc<Mutex<Option<Box<dyn Solver + Send>>>>>>,
-    hard_recipe_solver_list: Mutex<HashMap<solver::SolverHash, Arc<Mutex<dp_solver::Solver>>>>,
+    hard_recipe_solver_list:
+        Mutex<HashMap<solver::SolverHash, Arc<Mutex<memory_search_solver::Solver>>>>,
     db: OnceCell<DatabaseConnection>,
     should_be_transparent: AtomicBool,
 }
@@ -325,7 +334,7 @@ async fn create_solver(
         }
     };
     let progress_list = preprogress_list(&status);
-    let solver: Box<dyn Solver + Send> = Box::new(dp_solver::Solver::new(status));
+    let solver: Box<dyn Solver + Send> = Box::new(memory_search_solver::Solver::new(status));
     *solver_slot.lock().await = Some(solver);
     Ok(())
 }
