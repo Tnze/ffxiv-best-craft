@@ -1,4 +1,3 @@
-use crate::solver::Solver;
 use ffxiv_crafting::{Actions, Status};
 use micro_ndarray::Array;
 use std::cell::Cell;
@@ -38,27 +37,24 @@ const TOUCH_SKILLS: [Actions; 13] = [
     Actions::Manipulation,
 ];
 
-pub struct QualitySolver<'a, const MN: usize, const WN: usize>
-where
-    [[(); WN]; MN]:,
-{
-    init_status: Status,
-    progress_solver: &'a ProgressSolver<MN, WN>,
+pub struct QualitySolver {
+    progress_solver: ProgressSolver,
+    mn: usize,
+    wn: usize,
     // results [iq][iv][gs][mn][wn][touch][d][cp]
     results: Array<Cell<Option<SolverSlot<u32>>>, 8>,
 }
 
-impl<'a, const MN: usize, const WN: usize> QualitySolver<'a, MN, WN>
-where
-    [[(); WN]; MN]:,
-{
-    pub fn new(init_status: Status, progress_solver: &'a ProgressSolver<MN, WN>) -> Self {
+impl QualitySolver {
+    pub fn new(init_status: Status, mn: usize, wn: usize) -> Self {
         let cp = init_status.attributes.craft_points as usize;
         let du = init_status.recipe.durability as usize;
+        let progress_solver = ProgressSolver::new(init_status, mn, wn);
         Self {
-            init_status,
             progress_solver,
-            results: Array::new([11, 5, 4, MN + 1, WN + 1, 3, du / 5 + 1, cp + 1]),
+            wn,
+            mn,
+            results: Array::new([11, 5, 4, mn + 1, wn + 1, 3, du / 5 + 1, cp + 1]),
         }
     }
 
@@ -96,8 +92,8 @@ where
         };
         for sk in &TOUCH_SKILLS {
             match sk {
-                &Actions::Manipulation if MN == 0 => continue,
-                &Actions::WasteNot | &Actions::WasteNotII if WN == 0 => continue,
+                &Actions::Manipulation if self.mn == 0 => continue,
+                &Actions::WasteNot | &Actions::WasteNotII if self.wn == 0 => continue,
                 _ => {}
             }
             if s.is_action_allowed(*sk).is_err() {
@@ -131,10 +127,7 @@ where
     }
 }
 
-impl<'a, const MN: usize, const WN: usize> Solver for QualitySolver<'a, MN, WN>
-where
-    [[(); WN]; MN]:,
-{
+impl crate::solver::Solver for QualitySolver {
     fn init(&mut self) {}
 
     fn read(&self, s: &Status) -> Option<Actions> {
@@ -171,25 +164,21 @@ where
 
 /// ProgressSolver 是一种专注于推动进展的求解器，给定玩家属性和配方并经过初始化后，
 /// 对于任意的当前状态，可以以O(1)时间复杂度算出剩余资源最多可推多少进展。
-pub struct ProgressSolver<const MN: usize, const WN: usize>
-where
-    [[(); WN]; MN]:,
-{
-    init_status: Status,
+pub struct ProgressSolver {
+    mn: usize,
+    wn: usize,
     // results[ve][mm][mn][wn][d][cp]
     results: Array<Cell<Option<SolverSlot<u16>>>, 6>,
 }
 
-impl<const MN: usize, const WN: usize> ProgressSolver<MN, WN>
-where
-    [[(); WN]; MN]:,
-{
-    pub fn new(init_status: Status) -> Self {
+impl ProgressSolver {
+    pub fn new(init_status: Status, mn: usize, wn: usize) -> Self {
         let cp = init_status.attributes.craft_points as usize;
         let du = init_status.recipe.durability as usize;
         Self {
-            init_status,
-            results: Array::new([5, 6, MN + 1, WN + 1, du / 5 + 1, cp + 1]),
+            mn,
+            wn,
+            results: Array::new([5, 6, mn + 1, mn + 1, du / 5 + 1, cp + 1]),
         }
     }
 
@@ -236,9 +225,9 @@ where
         };
         for sk in &SYNTH_SKILLS {
             match sk {
-                &Actions::Manipulation if MN < 9 => continue,
-                &Actions::WasteNot if WN < 5 => continue,
-                &Actions::WasteNotII if WN < 9 => continue,
+                &Actions::Manipulation if self.mn < 9 => continue,
+                &Actions::WasteNot if self.wn < 5 => continue,
+                &Actions::WasteNotII if self.wn < 9 => continue,
                 _ => {}
             }
             if s.is_action_allowed(*sk).is_err() {
@@ -267,10 +256,7 @@ where
     }
 }
 
-impl<const MN: usize, const WN: usize> Solver for ProgressSolver<MN, WN>
-where
-    [[(); WN]; MN]:,
-{
+impl crate::solver::Solver for ProgressSolver {
     fn init(&mut self) {}
 
     fn read(&self, s: &Status) -> Option<Actions> {
@@ -312,10 +298,9 @@ where
 mod test {
     use ffxiv_crafting::{Attributes, Recipe, Status};
 
-    use crate::dynamic_programing_solver::QualitySolver;
-
     use super::ProgressSolver;
-    use super::Solver;
+    use super::QualitySolver;
+    use crate::solver::Solver;
 
     fn init() -> Status {
         let r = Recipe {
@@ -338,7 +323,7 @@ mod test {
     #[test]
     fn test() {
         let init_status = init();
-        let solver = ProgressSolver::<8, 8>::new(init_status.clone());
+        let solver = ProgressSolver::new(init_status.clone(), 8, 8);
         let actions = solver.read_all(&init_status);
         println!("{actions:?}");
     }
@@ -347,8 +332,7 @@ mod test {
     fn test2() {
         let mut init_status = init();
         init_status.cast_action(ffxiv_crafting::Actions::Reflect);
-        let solver = ProgressSolver::<8, 8>::new(init_status.clone());
-        let solver = QualitySolver::<8, 8>::new(init_status.clone(), &solver);
+        let solver = QualitySolver::new(init_status.clone(), 8, 8);
         let actions = solver.read_all(&init_status);
         println!("{actions:?}");
     }

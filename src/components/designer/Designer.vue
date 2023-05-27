@@ -80,7 +80,6 @@ var attributionAlert = computed(() => {
     if (required_control > control) {
         notMeet.push($t('control'))
     }
-    console.log(notMeet)
     let num = notMeet.length
     if (num > 0) {
         let attribute = notMeet[0]
