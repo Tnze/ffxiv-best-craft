@@ -18,8 +18,7 @@ impl PreprogressSolver {
                 Some(v)
             })
             .enumerate()
-            .map(|(i, v)| std::iter::repeat(i).take(v as usize))
-            .flatten()
+            .flat_map(|(i, v)| std::iter::repeat(i).take(v as usize))
             .chain(std::iter::once(progress_list.len()))
             .collect::<Vec<usize>>();
         assert_eq!(

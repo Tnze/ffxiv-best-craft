@@ -32,7 +32,7 @@ pub fn solve(craft: Status) -> Vec<Actions> {
     content
 }
 
-pub fn next_action_picker_1<'a>(craft: &Status) -> Vec<Actions> {
+pub fn next_action_picker_1(craft: &Status) -> Vec<Actions> {
     if craft.is_finished() {
         return vec![];
     }
@@ -77,9 +77,8 @@ pub fn next_action_picker_1<'a>(craft: &Status) -> Vec<Actions> {
     result_actions
 }
 
-pub fn generate_routes_phase1(craft: Status) -> Vec<(Status, Vec<Actions>)> {
+pub fn generate_routes_phase1(mut craft: Status) -> Vec<(Status, Vec<Actions>)> {
     let (prog_120, prog_180, prog_200) = {
-        let mut craft = craft.clone();
         craft.buffs = Buffs::default();
         (
             craft.calc_synthesis(1.2),

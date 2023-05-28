@@ -157,7 +157,7 @@ impl crate::solver::Solver for QualitySolver {
                 value: quality,
                 step,
                 action,
-            } = self.inner_read(&s);
+            } = self.inner_read(s);
             let quality = quality.min(max_addon);
             (quality, step, action)
         };
@@ -176,7 +176,7 @@ impl crate::solver::Solver for QualitySolver {
                 }
             }
         }
-        best.2.or_else(|| self.progress_solver.read(&s))
+        best.2.or_else(|| self.progress_solver.read(s))
     }
 }
 
@@ -237,10 +237,10 @@ impl ProgressSolver {
             action: None,
         };
         for sk in &SYNTH_SKILLS {
-            match sk {
-                &Actions::Manipulation if self.mn < 9 => continue,
-                &Actions::WasteNot if self.wn < 5 => continue,
-                &Actions::WasteNotII if self.wn < 9 => continue,
+            match *sk {
+                Actions::Manipulation if self.mn < 9 => continue,
+                Actions::WasteNot if self.wn < 5 => continue,
+                Actions::WasteNotII if self.wn < 9 => continue,
                 _ => {}
             }
             if s.is_action_allowed(*sk).is_err() {
@@ -290,7 +290,7 @@ impl crate::solver::Solver for ProgressSolver {
                 value: progress,
                 step,
                 action,
-            } = self.inner_read(&s);
+            } = self.inner_read(s);
             let progress = progress.min(max_addon);
             (progress, step, action)
         };

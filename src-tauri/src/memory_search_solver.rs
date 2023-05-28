@@ -4,13 +4,13 @@ use std::cell::Cell;
 
 pub struct Solver {
     init_status: Status,
-    start_caches: Array<Cell<Option<Actions>>, 7>,
+    // start_caches: Array<Cell<Option<Actions>>, 7>,
     touch_caches: Array<Cell<Option<Actions>>, 9>,
     synth_caches: Array<Cell<Option<Actions>>, 6>,
 }
 
 impl Solver {
-    const MAX_MUSCLE_MEMORY: usize = 6;
+    // const MAX_MUSCLE_MEMORY: usize = 6;
     const MAX_INNER_QUIET: usize = 10;
     const MAX_INNOVATION: usize = 4;
     const MAX_MANIPULATION: usize = 8;
@@ -51,15 +51,15 @@ impl Solver {
 
     pub fn new(init_status: Status) -> Self {
         Self {
-            start_caches: Array::new([
-                init_status.attributes.craft_points as usize + 1,
-                init_status.recipe.durability as usize + 1,
-                Self::MAX_MUSCLE_MEMORY + 1,
-                Self::MAX_VENERATION + 1,
-                Self::MAX_MANIPULATION + 1,
-                Self::MAX_WASTE_NOT + 1,
-                Self::MAX_OBSERVE + 1,
-            ]),
+            // start_caches: Array::new([
+            //     init_status.attributes.craft_points as usize + 1,
+            //     init_status.recipe.durability as usize + 1,
+            //     Self::MAX_MUSCLE_MEMORY + 1,
+            //     Self::MAX_VENERATION + 1,
+            //     Self::MAX_MANIPULATION + 1,
+            //     Self::MAX_WASTE_NOT + 1,
+            //     Self::MAX_OBSERVE + 1,
+            // ]),
             touch_caches: Array::new([
                 init_status.attributes.craft_points as usize + 1,
                 init_status.recipe.durability as usize + 1,
@@ -190,7 +190,7 @@ impl Solver {
         let mut best_actions = Vec::new();
         let mut best_score = 0;
 
-        for (du, cp, mut synth) in SynthIterator::new(self, &tmp_s)
+        for (du, cp, mut synth) in SynthIterator::new(self, tmp_s)
             .filter(|&(du, cp, _)| du <= tmp_s.durability && cp <= tmp_s.craft_points)
         {
             let mut tmp_s = tmp_s.clone();
@@ -237,7 +237,7 @@ impl crate::solver::Solver for Solver {
             actions1.append(&mut actions2);
             actions1
         } else {
-            self.solve(&s)
+            self.solve(s)
         }
     }
 }

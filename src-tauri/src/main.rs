@@ -87,12 +87,11 @@ struct SimulateOneStepResult {
 /// 只模拟一步制作，计算技能概率和制作状态，更新制作状态
 #[tauri::command(async)]
 fn simulate_one_step(
-    status: Status,
+    mut status: Status,
     action: Actions,
     force_success: bool,
 ) -> Result<SimulateOneStepResult, String> {
     let mut rng = thread_rng();
-    let mut status = status.clone();
     status.is_action_allowed(action).map_err(err_to_string)?;
     let is_success = force_success || status.success_rate(action) as f32 / 100.0 > random();
     if is_success {
@@ -272,15 +271,16 @@ async fn item_info(
     app_handle: tauri::AppHandle,
 ) -> Result<items::Model, String> {
     let db = app_state.get_db(app_handle).await?;
-    Ok(Items::find_by_id(item_id)
+    Items::find_by_id(item_id)
         .one(db)
         .await
         .map_err(err_to_string)?
-        .ok_or("Item not found".to_string())?)
+        .ok_or("Item not found".to_string())
 }
 
+type SolverInstance = Arc<Mutex<Option<Box<dyn Solver + Send>>>>;
 struct AppState {
-    solver_list: Mutex<HashMap<solver::SolverHash, Arc<Mutex<Option<Box<dyn Solver + Send>>>>>>,
+    solver_list: Mutex<HashMap<solver::SolverHash, SolverInstance>>,
     hard_recipe_solver_list:
         Mutex<HashMap<solver::SolverHash, Arc<Mutex<memory_search_solver::Solver>>>>,
     db: OnceCell<DatabaseConnection>,
@@ -353,7 +353,6 @@ async fn create_solver(
     *solver_slot.lock().await = Some(solver);
     Ok(())
 }
-
 
 /// 调用求解器
 #[tauri::command(async)]
