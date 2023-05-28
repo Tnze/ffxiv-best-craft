@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElPopover, ElDivider } from 'element-plus';
+import { ElPopover } from 'element-plus';
 import { computed, reactive, watchEffect } from 'vue'
 import Action from './Action.vue'
 import { Jobs, Actions, Status, allowedList, craftPointsList, Conditions } from '../../Craft'

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ElProgress, ElLink } from 'element-plus';
 import { computed } from 'vue'
-import { Attributes, Conditions, Status } from '../../Craft';
-import Condition from './Condition.vue'
+import { Attributes, Status } from '../../Craft';
 import Buffs from './Buffs.vue';
 import { Enhancer } from '../attr-enhancer/Enhancer';
 import { Setting } from '@element-plus/icons-vue';
@@ -54,39 +53,33 @@ const durabilityColor = [
     { color: '#FFD470', percentage: 50 },
     { color: '#62C3FF', percentage: 100 },
 ]
-const condition = computed(() => {
-    return props.status?.condition || Conditions.Normal
-})
+
+const craftPointPercentage = computed(() => props.status?.craft_points / props.status?.attributes.craft_points * 100)
 </script>
 
 <template>
     <div class="conatiner">
         <div id="durability-and-condition">
             <div id="durability">
-                <span class="no-select">
-                    {{
-                        $t('display-durability', {
-                            current: status?.durability,
-                            total: status?.recipe.durability
-                        })
-                    }}
-                </span>
-
-                <el-progress :stroke-width="14" :show-text="false" :percentage="durability" :color="durabilityColor">
-                </el-progress>
-            </div>
-            <div id="condition">
-                <Condition :cond="condition" />
+                <span class="bar-title">{{ $t('durability') }}</span> {{ status?.durability }} / {{
+                    status?.recipe.durability }}
+                <el-progress :stroke-width="14" :show-text="false" :percentage="durability" :color="durabilityColor"
+                    striped />
+                <div id="craft-point"></div>
+                <span class="bar-title">{{ $t('craft-point') }}</span> {{ status?.craft_points }} / {{
+                    status?.attributes.craft_points }}
+                <el-progress :stroke-width="12" :percentage="craftPointPercentage" :show-text="false" color="#FF9999"
+                    striped />
             </div>
         </div>
         <div id="progress-and-buffs">
-            <span class="no-select">{{ $t('progress') }}</span>
+            <span class="bar-title">{{ $t('progress') }}</span>
             <el-progress :percentage="progress" :color="progressColor">
                 {{ status?.progress }} /
                 {{ status?.recipe.difficulty }} /
                 {{ status?.recipe.difficulty - status?.progress }}
             </el-progress>
-            <span class="no-select">{{ $t('quality') }}</span>
+            <span class="bar-title">{{ $t('quality') }}</span>
             <el-progress :percentage="quality" :color="qualityColor">
                 <template v-if="disabledInitQuality">
                     {{ status?.quality }} /
@@ -129,9 +122,9 @@ const condition = computed(() => {
                     })
                     }}
                     <br />
-                    {{ $t('display-craft-point', {
-                        current: status?.craft_points,
-                        total: attributes.craft_points + enhancers
+                    {{ $t('display-attrs', {
+                        what: $t('craft-point'),
+                        value: attributes.craft_points + enhancers
                             .filter(v => v.cp && v.cp_max)
                             .map(v => Math.min(
                                 status?.attributes.craft_points * v.cp!,
@@ -142,10 +135,6 @@ const condition = computed(() => {
                     }}
                 </div>
             </el-link>
-            <br />
-            <el-progress class="craft-points-progressbar"
-                :percentage="status?.craft_points / status?.attributes.craft_points * 100" color="#FF9999"
-                :show-text="false" :stroke-width="10" />
         </div>
     </div>
 </template>
@@ -167,8 +156,8 @@ const condition = computed(() => {
     padding: 10px;
 }
 
-#condition {
-    text-align: center;
+#craft-point {
+    margin-top: 7px;
 }
 
 #progress-and-buffs {
@@ -198,19 +187,15 @@ const condition = computed(() => {
     display: inline-block;
 }
 
-.no-select {
+.bar-title {
     user-select: none;
 }
 </style>
 
 <fluent locale="zh-CN">
-display-durability = { durability } { $current } / { $total }
 display-attrs = { $what }：{ $value }
-display-craft-point = { craft-point }：{ $current } / { $total }
 </fluent>
 
 <fluent locale="en-US">
-display-durability = { durability } { $current } / { $total }
 display-attrs = { $what }: { $value }
-display-craft-point = { craft-point }: { $current } / { $total }
 </fluent>

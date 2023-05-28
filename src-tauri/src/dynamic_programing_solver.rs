@@ -147,7 +147,7 @@ impl crate::solver::Solver for QualitySolver {
                 action,
             } = self.inner_read(&s);
             let quality = quality.min(max_addon);
-            ((quality, step), (s.craft_points, s.durability), action)
+            (quality, step, action)
         };
         for cp in 0..=s.craft_points {
             new_s.craft_points = cp;
@@ -159,8 +159,8 @@ impl crate::solver::Solver for QualitySolver {
                     action: skill,
                 } = self.inner_read(&new_s);
                 let quality = quality.min(max_addon);
-                if quality >= best.0 .0 && step < best.0 .1 {
-                    best = ((quality, step), (cp, du), skill);
+                if quality >= best.0 && step < best.1 {
+                    best = (quality, step, skill);
                 }
             }
         }
@@ -263,16 +263,16 @@ impl crate::solver::Solver for ProgressSolver {
     fn read(&self, s: &Status) -> Option<Actions> {
         let difficulty = s.recipe.difficulty;
         let max_addon = difficulty - s.progress;
-        let mut new_s2 = s.clone();
         let mut best = {
             let SolverSlot {
                 value: progress,
                 step,
-                action: skill,
+                action,
             } = self.inner_read(&s);
             let progress = progress.min(max_addon);
-            ((progress, step), (s.craft_points, s.durability), skill)
+            (progress, step, action)
         };
+        let mut new_s2 = s.clone();
         for cp in 0..=s.craft_points {
             new_s2.craft_points = cp;
             for du in 1..=s.durability {
@@ -280,18 +280,15 @@ impl crate::solver::Solver for ProgressSolver {
                 let SolverSlot {
                     value: progress,
                     step,
-                    action: skill,
+                    action,
                 } = self.inner_read(&new_s2);
                 let progress = progress.min(max_addon);
-                if progress >= best.0 .0 && step < best.0 .1 {
-                    best = ((progress, step), (cp, du), skill);
+                if progress >= best.0 && step < best.1 {
+                    best = (progress, step, action);
                 }
             }
         }
-        match best.2 {
-            Some(sk) => Some(sk),
-            None => None,
-        }
+        best.2
     }
 }
 

@@ -329,7 +329,7 @@ async function openListFromJSON() {
         <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
             <MacroExporter :actions="displayActions" />
         </el-drawer>
-        <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
+        <el-dialog v-model="openAttrEnhSelector" :title="$t('attributes-enhance')">
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <KeepAlive>
@@ -456,7 +456,7 @@ async function openListFromJSON() {
 <fluent locale="zh-CN">
 solvers = 求解器
 export-macro = 导出宏
-meal-and-potion = 食物 & 药水
+attributes-enhance = 属性加成
 
 please-input-init-quality = 请输入初期品质
 config-init-quality = 设置初期品质
@@ -481,7 +481,7 @@ attributes-requirements = 当前配方要求：作业精度 ≥ { $craftsmanship
 <fluent locale="en-US">
 solvers = Solvers
 export-macro = Export
-meal-and-potion = Meal & Potions
+attributes-enhance = Attributes Enhance
 
 please-input-init-quality = Please input initial quality
 config-init-quality = Set initial quality
