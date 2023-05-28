@@ -55,6 +55,7 @@
             "active": true,
             "endpoints": [
                 "https://gitee.com/Tnze/ffxiv-best-craft/raw/main/versions.json",
+                "https://github.com/Tnze/ffxiv-best-craft/releases/latest/download/latest.json",
                 "https://raw.githubusercontent.com/Tnze/ffxiv-best-craft/main/versions.json",
                 "https://bestcraft.tnze.workers.dev/update/{{target}}/{{current_version}}"
             ],
