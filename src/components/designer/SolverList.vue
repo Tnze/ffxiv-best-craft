@@ -19,7 +19,7 @@ const { $t } = useFluent()
 interface Solver {
     initStatus: Status,
     name: string,
-    status: 'solving' | 'prepared'
+    status: 'solving' | 'prepared' | 'destroying'
 }
 const solvers = ref<Solver[]>([])
 const useManipulation = ref(false)
@@ -70,10 +70,11 @@ const createSolver = async () => {
     }
 }
 
-const destroySolver = (s: Solver) => {
+const destroySolver = async (s: Solver) => {
     try {
+        s.status = 'destroying';
+        await destroy_solver(s.initStatus)
         solvers.value.splice(solvers.value.indexOf(s), 1)
-        destroy_solver(s.initStatus)
     } catch (err) {
         ElMessage({
             type: 'error',
@@ -136,7 +137,7 @@ async function runRikaSolver() {
                     <el-table-column align="right">
                         <template #default="scope">
                             <el-button size="small" type="danger" @click="destroySolver(scope.row)"
-                                :disabled="scope.row.status == 'solving'" :loading="scope.row.status == 'solving'">
+                                :disabled="scope.row.status != 'prepared'" :loading="scope.row.status != 'prepared'">
                                 {{ $t('release-solver') }}
                             </el-button>
                         </template>

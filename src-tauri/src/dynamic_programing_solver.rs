@@ -1,4 +1,4 @@
-use ffxiv_crafting::{Actions, Status};
+use ffxiv_crafting::{Actions, Status, Buffs};
 use micro_ndarray::Array;
 use std::cell::Cell;
 
@@ -107,6 +107,15 @@ impl QualitySolver {
             }
 
             let mut new_s = s.clone();
+            new_s.buffs = Buffs {
+                great_strides: s.buffs.great_strides,
+                innovation: s.buffs.innovation,
+                inner_quiet: s.buffs.inner_quiet,
+                manipulation: s.buffs.manipulation,
+                wast_not: s.buffs.wast_not,
+                touch_combo_stage: s.buffs.touch_combo_stage,
+                ..Buffs::default()
+            };
             new_s.quality = 0;
             new_s.cast_action(*sk);
 
@@ -137,6 +146,9 @@ impl crate::solver::Solver for QualitySolver {
     fn init(&mut self) {}
 
     fn read(&self, s: &Status) -> Option<Actions> {
+        if s.is_finished() {
+            return None
+        }
         let max_quality = s.recipe.quality;
         let mut new_s = s.clone();
         let max_addon = max_quality - s.quality;
@@ -235,6 +247,13 @@ impl ProgressSolver {
                 continue;
             }
             let mut new_s = s.clone();
+            new_s.buffs = Buffs{
+                muscle_memory: s.buffs.muscle_memory,
+                veneration: s.buffs.veneration,
+                manipulation: s.buffs.manipulation,
+                wast_not: s.buffs.wast_not,
+                ..Buffs::default()
+            };
             new_s.progress = 0;
             new_s.cast_action(*sk);
             let mut progress = new_s.progress;
@@ -261,6 +280,9 @@ impl crate::solver::Solver for ProgressSolver {
     fn init(&mut self) {}
 
     fn read(&self, s: &Status) -> Option<Actions> {
+        if s.is_finished() {
+            return None
+        }
         let difficulty = s.recipe.difficulty;
         let max_addon = difficulty - s.progress;
         let mut best = {

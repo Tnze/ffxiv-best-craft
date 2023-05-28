@@ -82,9 +82,9 @@ pub fn preprogress_list(status: &Status) -> Vec<u16> {
 
 #[cfg(test)]
 mod test {
-    use ffxiv_crafting::{Attributes, Recipe, Status};
+    use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
 
-    use crate::preprogress_solver::{PreprogressSolver, preprogress_list};
+    use crate::preprogress_solver::{preprogress_list, PreprogressSolver};
     use crate::solver::Solver;
 
     fn init() -> Status {
@@ -107,18 +107,36 @@ mod test {
 
     #[test]
     fn test() {
-        use ffxiv_crafting::Actions;
-        let mut init_status = init();
-        init_status.cast_action(Actions::MuscleMemory);
-        init_status.cast_action(Actions::Manipulation);
-        init_status.cast_action(Actions::Veneration);
-        init_status.cast_action(Actions::WasteNotII);
-        init_status.cast_action(Actions::Groundwork);
-        init_status.cast_action(Actions::Groundwork);
-        init_status.cast_action(Actions::FinalAppraisal);
-        init_status.cast_action(Actions::Groundwork);
-        let solver = PreprogressSolver::new(init_status.clone(), preprogress_list(&init_status), 8, 8);
-        let actions = solver.read_all(&init_status);
-        println!("{actions:?}");
+        let mut status1 = init();
+        let solver = PreprogressSolver::new(status1.clone(), preprogress_list(&status1), 8, 8);
+        let init_actions = [
+            Actions::MuscleMemory,
+            Actions::Manipulation,
+            Actions::Veneration,
+            Actions::WasteNotII,
+            Actions::Groundwork,
+            Actions::Groundwork,
+            Actions::Groundwork,
+        ];
+        for action in init_actions {
+            status1.cast_action(action);
+        }
+        println!("{:?}", solver.read_all(&status1));
+
+        let mut status2 = init();
+        let init_actions = [
+            Actions::MuscleMemory,
+            Actions::Manipulation,
+            Actions::Veneration,
+            Actions::WasteNotII,
+            Actions::Groundwork,
+            Actions::Groundwork,
+            Actions::FinalAppraisal,
+            Actions::Groundwork,
+        ];
+        for action in init_actions {
+            status2.cast_action(action);
+        }
+        println!("{:?}", solver.read_all(&status2));
     }
 }
