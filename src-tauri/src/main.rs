@@ -316,6 +316,7 @@ async fn create_solver(
     status: Status,
     use_muscle_memory: bool,
     use_manipulation: bool,
+    use_obzerve: bool,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
     let key = solver::SolverHash {
@@ -340,14 +341,15 @@ async fn create_solver(
         Box::new(preprogress_solver::PreprogressSolver::new(
             status,
             progress_list,
-            use_manipulation as usize * 8,
+            use_manipulation,
             8,
         ))
     } else {
         Box::new(dynamic_programing_solver::QualitySolver::new(
             status,
-            use_manipulation as usize * 8,
-            8,
+            use_manipulation,
+            8 + 1,
+            use_obzerve,
         ))
     };
     *solver_slot.lock().await = Some(solver);

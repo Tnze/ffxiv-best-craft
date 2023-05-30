@@ -9,7 +9,7 @@ pub struct PreprogressSolver {
 }
 
 impl PreprogressSolver {
-    pub fn new(init_status: Status, progress_list: Vec<u16>, mn: usize, wn: usize) -> Self {
+    pub fn new(init_status: Status, progress_list: Vec<u16>, mn: bool, wn: usize) -> Self {
         let progress_index = progress_list
             .iter()
             .scan(0, |prev, &x| {
@@ -30,7 +30,7 @@ impl PreprogressSolver {
             .map(|v| {
                 let mut s = init_status.clone();
                 s.progress = s.recipe.difficulty - *v;
-                QualitySolver::new(s, mn, wn)
+                QualitySolver::new(s, mn, wn, false)
             })
             .collect();
         Self {
@@ -107,7 +107,7 @@ mod test {
     #[test]
     fn test() {
         let mut status1 = init();
-        let solver = PreprogressSolver::new(status1.clone(), preprogress_list(&status1), 8, 8);
+        let solver = PreprogressSolver::new(status1.clone(), preprogress_list(&status1), true, 8);
         let init_actions = [
             Actions::MuscleMemory,
             Actions::Manipulation,

@@ -5,12 +5,14 @@ import { invoke } from "@tauri-apps/api/tauri";
 export const create_solver = (
     status: Status,
     useMuscleMemory: boolean,
-    useManipulation: boolean
+    useManipulation: boolean,
+    useObzerve: boolean,
 ) => {
     return invoke("create_solver", {
         status,
         useMuscleMemory,
         useManipulation,
+        useObzerve,
     });
 };
 

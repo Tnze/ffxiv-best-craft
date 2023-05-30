@@ -24,6 +24,7 @@ interface Solver {
 const solvers = ref<Solver[]>([])
 const useManipulation = ref(false)
 const useMuscleMemory = ref(false)
+const useObserve = ref(true)
 const activeNames = ref<string[]>([])
 const rikaIsSolving = ref(false)
 
@@ -48,7 +49,8 @@ const createSolver = async () => {
         await create_solver(
             solver.initStatus,
             useMuscleMemory.value,
-            useManipulation.value
+            useManipulation.value,
+            useObserve.value,
         )
         const stop_time = new Date().getTime();
         ElMessage({
@@ -125,6 +127,8 @@ async function runRikaSolver() {
                         </template>
                         <el-checkbox v-model="useManipulation" :label="$t('manipulation-select-info')" />
                         <br />
+                        <el-checkbox v-model="useObserve" :label="$t('observe-select-info')" />
+                        <br />
                         <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory-select-info')" />
                     </el-popover>
                 </el-button-group>
@@ -181,6 +185,7 @@ dp-solver = 动态规划求解
 bfs-solver = 广度优先搜索
 
 manipulation-select-info = { manipulation }（时间&内存×9）
+observe-select-info = { observe }（内存×2）
 muscle-memory-select-info = { muscle-memory }（内存×2）
 start-solver = 启动求解器
 release-solver = 释放
@@ -206,6 +211,7 @@ dp-solver = Dynamic Programing
 bfs-solver = Breadth First Search
 
 manipulation-select-info = { manipulation }(Time & Memory × 9)
+observe-select-info = { observe }(Memory × 2)
 muscle-memory-select-info = { muscle-memory }(Memory × 2)
 start-solver = Create solver
 release-solver = Release

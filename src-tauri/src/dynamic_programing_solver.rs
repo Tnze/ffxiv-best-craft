@@ -1,4 +1,4 @@
-use ffxiv_crafting::{Actions, Status, Buffs};
+use ffxiv_crafting::{Actions, Buffs, Status};
 use micro_ndarray::Array;
 use std::cell::Cell;
 
@@ -9,7 +9,7 @@ struct SolverSlot<T> {
     action: Option<Actions>,
 }
 
-const SYNTH_SKILLS: [Actions; 9] = [
+const SYNTH_SKILLS: [Actions; 11] = [
     Actions::BasicSynthesis,
     Actions::WasteNot,
     Actions::Veneration,
@@ -19,9 +19,11 @@ const SYNTH_SKILLS: [Actions; 9] = [
     Actions::DelicateSynthesis,
     Actions::IntensiveSynthesis,
     Actions::PrudentSynthesis,
+    Actions::Observe,
+    Actions::FocusedSynthesis,
 ];
 
-const TOUCH_SKILLS: [Actions; 13] = [
+const TOUCH_SKILLS: [Actions; 15] = [
     Actions::BasicTouch,
     Actions::MastersMend,
     Actions::WasteNot,
@@ -35,31 +37,46 @@ const TOUCH_SKILLS: [Actions; 13] = [
     Actions::AdvancedTouch,
     Actions::TrainedFinesse,
     Actions::Manipulation,
+    Actions::Observe,
+    Actions::FocusedTouch,
 ];
 
 pub struct QualitySolver {
     progress_solver: ProgressSolver,
-    mn: usize,
+    mn: bool,
     wn: usize,
-    // results [iq][iv][gs][mn][wn][touch][d][cp]
-    results: Array<Cell<Option<SolverSlot<u32>>>, 8>,
+    obz: bool,
+    // results [obz][iq][iv][gs][mn][wn][touch][d][cp]
+    results: Array<Cell<Option<SolverSlot<u32>>>, 9>,
 }
 
 impl QualitySolver {
-    pub fn new(init_status: Status, mn: usize, wn: usize) -> Self {
+    pub fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
         let cp = init_status.attributes.craft_points as usize;
         let du = init_status.recipe.durability as usize;
-        let progress_solver = ProgressSolver::new(init_status, mn, wn);
+        let progress_solver = ProgressSolver::new(init_status, mn, wn, obz);
         Self {
             progress_solver,
             wn,
             mn,
-            results: Array::new([11, 5, 4, mn + 1, wn + 1, 3, du / 5 + 1, cp + 1]),
+            obz,
+            results: Array::new([
+                obz as usize + 1,
+                11,
+                5,
+                4,
+                mn as usize * 8 + 1,
+                wn + 1,
+                3,
+                du / 5 + 1,
+                cp + 1,
+            ]),
         }
     }
 
     fn get(&self, s: &Status) -> &Cell<Option<SolverSlot<u32>>> {
         let i = [
+            s.buffs.observed as usize,
             s.buffs.inner_quiet as usize,
             s.buffs.innovation as usize,
             s.buffs.great_strides as usize,
@@ -96,28 +113,22 @@ impl QualitySolver {
             step: 0,
             action: None,
         };
-        for sk in &TOUCH_SKILLS {
-            match sk {
-                &Actions::Manipulation if self.mn == 0 => continue,
-                &Actions::WasteNot | &Actions::WasteNotII if self.wn == 0 => continue,
-                _ => {}
+        for sk in TOUCH_SKILLS {
+            if (matches!(sk, Actions::Manipulation) && !self.mn)
+                || (matches!(sk, Actions::WasteNotII) && self.wn < 8)
+                || (matches!(sk, Actions::WasteNot) && self.wn < 4)
+                || (matches!(sk, Actions::Observe) && !self.obz)
+                || (matches!(sk, Actions::FocusedTouch) && s.buffs.observed == 0)
+            {
+                continue;
             }
-            if s.is_action_allowed(*sk).is_err() {
+            if s.is_action_allowed(sk).is_err() {
                 continue;
             }
 
             let mut new_s = s.clone();
-            new_s.buffs = Buffs {
-                great_strides: s.buffs.great_strides,
-                innovation: s.buffs.innovation,
-                inner_quiet: s.buffs.inner_quiet,
-                manipulation: s.buffs.manipulation,
-                wast_not: s.buffs.wast_not,
-                touch_combo_stage: s.buffs.touch_combo_stage,
-                ..Buffs::default()
-            };
             new_s.quality = 0;
-            new_s.cast_action(*sk);
+            new_s.cast_action(sk);
 
             let progress = self.progress_solver.inner_read(&new_s).value;
             if new_s.progress + progress >= new_s.recipe.difficulty {
@@ -132,7 +143,7 @@ impl QualitySolver {
                     best = SolverSlot {
                         value: quality,
                         step,
-                        action: Some(*sk),
+                        action: Some(sk),
                     }
                 }
             }
@@ -147,10 +158,20 @@ impl crate::solver::Solver for QualitySolver {
 
     fn read(&self, s: &Status) -> Option<Actions> {
         if s.is_finished() {
-            return None
+            return None;
         }
         let max_quality = s.recipe.quality;
         let mut new_s = s.clone();
+        new_s.buffs = Buffs {
+            great_strides: s.buffs.great_strides,
+            innovation: s.buffs.innovation,
+            inner_quiet: s.buffs.inner_quiet,
+            manipulation: s.buffs.manipulation,
+            wast_not: s.buffs.wast_not,
+            touch_combo_stage: s.buffs.touch_combo_stage,
+            observed: s.buffs.observed,
+            ..Buffs::default()
+        };
         let max_addon = max_quality - s.quality;
         let mut best = {
             let SolverSlot {
@@ -183,25 +204,36 @@ impl crate::solver::Solver for QualitySolver {
 /// ProgressSolver 是一种专注于推动进展的求解器，给定玩家属性和配方并经过初始化后，
 /// 对于任意的当前状态，可以以O(1)时间复杂度算出剩余资源最多可推多少进展。
 pub struct ProgressSolver {
-    mn: usize,
+    mn: bool,
     wn: usize,
-    // results[ve][mm][mn][wn][d][cp]
-    results: Array<Cell<Option<SolverSlot<u16>>>, 6>,
+    obz: bool,
+    // [obz][ve][mm][mn][wn][d][cp]
+    results: Array<Cell<Option<SolverSlot<u16>>>, 7>,
 }
 
 impl ProgressSolver {
-    pub fn new(init_status: Status, mn: usize, wn: usize) -> Self {
+    pub fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
         let cp = init_status.attributes.craft_points as usize;
         let du = init_status.recipe.durability as usize;
         Self {
             mn,
             wn,
-            results: Array::new([5, 6, mn + 1, mn + 1, du / 5 + 1, cp + 1]),
+            obz,
+            results: Array::new([
+                obz as usize + 1,
+                5,
+                6,
+                mn as usize * 8 + 1,
+                wn + 1,
+                du / 5 + 1,
+                cp + 1,
+            ]),
         }
     }
 
     fn get(&self, s: &Status) -> &Cell<Option<SolverSlot<u16>>> {
         let i = [
+            s.buffs.observed as usize,
             s.buffs.veneration as usize,
             s.buffs.muscle_memory as usize,
             s.buffs.manipulation as usize,
@@ -236,26 +268,21 @@ impl ProgressSolver {
             step: 0,
             action: None,
         };
-        for sk in &SYNTH_SKILLS {
-            match *sk {
-                Actions::Manipulation if self.mn < 9 => continue,
-                Actions::WasteNot if self.wn < 5 => continue,
-                Actions::WasteNotII if self.wn < 9 => continue,
-                _ => {}
+        for sk in SYNTH_SKILLS {
+            if (matches!(sk, Actions::Manipulation) && !self.mn)
+                || (matches!(sk, Actions::WasteNotII) && self.wn < 8)
+                || (matches!(sk, Actions::WasteNot) && self.wn < 4)
+                || (matches!(sk, Actions::Observe) && !self.obz)
+                || (matches!(sk, Actions::FocusedSynthesis) && s.buffs.observed == 0)
+            {
+                continue;
             }
-            if s.is_action_allowed(*sk).is_err() {
+            if s.is_action_allowed(sk).is_err() {
                 continue;
             }
             let mut new_s = s.clone();
-            new_s.buffs = Buffs{
-                muscle_memory: s.buffs.muscle_memory,
-                veneration: s.buffs.veneration,
-                manipulation: s.buffs.manipulation,
-                wast_not: s.buffs.wast_not,
-                ..Buffs::default()
-            };
             new_s.progress = 0;
-            new_s.cast_action(*sk);
+            new_s.cast_action(sk);
             let mut progress = new_s.progress;
             let mut step = 1;
             if new_s.durability > 0 {
@@ -267,7 +294,7 @@ impl ProgressSolver {
                 best = SolverSlot {
                     value: progress,
                     step,
-                    action: Some(*sk),
+                    action: Some(sk),
                 }
             }
         }
@@ -281,7 +308,7 @@ impl crate::solver::Solver for ProgressSolver {
 
     fn read(&self, s: &Status) -> Option<Actions> {
         if s.is_finished() {
-            return None
+            return None;
         }
         let difficulty = s.recipe.difficulty;
         let max_addon = difficulty - s.progress;
@@ -295,6 +322,14 @@ impl crate::solver::Solver for ProgressSolver {
             (progress, step, action)
         };
         let mut new_s2 = s.clone();
+        new_s2.buffs = Buffs {
+            muscle_memory: s.buffs.muscle_memory,
+            veneration: s.buffs.veneration,
+            manipulation: s.buffs.manipulation,
+            wast_not: s.buffs.wast_not,
+            observed: s.buffs.observed,
+            ..Buffs::default()
+        };
         for cp in 0..=s.craft_points {
             new_s2.craft_points = cp;
             for du in 1..=s.durability {
@@ -343,7 +378,7 @@ mod test {
     #[test]
     fn test() {
         let init_status = init();
-        let solver = ProgressSolver::new(init_status.clone(), 8, 8);
+        let solver = ProgressSolver::new(init_status.clone(), true, 8, true);
         let actions = solver.read_all(&init_status);
         println!("{actions:?}");
     }
@@ -352,7 +387,7 @@ mod test {
     fn test2() {
         let mut init_status = init();
         init_status.cast_action(ffxiv_crafting::Actions::Reflect);
-        let solver = QualitySolver::new(init_status.clone(), 8, 8);
+        let solver = QualitySolver::new(init_status.clone(), true, 8, true);
         let actions = solver.read_all(&init_status);
         println!("{actions:?}");
     }

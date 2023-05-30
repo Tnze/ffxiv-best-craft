@@ -9,12 +9,22 @@
 - 自动排序，将更好的宏排在靠前位置，无需手动记录最优解
 - 离线使用，秒开秒用，体验不受网络环境影响
 - 程序极小，电脑硬盘空间不足的玩家也可以放心安装
-- 跨平台，（支持Linux与MacOS系统）Windows用户请在[发行版页面](https://gitee.com/Tnze/ffxiv-best-craft/releases)下载`.msi`安装包
+- 跨平台，（支持Linux与MacOS系统）
 
 缺点：
 
 - 开启“掌握”支持时求解器占用内存较大
 - 用的人太少了（？）
+
+## Download 下载
+
+Windows用户请在[发行版页面](https://gitee.com/Tnze/ffxiv-best-craft/releases)下载包含`.msi`字样的安装包
+
+Linux 与 MacOS 用户请移步[Github Releases](https://github.com/Tnze/ffxiv-best-craft/releases)下载对应的安装包
+
+- Mac 用户请下载`dmg`或`app`文件
+- Debian 及 Ubuntu 用户请下载`AppImage`或`deb`文件
+- 其他 Linux 用户请下载`AppImage`文件
 
 ## Dev （开发人员帮助）
 
