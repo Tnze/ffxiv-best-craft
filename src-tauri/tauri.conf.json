@@ -27,8 +27,8 @@
             "externalBin": [],
             "copyright": "2023 Tnze",
             "category": "Game",
-            "shortDescription": "",
-            "longDescription": "",
+            "shortDescription": "FF14 Crafting Simulator & Solver.",
+            "longDescription": "A software for FFXIV crafting simulation and auto solving with friendly UI.",
             "deb": {
                 "depends": []
             },

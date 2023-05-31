@@ -131,7 +131,7 @@ impl QualitySolver {
             new_s.cast_action(sk);
 
             let progress = self.progress_solver.inner_read(&new_s).value;
-            if new_s.progress + progress >= new_s.recipe.difficulty {
+            if progress >= new_s.recipe.difficulty {
                 let mut quality = new_s.quality;
                 let mut step = 1;
                 {
@@ -290,7 +290,9 @@ impl ProgressSolver {
                 progress += next.value;
                 step += next.step;
             }
-            if progress > best.value || (progress == best.value && step < best.step) {
+            if progress.min(s.recipe.difficulty) > best.value
+                || (progress == best.value && step < best.step)
+            {
                 best = SolverSlot {
                     value: progress,
                     step,
@@ -359,11 +361,11 @@ mod test {
 
     fn init() -> Status {
         let r = Recipe {
-            rlv: 620,
-            job_level: 90,
-            difficulty: 5720,
-            quality: 12900,
-            durability: 70,
+            rlv: 545,
+            job_level: 87,
+            difficulty: 3200,
+            quality: 6900,
+            durability: 80,
             conditions_flag: 15,
         };
         let a = Attributes {
