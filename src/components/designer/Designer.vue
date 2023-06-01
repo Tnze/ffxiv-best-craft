@@ -215,9 +215,9 @@ async function readSolver(s: Status) {
             if (oldID.get(slot.action)?.push(slot.id) == undefined)
                 oldID.set(slot.action, [slot.id]);
         }
-        for (const skill of newSolverResult) {
-            const i = oldID.get(skill)?.shift() || solverResult.maxid++;
-            display.push({ id: i, action: skill });
+        for (const action of newSolverResult) {
+            const i = oldID.get(action)?.shift() || solverResult.maxid++;
+            display.push({ id: i, action: action });
         }
         solverResult.slots = display;
 

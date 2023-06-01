@@ -5,7 +5,7 @@ use std::cell::Cell;
 #[derive(Clone, Copy, Default)]
 struct SolverSlot<T> {
     value: T,
-    step: i32,
+    step: u16,
     action: Option<Actions>,
 }
 
