@@ -27,7 +27,10 @@ const useMuscleMemory = ref(false)
 const useObserve = ref(true)
 const activeNames = ref<string[]>([])
 const rikaIsSolving = ref(false)
+
 const tnzeVerRikaIsSolving = ref(false)
+const tnzeVerRikaUseManipulation = ref(true)
+const tnzeVerRikaUseObserve = ref(true)
 
 const createSolver = async () => {
     const msg1 = ElMessage({
@@ -127,7 +130,12 @@ async function runTnzeVerRikaSolver() {
     try {
         tnzeVerRikaIsSolving.value = true
         const start_time = new Date().getTime()
-        const result = await rika_solve_tnzever(props.initStatus)
+        const result = await rika_solve_tnzever(
+            props.initStatus,
+            tnzeVerRikaUseManipulation.value,
+            8,
+            tnzeVerRikaUseObserve.value,
+        )
         const stop_time = new Date().getTime()
         ElMessage({
             showClose: true,
@@ -198,7 +206,7 @@ async function runTnzeVerRikaSolver() {
                     <template #startButton>
                         <br /> <br />
                         <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving">
-                            {{ rikaIsSolving ? $t('rika-solving') : $t('start-solver') }}
+                            {{ rikaIsSolving ? $t('rika-solving') : $t('rika-solver-start') }}
                         </el-button>
                     </template>
                     <template #rikaSaidLine="{ rikaSaid }">
@@ -213,9 +221,19 @@ async function runTnzeVerRikaSolver() {
                     </template>
                     <template #startButton>
                         <br /> <br />
-                        <el-button type="primary" @click="runTnzeVerRikaSolver" :loading="tnzeVerRikaIsSolving">
-                            {{ tnzeVerRikaIsSolving ? $t('rika-solving') : $t('start-solver') }}
-                        </el-button>
+                        <el-button-group>
+                            <el-button type="primary" @click="runTnzeVerRikaSolver" :loading="tnzeVerRikaIsSolving">
+                                {{ tnzeVerRikaIsSolving ? $t('rika-solving') : $t('rika-solver-start') }}
+                            </el-button>
+                            <el-popover placement="bottom" width="300px" trigger="click">
+                                <template #reference>
+                                    <el-button type="primary" :icon="ArrowRight" :disabled="tnzeVerRikaIsSolving" />
+                                </template>
+                                <el-checkbox v-model="tnzeVerRikaUseManipulation" :label="$t('manipulation-select-info')" />
+                                <br />
+                                <el-checkbox v-model="tnzeVerRikaUseObserve" :label="$t('observe-select-info')" />
+                            </el-popover>
+                        </el-button-group>
                         <br /> <br />
                     </template>
                 </i18n>
@@ -239,7 +257,7 @@ tnzever-rika-solver = 广度优先搜索 v2 ~ Tnze Ver. ~
 manipulation-select-info = { manipulation }（时间&内存×9）
 observe-select-info = { observe }（内存×2）
 muscle-memory-select-info = { muscle-memory }（内存×2）
-start-solver = 启动求解器
+start-solver = 创建求解器
 release-solver = 释放
 
 solving-info = 正在创建求解器
@@ -248,6 +266,7 @@ dp-solver-empty-text = 没有已加载的求解器
 error-with = 错误：{ $err }
 
 warning = 警告
+rika-solver-start = 开始求解
 rika-solver-warning = 当前配方不满足 Rika 求解器的使用条件，是否强制运行？
 rika-solving = 正在求解中
 rika-solve-finished = 求解完成({ $solveTime })

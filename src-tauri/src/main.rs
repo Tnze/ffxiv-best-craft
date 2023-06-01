@@ -290,7 +290,7 @@ async fn create_solver(
     status: Status,
     use_muscle_memory: bool,
     use_manipulation: bool,
-    use_obzerve: bool,
+    use_observe: bool,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
     let key = solver::SolverHash {
@@ -323,7 +323,7 @@ async fn create_solver(
             status,
             use_manipulation,
             8 + 1,
-            use_obzerve,
+            use_observe,
         ))
     };
     *solver_slot.lock().await = Some(solver);
@@ -360,8 +360,13 @@ fn rika_solve(status: Status) -> Vec<Actions> {
 }
 
 #[tauri::command(async)]
-fn rika_solve_tnzever(status: Status) -> Vec<Actions> {
-    rika_tnze_solver::solve(status)
+fn rika_solve_tnzever(
+    status: Status,
+    use_manipulation: bool,
+    use_wast_not: usize,
+    use_observe: bool,
+) -> Vec<Actions> {
+    rika_tnze_solver::solve(status, use_manipulation, use_wast_not, use_observe)
 }
 
 /// 释放求解器

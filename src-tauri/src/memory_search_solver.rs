@@ -11,6 +11,9 @@ pub struct Slot {
 
 pub struct Solver {
     init_status: Status,
+    mn: bool,
+    wn: usize,
+    obz: bool,
     touch_caches: Array<Cell<Option<Slot>>, 9>,
 }
 
@@ -18,7 +21,6 @@ impl Solver {
     const MAX_INNER_QUIET: usize = 10;
     const MAX_INNOVATION: usize = 4;
     const MAX_MANIPULATION: usize = 8;
-    const MAX_WASTE_NOT: usize = 8;
     const MAX_GREAT_STRIDES: usize = 3;
     const MAX_TOUCH_COMBO: usize = 2;
     // const MAX_VENERATION: usize = 4;
@@ -41,15 +43,18 @@ impl Solver {
         (Actions::MastersMend, 0),
     ];
 
-    pub fn new(init_status: Status) -> Self {
+    pub fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
         Self {
+            mn,
+            wn,
+            obz,
             touch_caches: Array::new([
-                Self::MAX_OBSERVE + 1,
+                obz as usize * Self::MAX_OBSERVE + 1,
                 Self::MAX_INNER_QUIET + 1,
                 Self::MAX_INNOVATION + 1,
                 Self::MAX_GREAT_STRIDES + 1,
-                Self::MAX_MANIPULATION + 1,
-                Self::MAX_WASTE_NOT + 1,
+                mn as usize * Self::MAX_MANIPULATION + 1,
+                wn + 1,
                 Self::MAX_TOUCH_COMBO + 1,
                 init_status.recipe.durability as usize / 5 + 1,
                 init_status.attributes.craft_points as usize + 1,
@@ -59,20 +64,17 @@ impl Solver {
     }
 
     pub fn next_touch(&self, craft_points: i32, durability: u16, buffs: Buffs) -> Slot {
-        let this_cell = self
-            .touch_caches
-            .get([
-                buffs.observed as usize,
-                buffs.inner_quiet as usize,
-                buffs.innovation as usize,
-                buffs.great_strides as usize,
-                buffs.manipulation as usize,
-                buffs.wast_not as usize,
-                buffs.touch_combo_stage as usize,
-                durability as usize / 5,
-                craft_points as usize,
-            ])
-            .unwrap();
+        let this_cell = &self.touch_caches[[
+            buffs.observed as usize,
+            buffs.inner_quiet as usize,
+            buffs.innovation as usize,
+            buffs.great_strides as usize,
+            buffs.manipulation as usize,
+            buffs.wast_not as usize,
+            buffs.touch_combo_stage as usize,
+            durability as usize / 5,
+            craft_points as usize,
+        ]];
         if let Some(slot) = this_cell.get() {
             return slot;
         }
@@ -89,6 +91,11 @@ impl Solver {
             if init_status.is_action_allowed(action).is_err()
                 || durability < init_status.calc_durability(consumed_du)
                 || init_status.success_rate(action) < 100
+                || (matches!(action, Actions::Manipulation) && !self.mn)
+                || (matches!(action, Actions::WasteNotII) && self.wn < 8)
+                || (matches!(action, Actions::WasteNot) && self.wn < 4)
+                || (matches!(action, Actions::Observe) && !self.obz)
+                || (matches!(action, Actions::FocusedTouch) && init_status.buffs.observed == 0)
             {
                 continue;
             }

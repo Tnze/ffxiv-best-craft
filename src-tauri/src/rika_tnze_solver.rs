@@ -1,9 +1,9 @@
-use ffxiv_crafting::{Actions, Buffs, Status};
+use ffxiv_crafting::{Actions, Status};
 
 use crate::memory_search_solver;
 
-pub fn solve(craft: Status) -> Vec<Actions> {
-    let tnzes_quality_solver = memory_search_solver::Solver::new(craft.clone());
+pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool) -> Vec<Actions> {
+    let tnzes_quality_solver = memory_search_solver::Solver::new(craft.clone(), mn, wn, obz);
     let phase1_routes = generate_routes_phase1(craft.clone());
     let mut phase2_routes: Vec<(Status, Vec<Actions>)> = Vec::new();
     let prog_120 = craft.calc_synthesis(1.2);
@@ -88,15 +88,8 @@ pub fn next_action_picker_1(craft: &Status) -> Vec<Actions> {
     result_actions
 }
 
-pub fn generate_routes_phase1(mut s: Status) -> Vec<(Status, Vec<Actions>)> {
-    let (prog_120, prog_180, prog_200) = {
-        s.buffs = Buffs::default();
-        (
-            s.calc_synthesis(1.2),
-            s.calc_synthesis(1.8),
-            s.calc_synthesis(2.0),
-        )
-    };
+pub fn generate_routes_phase1(s: Status) -> Vec<(Status, Vec<Actions>)> {
+    let prog_200 = s.calc_synthesis(2.0);
     let mut queue = vec![(s, vec![])];
     let mut routes = Vec::new();
     while let Some((status, actions)) = queue.pop() {
@@ -139,9 +132,9 @@ mod test {
         };
         let a = Attributes {
             level: 90,
-            craftsmanship: 4214,
-            control: 3528,
-            craft_points: 691,
+            craftsmanship: 4138,
+            control: 3938,
+            craft_points: 705,
         };
         Status::new(a, r)
     }
@@ -149,7 +142,7 @@ mod test {
     #[test]
     fn test() {
         let init_status = init();
-        let result = solve(init_status.clone());
+        let result = solve(init_status.clone(), true, 8, true);
         let quality = {
             let mut status = init_status.clone();
             for action in &result {
@@ -163,17 +156,18 @@ mod test {
     #[test]
     fn test_inner() {
         let mut init_status = init();
-        let tnzes_quality_solver = memory_search_solver::Solver::new(init_status.clone());
+        let tnzes_quality_solver =
+            memory_search_solver::Solver::new(init_status.clone(), true, 8, true);
 
         let init_actions = [
             Actions::MuscleMemory,
             Actions::Manipulation,
             Actions::Veneration,
-            Actions::WasteNotII,
+            Actions::WasteNot,
             Actions::Groundwork,
             Actions::Groundwork,
             Actions::CarefulSynthesis,
-            Actions::DelicateSynthesis,
+            Actions::BasicSynthesis,
         ];
         for action in init_actions {
             init_status.cast_action(action);
