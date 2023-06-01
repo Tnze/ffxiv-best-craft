@@ -28,6 +28,10 @@ export const rika_solve = (status: Status): Promise<Actions[]> => {
     return invoke("rika_solve", { status })
 }
 
+export const rika_solve_tnzever = (status: Status): Promise<Actions[]> => {
+    return invoke("rika_solve_tnzever", { status })
+}
+
 export const formatDuration = (u: number): string => {
     if (u < 1000) {
         return u + "ms"

@@ -177,10 +177,6 @@ export const simulateOneStep = (status: Status, action: Actions, forceSuccess: b
     return invoke("simulate_one_step", { status, action, forceSuccess });
 };
 
-export const suggessNext = (status: Status): Promise<Actions> => {
-    return invoke("suggess_next", { status });
-};
-
 export const allowedList = (status: Status, actions: Actions[]): Promise<string[]> => {
     return invoke("allowed_list", { status, skills: actions });
 };

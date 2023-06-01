@@ -5,6 +5,7 @@ pub fn solve(craft: Status) -> Vec<Actions> {
     let phase1_routes = generate_routes_phase1(craft);
     let mut phase2_routes = Vec::new();
     for route in phase1_routes {
+        println!("{:?}", route.1);
         if let Some(route) = generate_routes_phase2(route) {
             phase2_routes.push(route);
         }
@@ -215,4 +216,36 @@ pub fn generate_routes_phase2(
         }
     }
     top_route
+}
+
+#[cfg(test)]
+mod test {
+    use ffxiv_crafting::{Attributes, Recipe, Status};
+
+    use super::solve;
+
+    fn init() -> Status {
+        let r = Recipe {
+            rlv: 620,
+            job_level: 90,
+            difficulty: 5720,
+            quality: 12900,
+            durability: 70,
+            conditions_flag: 15,
+        };
+        let a = Attributes {
+            level: 90,
+            craftsmanship: 4214,
+            control: 3528,
+            craft_points: 691,
+        };
+        Status::new(a, r)
+    }
+
+    #[test]
+    fn test() {
+        let init_status = init();
+        let result = solve(init_status);
+        println!("{result:?}");
+    }
 }
