@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElContainer, ElHeader, ElMain, ElScrollbar, ElDialog, ElButton, ElTable, ElTableColumn } from 'element-plus';
 import { computed, ref, watch } from 'vue';
-import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep, suggessNext } from '../../Craft';
+import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep } from '../../Craft';
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import StatusBarVue from './StatusBar.vue';
 import ActionPanelVue from './ActionPanel.vue';
@@ -53,7 +53,6 @@ const openAttrEnhSelector = ref(false)
 const results = ref<Status[]>([])
 const waiting = ref(false)
 const preview = ref<Status | null>(null)
-const suggess = ref<Actions[]>([])
 let timer: any;
 
 const sleep = (t: number) => new Promise((resolve) => setTimeout(resolve, t))
@@ -73,12 +72,6 @@ async function pushAction(action: Actions) {
             id: seq.value.length, action,
             condition: currentStatus.value.condition,
         })
-        suggessNext(status).then(v => {
-            suggess.value = [v]
-        }).catch(e => {
-            console.error("suggest next error", e)
-            suggess.value.splice(0)
-        })
         if (status.progress >= status.recipe.difficulty || status.durability <= 0) {
             await sleep(2500);
             restart();
@@ -94,7 +87,6 @@ async function pushAction(action: Actions) {
 function restart() {
     results.value.push(currentStatus.value)
     seq.value.splice(0)
-    suggess.value.splice(0)
     currentStatus.value = initStatus.value
 }
 
@@ -128,9 +120,7 @@ function leaveAction() {
                     :status="preview ?? currentStatus" :disabled-init-quality="true"
                     @click-attributes="openAttrEnhSelector = true" />
                 <el-scrollbar class="action-queue">
-                    <ActionQueueVue :job="displayJob" :list="seq"
-                        :solver-result="seq.concat(suggess.map((action, id) => { return { id, action, condition: Conditions.Normal } }))"
-                        disabled no-hover />
+                    <ActionQueueVue :job="displayJob" :list="seq" disabled no-hover />
                 </el-scrollbar>
                 <div class="actionpanel">
                     <el-scrollbar class="action-panel">

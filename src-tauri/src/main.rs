@@ -23,6 +23,7 @@ mod hard_recipe;
 mod memory_search_solver;
 mod preprogress_solver;
 mod rika_solver;
+mod rika_tnze_solver;
 mod solver;
 
 use crate::solver::Solver;
@@ -120,33 +121,6 @@ fn simulate_one_step(
         };
     }
     Ok(SimulateOneStepResult { status, is_success })
-}
-
-#[tauri::command(async)]
-async fn suggess_next(
-    status: Status,
-    app_state: tauri::State<'_, AppState>,
-) -> Result<Actions, String> {
-    let solver = app_state
-        .hard_recipe_solver_list
-        .lock()
-        .await
-        .entry(solver::SolverHash {
-            attributes: status.attributes,
-            recipe: status.recipe,
-        })
-        .or_insert_with(|| {
-            Arc::new(Mutex::new(memory_search_solver::Solver::new(
-                status.clone(),
-            )))
-        })
-        .clone();
-    let solver = solver
-        .try_lock()
-        .map_err(|_| String::from("read on solving"))?;
-    solver
-        .next_touch(status.craft_points, status.durability, status.buffs)
-        .ok_or("no result".into())
 }
 
 /// 计算当前状态下可以释放技能的集合，用于模拟界面将不可释放技能置灰
@@ -281,8 +255,6 @@ async fn item_info(
 type SolverInstance = Arc<Mutex<Option<Box<dyn Solver + Send>>>>;
 struct AppState {
     solver_list: Mutex<HashMap<solver::SolverHash, SolverInstance>>,
-    hard_recipe_solver_list:
-        Mutex<HashMap<solver::SolverHash, Arc<Mutex<memory_search_solver::Solver>>>>,
     db: OnceCell<DatabaseConnection>,
     should_be_transparent: AtomicBool,
 }
@@ -291,7 +263,6 @@ impl AppState {
     fn new() -> Self {
         Self {
             solver_list: Mutex::new(HashMap::new()),
-            hard_recipe_solver_list: Mutex::new(HashMap::new()),
             db: OnceCell::new(),
             should_be_transparent: AtomicBool::new(false),
         }
@@ -316,7 +287,7 @@ async fn create_solver(
     status: Status,
     use_muscle_memory: bool,
     use_manipulation: bool,
-    use_obzerve: bool,
+    use_observe: bool,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
     let key = solver::SolverHash {
@@ -349,7 +320,7 @@ async fn create_solver(
             status,
             use_manipulation,
             8 + 1,
-            use_obzerve,
+            use_observe,
         ))
     };
     *solver_slot.lock().await = Some(solver);
@@ -385,6 +356,16 @@ fn rika_solve(status: Status) -> Vec<Actions> {
     rika_solver::solve(status)
 }
 
+#[tauri::command(async)]
+fn rika_solve_tnzever(
+    status: Status,
+    use_manipulation: bool,
+    use_wast_not: usize,
+    use_observe: bool,
+) -> Vec<Actions> {
+    rika_tnze_solver::solve(status, use_manipulation, use_wast_not, use_observe)
+}
+
 /// 释放求解器
 #[tauri::command(async)]
 async fn destroy_solver(
@@ -417,7 +398,6 @@ fn main() {
             new_status,
             simulate,
             simulate_one_step,
-            suggess_next,
             allowed_list,
             craftpoints_list,
             recipe_table,
@@ -427,6 +407,7 @@ fn main() {
             read_solver,
             destroy_solver,
             rika_solve,
+            rika_solve_tnzever,
             should_be_transparent,
         ])
         .setup(|app| {

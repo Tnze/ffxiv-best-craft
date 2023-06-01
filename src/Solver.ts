@@ -1,18 +1,17 @@
 import { Actions, Attributes, Recipe, Status } from "./Craft";
-import { emit, listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/tauri";
 
 export const create_solver = (
     status: Status,
     useMuscleMemory: boolean,
     useManipulation: boolean,
-    useObzerve: boolean,
+    useObserve: boolean,
 ) => {
     return invoke("create_solver", {
         status,
         useMuscleMemory,
         useManipulation,
-        useObzerve,
+        useObserve,
     });
 };
 
@@ -26,6 +25,10 @@ export const read_solver = (status: Status): Promise<Actions[]> => {
 
 export const rika_solve = (status: Status): Promise<Actions[]> => {
     return invoke("rika_solve", { status })
+}
+
+export const rika_solve_tnzever = (status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean): Promise<Actions[]> => {
+    return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve })
 }
 
 export const formatDuration = (u: number): string => {
