@@ -307,10 +307,10 @@ solver-created = Solver successfully created({ $solveTime })
 dp-solver-empty-text = None of solver is loaded
 error-with = Error: { $err }
 
-warning = 警告
-rika-solver-warning = 当前配方不满足 Rika 求解器的使用条件，是否强制运行？
-rika-solving = 正在求解中
-rika-solve-finished = 求解完成({ $solveTime })
+warning = Warning
+rika-solver-warning = The current recipe does not meet the usage conditions of the Rika's solver. Do you want to force it to run?
+rika-solving = Solving
+rika-solve-finished = Solved({ $solveTime })
 
 rika-solver-info =
     {$rikaRepoLink}. Transplant with the consent of the author.
@@ -324,12 +324,13 @@ rika-solver-info =
     .rika-said =「速度较快但不一定找到最优解，适用范围仅限于560以上70耐久配方」—— Rika
 
 tnzever-rika-solver-info =
-    此款求解器是 Rika 广度优先搜索算法的 Tnze 改良款。
+    This solver is a Tnze improved version of the Rika's Breadth First Search.
     {$startButton}
-    保留了 Rika 算法的 Phase 1，将 Phase 2 交由 Tnze 精心重制的动规算法实现。
-    该方法既能利用动态规划能计算最优解的优秀特性，也能充分利用 Rika 算法能处理“坚信”起手的优点。
+    Retained Phase 1 of Rika algorithm and entrusted Phase 2 to Tnze's carefully crafted Dynamic Programing algorithm implementation.
+    This method can not only take advantage of the excellent characteristics of dynamic programming that can calculate the optimal solution, 
+    but also take full advantage of the advantage of Rika algorithm that can handle the "conviction" starting.
     {$newLine}
     {$newLine}
-    注：类似于“广度优先搜索”求解器，该版算法可能也只适用于特定版本的配方。
-    如您认为遇到了异常情况，请通过 Gitee 或 Github 等渠道提交 issue 反馈。
+    Note: Similar to the "Breadth First Search" solver, this version of the algorithm may only be applicable to specific some of recipes.
+    If you believe that you have encountered an abnormal situation, please submit an issue on Gitee or Github.
 </fluent>
