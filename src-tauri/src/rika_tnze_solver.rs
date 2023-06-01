@@ -53,7 +53,10 @@ pub fn next_action_picker_1(craft: &Status) -> Vec<Actions> {
         0 => return vec![Actions::MuscleMemory],
         1 => return vec![Actions::Manipulation],
         2 => return vec![Actions::Veneration],
-        3 => available_actions.push(Actions::WasteNotII),
+        3 => {
+            available_actions.push(Actions::WasteNot);
+            available_actions.push(Actions::WasteNotII);
+        }
         _ => {}
     }
     if craft.buffs.wast_not > 0 || craft.buffs.muscle_memory > 0 {

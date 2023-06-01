@@ -255,8 +255,6 @@ async fn item_info(
 type SolverInstance = Arc<Mutex<Option<Box<dyn Solver + Send>>>>;
 struct AppState {
     solver_list: Mutex<HashMap<solver::SolverHash, SolverInstance>>,
-    hard_recipe_solver_list:
-        Mutex<HashMap<solver::SolverHash, Arc<Mutex<memory_search_solver::Solver>>>>,
     db: OnceCell<DatabaseConnection>,
     should_be_transparent: AtomicBool,
 }
@@ -265,7 +263,6 @@ impl AppState {
     fn new() -> Self {
         Self {
             solver_list: Mutex::new(HashMap::new()),
-            hard_recipe_solver_list: Mutex::new(HashMap::new()),
             db: OnceCell::new(),
             should_be_transparent: AtomicBool::new(false),
         }

@@ -64,17 +64,19 @@ impl Solver {
     }
 
     pub fn next_touch(&self, craft_points: i32, durability: u16, buffs: Buffs) -> Slot {
-        let this_cell = &self.touch_caches[[
-            buffs.observed as usize,
-            buffs.inner_quiet as usize,
-            buffs.innovation as usize,
-            buffs.great_strides as usize,
-            buffs.manipulation as usize,
-            buffs.wast_not as usize,
-            buffs.touch_combo_stage as usize,
-            durability as usize / 5,
-            craft_points as usize,
-        ]];
+        let this_cell = unsafe {
+            self.touch_caches.get_unchecked([
+                buffs.observed as usize,
+                buffs.inner_quiet as usize,
+                buffs.innovation as usize,
+                buffs.great_strides as usize,
+                buffs.manipulation as usize,
+                buffs.wast_not as usize,
+                buffs.touch_combo_stage as usize,
+                durability as usize / 5,
+                craft_points as usize,
+            ])
+        };
         if let Some(slot) = this_cell.get() {
             return slot;
         }
