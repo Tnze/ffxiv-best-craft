@@ -70,7 +70,8 @@ export const useDesignerStore = defineStore('designer', {
             item: Item;
             job: Jobs;
             recipe: Recipe;
-            recipeInfo?: RecipeInfo
+            recipeInfo?: RecipeInfo;
+            simulatorMode: boolean;
         }
     }),
     actions: {
@@ -79,6 +80,7 @@ export const useDesignerStore = defineStore('designer', {
             item: Item,
             recipe: Recipe,
             recipeInfo?: RecipeInfo
+            simulatorMode: boolean;
         }) {
             this.content = payload
         }

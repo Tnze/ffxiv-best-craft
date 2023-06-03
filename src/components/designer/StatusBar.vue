@@ -5,6 +5,7 @@ import { Attributes, Status } from '../../Craft';
 import Buffs from './Buffs.vue';
 import { Enhancer } from '../attr-enhancer/Enhancer';
 import { Setting } from '@element-plus/icons-vue';
+import Condition from './Condition.vue'
 
 const props = defineProps<{
     status: Status;
@@ -12,6 +13,7 @@ const props = defineProps<{
     enhancers: Enhancer[];
     disabledInitQuality?: boolean;
     disabledEnhancer?: boolean;
+    showCondition: boolean
 }>()
 
 const emits = defineEmits<{
@@ -70,6 +72,7 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
                     status?.attributes.craft_points }}
                 <el-progress :stroke-width="12" :percentage="craftPointPercentage" :show-text="false" color="#FF9999"
                     striped />
+                <Condition v-if="showCondition" :cond="status.condition" />
             </div>
         </div>
         <div id="progress-and-buffs">

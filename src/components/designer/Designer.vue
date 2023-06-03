@@ -343,7 +343,8 @@ async function openListFromJSON() {
                 <el-alert v-if="attributionAlert != undefined" :title="attributionAlert.title"
                     :description="attributionAlert.descryption" type="warning" show-icon center :closable="false" />
                 <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers" :status="displayedStatus
-                    " @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true" />
+                    " @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
+                    :show-condition="false" />
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">
                         <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />

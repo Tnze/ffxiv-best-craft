@@ -295,6 +295,7 @@ tnzever-rika-solver-info =
 <fluent locale="en-US">
 dp-solver = Dynamic Programing v2
 bfs-solver = Breadth First Search
+tnzever-rika-solver = Breadth First Search v2 ~ Tnze Ver. ~
 
 manipulation-select-info = { manipulation }(Time & Memory × 9)
 observe-select-info = { observe }(Memory × 2)

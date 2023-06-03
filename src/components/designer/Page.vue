@@ -19,7 +19,7 @@ const attributes = computed(() => {
 <template>
     <Suspense>
         <template v-if="designerStore.content != null">
-            <Designer v-if="(designerStore.content.recipe.conditions_flag & ~15) == 0" :item="designerStore.content.item"
+            <Designer v-if="!designerStore.content.simulatorMode" :item="designerStore.content.item"
                 :recipe="designerStore.content.recipe" :recipe-info="designerStore.content.recipeInfo"
                 :attributes="attributes" :display-job="designerStore.content!.job" />
             <Simulator v-else :item="designerStore.content.item" :recipe="designerStore.content.recipe"

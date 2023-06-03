@@ -48,33 +48,45 @@ watchEffect(async () => {
 
 
 const openCustomlizer = ref(false)
+const confirmDialogVisible = ref(false)
+let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null = null
 
 const selectRecipeRow = async (row: RecipeInfo) => {
-    try {
-        await ElMessageBox.confirm(
-            $t('confirm-select', { itemName: row.item_name }),
-            $t('please-confirm'),
-            { type: 'warning' }
-        )
-        const recipe = await newRecipe(
-            row.rlv,
-            row.difficulty_factor,
-            row.quality_factor,
-            row.durability_factor
-        )
-        selectRecipe(recipe, row, await itemInfo(row.item_id), row.job)
-        checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
-    } catch {
-        // operation canceled by user
+    let simulatorMode = false;
+    const recipe = await newRecipe(
+        row.rlv,
+        row.difficulty_factor,
+        row.quality_factor,
+        row.durability_factor
+    )
+    if ((recipe.conditions_flag & ~15) == 0) {
+        try {
+            await ElMessageBox.confirm(
+                $t('confirm-select', { itemName: row.item_name }),
+                $t('please-confirm'),
+                { type: 'warning' }
+            )
+            selectRecipe(recipe, row, await itemInfo(row.item_id), row.job, simulatorMode)
+            checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
+        } catch {
+            // operation canceled by user
+        }
+    } else {
+        confirmDialogCallback = async (mode: 'designer' | 'simulator') => {
+            selectRecipe(recipe, row, await itemInfo(row.item_id), row.job, mode == 'simulator')
+            confirmDialogVisible.value = false
+        }
+        confirmDialogVisible.value = true
     }
 }
 
-const selectRecipe = (recipe: Recipe, recipeInfo: RecipeInfo | undefined, item: Item, craftType: string) => {
+const selectRecipe = (recipe: Recipe, recipeInfo: RecipeInfo | undefined, item: Item, craftType: string, simulatorMode: boolean) => {
     designerStore.selectRecipe({
         job: jobMaps[craftType] ?? Jobs.Culinarian,
         item,
         recipe,
-        recipeInfo
+        recipeInfo,
+        simulatorMode,
     })
     router.push({ name: "designer" })
     ElMessage({
@@ -129,37 +141,53 @@ const customRecipe = ref({
                             id: -1,
                             name: $t('custom-recipe', { rlv: customRecipe.rlv }),
                             level: customRecipe.rlv,
-                            can_be_hq: true
-                        }, '')">
+                            can_be_hq: true,
+                        }, '', false)">
                             {{ $t('confirm') }}
                         </el-button>
                     </span>
                 </template>
             </el-dialog>
-            <el-input v-model="searchText" class="search-input" :placeholder="$t('search')" clearable>
+            <el-dialog v-model=" confirmDialogVisible " :title=" $t('please-confirm') " :align-center=" true ">
+                <span>
+                    {{ $t('confirm-select2') }}
+                </span>
+                <template #footer>
+                    <span>
+                        <el-button type="primary" @click=" confirmDialogCallback!('designer') ">
+                            {{ $t('designer-mode')}}
+                        </el-button>
+                        <el-button type="primary" @click=" confirmDialogCallback!('simulator') ">
+                            {{ $t('simulator-mode')}}
+                        </el-button>
+                        <el-button @click=" confirmDialogVisible = false ">{{$t('cancel')}}</el-button>
+                    </span>
+                </template>
+            </el-dialog>
+            <el-input v-model=" searchText " class="search-input" :placeholder=" $t('search') " clearable>
                 <template #append>
-                    <el-button :icon="EditPen" @click="openCustomlizer = true" />
+                    <el-button :icon=" EditPen " @click=" openCustomlizer = true " />
                 </template>
             </el-input>
-            <el-table :element-loading-text="$t('please-wait')" highlight-current-row @row-click="selectRecipeRow"
-                :data="displayTable" height="100%" style="width: 100%">
+            <el-table :element-loading-text=" $t('please-wait') " highlight-current-row @row-click=" selectRecipeRow "
+                :data=" displayTable " height="100%" style="width: 100%">
                 <el-table-column prop="id" label="ID" width="100" />
-                <el-table-column prop="rlv" :label="$t('recipe-level')" width="100" />
-                <!-- <el-table-column prop="Icon" label="图标" width="55">
+                <el-table-column prop="rlv" :label=" $t('recipe-level') " width="100" />
+                <!-- <el-table-column prop="Icon" la\bel="图标" width="55">
                     <template #default="scope">
                         <div style="display: flex; align-items: center">
                             <el-image :src="'https://garlandtools.cn/files/icons/item/' + scope.row.number +'.png'" />
                         </div>
                     </template>
                 </el-table-column> -->
-                <el-table-column prop="job" :label="$t('type')" width="70" />
-                <el-table-column prop="item_name" :label="$t('name')" />
+                <el-table-column prop="job" :label=" $t('type') " width="70" />
+                <el-table-column prop="item_name" :label=" $t('name') " />
                 <!-- <el-table-column prop="difficulty_factor" label="难度因子" /> -->
                 <!-- <el-table-column prop="quality_factor" label="品质因子" /> -->
                 <!-- <el-table-column prop="durability_factor" label="耐久因子" /> -->
             </el-table>
-            <el-pagination layout="prev, pager, next" v-model:current-page="pagination.Page"
-                :page-count="pagination.PageTotal" />
+            <el-pagination layout="prev, pager, next" v-model:current-page=" pagination.Page "
+                :page-count=" pagination.PageTotal " />
         </el-main>
     </el-container>
 </template>
@@ -188,6 +216,7 @@ const customRecipe = ref({
 
 <fluent locale="zh-CN">
 confirm-select = 将当前配方设置为“{ $itemName }”吗？
+confirm-select2 = 这是一个高难度配方，请选择你想进入的模式。
 please-confirm = 请确认
 recipe-setting-changed = 配方设置已变更
 select-recipe = 选择配方
@@ -196,6 +225,8 @@ conditions-flag = 球色标志
 
 cancel = 取消
 confirm = 确认
+designer-mode = 宏设计模式
+simulator-mode = 模拟器模式
 
 search = 键入以搜索
 please-wait = 请稍等...
@@ -206,6 +237,7 @@ name = 名称
 
 <fluent locale="en-US">
 confirm-select = Set current recipe to "{ $itemName }"?
+confirm-select2 = This is a 高难度配方. Please make a choice.
 please-confirm = Please confirm
 recipe-setting-changed = Selected recipe is updated
 select-recipe = Select Recipe
@@ -214,6 +246,8 @@ conditions-flag = Cond. Flag
 
 cancel = Cancel
 confirm = Confirm
+designer-mode = Designer Mode
+simulator-mode = Simulator Mode
 
 search = Search
 please-wait = Please wait...
