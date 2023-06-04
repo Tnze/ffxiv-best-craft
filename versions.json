@@ -1,19 +1,19 @@
 {
-  "version": "0.8.5",
-  "notes": "允许用户对高难配方选择Designer或Simulator模式",
-  "pub_date": "2023-06-03T12:11:12.964Z",
+  "version": "0.8.6",
+  "notes": "See the assets to download this version and install.",
+  "pub_date": "2023-06-04T17:30:49.161Z",
   "platforms": {
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnZlU2ZEcVpWaWFjZU9XNUZSZFM0SDJaR0sybFJqdW0rczVKWmgvU1QxSTRpRG9Qd2xPQ2NxaExIdzlndnc3QllseFhPTDVxNGdqNXNFN2duc1I0ZWdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjg1Nzk0MDg3CWZpbGU6YmVzdC1jcmFmdF8wLjguNV9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKVWRaZE94Z2R2ODd1UnplM3o5QW8ySmdxNU0rSS9md0EyRytJYUlNdEdZUnZQMUJLSlY3OHQzWDRsaS8vS1gxV2dNbTFkcDdSd0kxZE9ZZnNRMnZQQVE9PQo=",
-      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.8.5/best-craft_0.8.5_amd64.AppImage.tar.gz"
-    },
-    "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnJQYzIrN25jSFc0WVhmUDdiVzJXOVQ1Ritta3dCZWh4SGp5RDh0MEllaXJvd2ZCVUJIZ24zU1BLLzhPUjQzUkJRNU80QlNUSk9TbnZSTktoeGRneUE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjg1Nzk0MTg3CWZpbGU6QmVzdENyYWZ0XzAuOC41X3g2NF96aC1DTi5tc2kuemlwCjZOd2ZLTTdRNUduSFhTdzI5SHJSNkxtSW02NVJCSGRVZGF1S1BSWkYyYnRTOHl6YzVQaGFRY2JWdHk5MW9rb0xsNXQ5bGdPejRqT0dzcmRuQ3JBcUNRPT0K",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.8.5/BestCraft_0.8.5_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5KYTFDTUZhNHBIQWFWT09RYWpLMytwbS9OZjZZd0M0b2hndkV5Zk95djI2TEo3RU1PeTlIaXFBU01rU1YxTnVzSU1QUllmL1h1ZXU5Rm1pMXhDUWdrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjg1ODk5NDgwCWZpbGU6YmVzdC1jcmFmdF8wLjguNl9hbWQ2NC5BcHBJbWFnZS50YXIuZ3oKVUlXa2VqbTFLWVY5TlBZY1J6cEZnUWRLbzY2M0RPRkFXTmw3N3kvN0JNSlhIZll2djZGSHpEcGtLeVFacHRybTdlWjhFT0QzYmtBUXN2dFhOSWRwQ2c9PQo=",
+      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.8.6/best-craft_0.8.6_amd64.AppImage.tar.gz"
     },
     "darwin-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnJYY0tjWXQxbExuaitkQ0x3d0FVOVRLa1Yvekl5N3E4emhTKzdXekE2UXdCajZSVWV0bGFvVDRWMFErVnJGOXhtSVBBNTJJdWxwamsvQzJmTEdpYmdFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjg1Nzk0MjY5CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKUkNqNGhmN3BjRWxvSkZybnYwUndZRWgvTE5hOUdxTmlwR3o2QlFXRHM0TzJtd1lRN3RQWjUwclVVdDVUT0xFSE5GNDloeFZ1STVmcnVKTGF4dUptQ3c9PQo=",
-      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.8.5/BestCraft_x64.app.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnUvZEdZTXBzOHNqV1QrS0VCNkUyZ1ZBY1lDS21iVmJNRWcwUEMyb3pwMmxYSjR5SW0yOTFvcVFzOXdpcUF6a0QxY0FsOTkrUXc5bDc3dVZPejVtMWd3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjg1ODk5Nzk4CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKaEsrZFNTQjZqMzJJVFhBcmFsN1JsVlY0eFo3bU9adzlEcVA4Z0loMWs0ZFhBQjVsZXUzSzdjTkZqTGp6MU54UWsvaGFhM3pLUjVMUWxISTRaNlVKREE9PQo=",
+      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.8.6/BestCraft_x64.app.tar.gz"
+    },
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmdqaTVpYkp1eThsUXkxTVdoZHFic3hHWkR1WUpSOU1wanhySGFTa0g3U1hCbFJCc29lK1IyWmRJV0JLaTRITGsxYklPYWxGSlpQV3hoNnNaNjU5elFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjg1ODk5ODQzCWZpbGU6QmVzdENyYWZ0XzAuOC42X3g2NF96aC1DTi5tc2kuemlwCkh5T1Q1WmgvKzd1S0N6VnpOb1VlN1JzaUc3MU9XT3IvdXMvS1dmOEJWaWxIWTdKdTZQZ2xnUWtDcUQzVkc2YXVqYUJ6eUxTdUlNekRXbnhuaGdidENBPT0K",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.8.6/BestCraft_0.8.6_x64_zh-CN.msi.zip"
     }
   }
 }
