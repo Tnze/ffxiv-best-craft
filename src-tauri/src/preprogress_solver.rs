@@ -1,7 +1,6 @@
 use ffxiv_crafting::{Actions, Status};
-use rayon::iter::{IntoParallelRefMutIterator, ParallelIterator};
 
-use crate::{dynamic_programing_solver::QualitySolver, memory_search_solver};
+use crate::dynamic_programing_solver::QualitySolver;
 
 pub struct PreprogressSolver {
     progress_index: Vec<usize>,
@@ -42,7 +41,7 @@ impl PreprogressSolver {
 
 impl crate::solver::Solver for PreprogressSolver {
     fn init(&mut self) {
-        self.quality_solvers.par_iter_mut().for_each(|qs| qs.init());
+        self.quality_solvers.iter_mut().for_each(|qs| qs.init());
     }
 
     fn read(&self, s: &Status) -> Option<Actions> {
