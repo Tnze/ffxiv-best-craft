@@ -1,7 +1,7 @@
 use ffxiv_crafting::{Actions, Status};
 use rayon::iter::{IntoParallelRefMutIterator, ParallelIterator};
 
-use crate::dynamic_programing_solver::QualitySolver;
+use crate::{dynamic_programing_solver::QualitySolver, memory_search_solver};
 
 pub struct PreprogressSolver {
     progress_index: Vec<usize>,

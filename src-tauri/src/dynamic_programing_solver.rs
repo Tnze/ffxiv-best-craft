@@ -131,14 +131,11 @@ impl QualitySolver {
             new_s.cast_action(sk);
 
             let progress = self.progress_solver.inner_read(&new_s).value;
-            if progress >= new_s.recipe.difficulty {
-                let mut quality = new_s.quality;
-                let mut step = 1;
-                {
-                    let next = self.inner_read(&new_s);
-                    quality += next.value;
-                    step += next.step;
-                }
+            if progress + new_s.progress >= new_s.recipe.difficulty {
+                let next = self.inner_read(&new_s);
+                let quality = new_s.quality + next.value;
+                let step = 1 + next.step;
+
                 if (quality == best.value && step < best.step) || quality > best.value {
                     best = SolverSlot {
                         value: quality,
@@ -238,7 +235,7 @@ impl ProgressSolver {
             s.buffs.muscle_memory as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not as usize,
-            s.durability as usize / 5,
+            (s.durability as usize).div_ceil(5),
             s.craft_points as usize,
         ];
         // #[cfg(not(debug_assertions))]
@@ -361,25 +358,27 @@ mod test {
 
     fn init() -> Status {
         let r = Recipe {
-            rlv: 545,
-            job_level: 87,
-            difficulty: 3200,
-            quality: 6900,
-            durability: 80,
+            rlv: 516,
+            job_level: 80,
+            difficulty: 5470,
+            quality: 16156,
+            durability: 50,
             conditions_flag: 15,
         };
         let a = Attributes {
             level: 90,
-            craftsmanship: 4214,
-            control: 3528,
-            craft_points: 691,
+            craftsmanship: 4138,
+            control: 3846 + 70,
+            craft_points: 598 + 72,
         };
         Status::new(a, r)
     }
 
     #[test]
     fn test() {
-        let init_status = init();
+        let mut init_status = init();
+        init_status.durability = 40;
+        init_status.craft_points = 140;
         let solver = ProgressSolver::new(init_status.clone(), true, 8, true);
         let actions = solver.read_all(&init_status);
         println!("{actions:?}");

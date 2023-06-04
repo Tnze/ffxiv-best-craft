@@ -5,7 +5,6 @@ pub fn solve(craft: Status) -> Vec<Actions> {
     let phase1_routes = generate_routes_phase1(craft);
     let mut phase2_routes = Vec::new();
     for route in phase1_routes {
-        println!("{:?}", route.1);
         if let Some(route) = generate_routes_phase2(route) {
             phase2_routes.push(route);
         }

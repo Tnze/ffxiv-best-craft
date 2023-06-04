@@ -4,7 +4,7 @@ use crate::memory_search_solver;
 
 pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool) -> Vec<Actions> {
     let tnzes_quality_solver = memory_search_solver::Solver::new(craft.clone(), mn, wn, obz);
-    let phase1_routes = generate_routes_phase1(craft.clone());
+    let phase1_routes = generate_routes_phase1(&craft);
     let mut phase2_routes: Vec<(Status, Vec<Actions>)> = Vec::new();
     let prog_120 = craft.calc_synthesis(1.2);
     let prog_180 = craft.calc_synthesis(1.8);
@@ -27,15 +27,14 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool) -> Vec<Actions> {
             durability = s.durability - final_du;
             actions.push(next_action);
         }
+        println!("{actions:?} {}", s.quality);
         actions.append(&mut final_actions);
-        println!("{actions:?} {} {}", s.is_finished(), s.quality);
         phase2_routes.push((s, actions));
     }
     let res = phase2_routes.into_iter().max_by(|a, b| {
-        a.0.progress
-            .cmp(&b.0.progress)
-            .then(a.0.quality.cmp(&b.0.quality))
-            .then(a.0.step.cmp(&b.0.step).reverse())
+        let cond1 = a.0.quality.cmp(&b.0.quality);
+        let cond2 = a.0.step.cmp(&b.0.step).reverse();
+        cond1.then(cond2)
     });
     let Some((_, content)) = res else {
        return vec![]
@@ -91,9 +90,9 @@ pub fn next_action_picker_1(craft: &Status) -> Vec<Actions> {
     result_actions
 }
 
-pub fn generate_routes_phase1(s: Status) -> Vec<(Status, Vec<Actions>)> {
+pub fn generate_routes_phase1(s: &Status) -> Vec<(Status, Vec<Actions>)> {
     let prog_200 = s.calc_synthesis(2.0);
-    let mut queue = vec![(s, vec![])];
+    let mut queue = vec![(s.clone(), vec![])];
     let mut routes = Vec::new();
     while let Some((status, actions)) = queue.pop() {
         for action in next_action_picker_1(&status) {
@@ -114,90 +113,4 @@ pub fn generate_routes_phase1(s: Status) -> Vec<(Status, Vec<Actions>)> {
         }
     }
     routes
-}
-
-#[cfg(test)]
-mod test {
-    use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
-
-    use crate::memory_search_solver;
-
-    use super::solve;
-
-    fn init() -> Status {
-        let r = Recipe {
-            rlv: 620,
-            job_level: 90,
-            difficulty: 5720,
-            quality: 12900,
-            durability: 70,
-            conditions_flag: 15,
-        };
-        let a = Attributes {
-            level: 90,
-            craftsmanship: 4138,
-            control: 3938,
-            craft_points: 705,
-        };
-        Status::new(a, r)
-    }
-
-    #[test]
-    fn test() {
-        let init_status = init();
-        let result = solve(init_status.clone(), true, 8, true);
-        let quality = {
-            let mut status = init_status.clone();
-            for action in &result {
-                status.cast_action(*action);
-            }
-            status.quality
-        };
-        println!("{result:?} {quality}");
-    }
-
-    #[test]
-    fn test_inner() {
-        let mut init_status = init();
-        let tnzes_quality_solver =
-            memory_search_solver::Solver::new(init_status.clone(), true, 8, true);
-
-        let init_actions = [
-            Actions::MuscleMemory,
-            Actions::Manipulation,
-            Actions::Veneration,
-            Actions::WasteNot,
-            Actions::Groundwork,
-            Actions::Groundwork,
-            Actions::CarefulSynthesis,
-            Actions::BasicSynthesis,
-        ];
-        for action in init_actions {
-            init_status.cast_action(action);
-        }
-        let result = tnzes_quality_solver.next_touch(440 - 7, 60 - 1, init_status.buffs);
-        println!("{result:?}");
-        init_status.craft_points -= 7;
-        init_status.durability -= 1;
-        while let memory_search_solver::Slot {
-            action: Some(action),
-            ..
-        } = tnzes_quality_solver.next_touch(
-            init_status.craft_points,
-            init_status.durability,
-            init_status.buffs,
-        ) {
-            println!("{action:?}");
-            init_status.cast_action(action);
-        }
-        println!("{init_status:?}");
-        // let quality = {
-        //     let mut status = init_status.clone();
-        //     for action in &result {
-        //         status.cast_action(*action);
-        //     }
-        //     status.quality
-        // };
-        // println!("{result:?} {quality}");
-    }
 }

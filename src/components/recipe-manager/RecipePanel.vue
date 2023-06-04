@@ -59,6 +59,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         row.quality_factor,
         row.durability_factor
     )
+    const info = await itemInfo(row.item_id)
     if ((recipe.conditions_flag & ~15) == 0) {
         try {
             await ElMessageBox.confirm(
@@ -66,14 +67,14 @@ const selectRecipeRow = async (row: RecipeInfo) => {
                 $t('please-confirm'),
                 { type: 'warning' }
             )
-            selectRecipe(recipe, row, await itemInfo(row.item_id), row.job, simulatorMode)
+            selectRecipe(recipe, row, info, row.job, simulatorMode)
             checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
         } catch {
             // operation canceled by user
         }
     } else {
         confirmDialogCallback = async (mode: 'designer' | 'simulator') => {
-            selectRecipe(recipe, row, await itemInfo(row.item_id), row.job, mode == 'simulator')
+            selectRecipe(recipe, row, info, row.job, mode == 'simulator')
             confirmDialogVisible.value = false
         }
         confirmDialogVisible.value = true
@@ -88,6 +89,7 @@ const selectRecipe = (recipe: Recipe, recipeInfo: RecipeInfo | undefined, item: 
         recipeInfo,
         simulatorMode,
     })
+    console.log(recipe, recipeInfo)
     router.push({ name: "designer" })
     ElMessage({
         type: 'success',
