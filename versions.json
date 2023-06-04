@@ -1,6 +1,6 @@
 {
   "version": "0.8.6",
-  "notes": "See the assets to download this version and install.",
+  "notes": "- 修复了DP和BFSv2等各个求解器的一些问题。\n- DP求解器仍然还有问题，可能无法求出最优解\n- 其他优化",
   "pub_date": "2023-06-04T17:30:49.161Z",
   "platforms": {
     "linux-x86_64": {
