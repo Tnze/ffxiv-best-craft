@@ -1,6 +1,6 @@
 use ffxiv_crafting::{Actions, Status};
 
-use crate::memory_search_solver::Solver;
+use crate::memoization_solver::Solver;
 
 pub struct PreprogressSolver {
     quality_solver: Solver,

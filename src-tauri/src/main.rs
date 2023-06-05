@@ -19,10 +19,10 @@ use tauri::Manager;
 use tokio::sync::{Mutex, OnceCell};
 
 mod db;
-mod dynamic_programing_solver;
 mod hard_recipe;
-mod memory_search_solver;
-mod preprogress_solver;
+mod memoization_solver;
+mod muscle_memory_solver;
+mod reflect_solver;
 mod rika_solver;
 mod rika_tnze_solver;
 mod solver;
@@ -309,14 +309,14 @@ async fn create_solver(
     };
     // let solver: Box<dyn Solver + Send> = Box::new(memory_search_solver::Solver::new(status));
     let solver: Box<dyn Solver + Send> = if use_muscle_memory {
-        Box::new(preprogress_solver::PreprogressSolver::new(
+        Box::new(muscle_memory_solver::PreprogressSolver::new(
             status,
             use_manipulation,
             8,
             use_observe,
         ))
     } else {
-        Box::new(dynamic_programing_solver::QualitySolver::new(
+        Box::new(reflect_solver::QualitySolver::new(
             status,
             use_manipulation,
             8 + 1,

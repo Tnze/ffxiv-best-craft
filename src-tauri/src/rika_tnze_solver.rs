@@ -1,9 +1,9 @@
 use ffxiv_crafting::{Actions, Status};
 
-use crate::memory_search_solver;
+use crate::memoization_solver;
 
 pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool) -> Vec<Actions> {
-    let tnzes_quality_solver = memory_search_solver::Solver::new(craft.clone(), mn, wn, obz);
+    let tnzes_quality_solver = memoization_solver::Solver::new(craft.clone(), mn, wn, obz);
     let phase1_routes = generate_routes_phase1(&craft);
     let mut phase2_routes: Vec<(Status, Vec<Actions>)> = Vec::new();
     let prog_120 = craft.calc_synthesis(1.2);
