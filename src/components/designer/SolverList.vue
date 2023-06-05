@@ -254,9 +254,9 @@ dp-solver = 动态规划求解 v2
 bfs-solver = 广度优先搜索
 tnzever-rika-solver = 广度优先搜索 v2 ~ Tnze Ver. ~
 
-manipulation-select-info = { manipulation }（时间&内存×9）
+manipulation-select-info = { manipulation }（内存×9）
 observe-select-info = { observe }（内存×2）
-muscle-memory-select-info = { muscle-memory }（内存×2）
+muscle-memory-select-info = { muscle-memory }
 start-solver = 创建求解器
 release-solver = 释放
 
@@ -297,9 +297,9 @@ dp-solver = Dynamic Programing v2
 bfs-solver = Breadth First Search
 tnzever-rika-solver = Breadth First Search v2 ~ Tnze Ver. ~
 
-manipulation-select-info = { manipulation }(Time & Memory × 9)
+manipulation-select-info = { manipulation }(Memory × 9)
 observe-select-info = { observe }(Memory × 2)
-muscle-memory-select-info = { muscle-memory }(Memory × 2)
+muscle-memory-select-info = { muscle-memory }
 start-solver = Create solver
 release-solver = Release
 
@@ -309,6 +309,7 @@ dp-solver-empty-text = None of solver is loaded
 error-with = Error: { $err }
 
 warning = Warning
+rika-solver-start = Start
 rika-solver-warning = The current recipe does not meet the usage conditions of the Rika's solver. Do you want to force it to run?
 rika-solving = Solving
 rika-solve-finished = Solved({ $solveTime })

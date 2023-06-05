@@ -27,7 +27,6 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool) -> Vec<Actions> {
             durability = s.durability - final_du;
             actions.push(next_action);
         }
-        println!("{actions:?} {}", s.quality);
         actions.append(&mut final_actions);
         phase2_routes.push((s, actions));
     }
@@ -42,52 +41,37 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool) -> Vec<Actions> {
     content
 }
 
-pub fn next_action_picker_1(craft: &Status) -> Vec<Actions> {
+pub fn next_action_picker_1(craft: Status) -> Box<dyn Iterator<Item = Actions>> {
     if craft.is_finished() {
-        return vec![];
+        return Box::new(std::iter::empty());
     }
     let mut available_actions = Vec::new();
-    let mut forbidden_actions = Vec::new();
     match craft.step {
-        0 => return vec![Actions::MuscleMemory],
-        1 => return vec![Actions::Manipulation],
-        2 => return vec![Actions::Veneration],
+        0 => return Box::new(std::iter::once(Actions::MuscleMemory)),
+        1 => return Box::new(std::iter::once(Actions::Manipulation)),
+        2 => return Box::new(std::iter::once(Actions::Veneration)),
         3 => {
             available_actions.push(Actions::WasteNot);
             available_actions.push(Actions::WasteNotII);
         }
         _ => {}
     }
-    if craft.buffs.wast_not > 0 || craft.buffs.muscle_memory > 0 {
-        available_actions.push(Actions::Groundwork)
-    }
-    if craft.buffs.muscle_memory > 0 {
-        forbidden_actions.append(&mut vec![
-            Actions::BasicSynthesis,
-            Actions::CarefulSynthesis,
-            Actions::PrudentSynthesis,
-            Actions::DelicateSynthesis,
-        ])
-    }
-    if craft.buffs.wast_not > 0 {
-        forbidden_actions.push(Actions::PrudentSynthesis)
-    }
+
     available_actions.append(&mut vec![
         Actions::BasicSynthesis,
         Actions::CarefulSynthesis,
-        Actions::PrudentSynthesis,
         Actions::DelicateSynthesis,
     ]);
-    let mut result_actions = Vec::new();
-    for action in available_actions {
-        if !forbidden_actions.contains(&action)
-            && craft.is_action_allowed(action).is_ok()
-            && !result_actions.contains(&action)
-        {
-            result_actions.push(action);
-        }
+    if craft.buffs.wast_not > 0 || craft.buffs.muscle_memory > 0 {
+        available_actions.push(Actions::Groundwork)
     }
-    result_actions
+    if craft.buffs.wast_not == 0 {
+        available_actions.push(Actions::PrudentSynthesis)
+    }
+    let allowed = available_actions
+        .into_iter()
+        .filter(move |x| craft.is_action_allowed(*x).is_ok());
+    Box::new(allowed)
 }
 
 pub fn generate_routes_phase1(s: &Status) -> Vec<(Status, Vec<Actions>)> {
@@ -95,7 +79,7 @@ pub fn generate_routes_phase1(s: &Status) -> Vec<(Status, Vec<Actions>)> {
     let mut queue = vec![(s.clone(), vec![])];
     let mut routes = Vec::new();
     while let Some((status, actions)) = queue.pop() {
-        for action in next_action_picker_1(&status) {
+        for action in next_action_picker_1(status.clone()) {
             let mut craft = status.clone();
             craft.cast_action(action);
             let remaining_prog = craft.recipe.difficulty - craft.progress;
