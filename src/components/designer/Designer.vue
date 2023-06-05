@@ -98,11 +98,26 @@ var attributionAlert = computed(() => {
 })
 // UI State
 const isReadingSolver = ref(0);
+const isReadingSolverDisplay = ref(false); // This is basicly (isReadingSolver != 0), with a 500ms delay on rising edge
 const previewSolver = ref(false);
 const openInitQualitySet = ref(false);
 const openSolverDrawer = ref(false);
 const openExportMacro = ref(false);
 const openAttrEnhSelector = ref(false);
+
+let isReadingSolverDisplayStopTimer: NodeJS.Timeout | null = null;
+watch(isReadingSolver, (irs, irsPrev) => {
+    if (irs > 0) {
+        if (irsPrev == 0) isReadingSolverDisplayStopTimer = setTimeout(
+            () => { isReadingSolverDisplay.value = true },
+            500,
+        )
+    } else if (irsPrev > 0) {
+        if (isReadingSolverDisplayStopTimer)
+            clearTimeout(isReadingSolverDisplayStopTimer)
+        isReadingSolverDisplay.value = false
+    }
+})
 
 // Simulation Input
 const initQuality = ref(0)
@@ -193,7 +208,7 @@ function pushSequence(seq: Sequence) {
 }
 
 const displayedStatus = computed(() => {
-    return previewSolver.value && solverResult.slots.length > 0
+    return previewSolver.value && !isReadingSolverDisplay.value && solverResult.slots.length > 0
         ? solverResult.status
         : activeSeq.status
 })
@@ -353,7 +368,7 @@ async function openListFromJSON() {
                         <div class="action-queue">
                             <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
                                 :preview-solver="previewSolver" :err-list="activeSeq.errors"
-                                :loading-solver-result="isReadingSolver > 0" />
+                                :loading-solver-result="isReadingSolverDisplay" />
                         </div>
                         <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver" @plus="saveSequence"
                             @delete="clearSeq" @solver="openSolverDrawer = true" @print="openExportMacro = true"

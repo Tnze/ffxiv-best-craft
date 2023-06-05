@@ -3,10 +3,10 @@ use micro_ndarray::Array;
 use std::cell::Cell;
 
 #[derive(Clone, Copy, Default, Debug)]
-pub struct Slot {
-    score: u32,
-    steps: u16,
-    pub action: Option<Actions>,
+pub(crate) struct Slot {
+    pub(crate) score: u32,
+    pub(crate) steps: u16,
+    pub(crate) action: Option<Actions>,
 }
 
 pub struct Solver {
@@ -43,7 +43,7 @@ impl Solver {
         (Actions::MastersMend, 0),
     ];
 
-    pub fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
+    pub(crate) fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
         Self {
             mn,
             wn,
@@ -63,7 +63,7 @@ impl Solver {
         }
     }
 
-    pub fn next_touch(&self, craft_points: i32, durability: u16, buffs: Buffs) -> Slot {
+    pub(crate) fn next_touch(&self, craft_points: i32, durability: u16, buffs: Buffs) -> Slot {
         let this_cell = unsafe {
             self.touch_caches.get_unchecked([
                 buffs.observed as usize,

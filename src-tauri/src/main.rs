@@ -309,12 +309,11 @@ async fn create_solver(
     };
     // let solver: Box<dyn Solver + Send> = Box::new(memory_search_solver::Solver::new(status));
     let solver: Box<dyn Solver + Send> = if use_muscle_memory {
-        let progress_list = preprogress_solver::preprogress_list(&status);
         Box::new(preprogress_solver::PreprogressSolver::new(
             status,
-            progress_list,
             use_manipulation,
             8,
+            use_observe,
         ))
     } else {
         Box::new(dynamic_programing_solver::QualitySolver::new(

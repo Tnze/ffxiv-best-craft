@@ -89,7 +89,6 @@ const selectRecipe = (recipe: Recipe, recipeInfo: RecipeInfo | undefined, item: 
         recipeInfo,
         simulatorMode,
     })
-    console.log(recipe, recipeInfo)
     router.push({ name: "designer" })
     ElMessage({
         type: 'success',
@@ -156,13 +155,13 @@ const customRecipe = ref({
                 </span>
                 <template #footer>
                     <span>
-                        <el-button type="primary" @click=" confirmDialogCallback!('designer') ">
-                            {{ $t('designer-mode')}}
-                        </el-button>
+                        <el-button @click=" confirmDialogVisible = false ">{{$t('cancel')}}</el-button>
                         <el-button type="primary" @click=" confirmDialogCallback!('simulator') ">
                             {{ $t('simulator-mode')}}
                         </el-button>
-                        <el-button @click=" confirmDialogVisible = false ">{{$t('cancel')}}</el-button>
+                        <el-button type="primary" @click=" confirmDialogCallback!('designer') ">
+                            {{ $t('designer-mode')}}
+                        </el-button>
                     </span>
                 </template>
             </el-dialog>

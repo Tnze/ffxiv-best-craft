@@ -51,7 +51,8 @@ pub struct QualitySolver {
 }
 
 impl QualitySolver {
-    pub fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
+    pub fn new(mut init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
+        init_status.progress = 0;
         let cp = init_status.attributes.craft_points as usize;
         let du = init_status.recipe.durability as usize;
         let progress_solver = ProgressSolver::new(init_status, mn, wn, obz);

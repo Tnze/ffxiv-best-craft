@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { ElScrollbar, ElCollapse, ElCollapseItem, ElButtonGroup, ElButton, ElPopover, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage, ElMessageBox } from 'element-plus'
 import { Actions, Status } from "../../Craft"
 import { create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever } from '../../Solver'
@@ -39,28 +39,28 @@ const createSolver = async () => {
         type: 'info',
         message: $t('solving-info'),
     })
-    let solver: Solver = {
+    let solver = reactive(<Solver>{
         initStatus: {
             ...props.initStatus!,
             quality: 0, // bypass the solver bug that we can't handle the initial quality
         },
         name: props.recipeName,
         status: 'solving'
-    }
+    })
     try {
         solvers.value.push(solver)
-        const start_time = new Date().getTime();
+        const startTime = new Date().getTime();
         await create_solver(
             solver.initStatus,
             useMuscleMemory.value,
             useManipulation.value,
             useObserve.value,
         )
-        const stop_time = new Date().getTime();
+        const stopTime = new Date().getTime();
         ElMessage({
             showClose: true,
             type: 'success',
-            message: $t('solver-created', { solveTime: formatDuration(stop_time - start_time) }),
+            message: $t('solver-created', { solveTime: formatDuration(stopTime - startTime) }),
         })
         solver.status = 'prepared'
         emits('solverLoad', solver)
@@ -104,14 +104,14 @@ async function runRikaSolver() {
     }
     try {
         rikaIsSolving.value = true
-        const start_time = new Date().getTime()
+        const startTime = new Date().getTime()
         const result = await rika_solve(props.initStatus)
-        const stop_time = new Date().getTime()
+        const stopTime = new Date().getTime()
         ElMessage({
             showClose: true,
             duration: 0,
             type: 'success',
-            message: $t('rika-solve-finished', { solveTime: formatDuration(stop_time - start_time) }),
+            message: $t('rika-solve-finished', { solveTime: formatDuration(stopTime - startTime) }),
         })
         emits('solverResult', result)
     } catch (err) {
@@ -129,19 +129,19 @@ async function runRikaSolver() {
 async function runTnzeVerRikaSolver() {
     try {
         tnzeVerRikaIsSolving.value = true
-        const start_time = new Date().getTime()
+        const startTime = new Date().getTime()
         const result = await rika_solve_tnzever(
             props.initStatus,
             tnzeVerRikaUseManipulation.value,
             8,
             tnzeVerRikaUseObserve.value,
         )
-        const stop_time = new Date().getTime()
+        const stopTime = new Date().getTime()
         ElMessage({
             showClose: true,
             duration: 0,
             type: 'success',
-            message: $t('rika-solve-finished', { solveTime: formatDuration(stop_time - start_time) }),
+            message: $t('rika-solve-finished', { solveTime: formatDuration(stopTime - startTime) }),
         })
         emits('solverResult', result)
     } catch (err) {

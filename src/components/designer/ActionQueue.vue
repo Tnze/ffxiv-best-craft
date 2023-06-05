@@ -49,15 +49,14 @@ watch(() => props.loadingSolverResult, (newVal, oldVal) => {
     if (newVal) {
         startTime = new Date().getTime()
         stopTimer = setTimeout(() => { hideSolverResult.value = true }, 500)
-    }
-    else if (oldVal) {
+    } else if (oldVal) {
         solveTime.value = new Date().getTime() - startTime
         if (stopTimer) clearTimeout(stopTimer)
         hideSolverResult.value = false
     }
 })
 
-function calc_effect(index: number): string {
+function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
     if (props.errList?.find((v) => v.pos == index) !== undefined)
         return 'black'
     else if (props.list[index].action.endsWith('_fail'))
@@ -74,8 +73,9 @@ function calc_effect(index: number): string {
         }" :list="list" v-bind="dragOptions" @start="isDragging = true" @end="isDragging = false">
             <template #item="{ element, index }">
                 <div class="list-group-item">
-                    <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)" disabled
-                        @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)" :no_hover="noHover" />
+                    <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)"
+                        :opacity="1" disabled @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)"
+                        :no_hover="noHover" />
                 </div>
             </template>
             <template #footer>
@@ -85,8 +85,8 @@ function calc_effect(index: number): string {
                     </el-icon>
                 </div>
                 <div v-if="!hideSolverResult" v-for="elem in solverAdds" class="list-group-item">
-                    <Action class="action-icon" :job="job" :action="elem.action" no_hover
-                        :effect="previewSolver ? 'normal' : 'ghost'" disabled />
+                    <Action class="action-icon" :job="job" :action="elem.action" no_hover effect="sunken"
+                        :opacity="previewSolver ? 1 : 0.4" disabled />
                 </div>
                 <span v-if="!loadingSolverResult && solverResult && solverResult.length > 0" class="solve-time">
                     {{ $t('solved-in', { 'time': formatDuration(solveTime) }) }}

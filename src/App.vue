@@ -96,13 +96,23 @@ onMounted(() => checkUpdate($t, true))
 }
 
 :root {
-    --el-color-primary: rgb(11, 91, 11);
-    /* --el-bg-color: transparent; */
+    --el-color-primary: #3fb42d;
+    --el-color-primary-light-3: #5ec35d;
+    --el-color-primary-light-5: #81c27b;
+    --el-color-primary-light-7: #c6ffca;
+    --el-color-primary-light-8: #a2c0a2;
+    --el-color-primary-light-9: #b0bdae;
+    --el-color-primary-dark-2: #288b23;
     --el-fill-color-blank: transparent;
 }
 
 :root.dark {
-    --el-color-primary: rgb(49, 180, 49);
-    /* --el-bg-color: transparent; */
+    --el-color-primary: #299929;
+    --el-color-primary-light-3: #267921;
+    --el-color-primary-light-5: #1f601d;
+    --el-color-primary-light-7: #1b461a;
+    --el-color-primary-light-8: #16331b;
+    --el-color-primary-light-9: #18222c;
+    --el-color-primary-dark-2: #5cc952;
 }
 </style>

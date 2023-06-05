@@ -11,8 +11,9 @@ const props = defineProps<{
     disabled?: boolean,
     active?: boolean,
     no_hover?: boolean,
-    effect?: string,
-    cp?: number
+    effect?: 'normal' | 'red-cross' | 'blue-cross' | 'black' | 'sunken',
+    cp?: number,
+    opacity: number,
 }>();
 
 const iconUrl = computed(() => {
@@ -39,8 +40,6 @@ const hoverLayerOffset = computed(() => {
     }
 })
 
-const opacity = computed(() => props.effect == 'ghost' ? 0.4 : 1)
-
 const onClick = (event: MouseEvent) => {
     if (!props.disabled)
         (event.target as HTMLElement).firstElementChild!.classList.add('click-animation')
@@ -52,8 +51,7 @@ const onAnimationEnd = (event: AnimationEvent) => {
 </script>
 
 <template>
-    <div class="action" @click="onClick" v-bind:class="no_hover ? '' : 'action-hover'"
-        v-bind:style="{opacity: opacity}">
+    <div class="action" @click="onClick" v-bind:class="no_hover ? '' : 'action-hover'" v-bind:style="{ opacity: opacity }">
         <div @animationend="onAnimationEnd($event)"></div>
         <div v-if="active" class="active-mask"></div>
         <div v-if="cp != undefined" class="craft-point">{{ cp }}</div>
@@ -66,7 +64,7 @@ const onAnimationEnd = (event: AnimationEvent) => {
     display: inline-block;
     width: 48px;
     height: 48px;
-    background: v-bind("'url('+hoverUrl+') no-repeat '+hoverLayerOffset+', url('+iconUrl+') no-repeat top 3px left 4px'");
+    background: v-bind("'url(' + hoverUrl + ') no-repeat ' + hoverLayerOffset + ', url(' + iconUrl + ') no-repeat top 3px left 4px'");
 }
 
 .action-hover:hover::after {
@@ -78,7 +76,7 @@ const onAnimationEnd = (event: AnimationEvent) => {
     left: -12px;
     position: absolute;
     background: url("../../assets/icons/icona_frame_tex.png") no-repeat top 0px left -240px;
-    cursor: v-bind("disabled?'inherit':'pointer'");
+    cursor: v-bind("disabled ? 'inherit' : 'pointer'");
 }
 
 .click-animation {

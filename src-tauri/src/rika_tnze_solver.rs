@@ -19,7 +19,7 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool) -> Vec<Actions> {
         let mut craft_points = s.craft_points - final_cp;
         let mut durability = s.durability - final_du;
         while let Some(next_action) = tnzes_quality_solver
-            .next_touch(craft_points, durability, s.buffs.clone())
+            .next_touch(craft_points, durability, s.buffs)
             .action
         {
             s.cast_action(next_action);
