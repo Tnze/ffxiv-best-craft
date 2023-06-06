@@ -91,6 +91,12 @@ const destroySolver = async (s: Solver) => {
 }
 
 async function runRikaSolver() {
+    const msg1 = ElMessage({
+        showClose: true,
+        duration: 0,
+        type: 'info',
+        message: $t('solving-info'),
+    })
     if (props.initStatus.recipe.rlv < 560 || props.initStatus.recipe.difficulty < 70) {
         try {
             await ElMessageBox.confirm(
@@ -109,7 +115,6 @@ async function runRikaSolver() {
         const stopTime = new Date().getTime()
         ElMessage({
             showClose: true,
-            duration: 0,
             type: 'success',
             message: $t('rika-solve-finished', { solveTime: formatDuration(stopTime - startTime) }),
         })
@@ -123,10 +128,17 @@ async function runRikaSolver() {
         })
     } finally {
         rikaIsSolving.value = false
+        msg1.close()
     }
 }
 
 async function runTnzeVerRikaSolver() {
+    const msg1 = ElMessage({
+        showClose: true,
+        duration: 0,
+        type: 'info',
+        message: $t('solving-info'),
+    })
     try {
         tnzeVerRikaIsSolving.value = true
         const startTime = new Date().getTime()
@@ -153,6 +165,7 @@ async function runTnzeVerRikaSolver() {
         })
     } finally {
         tnzeVerRikaIsSolving.value = false
+        msg1.close()
     }
 }
 
@@ -260,7 +273,7 @@ muscle-memory-select-info = { muscle-memory }
 start-solver = 创建求解器
 release-solver = 释放
 
-solving-info = 正在创建求解器
+solving-info = 求解中
 solver-created = 求解器创建成功({ $solveTime })
 dp-solver-empty-text = 没有已加载的求解器
 error-with = 错误：{ $err }
@@ -303,7 +316,7 @@ muscle-memory-select-info = { muscle-memory }
 start-solver = Create solver
 release-solver = Release
 
-solving-info = Creating solver
+solving-info = Solving
 solver-created = Solver successfully created({ $solveTime })
 dp-solver-empty-text = None of solver is loaded
 error-with = Error: { $err }
