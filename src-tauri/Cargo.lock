@@ -1698,6 +1698,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
+name = "ident_concat"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "036f59fb8c94121b07f1865beebfe61c15d3a874f0d1d3a2db737cdb2e98d412"
+
+[[package]]
 name = "idna"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2030,10 +2036,11 @@ dependencies = [
 
 [[package]]
 name = "micro_ndarray"
-version = "0.3.3"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "721b7a077f8849c3673c475776a2d7188b45d6d0c55122be3dc222e17d3b6c17"
+checksum = "8a5574e9173b60bdb6ad93c0797fd5bfb03f51a78cab540156bb51c217d0b7ac"
 dependencies = [
+ "ident_concat",
  "vec_split",
 ]
 

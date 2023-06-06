@@ -7,6 +7,7 @@ pub(crate) struct Slot {
     pub(crate) score: u32,
     pub(crate) steps: u16,
     pub(crate) action: Option<Actions>,
+    is_some: bool,
 }
 
 pub struct Solver {
@@ -14,7 +15,7 @@ pub struct Solver {
     mn: bool,
     wn: usize,
     obz: bool,
-    touch_caches: Array<Cell<Option<Slot>>, 9>,
+    touch_caches: Array<Cell<Slot>, 9>,
 }
 
 impl Solver {
@@ -44,21 +45,32 @@ impl Solver {
     ];
 
     pub(crate) fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
+        let size = [
+            obz as usize * Self::MAX_OBSERVE + 1,
+            Self::MAX_INNER_QUIET + 1,
+            Self::MAX_INNOVATION + 1,
+            Self::MAX_GREAT_STRIDES + 1,
+            mn as usize * Self::MAX_MANIPULATION + 1,
+            wn + 1,
+            Self::MAX_TOUCH_COMBO + 1,
+            init_status.recipe.durability as usize / 5 + 1,
+            init_status.attributes.craft_points as usize + 1,
+        ];
+        // let touch_caches = Array::new(size);
+        let touch_caches = unsafe {
+            use std::alloc::{alloc_zeroed, Layout};
+
+            let length = size.iter().product();
+            let layout = Layout::array::<Cell<Slot>>(length).unwrap();
+            let ptr = alloc_zeroed(layout).cast();
+            let data = Vec::from_raw_parts(ptr, length, length);
+            Array::from_flat(data, size).unwrap()
+        };
         Self {
             mn,
             wn,
             obz,
-            touch_caches: Array::new([
-                obz as usize * Self::MAX_OBSERVE + 1,
-                Self::MAX_INNER_QUIET + 1,
-                Self::MAX_INNOVATION + 1,
-                Self::MAX_GREAT_STRIDES + 1,
-                mn as usize * Self::MAX_MANIPULATION + 1,
-                wn + 1,
-                Self::MAX_TOUCH_COMBO + 1,
-                init_status.recipe.durability as usize / 5 + 1,
-                init_status.attributes.craft_points as usize + 1,
-            ]),
+            touch_caches,
             init_status,
         }
     }
@@ -77,13 +89,17 @@ impl Solver {
                 craft_points as usize,
             ])
         };
-        if let Some(slot) = this_cell.get() {
-            return slot;
+        {
+            let slot = this_cell.get();
+            if slot.is_some {
+                return slot;
+            }
         }
         let mut best = Slot {
             score: 0,
             steps: 0,
             action: None,
+            is_some: true,
         };
         let mut init_status = self.init_status.clone();
         init_status.craft_points = craft_points;
@@ -109,6 +125,7 @@ impl Solver {
                 score: next_score,
                 steps: next_steps,
                 action: Some(_),
+                ..
             } = self.next_touch(s.craft_points, s.durability, s.buffs)
             {
                 score += next_score;
@@ -123,10 +140,11 @@ impl Solver {
                     score,
                     steps,
                     action: Some(action),
+                    is_some: true,
                 };
             }
         }
-        this_cell.set(Some(best));
+        this_cell.set(best);
         best
     }
 }

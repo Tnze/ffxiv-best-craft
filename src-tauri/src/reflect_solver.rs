@@ -7,6 +7,7 @@ struct SolverSlot<T> {
     value: T,
     step: u16,
     action: Option<Actions>,
+    is_some: bool,
 }
 
 const SYNTH_SKILLS: [Actions; 11] = [
@@ -47,7 +48,7 @@ pub struct QualitySolver {
     wn: usize,
     obz: bool,
     // results [obz][iq][iv][gs][mn][wn][touch][d][cp]
-    results: Array<Cell<Option<SolverSlot<u32>>>, 9>,
+    results: Array<Cell<SolverSlot<u32>>, 9>,
 }
 
 impl QualitySolver {
@@ -56,26 +57,37 @@ impl QualitySolver {
         let cp = init_status.attributes.craft_points as usize;
         let du = init_status.recipe.durability as usize;
         let progress_solver = ProgressSolver::new(init_status, mn, wn, obz);
+        let size = [
+            obz as usize + 1,
+            11,
+            5,
+            4,
+            mn as usize * 8 + 1,
+            wn + 1,
+            3,
+            du / 5 + 1,
+            cp + 1,
+        ];
+        // let results = Array::new(size);
+        let results = unsafe {
+            use std::alloc::{alloc_zeroed, Layout};
+
+            let length = size.iter().product();
+            let layout = Layout::array::<Cell<SolverSlot<u32>>>(length).unwrap();
+            let ptr = alloc_zeroed(layout).cast();
+            let data = Vec::from_raw_parts(ptr, length, length);
+            Array::from_flat(data, size).unwrap()
+        };
         Self {
             progress_solver,
             wn,
             mn,
             obz,
-            results: Array::new([
-                obz as usize + 1,
-                11,
-                5,
-                4,
-                mn as usize * 8 + 1,
-                wn + 1,
-                3,
-                du / 5 + 1,
-                cp + 1,
-            ]),
+            results,
         }
     }
 
-    fn get(&self, s: &Status) -> &Cell<Option<SolverSlot<u32>>> {
+    fn get(&self, s: &Status) -> &Cell<SolverSlot<u32>> {
         let i = [
             s.buffs.observed as usize,
             s.buffs.inner_quiet as usize,
@@ -97,22 +109,27 @@ impl QualitySolver {
 
     fn inner_read(&self, s: &Status) -> SolverSlot<u32> {
         let slot = self.get(s);
-        if let Some(result) = slot.get() {
-            return result;
+        {
+            let result = slot.get();
+            if result.is_some {
+                return result;
+            }
         }
         if s.durability == 0 {
             let result = SolverSlot {
                 value: 0,
                 step: 0,
                 action: None,
+                is_some: true,
             };
-            slot.set(Some(result));
+            slot.set(result);
             return result;
         }
         let mut best = SolverSlot {
             value: 0,
             step: 0,
             action: None,
+            is_some: true,
         };
         for sk in TOUCH_SKILLS {
             if (matches!(sk, Actions::Manipulation) && !self.mn)
@@ -142,11 +159,12 @@ impl QualitySolver {
                         value: quality,
                         step,
                         action: Some(sk),
+                        is_some: true,
                     }
                 }
             }
         }
-        slot.set(Some(best));
+        slot.set(best);
         best
     }
 }
@@ -176,6 +194,7 @@ impl crate::solver::Solver for QualitySolver {
                 value: quality,
                 step,
                 action,
+                ..
             } = self.inner_read(s);
             let quality = quality.min(max_addon);
             (quality, step, action)
@@ -188,6 +207,7 @@ impl crate::solver::Solver for QualitySolver {
                     value: quality,
                     step,
                     action: skill,
+                    ..
                 } = self.inner_read(&new_s);
                 let quality = quality.min(max_addon);
                 if quality >= best.0 && step < best.1 {
@@ -205,35 +225,43 @@ pub struct ProgressSolver {
     mn: bool,
     wn: usize,
     obz: bool,
-    // [obz][ve][mm][mn][wn][d][cp]
-    results: Array<Cell<Option<SolverSlot<u16>>>, 7>,
+    // [obz][ve][mn][wn][d][cp]
+    results: Array<Cell<SolverSlot<u16>>, 6>,
 }
 
 impl ProgressSolver {
     pub fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
         let cp = init_status.attributes.craft_points as usize;
         let du = init_status.recipe.durability as usize;
+        let size = [
+            obz as usize + 1,
+            5,
+            mn as usize * 8 + 1,
+            wn + 1,
+            du / 5 + 1,
+            cp + 1,
+        ];
+        let results = unsafe {
+            use std::alloc::{alloc_zeroed, Layout};
+
+            let length = size.iter().product();
+            let layout = Layout::array::<Cell<SolverSlot<u16>>>(length).unwrap();
+            let ptr = alloc_zeroed(layout).cast();
+            let data = Vec::from_raw_parts(ptr, length, length);
+            Array::from_flat(data, size).unwrap()
+        };
         Self {
             mn,
             wn,
             obz,
-            results: Array::new([
-                obz as usize + 1,
-                5,
-                6,
-                mn as usize * 8 + 1,
-                wn + 1,
-                du / 5 + 1,
-                cp + 1,
-            ]),
+            results,
         }
     }
 
-    fn get(&self, s: &Status) -> &Cell<Option<SolverSlot<u16>>> {
+    fn get(&self, s: &Status) -> &Cell<SolverSlot<u16>> {
         let i = [
             s.buffs.observed as usize,
             s.buffs.veneration as usize,
-            s.buffs.muscle_memory as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not as usize,
             (s.durability as usize).div_ceil(5),
@@ -249,22 +277,27 @@ impl ProgressSolver {
 
     fn inner_read(&self, s: &Status) -> SolverSlot<u16> {
         let slot = self.get(s);
-        if let Some(result) = slot.get() {
-            return result;
+        {
+            let result = slot.get();
+            if result.is_some {
+                return result;
+            }
         }
         if s.durability == 0 {
             let result = SolverSlot {
                 value: 0,
                 step: 0,
                 action: None,
+                is_some: true,
             };
-            slot.set(Some(result));
+            slot.set(result);
             return result;
         }
         let mut best = SolverSlot {
             value: 0,
             step: 0,
             action: None,
+            is_some: true,
         };
         for sk in SYNTH_SKILLS {
             if (matches!(sk, Actions::Manipulation) && !self.mn)
@@ -295,10 +328,11 @@ impl ProgressSolver {
                     value: progress,
                     step,
                     action: Some(sk),
+                    is_some: true,
                 }
             }
         }
-        slot.set(Some(best));
+        slot.set(best);
         best
     }
 }
@@ -317,6 +351,7 @@ impl crate::solver::Solver for ProgressSolver {
                 value: progress,
                 step,
                 action,
+                ..
             } = self.inner_read(s);
             let progress = progress.min(max_addon);
             (progress, step, action)
@@ -338,6 +373,7 @@ impl crate::solver::Solver for ProgressSolver {
                     value: progress,
                     step,
                     action,
+                    ..
                 } = self.inner_read(&new_s2);
                 let progress = progress.min(max_addon);
                 if progress >= best.0 && step < best.1 {
