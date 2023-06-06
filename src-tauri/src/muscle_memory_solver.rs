@@ -36,7 +36,7 @@ impl crate::solver::Solver for PreprogressSolver {
             _ => return None,
         };
         let craft_points = s.craft_points - final_cp;
-        let durability = s.durability - final_du;
+        let durability = s.durability.saturating_sub(final_du);
         self.quality_solver
             .next_touch(craft_points, durability, s.buffs)
             .action

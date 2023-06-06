@@ -17,14 +17,17 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool) -> Vec<Actions> {
             _ => continue,
         };
         let mut craft_points = s.craft_points - final_cp;
-        let mut durability = s.durability - final_du;
+        let mut durability = s.durability.saturating_sub(final_du);
         while let Some(next_action) = tnzes_quality_solver
             .next_touch(craft_points, durability, s.buffs)
             .action
         {
+            if s.is_action_allowed(next_action).is_err() {
+                break;
+            }
             s.cast_action(next_action);
             craft_points = s.craft_points - final_cp;
-            durability = s.durability - final_du;
+            durability = s.durability.saturating_sub(final_du);
             actions.push(next_action);
         }
         actions.append(&mut final_actions);
@@ -35,10 +38,7 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool) -> Vec<Actions> {
         let cond2 = a.0.step.cmp(&b.0.step).reverse();
         cond1.then(cond2)
     });
-    let Some((_, content)) = res else {
-       return vec![]
-    };
-    content
+    res.map_or_else(|| Vec::new(), |x| x.1)
 }
 
 pub fn next_action_picker_1(craft: Status) -> Box<dyn Iterator<Item = Actions>> {
@@ -57,17 +57,17 @@ pub fn next_action_picker_1(craft: Status) -> Box<dyn Iterator<Item = Actions>> 
         _ => {}
     }
 
-    available_actions.append(&mut vec![
-        Actions::BasicSynthesis,
-        Actions::CarefulSynthesis,
-        Actions::DelicateSynthesis,
-    ]);
     if craft.buffs.wast_not > 0 || craft.buffs.muscle_memory > 0 {
         available_actions.push(Actions::Groundwork)
     }
     if craft.buffs.wast_not == 0 {
         available_actions.push(Actions::PrudentSynthesis)
     }
+    available_actions.append(&mut vec![
+        Actions::BasicSynthesis,
+        Actions::CarefulSynthesis,
+        Actions::DelicateSynthesis,
+    ]);
     let allowed = available_actions
         .into_iter()
         .filter(move |x| craft.is_action_allowed(*x).is_ok());
@@ -80,9 +80,12 @@ pub fn generate_routes_phase1(s: &Status) -> Vec<(Status, Vec<Actions>)> {
     let mut routes = Vec::new();
     while let Some((status, actions)) = queue.pop() {
         for action in next_action_picker_1(status.clone()) {
-            let mut craft = status.clone();
-            craft.cast_action(action);
-            let remaining_prog = craft.recipe.difficulty - craft.progress;
+            let mut s = status.clone();
+            if s.is_action_allowed(action).is_err() {
+                continue;
+            }
+            s.cast_action(action);
+            let remaining_prog = s.recipe.difficulty - s.progress;
             let get_actions = || {
                 let mut new_actions = Vec::with_capacity(actions.len() + 1);
                 new_actions.clone_from(&actions);
@@ -90,9 +93,9 @@ pub fn generate_routes_phase1(s: &Status) -> Vec<(Status, Vec<Actions>)> {
                 new_actions
             };
             if remaining_prog <= prog_200 && remaining_prog > 0 {
-                routes.push((craft, get_actions()));
-            } else if craft.step < 8 {
-                queue.push((craft, get_actions()));
+                routes.push((s, get_actions()));
+            } else if s.step < 8 {
+                queue.push((s, get_actions()));
             }
         }
     }
