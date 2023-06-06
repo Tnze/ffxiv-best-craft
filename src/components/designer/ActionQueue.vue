@@ -73,9 +73,8 @@ function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
         }" :list="list" v-bind="dragOptions" @start="isDragging = true" @end="isDragging = false">
             <template #item="{ element, index }">
                 <div class="list-group-item">
-                    <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)"
-                        :opacity="1" disabled @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)"
-                        :no_hover="noHover" />
+                    <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)" disabled
+                        @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)" :no-hover="noHover" />
                 </div>
             </template>
             <template #footer>
@@ -85,7 +84,7 @@ function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
                     </el-icon>
                 </div>
                 <div v-if="!hideSolverResult" v-for="elem in solverAdds" class="list-group-item">
-                    <Action class="action-icon" :job="job" :action="elem.action" no_hover effect="sunken"
+                    <Action class="action-icon" :job="job" :action="elem.action" no-hover effect="sunken"
                         :opacity="previewSolver ? 1 : 0.4" disabled />
                 </div>
                 <span v-if="!loadingSolverResult && solverResult && solverResult.length > 0" class="solve-time">

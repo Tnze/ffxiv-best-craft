@@ -5,15 +5,14 @@ import hoverUrl from '../../assets/icons/icona_frame_tex.png'
 import { Jobs, Actions } from '../../Craft';
 
 const props = defineProps<{
-    scale?: number,
     job: Jobs,
     action: Actions,
     disabled?: boolean,
     active?: boolean,
-    no_hover?: boolean,
+    noHover?: boolean,
     effect?: 'normal' | 'red-cross' | 'blue-cross' | 'black' | 'sunken',
     cp?: number,
-    opacity: number,
+    opacity?: number,
 }>();
 
 const iconUrl = computed(() => {
@@ -51,7 +50,7 @@ const onAnimationEnd = (event: AnimationEvent) => {
 </script>
 
 <template>
-    <div class="action" @click="onClick" v-bind:class="no_hover ? '' : 'action-hover'" v-bind:style="{ opacity: opacity }">
+    <div class="action" @click="onClick" v-bind:class="noHover ? '' : 'action-hover'" v-bind:style="{ opacity: opacity ?? 1 }">
         <div @animationend="onAnimationEnd($event)"></div>
         <div v-if="active" class="active-mask"></div>
         <div v-if="cp != undefined" class="craft-point">{{ cp }}</div>
