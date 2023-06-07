@@ -31,6 +31,7 @@ const rikaIsSolving = ref(false)
 const tnzeVerRikaIsSolving = ref(false)
 const tnzeVerRikaUseManipulation = ref(true)
 const tnzeVerRikaUseObserve = ref(true)
+const tnzeVerRikaReduceSteps = ref(true)
 
 const createSolver = async () => {
     const msg1 = ElMessage({
@@ -147,6 +148,7 @@ async function runTnzeVerRikaSolver() {
             tnzeVerRikaUseManipulation.value,
             8,
             tnzeVerRikaUseObserve.value,
+            tnzeVerRikaReduceSteps.value
         )
         const stopTime = new Date().getTime()
         ElMessage({
@@ -245,6 +247,8 @@ async function runTnzeVerRikaSolver() {
                                 <el-checkbox v-model="tnzeVerRikaUseManipulation" :label="$t('manipulation-select-info')" />
                                 <br />
                                 <el-checkbox v-model="tnzeVerRikaUseObserve" :label="$t('observe-select-info')" />
+                                <br />
+                                <el-checkbox v-model="tnzeVerRikaReduceSteps" :label="$t('reduce-steps-info')" />
                             </el-popover>
                         </el-button-group>
                         <br /> <br />
@@ -270,10 +274,11 @@ tnzever-rika-solver = 广度优先搜索 v2 ~ Tnze Ver. ~
 manipulation-select-info = { manipulation }（内存×9）
 observe-select-info = { observe }（内存×2）
 muscle-memory-select-info = { muscle-memory }
+reduce-steps-info = 最少资源方案
 start-solver = 创建求解器
 release-solver = 释放
 
-solving-info = 求解中
+solving-info = 求解中，请耐心等待
 solver-created = 求解器创建成功({ $solveTime })
 dp-solver-empty-text = 没有已加载的求解器
 error-with = 错误：{ $err }
@@ -313,10 +318,11 @@ tnzever-rika-solver = Breadth First Search v2 ~ Tnze Ver. ~
 manipulation-select-info = { manipulation }(Memory × 9)
 observe-select-info = { observe }(Memory × 2)
 muscle-memory-select-info = { muscle-memory }
+reduce-steps-info = Minimum resource
 start-solver = Create solver
 release-solver = Release
 
-solving-info = Solving
+solving-info = Solving, please wait patiently
 solver-created = Solver successfully created({ $solveTime })
 dp-solver-empty-text = None of solver is loaded
 error-with = Error: { $err }

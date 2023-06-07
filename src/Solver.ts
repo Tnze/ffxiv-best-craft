@@ -27,8 +27,8 @@ export const rika_solve = (status: Status): Promise<Actions[]> => {
     return invoke("rika_solve", { status })
 }
 
-export const rika_solve_tnzever = (status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean): Promise<Actions[]> => {
-    return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve })
+export const rika_solve_tnzever = (status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean, reduceSteps: boolean): Promise<Actions[]> => {
+    return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve, reduceSteps })
 }
 
 export const formatDuration = (u: number): string => {

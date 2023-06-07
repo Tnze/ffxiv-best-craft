@@ -362,8 +362,15 @@ fn rika_solve_tnzever(
     use_manipulation: bool,
     use_wast_not: usize,
     use_observe: bool,
+    reduce_steps: bool,
 ) -> Vec<Actions> {
-    rika_tnze_solver::solve(status, use_manipulation, use_wast_not, use_observe)
+    rika_tnze_solver::solve(
+        status,
+        use_manipulation,
+        use_wast_not,
+        use_observe,
+        reduce_steps,
+    )
 }
 
 /// 释放求解器
