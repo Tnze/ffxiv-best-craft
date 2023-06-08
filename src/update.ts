@@ -75,7 +75,7 @@ export const checkUpdate = async ($t: (key: string, value?: Record<string, Fluen
                 duration: 0,
                 title: $t('update-available', { version: manifest?.version || 'Unknown' }),
                 message: h('div', [
-                    h(ElText, { style: 'white-space: pre-wrap;' }, () => manifest?.body || ''),
+                    h('div', { style: 'white-space: pre-wrap;', innerHTML: manifest?.body || '' }),
                     h('div', {
                         style: 'margin-top: 5px; text-align: right',
                     }, [
