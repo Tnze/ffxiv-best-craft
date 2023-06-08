@@ -175,6 +175,7 @@ async function runTnzeVerRikaSolver() {
 }
 
 const maxDepth = ref(6);
+const dfsSolving = ref(false);
 
 function dfsFormatTooltip(value: number): string {
     let str = String(value);
@@ -190,7 +191,7 @@ async function runDfsSolver() {
         message: $t('solving-info'),
     })
     try {
-        tnzeVerRikaIsSolving.value = true
+        dfsSolving.value = true
         const startTime = new Date().getTime()
         const result = await dfs_solve(props.initStatus, maxDepth.value)
         const stopTime = new Date().getTime()
@@ -210,7 +211,7 @@ async function runDfsSolver() {
             message: $t('error-with', { err: err as string }),
         })
     } finally {
-        tnzeVerRikaIsSolving.value = false
+        dfsSolving.value = false
         msg1.close()
     }
 }
@@ -285,8 +286,8 @@ async function runDfsSolver() {
                             <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip"
                                 :label="$t('dfs-max-depth')" />
                         </div>
-                        <el-button type="primary" @click="runDfsSolver" :loading="tnzeVerRikaIsSolving">
-                            {{ tnzeVerRikaIsSolving ? $t('rika-solving') : $t('rika-solver-start') }}
+                        <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
+                            {{ dfsSolving ? $t('rika-solving') : $t('rika-solver-start') }}
                         </el-button>
                     </template>
                 </i18n>
