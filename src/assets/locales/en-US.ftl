@@ -14,6 +14,8 @@ initial-quality = Quality
 name = Name
 amount = Amount
 
+specialist = Specialist
+
 # Job names
 carpenter = Carpenter
 blacksmith = Blacksmith

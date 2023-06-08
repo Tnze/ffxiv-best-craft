@@ -31,6 +31,10 @@ export const rika_solve_tnzever = (status: Status, useManipulation: boolean, use
     return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve, reduceSteps })
 }
 
+export const dfs_solve = (status: Status, depth: number): Promise<Actions[]> => {
+    return invoke("dfs_solve", { status, depth })
+}
+
 export const formatDuration = (u: number): string => {
     if (u < 1000) {
         return u + "ms"

@@ -14,6 +14,8 @@ initial-quality = 初期品质
 name = 名称
 amount = 数量
 
+specialist = 专家
+
 # 职业名
 carpenter = 刻木匠
 blacksmith = 锻铁匠
