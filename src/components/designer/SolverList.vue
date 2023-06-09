@@ -175,6 +175,7 @@ async function runTnzeVerRikaSolver() {
 }
 
 const maxDepth = ref(6);
+const useSpecialist = ref(false);
 const dfsSolving = ref(false);
 
 function dfsFormatTooltip(value: number): string {
@@ -193,7 +194,7 @@ async function runDfsSolver() {
     try {
         dfsSolving.value = true
         const startTime = new Date().getTime()
-        const result = await dfs_solve(props.initStatus, maxDepth.value)
+        const result = await dfs_solve(props.initStatus, maxDepth.value, useSpecialist.value)
         const stopTime = new Date().getTime()
         ElMessage({
             type: 'success',
@@ -222,9 +223,9 @@ async function runDfsSolver() {
     <el-scrollbar class="container">
         <el-collapse v-model="activeNames" accordion>
             <el-collapse-item :title="$t('dp-solver')" name="dp">
-                <el-checkbox v-model="useManipulation" :label="$t('manipulation-select-info')" /><br />
-                <el-checkbox v-model="useObserve" :label="$t('observe-select-info')" /><br />
-                <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory-select-info')" /><br />
+                <el-checkbox v-model="useManipulation" :label="$t('manipulation')" /><br />
+                <el-checkbox v-model="useObserve" :label="$t('observe')" /><br />
+                <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" /><br />
                 <el-button type="primary" :disabled="initStatus == undefined" @click="createSolver">
                     {{ $t('start-solver') }}
                 </el-button>
@@ -264,8 +265,8 @@ async function runDfsSolver() {
             <el-collapse-item :title="$t('tnzever-rika-solver')" name="bfs-dp">
                 <i18n path="tnzever-rika-solver-info" tag="span" class="solver-info">
                     <template #startButton>
-                        <el-checkbox v-model="tnzeVerRikaUseManipulation" :label="$t('manipulation-select-info')" /><br />
-                        <el-checkbox v-model="tnzeVerRikaUseObserve" :label="$t('observe-select-info')" /><br />
+                        <el-checkbox v-model="tnzeVerRikaUseManipulation" :label="$t('manipulation')" /><br />
+                        <el-checkbox v-model="tnzeVerRikaUseObserve" :label="$t('observe')" /><br />
                         <el-checkbox v-model="tnzeVerRikaReduceSteps" :label="$t('reduce-steps-info')" /><br />
                         <el-button type="primary" @click="runTnzeVerRikaSolver" :loading="tnzeVerRikaIsSolving">
                             {{ tnzeVerRikaIsSolving ? $t('rika-solving') : $t('rika-solver-start') }}
@@ -286,6 +287,7 @@ async function runDfsSolver() {
                             <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip"
                                 :label="$t('dfs-max-depth')" />
                         </div>
+                        <el-checkbox v-model="useSpecialist" :label="$t('specialist')" /><br />
                         <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
                             {{ dfsSolving ? $t('rika-solving') : $t('rika-solver-start') }}
                         </el-button>
@@ -339,9 +341,6 @@ bfs-solver = 广度优先搜索
 tnzever-rika-solver = 广度优先搜索 v2 ~ Tnze Ver. ~
 dfs-solver = 深度优先搜索
 
-manipulation-select-info = { manipulation }（内存×9）
-observe-select-info = { observe }（内存×2）
-muscle-memory-select-info = { muscle-memory }
 reduce-steps-info = 最少资源方案
 start-solver = 创建求解器
 release-solver = 释放
@@ -396,9 +395,6 @@ bfs-solver = Breadth First Search
 tnzever-rika-solver = Breadth First Search v2 ~ Tnze Ver. ~
 dfs-solver = Depth First Search
 
-manipulation-select-info = { manipulation }(Memory × 9)
-observe-select-info = { observe }(Memory × 2)
-muscle-memory-select-info = { muscle-memory }
 reduce-steps-info = Minimum resource
 start-solver = Create solver
 release-solver = Release

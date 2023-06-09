@@ -19,7 +19,7 @@ use tauri::Manager;
 use tokio::sync::{Mutex, OnceCell};
 
 mod db;
-mod depth_first_search;
+mod depth_first_search_solver;
 mod hard_recipe;
 mod memoization_solver;
 mod muscle_memory_solver;
@@ -375,8 +375,8 @@ fn rika_solve_tnzever(
 }
 
 #[tauri::command(async)]
-fn dfs_solve(status: Status, depth: u16) -> Vec<Actions> {
-    depth_first_search::solve(&status, depth)
+fn dfs_solve(status: Status, depth: u16, specialist: bool) -> Vec<Actions> {
+    depth_first_search_solver::solve(&status, depth, specialist)
 }
 
 /// 释放求解器

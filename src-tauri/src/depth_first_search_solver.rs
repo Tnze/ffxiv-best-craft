@@ -6,7 +6,7 @@ use ffxiv_crafting::{Actions, Status};
 ///
 /// status为开始制作时的初始状态
 /// maximum_depth为限制最深搜索深度
-pub fn solve(status: &Status, maximum_depth: u16) -> Vec<Actions> {
+pub fn solve(status: &Status, maximum_depth: u16, specialist: bool) -> Vec<Actions> {
     let mut best_list = Vec::new();
     let mut best_score = Score::from(status);
     search(
@@ -16,6 +16,7 @@ pub fn solve(status: &Status, maximum_depth: u16) -> Vec<Actions> {
         &mut Vec::with_capacity(maximum_depth as usize),
         &mut best_list,
         &mut best_score,
+        specialist,
     );
     fn search(
         status: &Status,
@@ -24,6 +25,7 @@ pub fn solve(status: &Status, maximum_depth: u16) -> Vec<Actions> {
         stack_seq: &mut Vec<Actions>,
         best_seq: &mut Vec<Actions>,
         best_score: &mut Score,
+        specialist: bool,
     ) {
         let score = Score::from(status);
         if score > *best_score {
@@ -38,6 +40,7 @@ pub fn solve(status: &Status, maximum_depth: u16) -> Vec<Actions> {
         }
         for sk in SKILL_LIST {
             if matches!(sk, Actions::FocusedSynthesis | Actions::FocusedTouch if status.buffs.observed > 0)
+                || matches!(sk, Actions::HeartAndSoul if !specialist)
             {
                 continue;
             }
@@ -52,6 +55,7 @@ pub fn solve(status: &Status, maximum_depth: u16) -> Vec<Actions> {
                     stack_seq,
                     best_seq,
                     best_score,
+                    specialist,
                 );
                 stack_seq.pop();
             }
@@ -89,7 +93,7 @@ impl PartialOrd for Score {
 }
 
 /// 搜索的技能列表
-const SKILL_LIST: [Actions; 31] = [
+const SKILL_LIST: [Actions; 30] = [
     Actions::BasicSynthesis,
     Actions::BasicTouch,
     Actions::MastersMend,
@@ -119,6 +123,5 @@ const SKILL_LIST: [Actions; 31] = [
     Actions::AdvancedTouch,
     Actions::PrudentSynthesis,
     Actions::TrainedFinesse,
-    Actions::CarefulObservation,
     Actions::HeartAndSoul,
 ];
