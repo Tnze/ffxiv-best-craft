@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
 
 #[derive(Hash, Eq, PartialEq, Clone)]
@@ -23,5 +25,33 @@ pub trait Solver {
             }
         }
         result
+    }
+}
+
+#[derive(PartialEq)]
+pub(crate) struct Score {
+    pub(crate) quality: u32,
+    pub(crate) prgress: u16,
+    pub(crate) steps: u16,
+}
+
+impl From<&Status> for Score {
+    fn from(s: &Status) -> Self {
+        Self {
+            quality: s.quality,
+            prgress: s.progress,
+            steps: s.step as u16,
+        }
+    }
+}
+
+impl PartialOrd for Score {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(
+            self.prgress
+                .cmp(&other.prgress)
+                .then_with(|| self.quality.cmp(&other.quality))
+                .then_with(|| self.steps.cmp(&other.steps).reverse()),
+        )
     }
 }

@@ -1,6 +1,6 @@
-use std::cmp::Ordering;
-
 use ffxiv_crafting::{Actions, Status};
+
+use crate::solver::Score;
 
 /// 进行一次深度优先搜索（DFS）
 ///
@@ -62,34 +62,6 @@ pub fn solve(status: &Status, maximum_depth: u16, specialist: bool) -> Vec<Actio
         }
     }
     best_list
-}
-
-#[derive(PartialEq)]
-struct Score {
-    quality: u32,
-    prgress: u16,
-    steps: u16,
-}
-
-impl From<&Status> for Score {
-    fn from(s: &Status) -> Self {
-        Self {
-            quality: s.quality,
-            prgress: s.progress,
-            steps: s.step as u16,
-        }
-    }
-}
-
-impl PartialOrd for Score {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(
-            self.prgress
-                .cmp(&other.prgress)
-                .then_with(|| self.quality.cmp(&other.quality))
-                .then_with(|| self.steps.cmp(&other.steps).reverse()),
-        )
-    }
 }
 
 /// 搜索的技能列表

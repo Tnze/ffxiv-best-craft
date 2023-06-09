@@ -21,6 +21,8 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool, reduce_steps: bool) 
         'rs: for mut cp in (0..=craft_points).rev() {
             for mut du in (1..=durability).filter(|x| x % 5 == 0).rev() {
                 let mut s = s.clone();
+                s.craft_points = cp;
+                s.durability = du;
                 let mut actions = actions.clone();
                 while let Some(next_action) =
                     tnzes_quality_solver.next_touch(cp, du, s.buffs).action
@@ -29,8 +31,8 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool, reduce_steps: bool) 
                         break;
                     }
                     s.cast_action(next_action);
-                    cp = s.craft_points - final_cp;
-                    du = s.durability.saturating_sub(final_du);
+                    cp = s.craft_points;
+                    du = s.durability;
                     actions.push(next_action);
                 }
                 let r#continue = s.quality >= s.recipe.quality;

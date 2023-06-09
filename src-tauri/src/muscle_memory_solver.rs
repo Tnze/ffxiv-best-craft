@@ -1,6 +1,6 @@
 use ffxiv_crafting::{Actions, Status};
 
-use crate::memoization_solver::Solver;
+use crate::{memoization_solver::Solver, solver::Score};
 
 pub struct PreprogressSolver {
     quality_solver: Solver,
@@ -41,5 +41,38 @@ impl crate::solver::Solver for PreprogressSolver {
             .next_touch(craft_points, durability, s.buffs)
             .action
             .or(Some(final_actions))
+    }
+
+    fn read_all(&self, s: &Status) -> Vec<Actions> {
+        let mut best_score = Score::from(s);
+        let mut best_actions = Vec::new();
+
+        let mut actions = Vec::new();
+        'rs: for cp in (0..=s.craft_points).rev() {
+            for du in (1..=s.durability).filter(|x| x % 5 == 0).rev() {
+                let mut s = s.clone();
+                s.craft_points = cp;
+                s.durability = du;
+                actions.clear();
+                while let Some(next_action) = self.read(&s) {
+                    if s.is_action_allowed(next_action).is_err() {
+                        break;
+                    }
+                    s.cast_action(next_action);
+                    actions.push(next_action);
+                }
+
+                let score = Score::from(&s);
+                if score > best_score {
+                    best_score = score;
+                    best_actions = actions.clone();
+                }
+
+                if s.quality < s.recipe.quality {
+                    break 'rs;
+                }
+            }
+        }
+        best_actions
     }
 }
