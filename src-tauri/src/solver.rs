@@ -28,7 +28,7 @@ pub trait Solver {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq)]
 pub(crate) struct Score {
     pub(crate) quality: u32,
     pub(crate) prgress: u16,
@@ -47,11 +47,15 @@ impl From<&Status> for Score {
 
 impl PartialOrd for Score {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(
-            self.prgress
-                .cmp(&other.prgress)
-                .then_with(|| self.quality.cmp(&other.quality))
-                .then_with(|| self.steps.cmp(&other.steps).reverse()),
-        )
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Score {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.prgress
+            .cmp(&other.prgress)
+            .then_with(|| self.quality.cmp(&other.quality))
+            .then_with(|| self.steps.cmp(&other.steps).reverse())
     }
 }

@@ -1,11 +1,11 @@
 use ffxiv_crafting::{Actions, Status};
 
-use crate::memoization_solver;
+use crate::{memoization_solver, solver::Score};
 
 pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool, reduce_steps: bool) -> Vec<Actions> {
     let tnzes_quality_solver = memoization_solver::Solver::new(craft.clone(), mn, wn, obz);
     let phase1_routes = generate_routes_phase1(&craft, mn);
-    let mut phase2_routes: Vec<(Status, Vec<Actions>)> = Vec::new();
+    let mut phase2_routes = Vec::new();
     let prog_120 = craft.calc_synthesis(1.2);
     let prog_180 = craft.calc_synthesis(1.8);
     let prog_200 = craft.calc_synthesis(2.0);
@@ -37,19 +37,17 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool, reduce_steps: bool) 
                 }
                 let r#continue = s.quality >= s.recipe.quality;
                 actions.append(&mut final_actions.clone());
-                phase2_routes.push((s, actions));
+                phase2_routes.push((Score::from(&s), actions));
                 if !reduce_steps && !r#continue {
                     break 'rs;
                 }
             }
         }
     }
-    let res = phase2_routes.into_iter().max_by(|a, b| {
-        let cond1 = a.0.quality.cmp(&b.0.quality);
-        let cond2 = a.0.step.cmp(&b.0.step).reverse();
-        cond1.then(cond2)
-    });
-    res.map_or_else(|| Vec::new(), |x| x.1)
+    phase2_routes
+        .into_iter()
+        .max_by(|a, b| a.0.cmp(&b.0))
+        .map_or_else(|| Vec::new(), |x| x.1)
 }
 
 pub fn next_action_picker_1(
