@@ -9,57 +9,48 @@ use crate::solver::Score;
 pub fn solve(status: &Status, maximum_depth: u16, specialist: bool) -> Vec<Actions> {
     let mut best_list = Vec::new();
     let mut best_score = Score::from(status);
-    search(
-        &status,
-        0,
-        maximum_depth,
-        &mut Vec::with_capacity(maximum_depth as usize),
-        &mut best_list,
-        &mut best_score,
-        specialist,
-    );
-    fn search(
-        status: &Status,
-        current_depth: u16,
-        maximum_depth: u16,
-        stack_seq: &mut Vec<Actions>,
-        best_seq: &mut Vec<Actions>,
-        best_score: &mut Score,
-        specialist: bool,
-    ) {
-        let score = Score::from(status);
-        if score > *best_score {
-            *best_score = score;
-            *best_seq = stack_seq.clone();
-        }
-        // 简单的剪枝，排除比当前最优解更深的分支。
-        let is_best_quality_full = best_score.quality >= status.recipe.quality;
-        let is_this_steps_longer = current_depth >= best_score.steps;
-        if is_best_quality_full && is_this_steps_longer || current_depth > maximum_depth {
-            return;
-        }
-        for sk in SKILL_LIST {
-            if matches!(sk, Actions::FocusedSynthesis | Actions::FocusedTouch if status.buffs.observed > 0)
-                || matches!(sk, Actions::HeartAndSoul if !specialist)
-            {
-                continue;
-            }
+
+    // let (sender, receiver) = crossbeam_channel::bounded(0);
+    // for _ in 0..num_cpus::get() {
+    //     let receiver = receiver.clone();
+    //     std::thread::spawn(move || while let Ok(status) = receiver.recv() {});
+    // }
+    // sender.send(status.clone());
+
+    let mut stack = Vec::new();
+    let mut stack_seq = Vec::new();
+    stack.push((status.clone(), SKILL_LIST.into_iter()));
+    while let Some((status, action_iter)) = stack.last_mut() {
+        if let Some(next_action) = action_iter.next() {
             let mut new_s = status.clone();
-            if new_s.is_action_allowed(sk).is_ok() && new_s.success_rate(sk) == 100 {
-                new_s.cast_action(sk);
-                stack_seq.push(sk);
-                search(
-                    &new_s,
-                    current_depth + 1,
-                    maximum_depth,
-                    stack_seq,
-                    best_seq,
-                    best_score,
-                    specialist,
-                );
-                stack_seq.pop();
+            if !matches!(next_action, Actions::FocusedSynthesis | Actions::FocusedTouch if status.buffs.observed == 0)
+                && !matches!(next_action, Actions::FinalAppraisal if status.buffs.final_appraisal == 0)
+                && !matches!(next_action, Actions::HeartAndSoul if specialist)
+                && new_s.is_action_allowed(next_action).is_ok()
+            {
+                new_s.cast_action(next_action);
+                stack_seq.push(next_action);
+                if !new_s.is_finished()
+                    && !(best_score.quality == status.recipe.quality
+                        && best_score.steps < new_s.step as u16)
+                    && new_s.step < maximum_depth as i32
+                {
+                    stack.push((new_s, SKILL_LIST.into_iter()));
+                } else {
+                    let score = Score::from(&new_s);
+                    if score > best_score {
+                        best_score = score;
+                        best_list = stack_seq.clone();
+                        println!("{:?}", best_list);
+                    }
+                    stack_seq.pop();
+                }
             }
+        } else {
+            stack_seq.pop();
+            stack.pop();
         }
+        // println!("{stack_seq:?}");
     }
     best_list
 }
