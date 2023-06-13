@@ -15,10 +15,12 @@ version = "0.9.3"
 tauri-build = { version = "1.3.0", features = [] }
 
 [dependencies]
+crossbeam-channel = "0.5.8"
 ffxiv-crafting = { version = "6.3.1", features = ["serde-support"] }
 futures = "0.3"
 micro_ndarray = "0.6.0"
 msgbox = "0.7.0"
+num_cpus = "1.15.0"
 percent-encoding = "2.3.0"
 rand = "0.8.5"
 sea-orm = { version = "0.11.0", features = [
