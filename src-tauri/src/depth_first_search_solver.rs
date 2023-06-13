@@ -1,4 +1,6 @@
-use crossbeam_channel::{Sender, TrySendError};
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::Arc;
+
 use ffxiv_crafting::{Actions, Status};
 
 use crate::solver::Score;
@@ -7,43 +9,30 @@ use crate::solver::Score;
 ///
 /// status为开始制作时的初始状态
 /// maximum_depth为限制最深搜索深度
-pub fn solve(status: &Status, maximum_depth: u16, specialist: bool) -> Vec<Actions> {
+pub fn solve(status: &Status, maximum_depth: usize, specialist: bool) -> Vec<Actions> {
     let num = num_cpus::get();
-    let (sender, receiver) = crossbeam_channel::bounded::<(Status, Vec<Actions>)>(num);
-    let (task_sender, task_receiver) = crossbeam_channel::bounded(num);
-    for _ in 0..num {
-        let r = receiver.clone();
-        let s = sender.clone();
-        let ts = task_sender.clone();
-        std::thread::spawn(move || {
-            while let Ok((status, actions)) = r.recv() {
-                ts.send(search(status, actions, &s)).unwrap();
-            }
-        });
-    }
-    sender.send((status.clone(), Vec::new())).unwrap();
-
-    let mut best_actions = Vec::new();
-    let mut best_score = Score::from(status);
-    while let Ok((score, actions)) = task_receiver.recv() {
-        if score > best_score {
-            best_actions = actions;
-            best_score = score;
-            println!("{:?}", best_actions);
-        }
-    }
-
+    let aval_worker_num = Arc::new(AtomicUsize::new(num));
+    aval_worker_num.fetch_sub(1, Ordering::Relaxed);
+    let (_best_score, best_actions) = search(
+        status.clone(),
+        Vec::new(),
+        aval_worker_num,
+        maximum_depth,
+        specialist,
+    );
     best_actions
 }
 
 fn search(
     status: Status,
     actions: Vec<Actions>,
-    sender: &Sender<(Status, Vec<Actions>)>,
+    aval_worker_num: Arc<AtomicUsize>,
+    maximum_depth: usize,
+    specialist: bool,
 ) -> (Score, Vec<Actions>) {
+    let mut threads = Vec::new();
     let mut best_actions = actions.clone();
     let mut best_score = Score::from(&status);
-    let specialist = false;
 
     let mut stack = Vec::new();
     let mut stack_seq = actions;
@@ -60,6 +49,7 @@ fn search(
         if !matches!(next_action, Actions::FocusedSynthesis | Actions::FocusedTouch if status.buffs.observed == 0)
             && !matches!(next_action, Actions::FinalAppraisal if status.buffs.final_appraisal == 0)
             && !matches!(next_action, Actions::HeartAndSoul if specialist)
+            && stack_seq.len() <= maximum_depth
             && status.is_action_allowed(next_action).is_ok()
         {
             let mut new_s = status.clone();
@@ -68,22 +58,36 @@ fn search(
                 if best_score.quality != new_s.recipe.quality
                     || best_score.steps >= new_s.step as u16
                 {
-                    if !sender.is_full() {
-                        let payload = (new_s.clone(), stack_seq.clone());
-                        if sender.try_send(payload).is_ok() {
-                            continue;
-                        }
+                    let num = aval_worker_num.load(Ordering::Relaxed);
+                    if num > 0
+                        && aval_worker_num
+                            .compare_exchange(num, num - 1, Ordering::Release, Ordering::Relaxed)
+                            .is_ok()
+                    {
+                        let (status, actions, aval_worker_num) =
+                            (new_s.clone(), stack_seq.clone(), aval_worker_num.clone());
+                        threads.push(std::thread::spawn(move || {
+                            search(status, actions, aval_worker_num, maximum_depth, specialist)
+                        }));
+                    } else {
+                        stack.push((new_s, SKILL_LIST.into_iter()));
+                        stack_seq.push(next_action);
                     }
-                    stack.push((new_s, SKILL_LIST.into_iter()));
-                    stack_seq.push(next_action);
                 }
             } else {
-                let score = Score::from(&new_s);
+                let score = Score::from((&new_s, stack_seq.len()));
                 if score > best_score {
                     best_score = score;
                     best_actions = stack_seq.clone();
                 }
             }
+        }
+    }
+    aval_worker_num.fetch_add(1, Ordering::Relaxed);
+    for (score, actions) in threads.into_iter().map(|x| x.join().unwrap()) {
+        if score > best_score {
+            best_score = score;
+            best_actions = actions;
         }
     }
     (best_score, best_actions)

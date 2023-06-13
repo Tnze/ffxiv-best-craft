@@ -344,7 +344,7 @@ async function runDfsSolver() {
 dp-solver = 动态规划求解 v2.1
 bfs-solver = 广度优先搜索 v1
 tnzever-rika-solver = 广度优先搜索 ~ Tnze Impv. ~ v2
-dfs-solver = 深度优先搜索 v1
+dfs-solver = 深度优先搜索 v2 力大砖飞版
 
 reduce-steps-info = 最少资源方案
 start-solver = 创建求解器
@@ -388,6 +388,7 @@ dfs-solver-info =
     此款求解器源于 Tnze 早期开发的一款{ $ffxivCraftingAlgo }，最初用于搜索最短的巨匠手法。
 
     该算法采用朴素的暴力搜索，所需时间随搜索深度限制指数级增大。推荐将搜索深度限制为6。
+    更新至v2后采用拥有多线程加速。
 
     此求解器通常适合低于玩家10级以上的配方。
     { $startButton }
@@ -398,7 +399,7 @@ dfs-solver-info =
 dp-solver = Dynamic Programing v2.1
 bfs-solver = Breadth First Search v1
 tnzever-rika-solver = Breadth First Search ~ Tnze Impv. ~ v2
-dfs-solver = Depth First Search v1
+dfs-solver = Depth First Search v2
 
 reduce-steps-info = Minimum resource
 start-solver = Create solver
@@ -445,6 +446,7 @@ dfs-solver-info =
 
     The algorithm adopts naive search, which increases exponentially in time with the depth of the searching. 
     It is recommended to limit the search depth to 6. 
+    After updating to v2, adopt multi threaded acceleration.
 
     This solver is usually suitable for recipes that are 10-level lower than the player or above.
     { $startButton }

@@ -375,7 +375,7 @@ fn rika_solve_tnzever(
 }
 
 #[tauri::command(async)]
-fn dfs_solve(status: Status, depth: u16, specialist: bool) -> Vec<Actions> {
+fn dfs_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
     depth_first_search_solver::solve(&status, depth, specialist)
 }
 

@@ -45,6 +45,16 @@ impl From<&Status> for Score {
     }
 }
 
+impl From<(&Status, usize)> for Score {
+    fn from((s, steps): (&Status, usize)) -> Self {
+        Self {
+            quality: s.quality,
+            prgress: s.progress,
+            steps: steps as u16,
+        }
+    }
+}
+
 impl PartialOrd for Score {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
