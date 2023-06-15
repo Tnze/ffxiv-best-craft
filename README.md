@@ -10,7 +10,7 @@
 最低配置：
 
 - 操作系统：Windows 10
-- 内存：8Gib
+- 内存：8GiB
 
 ## Download 下载
 
