@@ -6,16 +6,24 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool, reduce_steps: bool) 
     let tnzes_quality_solver = memoization_solver::Solver::new(craft.clone(), mn, wn, obz);
     let phase1_routes = generate_routes_phase1(&craft, mn);
     let mut phase2_routes = Vec::new();
-    let prog_120 = craft.calc_synthesis(1.2);
-    let prog_180 = craft.calc_synthesis(1.8);
-    let prog_200 = craft.calc_synthesis(2.0);
+    let basic_prog = craft.calc_synthesis(match craft.attributes.level < 31 {
+        true => 1.0,
+        false => 1.2,
+    });
+    let careful_prog = craft.calc_synthesis(match craft.attributes.level < 82 {
+        true => 1.5,
+        false => 1.8,
+    });
+    let focused_prog = craft.calc_synthesis(2.0);
+
     for (s, actions) in phase1_routes {
-        let (final_actions, final_cp, final_du) = match s.recipe.difficulty - s.progress {
-            x if x <= prog_120 => (vec![Actions::BasicSynthesis], 0, 1),
-            x if x <= prog_180 => (vec![Actions::CarefulSynthesis], 7, 1),
-            x if x <= prog_200 => (vec![Actions::Observe, Actions::FocusedSynthesis], 12, 1),
+        let (final_actions, final_cp) = match s.recipe.difficulty - s.progress {
+            x if x <= basic_prog => (vec![Actions::BasicSynthesis], 0),
+            x if x <= careful_prog => (vec![Actions::CarefulSynthesis], 7),
+            x if x <= focused_prog => (vec![Actions::Observe, Actions::FocusedSynthesis], 12),
             _ => continue,
         };
+        let final_du = 1;
         let craft_points = s.craft_points - final_cp;
         let durability = s.durability.saturating_sub(final_du);
         'rs: for mut cp in (0..=craft_points).rev() {
@@ -91,7 +99,12 @@ pub fn next_action_picker_1(
 }
 
 pub fn generate_routes_phase1(s: &Status, use_manipulation: bool) -> Vec<(Status, Vec<Actions>)> {
-    let prog_200 = s.calc_synthesis(2.0);
+    let max_prog = match s.attributes.level {
+        x if x >= 67 => s.calc_synthesis(2.0),
+        x if x >= 62 => s.calc_synthesis(1.5),
+        x if x >= 31 => s.calc_synthesis(1.2),
+        _ => s.calc_synthesis(1.0),
+    };
     let mut queue = vec![(s.clone(), vec![])];
     let mut routes = Vec::new();
     while let Some((status, actions)) = queue.pop() {
@@ -108,7 +121,7 @@ pub fn generate_routes_phase1(s: &Status, use_manipulation: bool) -> Vec<(Status
                 new_actions.push(action);
                 new_actions
             };
-            if remaining_prog <= prog_200 && remaining_prog > 0 {
+            if remaining_prog <= max_prog && remaining_prog > 0 {
                 routes.push((s, get_actions()));
             } else if s.step < 8 {
                 queue.push((s, get_actions()));
