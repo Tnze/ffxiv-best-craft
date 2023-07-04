@@ -226,8 +226,8 @@ conditions-flag = 球色标志
 
 cancel = 取消
 confirm = 确认
-designer-mode = 宏设计模式
-simulator-mode = 模拟器模式
+designer-mode = 普通模式
+simulator-mode = 高难模式
 
 search = 键入以搜索
 please-wait = 请稍等...
@@ -247,7 +247,7 @@ conditions-flag = Cond. Flag
 
 cancel = Cancel
 confirm = Confirm
-designer-mode = Designer Mode
+designer-mode = Normal Mode
 simulator-mode = Simulator Mode
 
 search = Search
