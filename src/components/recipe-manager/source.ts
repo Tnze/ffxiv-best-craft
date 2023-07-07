@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api";
-import { Item, RecipeInfo } from "../../Craft";
-import { d } from "unplugin-fluent-vue/dist/external-plugin-d3a77f28";
+import { Item, RecipeInfo, RecipeLevel } from "../../Craft";
 
 export interface DataSource {
     recipeTable(page: number, searchName: string): Promise<RecipesSourceResult>
+    recipeLevelTable(rlv: number): Promise<RecipeLevel>
     itemInfo(id: number): Promise<Item>
 }
 
@@ -67,7 +67,6 @@ export class XivApiRecipeSource {
         })
         if (this.language != undefined) query.set('language', this.language)
         const url = new URL('search', this.base).toString() + '?' + query.toString();
-        console.log(url)
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors'
@@ -91,6 +90,35 @@ export class XivApiRecipeSource {
                 can_hq: v.CanHq != 0,
             }),
             totalPages: data.Pagination.PageTotal
+        }
+    }
+
+    async recipeLevelTable(rlv: number) {
+        const url = new URL(`RecipeLevelTable/${rlv}`, this.base).toString() + '?' + new URLSearchParams({
+            'columns': 'ID,ClassJobLevel,SuggestedCraftsmanship,SuggestedControl,Difficulty,Quality,Durability,ProgressDivider,QualityDivider,ProgressModifier,QualityModifier,ConditionsFlag'
+        }).toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        })
+        let data = await resp.json()
+        return <RecipeLevel>{
+            id: data.ID,
+            class_job_level: data.ClassJobLevel,
+
+            suggested_craftsmanship: data.SuggestedCraftsmanship,
+            suggested_control: data.SuggestedControl,
+
+            difficulty: data.Difficulty,
+            quality: data.Quality,
+            durability: data.Durability,
+
+            progress_divider: data.ProgressDivider,
+            quality_divider: data.QualityDivider,
+            progress_modifier: data.ProgressModifier,
+            quality_modifier: data.QualityModifier,
+            
+            conditions_flag: data.ConditionsFlag,
         }
     }
 
@@ -119,6 +147,10 @@ export class LocalRecipeSource {
     async recipeTable(page: number, searchName: string) {
         let [recipes, totalPages]: [RecipeInfo[], number] = await invoke("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
         return { recipes, totalPages }
+    }
+    async recipeLevelTable(rlv: number) {
+        let result: RecipeLevel = await invoke("recipe_level_table", { rlv })
+        return result
     }
     async itemInfo(itemId: number) {
         const { id, name, level, can_be_hq, category_id } = await invoke("item_info", { itemId }) as {

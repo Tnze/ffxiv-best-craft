@@ -33,13 +33,16 @@ use db::{craft_types, item_with_amount, items, prelude::*, recipes};
 
 /// 创建新的Recipe对象，蕴含了模拟一次制作过程所必要的全部配方信息
 #[tauri::command(async)]
-fn new_recipe(
+async fn recipe_level_table(
     rlv: i32,
-    difficulty_factor: u16,
-    quality_factor: u16,
-    durability_factor: u16,
-) -> Recipe {
-    Recipe::new(rlv, difficulty_factor, quality_factor, durability_factor)
+    app_state: tauri::State<'_, AppState>,
+    app_handle: tauri::AppHandle,
+) -> Result<db::recipe_level_tables::Model, String> {
+    let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
+    let Some(rt) = RecipeLevelTables::find_by_id(rlv).one(db).await.map_err(err_to_string)? else {
+        return Err(String::from("unknown recipe level"))
+    };
+    Ok(rt)
 }
 
 /// 初始化一个表示一次制作的初始状态的Status对象，包含玩家属性、配方信息和初期品质
@@ -177,10 +180,14 @@ async fn recipe_table(
     let paginate = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
         .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
+        .join(
+            JoinType::InnerJoin,
+            recipes::Relation::RecipeLevelTables.def(),
+        )
         .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
         .filter(items::Column::Name.like(&search_name))
         .column_as(recipes::Column::Id, "id")
-        .column_as(recipes::Column::RecipeLevel, "rlv")
+        .column_as(recipes::Column::RecipeLevelId, "rlv")
         .column_as(items::Column::Id, "item_id")
         .column_as(items::Column::Name, "item_name")
         .column_as(craft_types::Column::Name, "job")
@@ -407,7 +414,7 @@ fn main() {
     tauri::Builder::default()
         .manage(AppState::new())
         .invoke_handler(tauri::generate_handler![
-            new_recipe,
+            recipe_level_table,
             new_status,
             simulate,
             simulate_one_step,

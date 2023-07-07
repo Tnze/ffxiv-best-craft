@@ -2,7 +2,7 @@
 import { ref, watchEffect, reactive } from 'vue'
 import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElInput, ElInputNumber, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
-import { Jobs, Recipe, newRecipe, RecipeInfo, Item } from '../../Craft'
+import { Jobs, Recipe, newRecipe, RecipeInfo, Item, RecipeLevel } from '../../Craft'
 import { useRouter } from 'vue-router';
 import { useChecklistStore, useDesignerStore, useSettingsStore } from '../../store';
 import { useFluent } from 'fluent-vue';
@@ -67,24 +67,24 @@ const confirmDialogVisible = ref(false)
 let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null = null
 
 const selectRecipeRow = async (row: RecipeInfo) => {
-    let simulatorMode = false;
-    const recipe = await newRecipe(
-        row.rlv,
-        row.difficulty_factor,
-        row.quality_factor,
-        row.durability_factor
-    )
-
-    let info: Item
     try {
         isRecipeTableLoading.value = true
-        info = await settingStore.getDataSource.itemInfo(row.item_id)
+        var [rlv, info] = await Promise.all([
+            settingStore.getDataSource.recipeLevelTable(row.rlv),
+            settingStore.getDataSource.itemInfo(row.item_id)
+        ])
     } catch (e: any) {
         ElMessage.error(String(e))
         return
     } finally {
         isRecipeTableLoading.value = false
     }
+    const recipe = await newRecipe(
+        rlv,
+        row.difficulty_factor,
+        row.quality_factor,
+        row.durability_factor
+    )
 
     if ((recipe.conditions_flag & ~15) == 0) {
         try {
@@ -93,7 +93,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
                 $t('please-confirm'),
                 { type: 'warning' }
             )
-            selectRecipe(recipe, row, info, row.job, simulatorMode)
+            selectRecipe(recipe, row, info, row.job, false)
             checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
         } catch {
             // operation canceled by user

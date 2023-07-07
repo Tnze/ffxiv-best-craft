@@ -24,6 +24,21 @@ export interface Recipe {
     conditions_flag: number;
 }
 
+export interface RecipeLevel {
+    id: number,
+    class_job_level: number,
+    suggested_craftsmanship: number,
+    suggested_control: number,
+    difficulty: number,
+    quality: number,
+    progress_divider: number,
+    quality_divider: number,
+    progress_modifier: number,
+    quality_modifier: number,
+    durability: number,
+    conditions_flag: number,
+}
+
 export interface Buffs {
     muscle_memory: number;
     great_strides: number;
@@ -138,17 +153,19 @@ export enum Actions {
 }
 
 export const newRecipe = async (
-    rlv: number,
+    rt: RecipeLevel,
     difficultyFactor: number,
     qualityFactor: number,
-    durabilityFactor: number
+    durabilityFactor: number,
 ): Promise<Recipe> => {
-    return await invoke("new_recipe", {
-        rlv,
-        difficultyFactor,
-        qualityFactor,
-        durabilityFactor,
-    });
+    return <Recipe>{
+        rlv: rt.id,
+        job_level: rt.class_job_level,
+        difficulty: Math.floor(rt.difficulty * difficultyFactor * Math.fround(0.01)),
+        quality: Math.floor(rt.quality * qualityFactor * Math.fround(0.01)),
+        durability: Math.floor(rt.durability * durabilityFactor * Math.fround(0.01)),
+        conditions_flag: rt.conditions_flag,
+    };
 };
 
 export const newStatus = (
