@@ -23,7 +23,7 @@ msgbox = "0.7.0"
 num_cpus = "1.15.0"
 percent-encoding = "2.3.0"
 rand = "0.8.5"
-sea-orm = { version = "0.11.0", features = [
+sea-orm = { version = "0.11.3", features = [
   "sqlx-sqlite",
   "runtime-tokio-native-tls",
   "macros",
