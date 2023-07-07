@@ -2,7 +2,10 @@
 import { ElDialog, ElIcon, ElFormItem, ElInputNumber, ElTable, ElTableColumn, ElButton, ElButtonGroup } from 'element-plus';
 import { ArrowUp } from '@element-plus/icons-vue';
 import { computed, reactive, ref, watchEffect } from 'vue';
-import { Item, itemInfo, ItemWithAmount, Recipe, recipesIngredientions } from '../../Craft';
+import { Item, ItemWithAmount, Recipe, recipesIngredientions } from '../../Craft';
+import { useSettingsStore } from '../../store';
+
+const settingStore = useSettingsStore()
 
 const props = defineProps<{
     open: boolean
@@ -29,7 +32,7 @@ const dialogOpen = computed({
 const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
     async (item) => {
         return {
-            item: await itemInfo(item.ingredient_id),
+            item: await settingStore.getDataSource.itemInfo(item.ingredient_id),
             amount: item.amount,
             hqAmount: 0,
         }

@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { Attributes, Item, ItemWithAmount, Jobs, Recipe, RecipeInfo } from './Craft'
+import { CafeMakerApiBase, DataSource, LocalRecipeSource, XivApiRecipeSource, XivapiBase } from './components/recipe-manager/source'
 
 export interface GearsetsRow {
     name: string
@@ -89,19 +90,39 @@ export const useDesignerStore = defineStore('designer', {
 
 export const useSettingsStore = defineStore('settings', {
     state: () => ({
-        language: 'system'
+        language: 'system',
+        dataSource: <'local' | 'xivapi' | 'cafe'>'local',
+        dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined
     }),
     getters: {
         toJson(): string {
             return JSON.stringify({
                 language: this.language,
             })
+        },
+        getDataSource(): DataSource {
+            switch (this.dataSource) {
+                case 'local': return new LocalRecipeSource()
+                case 'xivapi': return new XivApiRecipeSource(XivapiBase, this.dataSourceLang)
+                case 'cafe': return new XivApiRecipeSource(CafeMakerApiBase)
+                default: return new LocalRecipeSource()
+            }
         }
     },
     actions: {
         loadSettings(localSettings: any) {
             this.$patch(localSettings)
             this.language = localSettings.language
+            this.dataSource = localSettings.dataSource
+            if (localSettings.dataSourceLang)
+                this.dataSourceLang = localSettings.dataSourceLang
+            else {
+                if (this.language.startsWith('en')) {
+                    this.dataSourceLang = 'en'
+                } else if (this.language.startsWith('ja')) {
+                    this.dataSourceLang = 'ja'
+                }
+            }
         },
         fromJson(json: string) {
             this.$patch(JSON.parse(json))

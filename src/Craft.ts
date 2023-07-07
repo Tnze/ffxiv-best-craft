@@ -205,10 +205,6 @@ export interface RecipeInfo {
     can_hq: boolean;
 }
 
-export const recipeTable = (page: number, searchName: string): Promise<[RecipeInfo[], number]> => {
-    return invoke("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
-};
-
 export interface ItemWithAmount {
     ingredient_id: number;
     amount: number;
@@ -221,15 +217,4 @@ export const recipesIngredientions = async (checklist: ItemWithAmount[]): Promis
     return ings.map(x => {
         return { ingredient_id: x[0], amount: x[1] }
     })
-}
-
-export const itemInfo = async (itemId: number): Promise<Item> => {
-    const { id, name, level, can_be_hq, category_id } = await invoke("item_info", { itemId }) as {
-        id: number,
-        name: string,
-        level: number,
-        can_be_hq: number,
-        category_id?: number,
-    };
-    return { id, name, level, can_be_hq: can_be_hq != 0, category_id };
 }

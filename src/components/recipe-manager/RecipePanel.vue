@@ -2,9 +2,9 @@
 import { ref, watchEffect, reactive } from 'vue'
 import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElInput, ElInputNumber, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
-import { Jobs, Recipe, newRecipe, recipeTable, RecipeInfo, Item, itemInfo } from '../../Craft'
+import { Jobs, Recipe, newRecipe, RecipeInfo, Item } from '../../Craft'
 import { useRouter } from 'vue-router';
-import { useChecklistStore, useDesignerStore } from '../../store';
+import { useChecklistStore, useDesignerStore, useSettingsStore } from '../../store';
 import { useFluent } from 'fluent-vue';
 
 
@@ -20,6 +20,7 @@ import { useFluent } from 'fluent-vue';
 
 const checklistStore = useChecklistStore()
 const designerStore = useDesignerStore()
+const settingStore = useSettingsStore()
 const router = useRouter()
 const { $t } = useFluent()
 
@@ -40,12 +41,26 @@ const pagination = reactive({
     PageTotal: 1
 })
 const displayTable = ref<RecipeInfo[]>([])
-watchEffect(async () => {
-    let [list, totalPages] = await recipeTable(pagination.Page, searchText.value)
-    displayTable.value = list
-    pagination.PageTotal = totalPages
-})
+const isRecipeTableLoading = ref(false)
 
+let loadRecipeTableResult: Promise<{ recipes: RecipeInfo[], totalPages: number }> | null = null
+watchEffect(async () => {
+    try {
+        isRecipeTableLoading.value = true
+        let promise = settingStore.getDataSource.recipeTable(pagination.Page, searchText.value)
+        loadRecipeTableResult = promise
+        let { recipes, totalPages } = await promise
+        if (loadRecipeTableResult == promise) {
+            displayTable.value = recipes
+            pagination.PageTotal = totalPages
+            loadRecipeTableResult = null
+        }
+    } catch (e: any) {
+        ElMessage.error(String(e))
+    } finally {
+        isRecipeTableLoading.value = false
+    }
+})
 
 const openCustomlizer = ref(false)
 const confirmDialogVisible = ref(false)
@@ -59,7 +74,18 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         row.quality_factor,
         row.durability_factor
     )
-    const info = await itemInfo(row.item_id)
+
+    let info: Item
+    try {
+        isRecipeTableLoading.value = true
+        info = await settingStore.getDataSource.itemInfo(row.item_id)
+    } catch (e: any) {
+        ElMessage.error(String(e))
+        return
+    } finally {
+        isRecipeTableLoading.value = false
+    }
+
     if ((recipe.conditions_flag & ~15) == 0) {
         try {
             await ElMessageBox.confirm(
@@ -149,31 +175,31 @@ const customRecipe = ref({
                     </span>
                 </template>
             </el-dialog>
-            <el-dialog v-model=" confirmDialogVisible " :title=" $t('please-confirm') " :align-center=" true ">
+            <el-dialog v-model="confirmDialogVisible" :title="$t('please-confirm')" :align-center="true">
                 <span>
                     {{ $t('confirm-select2') }}
                 </span>
                 <template #footer>
                     <span>
-                        <el-button @click=" confirmDialogVisible = false ">{{$t('cancel')}}</el-button>
-                        <el-button type="primary" @click=" confirmDialogCallback!('simulator') ">
-                            {{ $t('simulator-mode')}}
+                        <el-button @click=" confirmDialogVisible = false">{{ $t('cancel') }}</el-button>
+                        <el-button type="primary" @click=" confirmDialogCallback!('simulator')">
+                            {{ $t('simulator-mode') }}
                         </el-button>
-                        <el-button type="primary" @click=" confirmDialogCallback!('designer') ">
-                            {{ $t('designer-mode')}}
+                        <el-button type="primary" @click=" confirmDialogCallback!('designer')">
+                            {{ $t('designer-mode') }}
                         </el-button>
                     </span>
                 </template>
             </el-dialog>
-            <el-input v-model=" searchText " class="search-input" :placeholder=" $t('search') " clearable>
+            <el-input v-model="searchText" class="search-input" :placeholder="$t('search')" clearable>
                 <template #append>
-                    <el-button :icon=" EditPen " @click=" openCustomlizer = true " />
+                    <el-button :icon="EditPen" @click=" openCustomlizer = true" />
                 </template>
             </el-input>
-            <el-table :element-loading-text=" $t('please-wait') " highlight-current-row @row-click=" selectRecipeRow "
-                :data=" displayTable " height="100%" style="width: 100%">
+            <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row
+                @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
                 <el-table-column prop="id" label="ID" width="100" />
-                <el-table-column prop="rlv" :label=" $t('recipe-level') " width="100" />
+                <el-table-column prop="rlv" :label="$t('recipe-level')" width="100" />
                 <!-- <el-table-column prop="Icon" la\bel="图标" width="55">
                     <template #default="scope">
                         <div style="display: flex; align-items: center">
@@ -181,14 +207,14 @@ const customRecipe = ref({
                         </div>
                     </template>
                 </el-table-column> -->
-                <el-table-column prop="job" :label=" $t('type') " width="70" />
-                <el-table-column prop="item_name" :label=" $t('name') " />
+                <el-table-column prop="job" :label="$t('type')" width="200" />
+                <el-table-column prop="item_name" :label="$t('name')" />
                 <!-- <el-table-column prop="difficulty_factor" label="难度因子" /> -->
                 <!-- <el-table-column prop="quality_factor" label="品质因子" /> -->
                 <!-- <el-table-column prop="durability_factor" label="耐久因子" /> -->
             </el-table>
-            <el-pagination layout="prev, pager, next" v-model:current-page=" pagination.Page "
-                :page-count=" pagination.PageTotal " />
+            <el-pagination layout="prev, pager, next" v-model:current-page="pagination.Page"
+                :page-count="pagination.PageTotal" />
         </el-main>
     </el-container>
 </template>
@@ -216,8 +242,8 @@ const customRecipe = ref({
 </style>
 
 <fluent locale="zh-CN">
-confirm-select = 将当前配方设置为“{ $itemName }”吗？
-confirm-select2 = 这是一个高难度配方，请选择你想进入的模式。
+confirm-select = 确定要制作“{ $itemName }”吗？
+confirm-select2 = 这是一个高难度配方，请选择模式。
 please-confirm = 请确认
 recipe-setting-changed = 配方设置已变更
 select-recipe = 选择配方
@@ -237,7 +263,7 @@ name = 名称
 </fluent>
 
 <fluent locale="en-US">
-confirm-select = Set current recipe to "{ $itemName }"?
+confirm-select = Start crafting "{ $itemName }"?
 confirm-select2 = This is a 高难度配方. Please make a choice.
 please-confirm = Please confirm
 recipe-setting-changed = Selected recipe is updated

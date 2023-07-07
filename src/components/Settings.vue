@@ -39,6 +39,21 @@ const onCheckUpdateClick = async () => {
                         <el-option v-for="[v, name] in languages" :label="name" :value="v" />
                     </el-select>
                 </el-form-item>
+                <el-form-item :label="$t('data-source')">
+                    <el-select v-model="store.dataSource">
+                        <el-option :label="$t('ds-local')" value="local" />
+                        <el-option :label="$t('ds-xivapi')" value="xivapi" />
+                        <el-option :label="$t('ds-cafe')" value="cafe" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item v-if="store.dataSource == 'xivapi'">
+                    <el-select v-model="store.dataSourceLang">
+                        <el-option :label="$t('dslang-en')" value="en" />
+                        <el-option :label="$t('dslang-ja')" value="ja" />
+                        <el-option :label="$t('dslang-de')" value="de" />
+                        <el-option :label="$t('dslang-fr')" value="fr" />
+                    </el-select>
+                </el-form-item>
                 <el-form-item :label="$t('version-number')">
                     {{ version }}
                 </el-form-item>
@@ -76,6 +91,14 @@ const onCheckUpdateClick = async () => {
 <fluent locale="zh-CN">
 settings = 设置
 # language =
+data-source = 数据源
+ds-local = 本地
+# ds-xivapi =
+# ds-cafe =
+dslang-en = 英语
+dslang-ja = 日语
+dslang-de = 德语
+dslang-fr = 法语
 system-lang = 跟随系统
 version-number = 版本号
 tauri = Tauri
@@ -89,6 +112,14 @@ checking-update = 正在检查更新
 <fluent locale="en-US">
 settings = Settings
 language = Language
+data-source = Data Source
+ds-local = Local
+ds-xivapi = Xivapi
+ds-cafe = Cafe Maker
+dslang-en = English
+dslang-ja = Japanese
+dslang-de = German
+dslang-fr = French
 system-lang = System
 version-number = Version
 tauri = Tauri
@@ -102,7 +133,14 @@ checking-update = Checking Update
 <fluent locale="ja-JP">
 settings = 設定
 # language =
-# system-lang = 
+data-source = データソース
+ds-local = ローカル
+# ds-xivapi =
+# ds-cafe =
+dslang-en = 英語
+dslang-ja = 日本語
+dslang-de = ドイツ語
+dslang-fr = フランス語
 version-number = バージョン
 tauri = Tauri
 developer = 開発者

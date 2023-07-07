@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router';
 import { createPinia } from 'pinia'
 import { fluent } from './fluent'
+import { ElLoading } from "element-plus";
 
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'element-plus/es/components/message/style/css'
@@ -29,4 +30,4 @@ const router = createRouter({
     ]
 })
 
-createApp(App).use(pinia).use(router).use(fluent).mount('#app')
+createApp(App).directive('tnze-loading', ElLoading.directive).use(pinia).use(router).use(fluent).mount('#app')
