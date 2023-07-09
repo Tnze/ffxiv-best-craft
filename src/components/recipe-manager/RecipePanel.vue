@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, watchEffect, reactive } from 'vue'
-import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElInput, ElInputNumber, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
+import { ElContainer, ElHeader, ElMain, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
-import { Jobs, Recipe, newRecipe, RecipeInfo, Item, RecipeLevel } from '../../Craft'
+import { Jobs, newRecipe, RecipeInfo } from '../../Craft'
 import { useRouter } from 'vue-router';
 import { useChecklistStore, useDesignerStore, useSettingsStore } from '../../store';
 import { useFluent } from 'fluent-vue';
+import { selectRecipe } from './common';
 
 
 // let jsonData = JSON.stringify(data.map(elem => ({
@@ -19,21 +20,9 @@ import { useFluent } from 'fluent-vue';
 // })), null, '    ')
 
 const checklistStore = useChecklistStore()
-const designerStore = useDesignerStore()
 const settingStore = useSettingsStore()
 const router = useRouter()
 const { $t } = useFluent()
-
-const jobMaps: { [key: string]: Jobs } = {
-    '木工': Jobs.Carpenter,
-    '锻冶': Jobs.Blacksmith,
-    '铸甲': Jobs.Armorer,
-    '雕金': Jobs.Goldsmith,
-    '制革': Jobs.Leatherworker,
-    '裁缝': Jobs.Weaver,
-    '炼金': Jobs.Alchemist,
-    '烹调': Jobs.Culinarian,
-}
 
 const searchText = ref('')
 const pagination = reactive({
@@ -62,14 +51,13 @@ watchEffect(async () => {
     }
 })
 
-const openCustomlizer = ref(false)
 const confirmDialogVisible = ref(false)
 let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null = null
 
 const selectRecipeRow = async (row: RecipeInfo) => {
     try {
         isRecipeTableLoading.value = true
-        var [rlv, info] = await Promise.all([
+        var [recipeLevel, info] = await Promise.all([
             settingStore.getDataSource.recipeLevelTable(row.rlv),
             settingStore.getDataSource.itemInfo(row.item_id)
         ])
@@ -80,57 +68,36 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         isRecipeTableLoading.value = false
     }
     const recipe = await newRecipe(
-        rlv,
+        row.rlv,
+        recipeLevel,
         row.difficulty_factor,
         row.quality_factor,
         row.durability_factor
     )
 
     if ((recipe.conditions_flag & ~15) == 0) {
-        try {
-            await ElMessageBox.confirm(
-                $t('confirm-select', { itemName: row.item_name }),
-                $t('please-confirm'),
-                { type: 'warning' }
-            )
-            selectRecipe(recipe, row, info, row.job, false)
-            checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
-        } catch {
-            // operation canceled by user
-        }
+        ElMessageBox.confirm(
+            $t('confirm-select', { itemName: row.item_name }),
+            $t('please-confirm'),
+            { type: 'warning' }
+        ).then(
+            () => {
+                selectRecipe(recipe, recipeLevel, row, info, row.job, false)
+                router.push({ name: "designer" })
+                checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
+            },
+            null, // operation canceled by user
+        )
     } else {
-        confirmDialogCallback = async (mode: 'designer' | 'simulator') => {
-            selectRecipe(recipe, row, info, row.job, mode == 'simulator')
+        confirmDialogCallback = (mode: 'designer' | 'simulator') => {
+            selectRecipe(recipe, recipeLevel, row, info, row.job, mode == 'simulator')
+            router.push({ name: "designer" })
             confirmDialogVisible.value = false
         }
         confirmDialogVisible.value = true
     }
 }
 
-const selectRecipe = (recipe: Recipe, recipeInfo: RecipeInfo | undefined, item: Item, craftType: string, simulatorMode: boolean) => {
-    designerStore.selectRecipe({
-        job: jobMaps[craftType] ?? Jobs.Culinarian,
-        item,
-        recipe,
-        recipeInfo,
-        simulatorMode,
-    })
-    router.push({ name: "designer" })
-    ElMessage({
-        type: 'success',
-        showClose: true,
-        message: $t('recipe-setting-changed')
-    })
-}
-
-const customRecipe = ref({
-    rlv: 611,
-    job_level: 90,
-    difficulty: 7480,
-    quality: 13620,
-    durability: 60,
-    conditions_flag: 435,
-})
 
 </script>
 
@@ -140,41 +107,6 @@ const customRecipe = ref({
             <h1>{{ $t('select-recipe') }}</h1>
         </el-header>
         <el-main class="container">
-            <el-dialog v-model="openCustomlizer" :title="$t('custom-recipe', { rlv: customRecipe.rlv })">
-                <el-form :model="customRecipe" label-position="right" label-width="100px" style="max-width: 460px">
-                    <el-form-item :label="$t('recipe-level')">
-                        <el-input-number v-model="customRecipe.rlv" :min="1"></el-input-number>
-                    </el-form-item>
-                    <el-form-item :label="$t('level')">
-                        <el-input-number v-model="customRecipe.job_level" :min="1"></el-input-number>
-                    </el-form-item>
-                    <el-form-item :label="$t('difficulty')">
-                        <el-input-number v-model="customRecipe.difficulty" :min="1"></el-input-number>
-                    </el-form-item>
-                    <el-form-item :label="$t('quality')">
-                        <el-input-number v-model="customRecipe.quality" :min="1"></el-input-number>
-                    </el-form-item>
-                    <el-form-item :label="$t('durability')">
-                        <el-input-number v-model="customRecipe.durability" :min="1"></el-input-number>
-                    </el-form-item>
-                    <el-form-item :label="$t('conditions-flag')">
-                        <el-input-number v-model="customRecipe.conditions_flag"></el-input-number>
-                    </el-form-item>
-                </el-form>
-                <template #footer>
-                    <span class="dialog-footer">
-                        <el-button @click="openCustomlizer = false">{{ $t('cancel') }}</el-button>
-                        <el-button type="primary" @click="openCustomlizer = false; selectRecipe(customRecipe, undefined, {
-                            id: -1,
-                            name: $t('custom-recipe', { rlv: customRecipe.rlv }),
-                            level: customRecipe.rlv,
-                            can_be_hq: true,
-                        }, '', false)">
-                            {{ $t('confirm') }}
-                        </el-button>
-                    </span>
-                </template>
-            </el-dialog>
             <el-dialog v-model="confirmDialogVisible" :title="$t('please-confirm')" :align-center="true">
                 <span>
                     {{ $t('confirm-select2') }}
@@ -193,7 +125,7 @@ const customRecipe = ref({
             </el-dialog>
             <el-input v-model="searchText" class="search-input" :placeholder="$t('search')" clearable>
                 <template #append>
-                    <el-button :icon="EditPen" @click=" openCustomlizer = true" />
+                    <el-button :icon="EditPen" @click="router.push('/recipe/customize')" />
                 </template>
             </el-input>
             <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row
@@ -242,13 +174,11 @@ const customRecipe = ref({
 </style>
 
 <fluent locale="zh-CN">
+select-recipe = 选择配方
+
 confirm-select = 确定要制作“{ $itemName }”吗？
 confirm-select2 = 这是一个高难度配方，请选择模式。
 please-confirm = 请确认
-recipe-setting-changed = 配方设置已变更
-select-recipe = 选择配方
-custom-recipe = 自定义配方 #{ $rlv }
-conditions-flag = 球色标志
 
 cancel = 取消
 confirm = 确认
@@ -263,13 +193,11 @@ name = 名称
 </fluent>
 
 <fluent locale="en-US">
+select-recipe = Select Recipe
+
 confirm-select = Start crafting "{ $itemName }"?
 confirm-select2 = This is a 高难度配方. Please make a choice.
 please-confirm = Please confirm
-recipe-setting-changed = Selected recipe is updated
-select-recipe = Select Recipe
-custom-recipe = Custom Recipe #{ $rlv }
-conditions-flag = Cond. Flag
 
 cancel = Cancel
 confirm = Confirm

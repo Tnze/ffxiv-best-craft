@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 use ffxiv_crafting::{
-    Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, Status,
+    Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, Status, RecipeLevel,
 };
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use rand::{random, seq::SliceRandom, thread_rng};
@@ -47,11 +47,11 @@ async fn recipe_level_table(
 
 /// 初始化一个表示一次制作的初始状态的Status对象，包含玩家属性、配方信息和初期品质
 #[tauri::command(async)]
-fn new_status(attrs: Attributes, recipe: Recipe) -> Result<Status, String> {
+fn new_status(attrs: Attributes, recipe: Recipe, recipe_level: RecipeLevel) -> Result<Status, String> {
     if recipe.job_level > attrs.level + 5 {
         Err("Player level lower than recipe's require".to_string())
     } else {
-        Ok(Status::new(attrs, recipe))
+        Ok(Status::new(attrs, recipe, recipe_level))
     }
 }
 

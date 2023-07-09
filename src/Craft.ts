@@ -25,8 +25,8 @@ export interface Recipe {
 }
 
 export interface RecipeLevel {
-    id: number,
     class_job_level: number,
+    stars: number,
     suggested_craftsmanship: number,
     suggested_control: number,
     difficulty: number,
@@ -153,13 +153,14 @@ export enum Actions {
 }
 
 export const newRecipe = async (
+    rlv: number,
     rt: RecipeLevel,
     difficultyFactor: number,
     qualityFactor: number,
     durabilityFactor: number,
 ): Promise<Recipe> => {
     return <Recipe>{
-        rlv: rt.id,
+        rlv,
         job_level: rt.class_job_level,
         difficulty: Math.floor(rt.difficulty * difficultyFactor * Math.fround(0.01)),
         quality: Math.floor(rt.quality * qualityFactor * Math.fround(0.01)),
@@ -171,7 +172,8 @@ export const newRecipe = async (
 export const newStatus = (
     attrs: Attributes,
     recipe: Recipe,
-): Promise<Status> => invoke("new_status", { attrs, recipe });
+    recipeLevel: RecipeLevel,
+): Promise<Status> => invoke("new_status", { attrs, recipe, recipeLevel });
 
 export interface SimulateResult {
     status: Status;

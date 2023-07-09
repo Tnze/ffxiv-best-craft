@@ -95,7 +95,7 @@ export class XivApiRecipeSource {
 
     async recipeLevelTable(rlv: number) {
         const url = new URL(`RecipeLevelTable/${rlv}`, this.base).toString() + '?' + new URLSearchParams({
-            'columns': 'ID,ClassJobLevel,SuggestedCraftsmanship,SuggestedControl,Difficulty,Quality,Durability,ProgressDivider,QualityDivider,ProgressModifier,QualityModifier,ConditionsFlag'
+            'columns': 'ID,Stars,ClassJobLevel,SuggestedCraftsmanship,SuggestedControl,Difficulty,Quality,Durability,ProgressDivider,QualityDivider,ProgressModifier,QualityModifier,ConditionsFlag'
         }).toString();
         const resp = await fetch(url, {
             method: 'GET',
@@ -104,6 +104,7 @@ export class XivApiRecipeSource {
         let data = await resp.json()
         return <RecipeLevel>{
             id: data.ID,
+            stars: data.Stars,
             class_job_level: data.ClassJobLevel,
 
             suggested_craftsmanship: data.SuggestedCraftsmanship,

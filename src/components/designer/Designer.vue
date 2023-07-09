@@ -4,7 +4,7 @@ import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
 import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
-import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeInfo } from "../../Craft";
+import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeInfo, RecipeLevel } from "../../Craft";
 import { read_solver } from "../../Solver";
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
@@ -35,7 +35,8 @@ interface Sequence {
 
 const props = defineProps<{
     recipe: Recipe,
-    recipeInfo?: RecipeInfo,
+    recipeLevel: RecipeLevel,
+    recipeInfo: RecipeInfo,
     item: Item,
     attributes: Attributes,
     displayJob: Jobs,
@@ -69,8 +70,6 @@ const enhancedAttributes = computed<Attributes>(() => {
 
 // Attribution Alert
 var attributionAlert = computed(() => {
-    if (props.recipeInfo == null)
-        return;
     let { required_craftsmanship, required_control } = props.recipeInfo;
     let { craftsmanship, control } = enhancedAttributes.value;
     let notMeet = [] as string[]
@@ -121,8 +120,8 @@ watch(isReadingSolver, (irs, irsPrev) => {
 
 // Simulation Input
 const initQuality = ref(0)
-const initStatus = ref<Status>({ ...await newStatus(enhancedAttributes.value, props.recipe), quality: initQuality.value });
-watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => { initStatus.value = { ...await newStatus(ea, p.recipe), quality: iq } });
+const initStatus = ref<Status>({ ...await newStatus(enhancedAttributes.value, props.recipe, props.recipeLevel), quality: initQuality.value });
+watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => { initStatus.value = { ...await newStatus(ea, p.recipe, p.recipeLevel), quality: iq } });
 
 // Active Sequence
 const activeSeq = reactive<Sequence>({

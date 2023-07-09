@@ -387,7 +387,7 @@ impl crate::solver::Solver for ProgressSolver {
 
 #[cfg(test)]
 mod test {
-    use ffxiv_crafting::{Attributes, Recipe, Status};
+    use ffxiv_crafting::{Attributes, Recipe, Status, data::recipe_level_table};
 
     use super::ProgressSolver;
     use super::QualitySolver;
@@ -408,7 +408,7 @@ mod test {
             control: 3846 + 70,
             craft_points: 598 + 72,
         };
-        Status::new(a, r)
+        Status::new(a, r, recipe_level_table(r.rlv))
     }
 
     #[test]

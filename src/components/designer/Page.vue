@@ -20,10 +20,12 @@ const attributes = computed(() => {
     <Suspense>
         <template v-if="designerStore.content != null">
             <Designer v-if="!designerStore.content.simulatorMode" :item="designerStore.content.item"
-                :recipe="designerStore.content.recipe" :recipe-info="designerStore.content.recipeInfo"
-                :attributes="attributes" :display-job="designerStore.content!.job" />
+                :recipe="designerStore.content.recipe" :recipe-level="designerStore.content.recipeLevel"
+                :recipe-info="designerStore.content.recipeInfo" :attributes="attributes"
+                :display-job="designerStore.content!.job" />
             <Simulator v-else :item="designerStore.content.item" :recipe="designerStore.content.recipe"
-                :attributes="attributes" :display-job="designerStore.content!.job" />
+                :recipe-level="designerStore.content.recipeLevel" :attributes="attributes"
+                :display-job="designerStore.content!.job" />
         </template>
         <el-empty v-else :description="$t('not-selected')" style="height: 100%;" />
         <template #fallback>

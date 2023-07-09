@@ -1,5 +1,6 @@
 level = Lv.
 recipe-level = Recipe Lv.
+class-job-level = Class Job Lv.
 craftsmanship = Craftsmanship
 control = Control
 craft-point = CP

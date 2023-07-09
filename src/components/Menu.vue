@@ -11,7 +11,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter()
-const disableAutomation = ref(true)
+const disableBom = ref(true)
 
 </script>
 
@@ -29,7 +29,7 @@ const disableAutomation = ref(true)
             </el-icon>
             <template #title>{{ $t('recipe') }}</template>
         </el-menu-item>
-        <el-menu-item index="/bom" :disabled="disableAutomation" @click.stop.prevent.right="disableAutomation = false">
+        <el-menu-item index="/bom" :disabled="disableBom" @click.stop.prevent.right="disableBom = false">
             <el-icon>
                 <box />
             </el-icon>

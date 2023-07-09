@@ -24,8 +24,8 @@ const props = defineProps<{
     noHover?: boolean
 }>()
 
+const isDragging = ref(false)
 const solverAdds = computed(() => props.solverResult?.slice(props.list.length) ?? [])
-
 const dragOptions = computed(() => {
     return {
         animation: 200,
@@ -34,12 +34,6 @@ const dragOptions = computed(() => {
         ghostClass: "ghost"
     }
 })
-
-const isDragging = ref(false)
-const removeAction = (index: number) => {
-    if (!props.disabled)
-        props.list.splice(index, 1)
-}
 
 let startTime = 0;
 let stopTimer: NodeJS.Timeout | null = null;
@@ -55,6 +49,11 @@ watch(() => props.loadingSolverResult, (newVal, oldVal) => {
         hideSolverResult.value = false
     }
 })
+
+function removeAction(index: number) {
+    if (!props.disabled)
+        props.list.splice(index, 1)
+}
 
 function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
     if (props.errList?.find((v) => v.pos == index) !== undefined)

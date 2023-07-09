@@ -1,5 +1,6 @@
 level = 等级
 recipe-level = 配方等级
+class-job-level = 特职等级
 craftsmanship = 作业精度
 control = 加工精度
 craft-point = 制作力

@@ -1,5 +1,6 @@
 level = Lv
 recipe-level = Recipe Lv
+class-job-level = Class Job Lv
 craftsmanship = 作業精度
 control = 加工精度
 craft-point = CP

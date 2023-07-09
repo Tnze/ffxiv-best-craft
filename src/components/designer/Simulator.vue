@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElContainer, ElHeader, ElMain, ElScrollbar, ElDialog, ElButton, ElTable, ElTableColumn } from 'element-plus';
 import { computed, ref, watch } from 'vue';
-import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep } from '../../Craft';
+import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep, RecipeLevel } from '../../Craft';
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import StatusBarVue from './StatusBar.vue';
 import ActionPanelVue from './ActionPanel.vue';
@@ -10,6 +10,7 @@ import AttrEnhSelector from '../attr-enhancer/AttrEnhSelector.vue';
 
 const props = defineProps<{
     recipe: Recipe,
+    recipeLevel: RecipeLevel,
     item: Item,
     attributes: Attributes,
     displayJob: Jobs,
@@ -44,8 +45,8 @@ const enhancedAttributes = computed<Attributes>(() => {
         craft_points,
     };
 });
-const initStatus = ref<Status>({ ...await newStatus(enhancedAttributes.value, props.recipe), quality: 0 });
-watch([props, enhancedAttributes], async ([p, attr]) => { initStatus.value = { ...await newStatus(attr, p.recipe), quality: 0 } });
+const initStatus = ref<Status>({ ...await newStatus(enhancedAttributes.value, props.recipe, props.recipeLevel), quality: 0 });
+watch([props, enhancedAttributes], async ([p, attr]) => { initStatus.value = { ...await newStatus(attr, p.recipe, p.recipeLevel), quality: 0 } });
 
 const currentStatus = ref<Status>(initStatus.value)
 const seq = ref<Slot[]>([])

@@ -46,7 +46,7 @@ async function writeJson(name: string, val: any) {
 settingStore.$subscribe((_mutation, state) => writeJson('settings.json', state))
 gearsetsStore.$subscribe((_mutation, state) => writeJson('gearsets.json', state))
 
-// Ask the rust size if the window transparent.
+// Ask the rust side if the window transparent.
 invoke('should_be_transparent').then(v => {
     bgColor.value = v ? 'transparent' : 'var(--el-bg-color)'
 });
