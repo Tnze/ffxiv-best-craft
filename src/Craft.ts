@@ -174,7 +174,6 @@ export const newStatus = (
     recipe: Recipe,
     recipeLevel: RecipeLevel,
 ): Promise<Status> => {
-    console.debug(recipe)
     return invoke("new_status", { attrs, recipe, recipeLevel })
 };
 

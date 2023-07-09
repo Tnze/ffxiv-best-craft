@@ -117,7 +117,7 @@ watch(isReadingSolver, (irs, irsPrev) => {
         isReadingSolverDisplay.value = false
     }
 })
-console.debug(props.recipe)
+
 // Simulation Input
 const initQuality = ref(0)
 const initStatus = ref<Status>({ ...await newStatus(enhancedAttributes.value, props.recipe, props.recipeLevel), quality: initQuality.value });

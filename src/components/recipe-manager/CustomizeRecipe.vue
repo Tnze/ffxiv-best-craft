@@ -76,7 +76,7 @@ watch(
     }
 )
 
-function confirm() {
+function confirm(simulatorMode: boolean) {
     const itemInfo: Item = {
         id: -1,
         name: $t('custom-recipe'),
@@ -87,8 +87,7 @@ function confirm() {
         required_craftsmanship: 0,
         required_control: 0,
     }
-    console.debug(recipeLevel.value)
-    selectRecipe(customRecipe.value, recipeLevel.value, requirements, itemInfo, '', false)
+    selectRecipe(customRecipe.value, recipeLevel.value, requirements, itemInfo, '', simulatorMode)
     router.push({ name: "designer" })
 }
 
@@ -151,7 +150,10 @@ function confirm() {
                 </el-form-item>
             </el-form>
             <span>
-                <el-button type="primary" @click="confirm">{{ $t('confirm') }}</el-button>
+                <el-button type="primary" @click="confirm(false)">{{ $t('confirm') }}</el-button>
+                <el-button type="primary" v-if="customRecipe.conditions_flag != 15" @click="confirm(true)">
+                    {{ $t('simulator-mode') }}
+                </el-button>
             </span>
         </el-main>
     </el-container>
@@ -175,6 +177,7 @@ auto-load = 自动填充
 
 cancel = 取消
 confirm = 确认
+simulator-mode = 模拟器模式
 </fluent>
 
 <fluent locale="en-US">
@@ -185,4 +188,5 @@ auto-load = Auto Fill
 
 cancel = Cancel
 confirm = Confirm
+simulator-mode = Simulator Mode
 </fluent>

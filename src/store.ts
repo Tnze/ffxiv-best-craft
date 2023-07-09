@@ -85,7 +85,6 @@ export const useDesignerStore = defineStore('designer', {
             requirements: RecipeRequirements,
             simulatorMode: boolean,
         }) {
-            console.log(payload.recipeLevel)
             this.content = payload
         }
     }

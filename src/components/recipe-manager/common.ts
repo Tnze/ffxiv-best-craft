@@ -15,7 +15,6 @@ const jobMaps: { [key: string]: Jobs } = {
 }
 
 export const selectRecipe = (recipe: Recipe, recipeLevel: RecipeLevel, requirements: RecipeRequirements, item: Item, craftType: string, simulatorMode: boolean) => {
-    console.log("select recipe", recipe, recipeLevel, requirements)
     designerStore.selectRecipe({
         job: jobMaps[craftType] ?? Jobs.Culinarian,
         item,
