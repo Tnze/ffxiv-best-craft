@@ -4,7 +4,7 @@ import { ElContainer, ElHeader, ElRow, ElCol, ElMain, ElButton, ElInputNumber, E
 import { useRouter } from 'vue-router';
 import { selectRecipe } from './common';
 import { useFluent } from 'fluent-vue';
-import { Conditions, Item, Recipe, RecipeInfo, RecipeLevel } from '../../Craft';
+import { Conditions, Item, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements } from '../../Craft';
 import { useSettingsStore } from '../../store';
 
 const router = useRouter()
@@ -15,40 +15,41 @@ const autoLoad = ref(true)
 const autoLoadLoading = ref(false)
 
 const defaultRecipe = {
-    rlv: 0,
-    job_level: 0,
-    difficulty: 0,
-    quality: 0,
-    durability: 0,
+    rlv: 610,
+    job_level: 90,
+    difficulty: 4143,
+    quality: 8199,
+    durability: 60,
     conditions_flag: 15
 }
 const defaultRecipeLevel = {
-    class_job_level: 0,
+    class_job_level: 90,
     stars: 0,
     suggested_craftsmanship: 0,
     suggested_control: 0,
-    difficulty: 0,
-    quality: 0,
-    progress_divider: 0,
-    quality_divider: 0,
-    progress_modifier: 0,
-    quality_modifier: 0,
-    durability: 0,
-    conditions_flag: 0
+    difficulty: 4143,
+    quality: 8199,
+    progress_divider: 180,
+    quality_divider: 180,
+    progress_modifier: 100,
+    quality_modifier: 100,
+    durability: 60,
+    conditions_flag: 15
 }
 
 const customRecipe = ref<Recipe>({ ...defaultRecipe })
 const recipeLevel = ref<RecipeLevel>({ ...defaultRecipeLevel })
-const conditionsFlag = computed({
+const conditionsFlag = computed<Conditions[]>({
     get: () => {
         const flag = customRecipe.value.conditions_flag
         return Object.values(Conditions).filter((_cond, i) => (flag & (1 << i)) != 0)
     },
     set: (val) => {
-        customRecipe.value.conditions_flag = Object
+        const flag = Object
             .values(Conditions)
             .map((cond, i) => val.indexOf(cond) >= 0 ? 1 << i : 0)
             .reduce((a, b) => a | b)
+        customRecipe.value.conditions_flag = flag
     }
 })
 
@@ -66,6 +67,7 @@ watch(
             if (recipeLevelPromise != null) await recipeLevelPromise
             recipeLevelPromise = dataSource.recipeLevelTable(rlv ?? 0)
             recipeLevel.value = await recipeLevelPromise
+            recipeLevelPromise = null
         } catch {
             recipeLevel.value = { ...defaultRecipeLevel }
         } finally {
@@ -75,7 +77,19 @@ watch(
 )
 
 function confirm() {
-    // selectRecipe(r, recipeLevel, recipeInfo, itemInfo, '', false)
+    const itemInfo: Item = {
+        id: -1,
+        name: $t('custom-recipe'),
+        level: customRecipe.value.job_level,
+        can_be_hq: true
+    }
+    const requirements: RecipeRequirements = {
+        required_craftsmanship: 0,
+        required_control: 0,
+    }
+    console.debug(recipeLevel.value)
+    selectRecipe(customRecipe.value, recipeLevel.value, requirements, itemInfo, '', false)
+    router.push({ name: "designer" })
 }
 
 </script>
@@ -113,12 +127,16 @@ function confirm() {
                         </el-checkbox-button>
                     </el-checkbox-group>
                 </el-form-item>
+            </el-form>
+            <el-form :inline="true" label-position="right" label-width="100px">
                 <el-form-item :label="$t('recipe-level')">
-                    <el-input-number v-model="customRecipe.rlv"></el-input-number>
+                    <el-input-number v-model="customRecipe.rlv" :min="1"></el-input-number>
                 </el-form-item>
                 <el-form-item :label="$t('auto-load')">
                     <el-switch v-model="autoLoad" :loading="autoLoadLoading"></el-switch>
                 </el-form-item>
+            </el-form>
+            <el-form :inline="true" label-position="right" label-width="100px">
                 <el-form-item :label="$t('progress-divider')">
                     <el-input-number :disabled="autoLoad" v-model="recipeLevel.progress_divider"></el-input-number>
                 </el-form-item>

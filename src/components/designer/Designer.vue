@@ -4,7 +4,7 @@ import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
 import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
-import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeInfo, RecipeLevel } from "../../Craft";
+import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeInfo, RecipeLevel, RecipeRequirements } from "../../Craft";
 import { read_solver } from "../../Solver";
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
@@ -36,7 +36,7 @@ interface Sequence {
 const props = defineProps<{
     recipe: Recipe,
     recipeLevel: RecipeLevel,
-    recipeInfo: RecipeInfo,
+    requirements: RecipeRequirements,
     item: Item,
     attributes: Attributes,
     displayJob: Jobs,
@@ -70,7 +70,7 @@ const enhancedAttributes = computed<Attributes>(() => {
 
 // Attribution Alert
 var attributionAlert = computed(() => {
-    let { required_craftsmanship, required_control } = props.recipeInfo;
+    let { required_craftsmanship, required_control } = props.requirements;
     let { craftsmanship, control } = enhancedAttributes.value;
     let notMeet = [] as string[]
     if (required_craftsmanship > craftsmanship) {
@@ -117,7 +117,7 @@ watch(isReadingSolver, (irs, irsPrev) => {
         isReadingSolverDisplay.value = false
     }
 })
-
+console.debug(props.recipe)
 // Simulation Input
 const initQuality = ref(0)
 const initStatus = ref<Status>({ ...await newStatus(enhancedAttributes.value, props.recipe, props.recipeLevel), quality: initQuality.value });

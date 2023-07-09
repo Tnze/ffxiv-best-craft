@@ -1,4 +1,4 @@
-import { Item, Jobs, Recipe, RecipeInfo, RecipeLevel } from "../../Craft"
+import { Item, Jobs, Recipe, RecipeLevel, RecipeRequirements } from "../../Craft"
 import { useDesignerStore } from "../../store"
 
 const designerStore = useDesignerStore()
@@ -14,13 +14,14 @@ const jobMaps: { [key: string]: Jobs } = {
     '烹调': Jobs.Culinarian,
 }
 
-export const selectRecipe = (recipe: Recipe, recipeLevel: RecipeLevel, recipeInfo: RecipeInfo, item: Item, craftType: string, simulatorMode: boolean) => {
+export const selectRecipe = (recipe: Recipe, recipeLevel: RecipeLevel, requirements: RecipeRequirements, item: Item, craftType: string, simulatorMode: boolean) => {
+    console.log("select recipe", recipe, recipeLevel, requirements)
     designerStore.selectRecipe({
         job: jobMaps[craftType] ?? Jobs.Culinarian,
         item,
         recipe,
         recipeLevel,
-        recipeInfo,
+        requirements,
         simulatorMode,
     })
 }

@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { Attributes, Item, ItemWithAmount, Jobs, Recipe, RecipeInfo, RecipeLevel } from './Craft'
+import { Attributes, Item, ItemWithAmount, Jobs, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements } from './Craft'
 import { CafeMakerApiBase, DataSource, LocalRecipeSource, XivApiRecipeSource, XivapiBase } from './components/recipe-manager/source'
 
 export interface GearsetsRow {
@@ -68,12 +68,12 @@ export const useChecklistStore = defineStore('checklist', {
 export const useDesignerStore = defineStore('designer', {
     state: () => ({
         content: null as null | {
-            item: Item;
-            job: Jobs;
-            recipe: Recipe;
-            recipeLevel: RecipeLevel;
-            recipeInfo: RecipeInfo;
-            simulatorMode: boolean;
+            item: Item,
+            job: Jobs,
+            recipe: Recipe,
+            recipeLevel: RecipeLevel,
+            requirements: RecipeRequirements,
+            simulatorMode: boolean,
         }
     }),
     actions: {
@@ -82,9 +82,10 @@ export const useDesignerStore = defineStore('designer', {
             item: Item,
             recipe: Recipe,
             recipeLevel: RecipeLevel,
-            recipeInfo: RecipeInfo,
+            requirements: RecipeRequirements,
             simulatorMode: boolean,
         }) {
+            console.log(payload.recipeLevel)
             this.content = payload
         }
     }

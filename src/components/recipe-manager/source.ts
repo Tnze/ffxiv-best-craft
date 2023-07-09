@@ -93,7 +93,7 @@ export class XivApiRecipeSource {
         }
     }
 
-    async recipeLevelTable(rlv: number) {
+    async recipeLevelTable(rlv: number): Promise<RecipeLevel> {
         const url = new URL(`RecipeLevelTable/${rlv}`, this.base).toString() + '?' + new URLSearchParams({
             'columns': 'ID,Stars,ClassJobLevel,SuggestedCraftsmanship,SuggestedControl,Difficulty,Quality,Durability,ProgressDivider,QualityDivider,ProgressModifier,QualityModifier,ConditionsFlag'
         }).toString();
@@ -102,8 +102,7 @@ export class XivApiRecipeSource {
             mode: 'cors'
         })
         let data = await resp.json()
-        return <RecipeLevel>{
-            id: data.ID,
+        return {
             stars: data.Stars,
             class_job_level: data.ClassJobLevel,
 
@@ -118,7 +117,7 @@ export class XivApiRecipeSource {
             quality_divider: data.QualityDivider,
             progress_modifier: data.ProgressModifier,
             quality_modifier: data.QualityModifier,
-            
+
             conditions_flag: data.ConditionsFlag,
         }
     }
@@ -150,7 +149,10 @@ export class LocalRecipeSource {
         return { recipes, totalPages }
     }
     async recipeLevelTable(rlv: number) {
-        let result: RecipeLevel = await invoke("recipe_level_table", { rlv })
+        let result: RecipeLevel = {
+            ...await invoke("recipe_level_table", { rlv }),
+            stars: 0,
+        }
         return result
     }
     async itemInfo(itemId: number) {

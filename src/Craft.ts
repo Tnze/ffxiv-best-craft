@@ -159,12 +159,12 @@ export const newRecipe = async (
     qualityFactor: number,
     durabilityFactor: number,
 ): Promise<Recipe> => {
-    return <Recipe>{
+    return {
         rlv,
         job_level: rt.class_job_level,
-        difficulty: Math.floor(rt.difficulty * difficultyFactor * Math.fround(0.01)),
-        quality: Math.floor(rt.quality * qualityFactor * Math.fround(0.01)),
-        durability: Math.floor(rt.durability * durabilityFactor * Math.fround(0.01)),
+        difficulty: Math.floor(rt.difficulty * difficultyFactor / 100),
+        quality: Math.floor(rt.quality * qualityFactor / 100),
+        durability: Math.floor(rt.durability * durabilityFactor / 100),
         conditions_flag: rt.conditions_flag,
     };
 };
@@ -173,7 +173,10 @@ export const newStatus = (
     attrs: Attributes,
     recipe: Recipe,
     recipeLevel: RecipeLevel,
-): Promise<Status> => invoke("new_status", { attrs, recipe, recipeLevel });
+): Promise<Status> => {
+    console.debug(recipe)
+    return invoke("new_status", { attrs, recipe, recipeLevel })
+};
 
 export interface SimulateResult {
     status: Status;
@@ -200,11 +203,8 @@ export const allowedList = (status: Status, actions: Actions[]): Promise<string[
     return invoke("allowed_list", { status, skills: actions });
 };
 
-export const craftPointsList = (
-    status: Status,
-    actions: Actions[]
-): Promise<number[]> => {
-    return invoke("craftpoints_list", { status, skills: actions });
+export const craftPointsList = (status: Status, actions: Actions[]): Promise<number[]> => {
+    return invoke("craftpoints_list", { status, skills: actions })
 };
 
 export interface RecipeInfo {
@@ -222,6 +222,11 @@ export interface RecipeInfo {
     required_control: number;
 
     can_hq: boolean;
+}
+
+export interface RecipeRequirements {
+    required_craftsmanship: number,
+    required_control: number,
 }
 
 export interface ItemWithAmount {

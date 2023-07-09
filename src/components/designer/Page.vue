@@ -21,7 +21,7 @@ const attributes = computed(() => {
         <template v-if="designerStore.content != null">
             <Designer v-if="!designerStore.content.simulatorMode" :item="designerStore.content.item"
                 :recipe="designerStore.content.recipe" :recipe-level="designerStore.content.recipeLevel"
-                :recipe-info="designerStore.content.recipeInfo" :attributes="attributes"
+                :requirements="designerStore.content.requirements" :attributes="attributes"
                 :display-job="designerStore.content!.job" />
             <Simulator v-else :item="designerStore.content.item" :recipe="designerStore.content.recipe"
                 :recipe-level="designerStore.content.recipeLevel" :attributes="attributes"
