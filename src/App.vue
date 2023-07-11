@@ -95,6 +95,14 @@ onMounted(() => checkUpdate($t, true))
     width: 150px;
 }
 
+.el-form-item__label {
+    user-select: none;
+}
+
+.el-message-box {
+    border-radius: var(--el-border-radius-base);
+}
+
 :root {
     --el-color-primary: #3fb42d;
     --el-color-primary-light-3: #5ec35d;
@@ -104,6 +112,10 @@ onMounted(() => checkUpdate($t, true))
     --el-color-primary-light-9: #b0bdae;
     --el-color-primary-dark-2: #288b23;
     --el-fill-color-blank: transparent;
+
+    --el-border-radius-base: 9px;
+    --el-border-radius-small: 8px;
+    --el-border-radius-round: 20px;
 }
 
 :root.dark {
