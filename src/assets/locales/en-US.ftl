@@ -84,3 +84,11 @@ update-pending = Updating in progress
 update-error = Update failed: { $error }
 update-done = Update done
 update-uptodate = Up-to-date
+
+# Rust Errors
+player-level-lower-than-recipe-requirement = Player level is lower than the recipe's requirement.
+unknown-recipe-level = Unknown recipe level
+solver-already-exist = Solver is already exist
+solver-is-creating = Solver is already creating
+solver-doesn-t-exist = Solver doesn't exist
+solver-isn-t-prepared = Solver isn't prepared

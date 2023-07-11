@@ -62,7 +62,7 @@ const createSolver = async () => {
         solvers.value.splice(solvers.value.indexOf(solver), 1)
         ElMessage({
             type: 'error',
-            message: $t('error-with', { err: err as string }),
+            message: $t('error-with', { err: $t(err as string) }),
         })
         console.error(err)
     } finally {
@@ -122,7 +122,7 @@ async function runRikaSolver() {
             showClose: true,
             duration: 0,
             type: 'error',
-            message: $t('error-with', { err: err as string }),
+            message: $t('error-with', { err: $t(err as string) }),
         })
     } finally {
         rikaIsSolving.value = false
@@ -166,7 +166,7 @@ async function runTnzeVerRikaSolver() {
             showClose: true,
             duration: 0,
             type: 'error',
-            message: $t('error-with', { err: err as string }),
+            message: $t('error-with', { err: $t(err as string) }),
         })
     } finally {
         tnzeVerRikaIsSolving.value = false
@@ -209,7 +209,7 @@ async function runDfsSolver() {
             showClose: true,
             duration: 0,
             type: 'error',
-            message: $t('error-with', { err: err as string }),
+            message: $t('error-with', { err: $t(err as string) }),
         })
     } finally {
         dfsSolving.value = false

@@ -76,23 +76,24 @@ const selectRecipeRow = async (row: RecipeInfo) => {
     )
 
     if ((recipe.conditions_flag & ~15) == 0) {
-        ElMessageBox.confirm(
-            $t('confirm-select', { itemName: row.item_name }),
-            $t('please-confirm'),
-            { type: 'warning' }
-        ).then(
-            () => {
-                selectRecipe(recipe, recipeLevel, row, info, row.job, false)
-                router.push({ name: "designer" })
-                checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
-            },
-            null, // operation canceled by user
-        )
+        try {
+            await ElMessageBox.confirm(
+                $t('confirm-select', { itemName: row.item_name }),
+                $t('please-confirm'),
+                { type: 'warning' }
+            )
+            selectRecipe(recipe, recipeLevel, row, info, row.job, false)
+            router.push({ name: "designer" })
+            checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
+        } catch {
+            // operation canceled by user
+        }
     } else {
         confirmDialogCallback = (mode: 'designer' | 'simulator') => {
             selectRecipe(recipe, recipeLevel, row, info, row.job, mode == 'simulator')
             router.push({ name: "designer" })
             confirmDialogVisible.value = false
+            confirmDialogCallback = null
         }
         confirmDialogVisible.value = true
     }
@@ -113,7 +114,9 @@ const selectRecipeRow = async (row: RecipeInfo) => {
                 </span>
                 <template #footer>
                     <span>
-                        <el-button @click=" confirmDialogVisible = false">{{ $t('cancel') }}</el-button>
+                        <el-button @click="confirmDialogVisible = false">
+                            {{ $t('cancel') }}
+                        </el-button>
                         <el-button type="primary" @click=" confirmDialogCallback!('simulator')">
                             {{ $t('simulator-mode') }}
                         </el-button>

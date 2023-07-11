@@ -40,7 +40,7 @@ async fn recipe_level_table(
 ) -> Result<db::recipe_level_tables::Model, String> {
     let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
     let Some(rt) = RecipeLevelTables::find_by_id(rlv).one(db).await.map_err(err_to_string)? else {
-        return Err(String::from("unknown recipe level"))
+        return Err(String::from("unknown-recipe-level"))
     };
     Ok(rt)
 }
@@ -49,7 +49,7 @@ async fn recipe_level_table(
 #[tauri::command(async)]
 fn new_status(attrs: Attributes, recipe: Recipe, recipe_level: RecipeLevel) -> Result<Status, String> {
     if recipe.job_level > attrs.level + 5 {
-        Err("Player level lower than recipe's require".to_string())
+        Err("player-level-lower-than-recipe-requirement".to_string())
     } else {
         Ok(Status::new(attrs, recipe, recipe_level))
     }
@@ -309,8 +309,8 @@ async fn create_solver(
             Entry::Vacant(o) => o.insert(Arc::new(Mutex::new(None))).clone(),
             Entry::Occupied(ref o) => {
                 return match o.get().try_lock() {
-                    Ok(_) => Err("Solver already exist".into()),
-                    Err(_) => Err("Solver is creating".into()),
+                    Ok(_) => Err("solver-already-exist".into()),
+                    Err(_) => Err("solver-is-creating".into()),
                 }
             }
         }
@@ -350,11 +350,11 @@ async fn read_solver(
         .lock()
         .await
         .get(&key)
-        .ok_or_else(|| "solver doesn't exists".to_string())?
+        .ok_or_else(|| "solver-doesn-t-exist".to_string())?
         .lock()
         .await
         .as_ref()
-        .ok_or_else(|| "solver isn't prepared".to_string())?
+        .ok_or_else(|| "solver-isn-t-prepared".to_string())?
         .read_all(&status);
     Ok(result)
 }

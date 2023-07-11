@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { ElMenu, ElMenuItem, ElIcon } from 'element-plus'
-import {
-    Notebook,
-    Suitcase,
-    Edit,
-    Setting,
-    Box,
-} from '@element-plus/icons-vue'
+import {Notebook,Suitcase,Edit,Setting,Box, Guide} from '@element-plus/icons-vue'
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -17,6 +11,12 @@ const disableBom = ref(true)
 
 <template>
     <el-menu :default-active="router.currentRoute.value.path" :router="true" :collapse="false">
+        <el-menu-item index="/guide">
+            <el-icon>
+                <guide />
+            </el-icon>
+            <template #title>{{ $t('guide') }}</template>
+        </el-menu-item>
         <el-menu-item index="/gearsets">
             <el-icon>
                 <suitcase />
@@ -59,6 +59,7 @@ const disableBom = ref(true)
 </style>
 
 <fluent locale="zh-CN">
+guide = 向导
 gearsets = 配装
 recipe = 配方
 bom = 物料
@@ -67,6 +68,7 @@ settings = 设置
 </fluent>
 
 <fluent locale="en-US">
+guide = Guide
 gearsets = Gearsets
 recipe = Recipe
 bom = BOM
@@ -75,6 +77,7 @@ settings = Settings
 </fluent>
 
 <fluent locale="ja-JP">
+guide = ガイダンス
 gearsets = 装備
 recipe = フォーミュラ
 bom = 材料リスト

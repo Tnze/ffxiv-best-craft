@@ -119,3 +119,11 @@ update-pending = 正在更新中
 update-error = 更新失败：{ $error }
 update-done = 更新已完成
 update-uptodate = 已是最新版本
+
+# Rust Errors
+player-level-lower-than-recipe-requirement = 玩家等级未达到所选配方最低要求
+unknown-recipe-level = 遇到了数据库中不存在的配方等级
+solver-already-exist = 求解器已存在
+solver-is-creating = 求解器已正在创建中
+solver-doesn-t-exist = 求解器不存在
+solver-isn-t-prepared = 求解器未准备完成
