@@ -1,7 +1,17 @@
-import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { Attributes, Item, ItemWithAmount, Jobs, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements } from './Craft'
 import { CafeMakerApiBase, DataSource, LocalRecipeSource, XivApiRecipeSource, XivapiBase } from './components/recipe-manager/source'
+
+export const useGuideStore = defineStore('guide', {
+    state: () => ({
+        recipeInfo: <RecipeInfo | null>null,
+    }),
+    actions: {
+        setRecipeInfo(info: RecipeInfo) {
+            this.recipeInfo = info
+        }
+    }
+})
 
 export interface GearsetsRow {
     name: string

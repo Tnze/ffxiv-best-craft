@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ElText, ElSelect, ElOption } from 'element-plus';
 import { computed, ref } from 'vue';
-import { useSettingsStore } from '../../store';
+import { useGuideStore, useSettingsStore } from '../../store';
 import { RecipeInfo } from '../../Craft';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
+const guideStore = useGuideStore()
 const settingStore = useSettingsStore()
 
 const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'beforedawn'>(() => {
@@ -38,7 +41,8 @@ async function searchRecipe(name: string) {
     }
 }
 function recipeChange(val: RecipeInfo) {
-    console.log(val)
+    guideStore.setRecipeInfo(val)
+    router.push('see-recipe')
 }
 
 </script>
@@ -46,11 +50,11 @@ function recipeChange(val: RecipeInfo) {
 <template>
     <div class="container">
         <el-text class="greeting">{{ $t('welcome', { time }) }}</el-text>
-        <el-select class="recipe-select" v-model="recipeSelected" size="large" :default-first-option="true"
+        <el-select class="recipe-select" v-model="recipeSelected" value-key="id" size="large" :default-first-option="true"
             :placeholder="$t('input-recipe-name')" :loading-text="$t('loading')" :no-match-text="$t('no-match')"
             :no-data-text="$t('no-data')" :remote-method="searchRecipe" v-on:change="recipeChange" remote remote-show-suffix
             filterable :loading="loading">
-            <el-option v-for="r in recipeOptions" :key="r.id" :label="r.item_name" :value="r.id"></el-option>
+            <el-option v-for="r in recipeOptions" :key="r.id" :label="r.item_name" :value="r" />
         </el-select>
     </div>
 </template>
