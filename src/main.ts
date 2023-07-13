@@ -11,7 +11,8 @@ import 'element-plus/es/components/message-box/style/css'
 import App from './App.vue'
 
 const pinia = createPinia()
-
+ 
+const Welcome = () => import('./components/guide/Welcome.vue')
 const GearsetsVue = () => import('./components/Gearsets.vue')
 const RecipePanelVue = () => import('./components/recipe-manager/RecipePanel.vue')
 const CustomizeRecipe = () => import('./components/recipe-manager/CustomizeRecipe.vue')
@@ -22,7 +23,8 @@ const SettingsVue = () => import('./components/Settings.vue')
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
-        { path: '/', redirect: '/gearsets' },
+        { path: '/', redirect: '/guide' },
+        { path: '/guide', component: Welcome },
         { path: '/gearsets', component: GearsetsVue },
         { path: '/recipe', component: RecipePanelVue },
         { path: '/recipe/customize', component: CustomizeRecipe },
