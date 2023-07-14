@@ -25,6 +25,10 @@ function back() {
     router.replace('welcome')
 }
 
+function start() {
+    router.replace('solving')
+}
+
 async function retry() {
     if (recipeInfo.value == null) {
         back()
@@ -79,6 +83,7 @@ const craftingCheckResult = computed(() => {
     craftingCheckResultIcon.value = 'success'
     return 'crafting-check-success'
 })
+craftingCheckResult.effect
 
 </script>
 
@@ -100,6 +105,9 @@ const craftingCheckResult = computed(() => {
                 })">
                 <template #extra>
                     <el-button @click="back">{{ $t('back') }}</el-button>
+                    <el-button @click="start" type="primary" v-if="craftingCheckResult == 'crafting-check-success'">
+                        {{ $t('start') }}
+                    </el-button>
                 </template>
             </el-result>
         </div>
@@ -171,6 +179,7 @@ false = 否
 error-happens = 加载配方时出现了一些错误
 back = 返回
 retry = 重试
+start = 开始
 
 class-job-level-too-low = { $job }等级过低
 class-job-level-too-low-detail = 您可能需要将{ $job }升至{ $minLevel }级才能制作该配方

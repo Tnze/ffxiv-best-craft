@@ -19,9 +19,9 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
         return 'morning'
     else if (hour >= 11 && hour < 14)
         return 'noon'
-    else if (hour >= 14 && hour < 18)
+    else if (hour >= 14 && hour < 19)
         return 'afternoon'
-    else if (hour >= 18 && hour < 21)
+    else if (hour >= 19 && hour < 21)
         return 'evening'
     else
         return 'night'
