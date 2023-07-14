@@ -4,11 +4,15 @@ import { CafeMakerApiBase, DataSource, LocalRecipeSource, XivApiRecipeSource, Xi
 
 export const useGuideStore = defineStore('guide', {
     state: () => ({
+        currentPage: '/guide/welcome',
         recipeInfo: <RecipeInfo | null>null,
     }),
     actions: {
         setRecipeInfo(info: RecipeInfo) {
             this.recipeInfo = info
+        },
+        setCurrentPage(url: string) {
+            this.currentPage = url
         }
     }
 })

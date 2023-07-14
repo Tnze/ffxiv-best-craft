@@ -18,6 +18,7 @@ const recipeLevel = ref<RecipeLevel | null>(null)
 const recipe = ref<Recipe | null>(null)
 const recipeInfo = computed(() => guideStore.recipeInfo)
 
+guideStore.setCurrentPage('see-recipe')
 retry()
 
 function back() {
@@ -52,18 +53,30 @@ async function retry() {
     }
 }
 
-const attributes = computed(() => {
+const classJobInfo = computed(() => {
     if (recipeInfo.value == null)
         return null
     const job = craftTypeTojobs(recipeInfo.value.job)
     const special = gearsetsStore.special.find(v => v.name == job)
-    return special ?? { name: 'unknown', value: gearsetsStore.default }
+    if (special == undefined)
+        return null
+    return {
+        name: special.name,
+        attributes: special.value ?? gearsetsStore.default
+    }
 })
+const craftingCheckResultIcon = ref<"success" | "warning" | "info" | "error">('success')
 const craftingCheckResult = computed(() => {
-    if (recipe.value == null || attributes.value == null)
+    craftingCheckResultIcon.value = 'error'
+    if (recipe.value == null || classJobInfo.value == null || recipeInfo.value == null)
         return '';
-    if (recipe.value.job_level > (attributes.value.value?.level ?? 0) + 5)
+    if (recipe.value.job_level > (classJobInfo.value.attributes.level ?? 0) + 5)
         return 'class-job-level-too-low'
+    if (recipeInfo.value.required_craftsmanship > classJobInfo.value.attributes.craftsmanship
+        || recipeInfo.value.required_control > classJobInfo.value.attributes.control)
+        return 'class-job-attributes-too-low'
+
+    craftingCheckResultIcon.value = 'success'
     return 'crafting-check-success'
 })
 
@@ -78,7 +91,17 @@ const craftingCheckResult = computed(() => {
     </el-result>
     <div v-else v-tnze-loading="loading" class="container">
         <div class="main-content">
-            <el-text>{{ $t(craftingCheckResult, { job: $t(attributes?.name ?? 'unknown') }) }}</el-text>
+            <el-result v-if="craftingCheckResult != ''" :icon="craftingCheckResultIcon"
+                :title="$t(craftingCheckResult, { job: $t(classJobInfo?.name ?? 'unknown') })" :sub-title="$t(craftingCheckResult + '-detail', {
+                    job: $t(classJobInfo?.name ?? 'unknown'),
+                    minLevel: (recipe?.job_level ?? 0) - 5,
+                    minCraftsmanship: recipeInfo?.required_craftsmanship ?? 0,
+                    minControl: recipeInfo?.required_control ?? 0,
+                })">
+                <template #extra>
+                    <el-button @click="back">{{ $t('back') }}</el-button>
+                </template>
+            </el-result>
         </div>
         <el-descriptions v-if="recipeInfo && recipeLevel && recipe" :title="$t('recipe-info')" size="small" :column="4">
             <el-descriptions-item :label="$t('item-name')" :span="2">{{ recipeInfo.item_name }}</el-descriptions-item>
@@ -120,9 +143,14 @@ const craftingCheckResult = computed(() => {
     justify-content: center;
 }
 
-.el-text {
+.title {
     font-size: 1.5em;
-    margin-bottom: 100px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1em;
+    margin-bottom: 90px;
 }
 </style>
 
@@ -132,7 +160,7 @@ item-name = 物品名称
 job-class = 职业类型
 recipe-level = 配方等级
 job-level = 职业等级
-can-hq = 是否HQ
+can-hq = 存在HQ
 suggested-craftsmanship = 建议{ craftsmanship }
 suggested-control = 建议{ control }
 required-craftsmanship = 最低{ craftsmanship }
@@ -144,6 +172,10 @@ error-happens = 加载配方时出现了一些错误
 back = 返回
 retry = 重试
 
-class-job-level-too-low = 你的{ $job }等级似乎没有满足该配方的要求
-crafting-check-success = 没有发现任何问题！可以开始制作了
+class-job-level-too-low = 您的{ $job }等级似乎没有满足该配方的要求
+class-job-level-too-low-detail = 您可能需要将{ $job }升至{ $minLevel }级才能制作该配方
+class-job-attributes-too-low = 您的{ $job }装备属性似乎没有满足该配方的要求
+class-job-attributes-too-low-detail = 您可能需要考虑更换更好的{ $job }装备，以满足{ craftsmanship } ≥ { $minCraftsmanship }、{ control } ≥ { $minControl }
+crafting-check-success = 没有发现任何问题，可以开始制作了！
+crafting-check-success-detail = 接下来将运行自动求解算法，帮助您了解制作该配方的手法
 </fluent>

@@ -9,6 +9,8 @@ const router = useRouter()
 const guideStore = useGuideStore()
 const settingStore = useSettingsStore()
 
+guideStore.setCurrentPage('welcome')
+
 const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'beforedawn'>(() => {
     const hour = new Date().getHours();
     if (hour >= 4 && hour < 6)
