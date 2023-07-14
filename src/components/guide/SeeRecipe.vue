@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { ElDescriptions, ElDescriptionsItem, ElButton, ElResult, ElText } from 'element-plus';
 import { useGearsetsStore, useGuideStore, useSettingsStore } from '../../store';
 import { Item, Recipe, RecipeInfo, RecipeLevel, newRecipe } from '../../Craft';
@@ -13,19 +13,18 @@ const gearsetsStore = useGearsetsStore()
 
 const loading = ref(true)
 const errorMessage = ref<string | null>(null)
-const itemInfo = ref<Item | null>(null)
-const recipeLevel = ref<RecipeLevel | null>(null)
-const recipe = ref<Recipe | null>(null)
 const recipeInfo = computed(() => guideStore.recipeInfo)
 
 guideStore.setCurrentPage('see-recipe')
 retry()
 
 function back() {
+    guideStore.setCurrentPage('welcome')
     router.replace('welcome')
 }
 
 function start() {
+    guideStore.setCurrentPage('solving')
     router.replace('solving')
 }
 
@@ -41,15 +40,15 @@ async function retry() {
             dataSource.itemInfo(recipeInfo.value.item_id),
             dataSource.recipeLevelTable(recipeInfo.value.rlv),
         ])
-        itemInfo.value = iinfo
-        recipeLevel.value = rlv
-        recipe.value = await newRecipe(
+        guideStore.setItemInfo(iinfo)
+        guideStore.setRecipeLevel(rlv)
+        guideStore.setRecipe(await newRecipe(
             recipeInfo.value.rlv,
             rlv,
             recipeInfo.value.difficulty_factor,
             recipeInfo.value.quality_factor,
             recipeInfo.value.durability_factor,
-        )
+        ))
     } catch (e: unknown) {
         errorMessage.value = String(e)
     } finally {
@@ -57,29 +56,29 @@ async function retry() {
     }
 }
 
-const classJobInfo = computed(() => {
+watchEffect(() => {
     if (recipeInfo.value == null)
         return null
     const job = craftTypeTojobs(recipeInfo.value.job)
     const special = gearsetsStore.special.find(v => v.name == job)
     if (special == undefined)
         return null
-    return {
-        name: special.name,
-        attributes: special.value ?? gearsetsStore.default
-    }
+    guideStore.setAttributes(
+        special.name,
+        special.value ?? gearsetsStore.default
+    )
 })
 const craftingCheckResultIcon = ref<"success" | "warning" | "info" | "error">('success')
 const craftingCheckResult = computed(() => {
     craftingCheckResultIcon.value = 'error'
-    if (recipe.value == null || classJobInfo.value == null || recipeInfo.value == null)
+    if (guideStore.recipe == null || guideStore.craftType == null || guideStore.craftTypeAttr == null || recipeInfo.value == null)
         return '';
-    if (recipe.value.job_level > (classJobInfo.value.attributes.level ?? 0) + 5)
+    if (guideStore.recipe.job_level > (guideStore.craftTypeAttr.level ?? 0) + 5)
         return 'class-job-level-too-low'
-    if (recipeInfo.value.required_craftsmanship > classJobInfo.value.attributes.craftsmanship
-        || recipeInfo.value.required_control > classJobInfo.value.attributes.control)
+    if (recipeInfo.value.required_craftsmanship > guideStore.craftTypeAttr.craftsmanship
+        || recipeInfo.value.required_control > guideStore.craftTypeAttr.control)
         return 'class-job-attributes-too-low'
-
+    
     craftingCheckResultIcon.value = 'success'
     return 'crafting-check-success'
 })
@@ -97,9 +96,9 @@ craftingCheckResult.effect
     <div v-else v-tnze-loading="loading" class="container">
         <div class="main-content">
             <el-result v-if="craftingCheckResult != ''" :icon="craftingCheckResultIcon"
-                :title="$t(craftingCheckResult, { job: $t(classJobInfo?.name ?? 'unknown') })" :sub-title="$t(craftingCheckResult + '-detail', {
-                    job: $t(classJobInfo?.name ?? 'unknown'),
-                    minLevel: (recipe?.job_level ?? 0) - 5,
+                :title="$t(craftingCheckResult, { job: $t(guideStore.craftType ?? 'unknown-job') })" :sub-title="$t(craftingCheckResult + '-detail', {
+                    job: $t(guideStore.craftType ?? 'unknown-job'),
+                    minLevel: (guideStore.recipe?.job_level ?? 0) - 5,
                     minCraftsmanship: recipeInfo?.required_craftsmanship ?? 0,
                     minControl: recipeInfo?.required_control ?? 0,
                 })">
@@ -111,19 +110,20 @@ craftingCheckResult.effect
                 </template>
             </el-result>
         </div>
-        <el-descriptions v-if="recipeInfo && recipeLevel && recipe" :title="$t('recipe-info')" size="small" :column="4">
+        <el-descriptions v-if="recipeInfo && guideStore.recipeLevel && guideStore.recipe" :title="$t('recipe-info')"
+            size="small" :column="4">
             <el-descriptions-item :label="$t('item-name')" :span="2">{{ recipeInfo.item_name }}</el-descriptions-item>
             <el-descriptions-item :label="$t('recipe-level')">{{ recipeInfo.rlv }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('job-level')">{{ recipe.job_level }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('job-level')">{{ guideStore.recipe.job_level }}</el-descriptions-item>
             <el-descriptions-item :label="$t('job-class')">{{ recipeInfo.job }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('difficulty')">{{ recipe.difficulty }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('quality')">{{ recipe.quality }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('durability')">{{ recipe.durability }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('difficulty')">{{ guideStore.recipe.difficulty }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('quality')">{{ guideStore.recipe.quality }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('durability')">{{ guideStore.recipe.durability }}</el-descriptions-item>
             <el-descriptions-item :label="$t('suggested-craftsmanship')">
-                {{ recipeLevel.suggested_craftsmanship }}
+                {{ guideStore.recipeLevel.suggested_craftsmanship }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('suggested-control')">
-                {{ recipeLevel.suggested_control }}
+                {{ guideStore.recipeLevel.suggested_control }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('required-craftsmanship')">
                 {{ recipeInfo.required_craftsmanship }}
@@ -180,6 +180,7 @@ error-happens = 加载配方时出现了一些错误
 back = 返回
 retry = 重试
 start = 开始
+unknown-job = 某职业
 
 class-job-level-too-low = { $job }等级过低
 class-job-level-too-low-detail = 您可能需要将{ $job }升至{ $minLevel }级才能制作该配方

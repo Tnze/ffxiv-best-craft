@@ -6,19 +6,27 @@ export const useGuideStore = defineStore('guide', {
     state: () => ({
         currentPage: '/guide/welcome',
         recipeInfo: <RecipeInfo | null>null,
+        recipe: <Recipe | null>null,
+        recipeLevel: <RecipeLevel | null>null,
+        itemInfo: <Item | null>null,
+        craftType: <Jobs | null>null,
+        craftTypeAttr: <Attributes | null>null
     }),
     actions: {
-        setRecipeInfo(info: RecipeInfo) {
-            this.recipeInfo = info
-        },
-        setCurrentPage(url: string) {
-            this.currentPage = url
+        setCurrentPage(url: string) { this.currentPage = url },
+        setRecipeInfo(info: RecipeInfo) { this.recipeInfo = info },
+        setRecipe(r: Recipe) { this.recipe = r },
+        setRecipeLevel(rlv: RecipeLevel) { this.recipeLevel = rlv },
+        setItemInfo(item: Item) { this.itemInfo = item },
+        setAttributes(classJob: Jobs, attr: Attributes) {
+            this.craftType = classJob
+            this.craftTypeAttr = attr
         }
     }
 })
 
 export interface GearsetsRow {
-    name: string
+    name: Jobs
     value: Attributes | null
 }
 
@@ -31,14 +39,14 @@ export const useGearsetsStore = defineStore('gearsets', {
             craft_points: 533,
         },
         special: [
-            { name: 'carpenter', value: null },
-            { name: 'blacksmith', value: null },
-            { name: 'armorer', value: null },
-            { name: 'goldsmith', value: null },
-            { name: 'leatherworker', value: null },
-            { name: 'weaver', value: null },
-            { name: 'alchemist', value: null },
-            { name: 'culinarian', value: null },
+            { name: Jobs.Carpenter, value: null },
+            { name: Jobs.Blacksmith, value: null },
+            { name: Jobs.Armorer, value: null },
+            { name: Jobs.Goldsmith, value: null },
+            { name: Jobs.Leatherworker, value: null },
+            { name: Jobs.Weaver, value: null },
+            { name: Jobs.Alchemist, value: null },
+            { name: Jobs.Culinarian, value: null },
         ] as GearsetsRow[]
     }),
     getters: {
