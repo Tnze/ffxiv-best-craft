@@ -172,9 +172,9 @@ error-happens = 加载配方时出现了一些错误
 back = 返回
 retry = 重试
 
-class-job-level-too-low = 您的{ $job }等级似乎没有满足该配方的要求
+class-job-level-too-low = { $job }等级过低
 class-job-level-too-low-detail = 您可能需要将{ $job }升至{ $minLevel }级才能制作该配方
-class-job-attributes-too-low = 您的{ $job }装备属性似乎没有满足该配方的要求
+class-job-attributes-too-low = { $job }装备属性过低
 class-job-attributes-too-low-detail = 您可能需要考虑更换更好的{ $job }装备，以满足{ craftsmanship } ≥ { $minCraftsmanship }、{ control } ≥ { $minControl }
 crafting-check-success = 没有发现任何问题，可以开始制作了！
 crafting-check-success-detail = 接下来将运行自动求解算法，帮助您了解制作该配方的手法
