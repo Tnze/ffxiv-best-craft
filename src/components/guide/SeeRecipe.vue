@@ -19,12 +19,10 @@ guideStore.setCurrentPage('see-recipe')
 retry()
 
 function back() {
-    guideStore.setCurrentPage('welcome')
     router.replace('welcome')
 }
 
 function start() {
-    guideStore.setCurrentPage('solving')
     router.replace('solving')
 }
 
