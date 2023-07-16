@@ -16,7 +16,7 @@ const attributes = computed(() => {
     const special = gearsetsStore.special.find(v => v.name == designerStore.content!.job)
     return special?.value ?? gearsetsStore.default
 })
-const errorMessage = ref<string | null>(null)
+const errorMessage = ref<string>()
 
 onErrorCaptured((err: unknown) => {
     errorMessage.value = String(err)
@@ -29,7 +29,7 @@ function reload() {
 
 <template>
     <Suspense>
-        <el-result v-if="errorMessage != null" icon="error" :title="$t('error-happens')" :sub-title="$t(errorMessage)">
+        <el-result v-if="errorMessage" icon="error" :title="$t('error-happens')" :sub-title="$t(errorMessage)">
             <template #extra>
                 <el-button @click="reload">{{ $t('reaload') }}</el-button>
             </template>

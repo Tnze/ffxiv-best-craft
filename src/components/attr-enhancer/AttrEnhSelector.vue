@@ -8,23 +8,7 @@ import { useFluent } from 'fluent-vue';
 
 const { $t } = useFluent();
 
-interface Item {
-    // craftsmanship
-    cm?: number;
-    cm_max?: number;
-
-    // touch
-    ct?: number;
-    ct_max?: number;
-
-    // craft-point
-    cp?: number;
-    cp_max?: number;
-
-    name: string;
-}
-
-const 专家之证: Item = {
+const 专家之证: Enhancer = {
     cm: 100,
     cm_max: 20,
     ct: 100,
@@ -33,7 +17,7 @@ const 专家之证: Item = {
     cp_max: 15,
     name: "【ilv.136】" + $t('soul-of-the-crafter')
 }
-const items: Item[] = [专家之证].concat(meal).concat(potions)
+const items: Enhancer[] = [专家之证].concat(meal).concat(potions)
 
 const props = defineProps<{
     modelValue: Enhancer[]

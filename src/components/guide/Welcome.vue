@@ -27,7 +27,7 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
         return 'night'
 })
 
-const recipeSelected = ref<RecipeInfo | undefined>()
+const recipeSelected = ref<RecipeInfo>()
 const recipeOptions = ref<RecipeInfo[]>([])
 const loading = ref(false)
 async function searchRecipe(name: string) {

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue';
-import { ElDescriptions, ElDescriptionsItem, ElButton, ElResult, ElText } from 'element-plus';
+import { ElDescriptions, ElDescriptionsItem, ElButton, ElResult, ElSelectV2 } from 'element-plus';
 import { useGearsetsStore, useGuideStore, useSettingsStore } from '../../store';
-import { Item, Recipe, RecipeInfo, RecipeLevel, newRecipe } from '../../Craft';
+import { newRecipe } from '../../Craft';
 import { craftTypeTojobs } from '../recipe-manager/common'
 import { useRouter } from 'vue-router';
+import meal from '../../assets/data/meal.json'
+import potions from '../../assets/data/potions.json'
+import { Enhancer } from '../attr-enhancer/Enhancer';
 
 const router = useRouter()
 const guideStore = useGuideStore()
@@ -12,7 +15,7 @@ const settingStore = useSettingsStore()
 const gearsetsStore = useGearsetsStore()
 
 const loading = ref(true)
-const errorMessage = ref<string | null>(null)
+const errorMessage = ref<string>()
 const recipeInfo = computed(() => guideStore.recipeInfo)
 
 guideStore.setCurrentPage('see-recipe')
@@ -76,16 +79,25 @@ const craftingCheckResult = computed(() => {
     if (recipeInfo.value.required_craftsmanship > guideStore.craftTypeAttr.craftsmanship
         || recipeInfo.value.required_control > guideStore.craftTypeAttr.control)
         return 'class-job-attributes-too-low'
-    
+
     craftingCheckResultIcon.value = 'success'
     return 'crafting-check-success'
 })
-craftingCheckResult.effect
 
+const mealSelected = ref<Enhancer>()
+const potionSelected = ref<Enhancer>()
+const mealOptions = meal.map(v => ({
+    value: v,
+    label: v.name
+}))
+const potionOptions = potions.map(v => ({
+    value: v,
+    label: v.name
+}))
 </script>
 
 <template>
-    <el-result v-if="errorMessage != null" icon="error" :title="$t('error-happens')" :sub-title="$t(errorMessage)">
+    <el-result v-if="errorMessage" icon="error" :title="$t('error-happens')" :sub-title="$t(errorMessage)">
         <template #extra>
             <el-button @click="back">{{ $t('back') }}</el-button>
             <el-button @click="retry" type="primary">{{ $t('retry') }}</el-button>
@@ -107,6 +119,12 @@ craftingCheckResult.effect
                     </el-button>
                 </template>
             </el-result>
+        </div>
+        <div class="enhancer-selectors">
+            <el-select-v2 class="enhancer-select-box" v-model="mealSelected" clearable :placeholder="$t('select-meal')"
+                :options="mealOptions" value-key="value.name" />
+            <el-select-v2 class="enhancer-select-box" v-model="potionSelected" clearable :placeholder="$t('select-potions')"
+                :options="potionOptions" value-key="value.name" />
         </div>
         <el-descriptions v-if="recipeInfo && guideStore.recipeLevel && guideStore.recipe" :title="$t('recipe-info')"
             size="small" :column="4">
@@ -149,6 +167,16 @@ craftingCheckResult.effect
     justify-content: center;
 }
 
+.enhancer-selectors {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.enhancer-select-box {
+    margin: 7px;
+}
+
 .title {
     font-size: 1.5em;
     margin-bottom: 10px;
@@ -179,11 +207,13 @@ back = 返回
 retry = 重试
 start = 开始
 unknown-job = 某职业
+select-meal = 选择食物
+select-potions = 选择药水
 
 class-job-level-too-low = { $job }等级过低
 class-job-level-too-low-detail = 您可能需要将{ $job }升至{ $minLevel }级才能制作该配方
 class-job-attributes-too-low = { $job }装备属性过低
-class-job-attributes-too-low-detail = 您可能需要考虑更换更好的{ $job }装备，以满足{ craftsmanship } ≥ { $minCraftsmanship }、{ control } ≥ { $minControl }
+class-job-attributes-too-low-detail = 您可能需要考虑更换更好的{ $job }装备，或使用食物和药水，以满足{ craftsmanship } ≥ { $minCraftsmanship }、{ control } ≥ { $minControl }
 crafting-check-success = 没有发现任何问题，可以开始制作了！
 crafting-check-success-detail = 接下来将运行自动求解算法，帮助您了解制作该配方的手法
 </fluent>

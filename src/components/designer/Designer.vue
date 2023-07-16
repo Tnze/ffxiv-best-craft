@@ -4,7 +4,7 @@ import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
 import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
-import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeInfo, RecipeLevel, RecipeRequirements } from "../../Craft";
+import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "../../Craft";
 import { read_solver } from "../../Solver";
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
