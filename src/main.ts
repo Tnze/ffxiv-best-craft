@@ -16,6 +16,8 @@ const Guide = () => import('./components/guide/Guide.vue')
 const Welcome = () => import('./components/guide/Welcome.vue')
 const SeeRecipe = () => import('./components/guide/SeeRecipe.vue')
 const Solving = () => import('./components/guide/Solving.vue')
+const Result = () => import('./components/guide/Result.vue')
+
 const GearsetsVue = () => import('./components/Gearsets.vue')
 const RecipePanelVue = () => import('./components/recipe-manager/RecipePanel.vue')
 const CustomizeRecipe = () => import('./components/recipe-manager/CustomizeRecipe.vue')
@@ -33,6 +35,7 @@ const router = createRouter({
                 { path: 'welcome', name: 'welcome', component: Welcome },
                 { path: 'see-recipe', name: 'see-recipe', component: SeeRecipe },
                 { path: 'solving', name: 'solving', component: Solving },
+                { path: 'result', name: 'result', component: Result },
             ]
         },
         { path: '/gearsets', component: GearsetsVue },
