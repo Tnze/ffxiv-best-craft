@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { Attributes, Item, ItemWithAmount, Jobs, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements } from './Craft'
 import { CafeMakerApiBase, DataSource, LocalRecipeSource, XivApiRecipeSource, XivapiBase } from './components/recipe-manager/source'
+import { Enhancer } from './components/attr-enhancer/Enhancer'
 
 export const useGuideStore = defineStore('guide', {
     state: () => ({
@@ -10,7 +11,9 @@ export const useGuideStore = defineStore('guide', {
         recipeLevel: <RecipeLevel | null>null,
         itemInfo: <Item | null>null,
         craftType: <Jobs | null>null,
-        craftTypeAttr: <Attributes | null>null
+        craftTypeAttr: <Attributes | null>null,
+        food: <Enhancer | undefined>undefined,
+        potion: <Enhancer | undefined>undefined,
     }),
     actions: {
         setCurrentPage(url: string) { this.currentPage = url },
@@ -21,7 +24,7 @@ export const useGuideStore = defineStore('guide', {
         setAttributes(classJob: Jobs, attr: Attributes) {
             this.craftType = classJob
             this.craftTypeAttr = attr
-        }
+        },
     }
 })
 

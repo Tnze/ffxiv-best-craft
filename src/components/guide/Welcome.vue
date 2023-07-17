@@ -6,10 +6,10 @@ import { RecipeInfo } from '../../Craft';
 import { useRouter } from 'vue-router';
 
 const router = useRouter()
-const guideStore = useGuideStore()
+const store = useGuideStore()
 const settingStore = useSettingsStore()
 
-guideStore.setCurrentPage('welcome')
+store.setCurrentPage('welcome')
 
 const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'beforedawn'>(() => {
     const hour = new Date().getHours();
@@ -43,7 +43,7 @@ async function searchRecipe(name: string) {
     }
 }
 function recipeChange(val: RecipeInfo) {
-    guideStore.setRecipeInfo(val)
+    store.setRecipeInfo(val)
     router.push('see-recipe')
 }
 
@@ -51,13 +51,20 @@ function recipeChange(val: RecipeInfo) {
 
 <template>
     <div class="container">
-        <el-text class="greeting">{{ $t('welcome', { time }) }}</el-text>
-        <el-select class="recipe-select" v-model="recipeSelected" value-key="id" size="large" :default-first-option="true"
-            :placeholder="$t('input-recipe-name')" :loading-text="$t('loading')" :no-match-text="$t('no-match')"
-            :no-data-text="$t('no-data')" :remote-method="searchRecipe" v-on:change="recipeChange" remote remote-show-suffix
-            filterable :loading="loading">
-            <el-option v-for="r in recipeOptions" :key="r.id" :label="r.item_name" :value="r" />
-        </el-select>
+        <div class="greeting-box">
+            <el-text class="greeting">
+                {{ $t('welcome', { time }) }}
+            </el-text>
+        </div>
+        <div class="select-box">
+            <el-select v-model="recipeSelected" value-key="id" size="large" :default-first-option="true"
+                :placeholder="$t('input-recipe-name')" :loading-text="$t('loading')" :no-match-text="$t('no-match')"
+                :no-data-text="$t('no-data')" :remote-method="searchRecipe" v-on:change="recipeChange" remote
+                remote-show-suffix filterable :loading="loading">
+                <el-option v-for="r in recipeOptions" :key="r.id" :label="r.item_name" :value="r" />
+            </el-select>
+        </div>
+        <el-text class="info-text" type="info">{{ $t('guide-mode-info') }}</el-text>
     </div>
 </template>
 
@@ -70,13 +77,30 @@ function recipeChange(val: RecipeInfo) {
     height: 100%;
 }
 
+.greeting-box {
+    flex: 3 1 0;
+    display: flex;
+}
+
 .greeting {
     font-size: 2em;
+    align-self: flex-end;
     margin-bottom: 100px;
+}
+
+.select-box {
+    flex: 2 1 0;
 }
 
 .confirm-button {
     margin-top: 50px;
+}
+
+.info-text {
+    align-self: center;
+    margin-bottom: 5px;
+    white-space: pre-line;
+    text-align: center;
 }
 </style>
 
@@ -96,4 +120,8 @@ input-recipe-name = 输入配方名称
 loading = 加载中
 no-match = 没有匹配的配方
 no-data = 无配方
+
+guide-mode-info =
+    注意：向导模式是一项实验性功能，旨在帮助新老工匠们快速生成制作手法。
+    如有任何问题请至QQ频道反馈交流。
 </fluent>

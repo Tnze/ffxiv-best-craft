@@ -1,4 +1,4 @@
-import { Actions, Attributes, Recipe, Status } from "./Craft";
+import { Actions, Status } from "./Craft";
 import { invoke } from "@tauri-apps/api/tauri";
 
 export const create_solver = (

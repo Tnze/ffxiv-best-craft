@@ -10,15 +10,15 @@ import potions from '../../assets/data/potions.json'
 import { Enhancer } from '../attr-enhancer/Enhancer';
 
 const router = useRouter()
-const guideStore = useGuideStore()
+const store = useGuideStore()
 const settingStore = useSettingsStore()
 const gearsetsStore = useGearsetsStore()
 
 const loading = ref(true)
 const errorMessage = ref<string>()
-const recipeInfo = computed(() => guideStore.recipeInfo)
+const recipeInfo = computed(() => store.recipeInfo)
 
-guideStore.setCurrentPage('see-recipe')
+store.setCurrentPage('see-recipe')
 retry()
 
 function back() {
@@ -41,9 +41,9 @@ async function retry() {
             dataSource.itemInfo(recipeInfo.value.item_id),
             dataSource.recipeLevelTable(recipeInfo.value.rlv),
         ])
-        guideStore.setItemInfo(iinfo)
-        guideStore.setRecipeLevel(rlv)
-        guideStore.setRecipe(await newRecipe(
+        store.setItemInfo(iinfo)
+        store.setRecipeLevel(rlv)
+        store.setRecipe(await newRecipe(
             recipeInfo.value.rlv,
             rlv,
             recipeInfo.value.difficulty_factor,
@@ -64,7 +64,7 @@ watchEffect(() => {
     const special = gearsetsStore.special.find(v => v.name == job)
     if (special == undefined)
         return null
-    guideStore.setAttributes(
+    store.setAttributes(
         special.name,
         special.value ?? gearsetsStore.default
     )
@@ -72,20 +72,18 @@ watchEffect(() => {
 const craftingCheckResultIcon = ref<"success" | "warning" | "info" | "error">('success')
 const craftingCheckResult = computed(() => {
     craftingCheckResultIcon.value = 'error'
-    if (guideStore.recipe == null || guideStore.craftType == null || guideStore.craftTypeAttr == null || recipeInfo.value == null)
+    if (store.recipe == null || store.craftType == null || store.craftTypeAttr == null || recipeInfo.value == null)
         return '';
-    if (guideStore.recipe.job_level > (guideStore.craftTypeAttr.level ?? 0) + 5)
+    if (store.recipe.job_level > (store.craftTypeAttr.level ?? 0) + 5)
         return 'class-job-level-too-low'
-    if (recipeInfo.value.required_craftsmanship > guideStore.craftTypeAttr.craftsmanship
-        || recipeInfo.value.required_control > guideStore.craftTypeAttr.control)
+    if (recipeInfo.value.required_craftsmanship > store.craftTypeAttr.craftsmanship
+        || recipeInfo.value.required_control > store.craftTypeAttr.control)
         return 'class-job-attributes-too-low'
 
     craftingCheckResultIcon.value = 'success'
     return 'crafting-check-success'
 })
 
-const mealSelected = ref<Enhancer>()
-const potionSelected = ref<Enhancer>()
 const mealOptions = meal.map(v => ({
     value: v,
     label: v.name
@@ -106,9 +104,9 @@ const potionOptions = potions.map(v => ({
     <div v-else v-tnze-loading="loading" class="container">
         <div class="main-content">
             <el-result v-if="craftingCheckResult != ''" :icon="craftingCheckResultIcon"
-                :title="$t(craftingCheckResult, { job: $t(guideStore.craftType ?? 'unknown-job') })" :sub-title="$t(craftingCheckResult + '-detail', {
-                    job: $t(guideStore.craftType ?? 'unknown-job'),
-                    minLevel: (guideStore.recipe?.job_level ?? 0) - 5,
+                :title="$t(craftingCheckResult, { job: $t(store.craftType ?? 'unknown-job') })" :sub-title="$t(craftingCheckResult + '-detail', {
+                    job: $t(store.craftType ?? 'unknown-job'),
+                    minLevel: (store.recipe?.job_level ?? 0) - 5,
                     minCraftsmanship: recipeInfo?.required_craftsmanship ?? 0,
                     minControl: recipeInfo?.required_control ?? 0,
                 })">
@@ -121,25 +119,25 @@ const potionOptions = potions.map(v => ({
             </el-result>
         </div>
         <div class="enhancer-selectors">
-            <el-select-v2 class="enhancer-select-box" v-model="mealSelected" clearable :placeholder="$t('select-meal')"
+            <el-select-v2 class="enhancer-select-box" v-model="store.food" clearable :placeholder="$t('select-meal')"
                 :options="mealOptions" value-key="value.name" />
-            <el-select-v2 class="enhancer-select-box" v-model="potionSelected" clearable :placeholder="$t('select-potions')"
+            <el-select-v2 class="enhancer-select-box" v-model="store.potion" clearable :placeholder="$t('select-potions')"
                 :options="potionOptions" value-key="value.name" />
         </div>
-        <el-descriptions v-if="recipeInfo && guideStore.recipeLevel && guideStore.recipe" :title="$t('recipe-info')"
-            size="small" :column="4">
+        <el-descriptions v-if="recipeInfo && store.recipeLevel && store.recipe" :title="$t('crafting-info')" size="small"
+            :column="4">
             <el-descriptions-item :label="$t('item-name')" :span="2">{{ recipeInfo.item_name }}</el-descriptions-item>
             <el-descriptions-item :label="$t('recipe-level')">{{ recipeInfo.rlv }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('job-level')">{{ guideStore.recipe.job_level }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('job-level')">{{ store.recipe.job_level }}</el-descriptions-item>
             <el-descriptions-item :label="$t('job-class')">{{ recipeInfo.job }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('difficulty')">{{ guideStore.recipe.difficulty }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('quality')">{{ guideStore.recipe.quality }}</el-descriptions-item>
-            <el-descriptions-item :label="$t('durability')">{{ guideStore.recipe.durability }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('difficulty')">{{ store.recipe.difficulty }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('quality')">{{ store.recipe.quality }}</el-descriptions-item>
+            <el-descriptions-item :label="$t('durability')">{{ store.recipe.durability }}</el-descriptions-item>
             <el-descriptions-item :label="$t('suggested-craftsmanship')">
-                {{ guideStore.recipeLevel.suggested_craftsmanship }}
+                {{ store.recipeLevel.suggested_craftsmanship }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('suggested-control')">
-                {{ guideStore.recipeLevel.suggested_control }}
+                {{ store.recipeLevel.suggested_control }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('required-craftsmanship')">
                 {{ recipeInfo.required_craftsmanship }}
@@ -148,6 +146,14 @@ const potionOptions = potions.map(v => ({
                 {{ recipeInfo.required_control }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('can-hq')">{{ $t(String(recipeInfo.can_hq)) }}</el-descriptions-item>
+            <template v-if="store.craftTypeAttr">
+                <el-descriptions-item :label="$t('craftsmanship')">
+                    {{ store.craftTypeAttr.craftsmanship }}
+                </el-descriptions-item>
+                <el-descriptions-item :label="$t('control')">{{ store.craftTypeAttr.control }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('craft-point')">{{ store.craftTypeAttr.craft_points
+                }}</el-descriptions-item>
+            </template>
         </el-descriptions>
     </div>
 </template>
@@ -189,7 +195,7 @@ const potionOptions = potions.map(v => ({
 </style>
 
 <fluent locale="zh-CN">
-recipe-info = 配方信息
+crafting-info = 制作信息
 item-name = 物品名称
 job-class = 职业类型
 recipe-level = 配方等级
@@ -213,7 +219,7 @@ select-potions = 选择药水
 class-job-level-too-low = { $job }等级过低
 class-job-level-too-low-detail = 您可能需要将{ $job }升至{ $minLevel }级才能制作该配方
 class-job-attributes-too-low = { $job }装备属性过低
-class-job-attributes-too-low-detail = 您可能需要考虑更换更好的{ $job }装备，或使用食物和药水，以满足{ craftsmanship } ≥ { $minCraftsmanship }、{ control } ≥ { $minControl }
-crafting-check-success = 没有发现任何问题，可以开始制作了！
-crafting-check-success-detail = 接下来将运行自动求解算法，帮助您了解制作该配方的手法
+class-job-attributes-too-low-detail = 您可能需要考虑更换更好的{ $job }装备、使用食物和药水，以满足{ craftsmanship } ≥ { $minCraftsmanship }、{ control } ≥ { $minControl }
+crafting-check-success = 可以开始制作了！
+crafting-check-success-detail = 点击{ start }运行自动求解算法，并生成游戏宏
 </fluent>

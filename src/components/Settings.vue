@@ -66,7 +66,7 @@ const onCheckUpdateClick = async () => {
                     }}</el-button>
                 </el-form-item>
                 <el-form-item :label="$t('developer')">
-                    Tnze❀潮风亭
+                    Tnze
                 </el-form-item>
                 <el-form-item :label="$t('feedback')">
                     <el-link href="https://pd.qq.com/s/cofwn9zhx" target="_blank">QQ频道</el-link>
@@ -102,7 +102,7 @@ dslang-fr = 法语
 system-lang = 跟随系统
 version-number = 版本号
 tauri = Tauri
-developer = 开发者
+developer = ๐•ᴗ•๐
 feedback = 反馈
 
 check-update = 检查更新
