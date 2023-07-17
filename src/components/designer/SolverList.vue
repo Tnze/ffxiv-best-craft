@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { ElScrollbar, ElCollapse, ElCollapseItem, ElButton, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage, ElMessageBox, ElSlider, ElRadioGroup, ElRadio } from 'element-plus'
+import { ElText, ElScrollbar, ElCollapse, ElCollapseItem, ElButton, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage, ElMessageBox, ElSlider, ElRadioGroup, ElRadio } from 'element-plus'
 import { Actions, Status } from "../../Craft"
 import { create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve } from '../../Solver'
 import { useFluent } from 'fluent-vue';
@@ -221,6 +221,7 @@ async function runDfsSolver() {
 
 <template>
     <el-scrollbar class="container">
+        <el-text type="info">{{ $t('sum-info') }}</el-text>
         <el-collapse v-model="activeNames" accordion>
             <el-collapse-item :title="$t('dfs-solver')" name="dfs">
                 <i18n path="dfs-solver-info" tag="span" class="solver-info">
@@ -237,7 +238,7 @@ async function runDfsSolver() {
                         </div>
                         <el-checkbox v-model="useSpecialist" :label="$t('specialist')" /><br />
                         <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
-                            {{ dfsSolving ? $t('rika-solving') : $t('rika-solver-start') }}
+                            {{ dfsSolving ? $t('rika-solving') : $t('solver-start') }}
                         </el-button>
                     </template>
                 </i18n>
@@ -249,7 +250,7 @@ async function runDfsSolver() {
                         <el-checkbox v-model="tnzeVerRikaUseObserve" :label="$t('observe')" /><br />
                         <el-checkbox v-model="tnzeVerRikaReduceSteps" :label="$t('reduce-steps-info')" /><br />
                         <el-button type="primary" @click="runTnzeVerRikaSolver" :loading="tnzeVerRikaIsSolving">
-                            {{ tnzeVerRikaIsSolving ? $t('rika-solving') : $t('rika-solver-start') }}
+                            {{ tnzeVerRikaIsSolving ? $t('rika-solving') : $t('solver-start') }}
                         </el-button>
                     </template>
                 </i18n>
@@ -290,7 +291,7 @@ async function runDfsSolver() {
                     </template>
                     <template #startButton>
                         <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving">
-                            {{ rikaIsSolving ? $t('rika-solving') : $t('rika-solver-start') }}
+                            {{ rikaIsSolving ? $t('rika-solving') : $t('solver-start') }}
                         </el-button>
                     </template>
                     <template #rikaSaidLine="{ rikaSaid }">
@@ -356,10 +357,12 @@ dp-solver-empty-text = 没有已加载的求解器
 error-with = 错误：{ $err }
 
 warning = 警告
-rika-solver-start = 开始求解
+solver-start = 开始求解
 rika-solver-warning = 当前配方不满足 Rika 求解器的使用条件，是否强制运行？
 rika-solving = 正在求解中
 rika-solve-finished =「{ $solverName }」求解完成({ $solveTime })
+
+sum-info = 警告：以下内容包含许多对您没有帮助的碎碎念，使用求解器请直接点击“{ solver-start }”按钮。
 
 rika-solver-info =
     由{$rikaRepoLink}，作者同意后移植至本应用。
@@ -411,7 +414,7 @@ dp-solver-empty-text = None of solver is loaded
 error-with = Error: { $err }
 
 warning = Warning
-rika-solver-start = Start
+solver-start = Start
 rika-solver-warning = The current recipe does not meet the usage conditions of the Rika's solver. Do you want to force it to run?
 rika-solving = Solving
 rika-solve-finished = Solver "{ $solverName }" finished. ({ $solveTime })
