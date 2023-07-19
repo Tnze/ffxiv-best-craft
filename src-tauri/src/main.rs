@@ -15,6 +15,7 @@ use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use rand::{random, seq::SliceRandom, thread_rng};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::Serialize;
+use solver::Score;
 use tauri::Manager;
 use tokio::sync::{Mutex, OnceCell};
 
@@ -39,8 +40,12 @@ async fn recipe_level_table(
     app_handle: tauri::AppHandle,
 ) -> Result<db::recipe_level_tables::Model, String> {
     let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
-    let Some(rt) = RecipeLevelTables::find_by_id(rlv).one(db).await.map_err(err_to_string)? else {
-        return Err(String::from("unknown-recipe-level"))
+    let Some(rt) = RecipeLevelTables::find_by_id(rlv)
+        .one(db)
+        .await
+        .map_err(err_to_string)?
+    else {
+        return Err(String::from("unknown-recipe-level"));
     };
     Ok(rt)
 }
@@ -390,6 +395,26 @@ fn dfs_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
     depth_first_search_solver::solve(&status, depth, specialist)
 }
 
+#[tauri::command(async)]
+fn reflect_solve(status: Status, use_manipulation: bool) -> Vec<Actions> {
+    let solver = reflect_solver::QualitySolver::new(status.clone(), use_manipulation, 8 + 1, true);
+    let result1 = solver.read_all(&status);
+    let SimulateResult { status: s1, .. } = simulate(status.clone(), result1.clone());
+    // Try reflect
+    let mut s = status.clone();
+    s.cast_action(Actions::Reflect);
+    let mut result2 = solver.read_all(&s);
+    if result2.len() != 0 {
+        result2.insert(0, Actions::Reflect);
+    }
+    let SimulateResult { status: s2, .. } = simulate(s, result2.clone());
+    if Score::from((&s1, result1.len())) > Score::from((&s2, result2.len())) {
+        result1
+    } else {
+        result2
+    }
+}
+
 /// 释放求解器
 #[tauri::command(async)]
 async fn destroy_solver(
@@ -433,6 +458,7 @@ fn main() {
             rika_solve,
             rika_solve_tnzever,
             dfs_solve,
+            reflect_solve,
             should_be_transparent,
         ])
         .setup(|app| {

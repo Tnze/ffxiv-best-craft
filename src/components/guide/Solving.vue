@@ -3,9 +3,9 @@ import { VNode, computed, h, onMounted, ref } from 'vue';
 import { ElText, ElTimeline, ElTimelineItem, ElButton, ElScrollbar, ElIcon, ElResult } from 'element-plus';
 import { Loading } from "@element-plus/icons-vue";
 import { useGuideStore } from '../../store';
-import { dfs_solve, formatDuration, rika_solve, rika_solve_tnzever } from "../../Solver";
+import { dfs_solve, formatDuration, reflect_solve, rika_solve, rika_solve_tnzever } from "../../Solver";
 import { useFluent } from 'fluent-vue'
-import { Actions, Jobs, Status, newStatus, simulate } from '../../Craft';
+import { Actions, Jobs, Status, compareStatus, newStatus, simulate } from '../../Craft';
 import ActionQueue from '../designer/ActionQueue.vue'
 
 const store = useGuideStore();
@@ -34,8 +34,9 @@ async function selectSolver() {
     const recipe = store.recipe
     const recipeLevel = store.recipeLevel
     const status = await newStatus(attr, recipe, recipeLevel)
+    const useManipulation = true
 
-    let ranSolverCount = 0;
+    const solveResults: { status: Status, actions: Actions[] }[] = []
     const runSolver = async (name: string, func: () => Promise<Actions[]>) => {
         runningSolverName.value = $t(name)
         const startTime = new Date().getTime()
@@ -46,6 +47,7 @@ async function selectSolver() {
         const list = result.map((action, id) => ({ id, action }))
         const { status: fstatus, errors: errList } = await simulate(status, result)
 
+        solveResults.push({ status: fstatus, actions: result })
         solverLines.value.push({
             content: [
                 h(ElText, { innerHTML: $t('solver-result', { solverName: $t(name) }) }),
@@ -57,7 +59,6 @@ async function selectSolver() {
                     fstatus.quality < recipe.quality ? 'warning' : 'primary'
             }, // evaluated after running solver
         })
-        ranSolverCount++
     }
     if (store.recipe.conditions_flag == 15) {
         // normal recipes
@@ -69,13 +70,18 @@ async function selectSolver() {
                 })
                 await runSolver('dfs-solver', () => dfs_solve(status, 6, false))
             }
+            solveResults.sort((a, b) => compareStatus(a.status, b.status))
+            if (solveResults.length == 0 || solveResults[0].status.quality < recipe.quality) {
+                await runSolver('reflect-solver', () => reflect_solve(status, useManipulation))
+            }
+            // if bestResult quality <= maxQuality { runReflectSolver() }
             if (store.recipe.rlv >= 560 && store.recipe.difficulty >= 70) {
                 solverLines.value.push({
                     content: [h(ElText, { innerHTML: $t('rika-say-good-try-rika-bfs') })],
                     lineprops: { timestamp: '', type: 'info' },
                 })
                 await runSolver('rika-bfs-solver', () => rika_solve(status))
-                await runSolver('tnze-bfs-solver', () => rika_solve_tnzever(status, true, 8, true, true))
+                await runSolver('tnze-bfs-solver', () => rika_solve_tnzever(status, useManipulation, 8, true, true))
             }
         } else {
             solverLines.value.push({
@@ -87,11 +93,11 @@ async function selectSolver() {
         // hard recipes
     }
 
-    if (ranSolverCount == 0) {
+    if (solveResults.length == 0) {
         solverTitle.value = 'no-suitable-solver';
-        return
+    } else {
+        solverTitle.value = 'solve-finished'
     }
-    solverTitle.value = 'solve-finished'
 }
 
 store.setCurrentPage('solving')
@@ -184,6 +190,7 @@ const solverSuccessed = computed(() => solverTitle.value == 'solve-finished')
 
 <fluent locale="zh-CN">
 dfs-solver = 深度优先搜索
+reflect-solver = 闲静DP
 rika-bfs-solver = Rika原版BFS
 tnze-bfs-solver = Tnze修改版BFS
 
