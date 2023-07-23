@@ -150,7 +150,6 @@ export class LocalRecipeSource {
     }
     async recipeLevelTable(rlv: number): Promise<RecipeLevel> {
         const val = await invoke("recipe_level_table", { rlv })
-        console.debug(val)
         let result: RecipeLevel = {
             ...await invoke("recipe_level_table", { rlv }),
             stars: 0,

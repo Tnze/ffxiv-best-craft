@@ -5,11 +5,13 @@ import { Loading } from "@element-plus/icons-vue";
 import { useGuideStore } from '../../store';
 import { dfs_solve, formatDuration, reflect_solve, rika_solve, rika_solve_tnzever } from "../../Solver";
 import { useFluent } from 'fluent-vue'
-import { Actions, Jobs, Status, compareStatus, newStatus, simulate } from '../../Craft';
+import { Actions, Status, compareStatus, newStatus, simulate } from '../../Craft';
 import ActionQueue from '../designer/ActionQueue.vue'
+import { useRouter } from 'vue-router';
 
-const store = useGuideStore();
-const { $t } = useFluent();
+const store = useGuideStore()
+const { $t } = useFluent()
+const router = useRouter()
 
 const solverTitle = ref<'solve-finished' | 'no-suitable-solver'>()
 const runningSolverName = ref<string>()
@@ -22,10 +24,7 @@ async function selectSolver() {
         store.recipeInfo == null ||
         store.recipeLevel == null) {
 
-        solverLines.value.push({
-            content: [h(ElText, { innerHTML: $t('recipe-info-incomplete') })],
-            lineprops: { timestamp: '', type: 'danger' },
-        })
+        router.replace('see-recipe')
         return
     }
 
@@ -63,6 +62,7 @@ async function selectSolver() {
     if (store.recipe.conditions_flag == 15) {
         // normal recipes
         if (store.recipeInfo.can_hq) {
+            // 优先尝试暴力求解
             if (store.craftTypeAttr.level >= store.recipe.job_level + 10) {
                 solverLines.value.push({
                     content: [h(ElText, { innerHTML: $t('trained-eye-usable-try-dfs') })],
@@ -70,11 +70,7 @@ async function selectSolver() {
                 })
                 await runSolver('dfs-solver', () => dfs_solve(status, 6, false))
             }
-            solveResults.sort((a, b) => compareStatus(a.status, b.status))
-            if (solveResults.length == 0 || solveResults[0].status.quality < recipe.quality) {
-                await runSolver('reflect-solver', () => reflect_solve(status, useManipulation))
-            }
-            // if bestResult quality <= maxQuality { runReflectSolver() }
+            // 如果符合条件，运行Rika求解
             if (store.recipe.rlv >= 560 && store.recipe.difficulty >= 70) {
                 solverLines.value.push({
                     content: [h(ElText, { innerHTML: $t('rika-say-good-try-rika-bfs') })],
@@ -82,6 +78,12 @@ async function selectSolver() {
                 })
                 await runSolver('rika-bfs-solver', () => rika_solve(status))
                 await runSolver('tnze-bfs-solver', () => rika_solve_tnzever(status, useManipulation, 8, true, true))
+            }
+            // 以上均无结果，则运行闲静手法DP兜底
+            // 坚信手法推不满的时候也运行闲静手法，有些特殊情况闲静手法品质更优
+            solveResults.sort((a, b) => compareStatus(a.status, b.status))
+            if (solveResults.length == 0 || solveResults[0].status.quality < recipe.quality) {
+                await runSolver('reflect-solver', () => reflect_solve(status, useManipulation))
             }
         } else {
             solverLines.value.push({
@@ -97,6 +99,11 @@ async function selectSolver() {
         solverTitle.value = 'no-suitable-solver';
     } else {
         solverTitle.value = 'solve-finished'
+
+        // sort the results and choice the first one
+        solveResults.sort((a, b) => compareStatus(a.status, b.status))
+        const { actions } = solveResults[0]
+        store.setBestResult(actions)
     }
 }
 
@@ -141,7 +148,7 @@ const solverSuccessed = computed(() => solverTitle.value == 'solve-finished')
                         <el-button @click="$router.replace('see-recipe')">
                             {{ $t('back') }}
                         </el-button>
-                        <el-button @click="$router.replace('result')" v-if="solverSuccessed" type="primary">
+                        <el-button @click="$router.push('result')" v-if="solverSuccessed" type="primary">
                             {{ $t('view-result') }}
                         </el-button>
                     </template>
@@ -152,7 +159,7 @@ const solverSuccessed = computed(() => solverTitle.value == 'solve-finished')
         <div class="button-box" v-if="runningSolverName">
             <el-button @click="$router.replace('see-recipe')">{{ $t('back') }}</el-button>
         </div>
-        <el-scrollbar>
+        <el-scrollbar always>
             <lines :lines="solverLines" />
         </el-scrollbar>
     </div>
@@ -197,7 +204,6 @@ tnze-bfs-solver = Tnze修改版BFS
 solving = 正在运行 { $solverName } 求解器
 back = 返回
 
-recipe-info-incomplete = 错误：未获取到配方信息
 trained-eye-usable-try-dfs = 满足{ trained-eye }使用条件，尝试使用{ dfs-solver }
 rika-say-good-try-rika-bfs = 满足 Rika 设定的条件，尝试使用广度优先搜索
 not-yet-supported-non-hq-recipes = 尚未支持对非 HQ 配方的求解
