@@ -133,7 +133,7 @@ export class XivApiRecipeSource {
             mode: 'cors'
         })
         let data: XivapiItemResult = await resp.json()
-        return <Item>{
+        return {
             id: data.ID,
             name: data.Name,
             level: data.LevelItem,
@@ -144,18 +144,20 @@ export class XivApiRecipeSource {
 }
 
 export class LocalRecipeSource {
-    async recipeTable(page: number, searchName: string) {
+    async recipeTable(page: number, searchName: string): Promise<RecipesSourceResult> {
         let [recipes, totalPages]: [RecipeInfo[], number] = await invoke("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
         return { recipes, totalPages }
     }
-    async recipeLevelTable(rlv: number) {
+    async recipeLevelTable(rlv: number): Promise<RecipeLevel> {
+        const val = await invoke("recipe_level_table", { rlv })
+        console.debug(val)
         let result: RecipeLevel = {
             ...await invoke("recipe_level_table", { rlv }),
             stars: 0,
         }
         return result
     }
-    async itemInfo(itemId: number) {
+    async itemInfo(itemId: number): Promise<Item> {
         const { id, name, level, can_be_hq, category_id } = await invoke("item_info", { itemId }) as {
             id: number,
             name: string,
