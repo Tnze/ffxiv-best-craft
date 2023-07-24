@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue';
-import { ElDescriptions, ElDescriptionsItem, ElButton, ElResult, ElSelectV2 } from 'element-plus';
+import { ElDescriptions, ElDescriptionsItem, ElButton, ElResult, ElSelectV2, ElCheckbox } from 'element-plus';
 import { useGearsetsStore, useGuideStore, useSettingsStore } from '../../store';
 import { newRecipe } from '../../Craft';
 import { craftTypeTojobs } from '../recipe-manager/common'
@@ -123,6 +123,7 @@ const potionOptions = potions.map(v => ({
                 :options="mealOptions" value-key="value.name" />
             <el-select-v2 class="enhancer-select-box" v-model="store.potion" clearable :placeholder="$t('select-potions')"
                 :options="potionOptions" value-key="value.name" />
+            <el-checkbox v-model="store.manipulation" :label="$t('manipulation')" />
         </div>
         <el-descriptions v-if="recipeInfo && store.recipeLevel && store.recipe" :title="$t('crafting-info')" size="small"
             :column="4">
@@ -177,6 +178,7 @@ const potionOptions = potions.map(v => ({
     display: flex;
     justify-content: center;
     margin-bottom: 15px;
+    align-items: center;
 }
 
 .enhancer-select-box {

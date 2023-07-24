@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VNode, computed, h, onMounted, ref } from 'vue';
+import { VNode, computed, h, onMounted, onUnmounted, ref } from 'vue';
 import { ElText, ElTimeline, ElTimelineItem, ElButton, ElScrollbar, ElIcon, ElResult } from 'element-plus';
 import { Loading } from "@element-plus/icons-vue";
 import { useGuideStore } from '../../store';
@@ -49,8 +49,8 @@ async function selectSolver() {
     const job = store.craftType
     const recipe = store.recipe
     const recipeLevel = store.recipeLevel
+    const useManipulation = store.manipulation
     const status = await newStatus(attr, recipe, recipeLevel)
-    const useManipulation = true
 
     const solveResults: { status: Status, actions: Actions[] }[] = []
     const runSolver = async (name: string, func: () => Promise<Actions[]>) => {
@@ -65,7 +65,7 @@ async function selectSolver() {
 
         solveResults.push({ status: fstatus, actions: result })
         solverLines.value.push({
-            title: $t('solver-result', { 
+            title: $t('solver-result', {
                 solverName: $t(name),
                 quality: fstatus.quality,
                 highQuality: await high_quality_probability(fstatus) ?? '',
@@ -76,32 +76,33 @@ async function selectSolver() {
                 fstatus.quality < recipe.quality ? 'warning' : 'primary'
         })
     }
-    if (store.recipe.conditions_flag == 15) {
-        // normal recipes
-        if (store.recipeInfo.can_hq) {
+
+    if (!store.recipeInfo.can_hq) {
+        solverLines.value.push({
+            type: 'warning',
+            title: $t('not-yet-supported-non-hq-recipes'),
+        })
+    } else {
+        if (store.recipe.conditions_flag == 15) {
+            // 普通配方
             // 优先尝试暴力求解
             if (store.craftTypeAttr.level >= store.recipe.job_level + 10) {
                 await runSolver('dfs-solver', () => dfs_solve(status, 6, false))
             }
-            // 如果符合条件，运行Rika求解
-            if (store.recipe.rlv >= 560 && store.recipe.difficulty >= 70) {
-                await runSolver('rika-bfs-solver', () => rika_solve(status))
-                await runSolver('tnze-bfs-solver', () => rika_solve_tnzever(status, useManipulation, 8, true, true))
-            }
-            // 以上均无结果，则运行闲静手法DP兜底
-            // 坚信手法推不满的时候也运行闲静手法，有些特殊情况闲静手法品质更优
-            solveResults.sort((a, b) => compareStatus(a.status, b.status))
-            if (solveResults.length == 0 || solveResults[0].status.quality < recipe.quality) {
-                await runSolver('reflect-solver', () => reflect_solve(status, useManipulation))
-            }
         } else {
-            solverLines.value.push({
-                type: 'warning',
-                title: $t('not-yet-supported-non-hq-recipes'),
-            })
+            // 高难配方
         }
-    } else {
-        // hard recipes
+        // 如果符合条件，运行Rika求解
+        if (store.recipe.rlv >= 560 && store.recipe.difficulty >= 70) {
+            await runSolver('rika-bfs-solver', () => rika_solve(status))
+            await runSolver('tnze-bfs-solver', () => rika_solve_tnzever(status, useManipulation, 8, true, true))
+        }
+        // 以上均无结果，则运行闲静手法DP兜底
+        // 坚信手法推不满的时候也运行闲静手法，有些特殊情况闲静手法品质更优
+        solveResults.sort((a, b) => compareStatus(a.status, b.status))
+        if (solveResults.length == 0 || solveResults[0].status.quality < recipe.quality) {
+            await runSolver('reflect-solver', () => reflect_solve(status, useManipulation))
+        }
     }
 
     if (solveResults.length == 0) {
@@ -109,15 +110,29 @@ async function selectSolver() {
     } else {
         solverTitle.value = 'solve-finished'
 
-        // sort the results and choice the first one
-        solveResults.sort((a, b) => compareStatus(a.status, b.status))
-        const { actions } = solveResults[0]
-        store.setBestResult(actions)
+        return () => {
+            // sort the results and choice the first one
+            solveResults.sort((a, b) => compareStatus(a.status, b.status))
+            const { actions } = solveResults[0]
+            store.setBestResult(actions)
+        }
     }
 }
 
 store.setCurrentPage('solving')
-onMounted(selectSolver)
+let cancelLast = () => { }
+onMounted(async () => {
+    cancelLast()
+    let canceled = false
+    cancelLast = () => { canceled = true }
+    const writeStore = await selectSolver()
+    if (!canceled && writeStore != undefined)
+        writeStore()
+})
+onUnmounted(() => {
+    cancelLast()
+    cancelLast = () => { }
+})
 
 const solverSuccessed = computed(() => solverTitle.value == 'solve-finished')
 

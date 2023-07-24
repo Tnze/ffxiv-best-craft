@@ -14,6 +14,7 @@ export const useGuideStore = defineStore('guide', {
         craftTypeAttr: <Attributes | null>null,
         food: <Enhancer | undefined>undefined,
         potion: <Enhancer | undefined>undefined,
+        manipulation: false,
         bestResult: <Actions[] | null>null,
     }),
     actions: {

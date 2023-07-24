@@ -114,7 +114,7 @@ onMounted(() => checkUpdate($t, true))
     --el-fill-color-blank: transparent;
 
     --el-border-radius-base: 9px;
-    --el-border-radius-small: 8px;
+    --el-border-radius-small: 5px;
     --el-border-radius-round: 20px;
 }
 
