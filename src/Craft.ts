@@ -198,6 +198,10 @@ export const simulateOneStep = (status: Status, action: Actions, forceSuccess: b
     return invoke("simulate_one_step", { status, action, forceSuccess });
 };
 
+export const high_quality_probability = (status: Status): Promise<number | null> => {
+    return invoke("high_quality_probability", { status });
+}
+
 export const allowedList = (status: Status, actions: Actions[]): Promise<string[]> => {
     return invoke("allowed_list", { status, skills: actions });
 };

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import { ElAlert } from 'element-plus';
 import { useRouter } from 'vue-router';
 import { useGuideStore } from '../../store';
@@ -12,7 +12,6 @@ const router = useRouter()
 const store = useGuideStore()
 
 store.setCurrentPage('result')
-onMounted(loadResult)
 
 const simulatedResult = ref<{
     attr: Attributes
@@ -23,7 +22,7 @@ const simulatedResult = ref<{
     errList: { pos: number, err: string }[]
 }>()
 
-async function loadResult() {
+watchEffect(async () => {
     const attr = store.craftTypeAttr
     const job = store.craftType
     const recipe = store.recipe
@@ -48,7 +47,7 @@ async function loadResult() {
     simulatedResult.value = {
         attr, enhancers, status, job, slots, errList,
     }
-}
+})
 
 </script>
 

@@ -156,6 +156,11 @@ fn craftpoints_list(status: Status, skills: Vec<Actions>) -> Vec<i32> {
     skills.iter().map(|&sk| status.craft_point(sk)).collect()
 }
 
+#[tauri::command(async)]
+fn high_quality_probability(status: Status) -> Option<i32> {
+    status.high_quality_probability()
+}
+
 fn err_to_string<T: ToString>(v: T) -> String {
     v.to_string()
 }
@@ -447,6 +452,7 @@ fn main() {
             new_status,
             simulate,
             simulate_one_step,
+            high_quality_probability,
             allowed_list,
             craftpoints_list,
             recipe_table,
@@ -464,6 +470,11 @@ fn main() {
         .setup(|app| {
             let window = app.get_window("main").unwrap();
             window.set_decorations(true)?;
+
+            let packaeg_info = app.package_info();
+            window.set_title(
+                format!("{} v{}", window.title()?, packaeg_info.version.to_string()).as_str(),
+            )?;
 
             let state = app.state::<AppState>();
 
