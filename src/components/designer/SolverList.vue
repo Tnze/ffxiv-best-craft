@@ -419,6 +419,8 @@ rika-solver-warning = The current recipe does not meet the usage conditions of t
 rika-solving = Solving
 rika-solve-finished = Solver "{ $solverName }" finished. ({ $solveTime })
 
+sum-info = Warning: The following content contains many fragmented ideas that are not helpful to you. To use the solvers, please click on the '{ solver-start }' button directly.
+
 rika-solver-info =
     {$rikaRepoLink}. Transplant with the consent of the author.
     P.S: The algorithm uses radical pruning strategy for solving,

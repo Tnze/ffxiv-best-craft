@@ -119,7 +119,7 @@ const potionOptions = potions.map(v => ({
             </el-result>
         </div>
         <div class="enhancer-selectors">
-            <el-select-v2 class="enhancer-select-box" v-model="store.food" clearable :placeholder="$t('select-meal')"
+            <el-select-v2 class="enhancer-select-box" v-model="store.food" clearable :placeholder="$t('select-meals')"
                 :options="mealOptions" value-key="value.name" />
             <el-select-v2 class="enhancer-select-box" v-model="store.potion" clearable :placeholder="$t('select-potions')"
                 :options="potionOptions" value-key="value.name" />
@@ -215,7 +215,7 @@ back = 返回
 retry = 重试
 start = 开始
 unknown-job = 某职业
-select-meal = 选择食物
+select-meals = 选择食物
 select-potions = 选择药水
 
 class-job-level-too-low = { $job }等级过低
@@ -225,3 +225,35 @@ class-job-attributes-too-low-detail = 您可能需要考虑更换更好的{ $job
 crafting-check-success = 可以开始制作了！
 crafting-check-success-detail = 点击{ start }运行自动求解算法，并生成游戏宏
 </fluent>
+
+<fluent locale="en-US">
+crafting-info = Crafting Info
+item-name = Item Name
+job-class = Job Class
+recipe-level = Recipe Level
+job-level = Job Level
+can-hq = Can be HQ
+suggested-craftsmanship = Suggested { craftsmanship }
+suggested-control = Suggested { control }
+required-craftsmanship = Required { craftsmanship }
+required-control = Required { control }
+true = True
+false = False
+
+error-happens = 加载配方时出现了一些错误
+back = Back
+retry = Retry
+start = Start
+unknown-job = Unknown Job
+select-meals = Select Meals
+select-potions = Select Potions
+
+class-job-level-too-low = { $job } level not enough.
+class-job-level-too-low-detail = You may need to raise { $job } to Lv. { $minLevel } to craft this recipe.
+class-job-attributes-too-low = { $job } gearsets attributes not enough.
+class-job-attributes-too-low-detail = 您可能需要考虑更换更好的{ $job }装备、使用食物和药水，以满足{ craftsmanship } ≥ { $minCraftsmanship }、{ control } ≥ { $minControl }
+class-job-attributes-too-low-detail = You may need to consider replacing better { $job } equipment, using meals and potions to meet { craftsmanship } ≥ { $minCraftsmanship } and { control } ≥ { $minControl }.
+crafting-check-success = It's all ready to crafting!
+crafting-check-success-detail = Click the { start } button to running the solver algorithms and generating macros.
+</fluent>
+    

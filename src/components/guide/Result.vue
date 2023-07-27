@@ -53,7 +53,7 @@ watchEffect(async () => {
 
 <template>
     <div class="container">
-        <el-alert title="该页面尚未制作完成，请等待软件版本更新" type="warning" show-icon />
+        <el-alert :title="$t('unfinished')" type="warning" show-icon center />
         <template v-if="simulatedResult">
             <StatusBar :status="simulatedResult.status" :attributes="simulatedResult.attr"
                 :enhancers="simulatedResult.enhancers" :show-condition="false" />
@@ -67,3 +67,11 @@ watchEffect(async () => {
     margin: 10px;
 }
 </style>
+
+<fluent locale="zh-CN">
+unfinished = 该页面尚未制作完成，请等待软件版本更新。
+</fluent>
+
+<fluent locale="en-US">
+unfinished = This page has not been developed yet. Please wait for updates.
+</fluent>

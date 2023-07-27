@@ -70,7 +70,7 @@ settings = 设置
 </fluent>
 
 <fluent locale="en-US">
-guide = Guide
+guide = Wizard
 gearsets = Gearsets
 recipe = Recipe
 bom = BOM

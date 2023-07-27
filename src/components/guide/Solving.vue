@@ -223,3 +223,22 @@ no-suitable-solver = 没有合适的求解器
 
 view-result = 查看结果
 </fluent>
+
+<fluent locale="en-US">
+dfs-solver = Deep First Search
+reflect-solver = Dynamic Programing
+rika-bfs-solver = Rika original edition BFS
+tnze-bfs-solver = Tnze modified version BFS
+
+solving = Runinng { $solverName } solver
+back = Back
+
+not-yet-supported-non-hq-recipes = Not yet supported for solving non HQ recipes
+solver-result = { $solverName } solving finished, Quality: { $quality }, HQ rate: { $highQuality }%
+
+solve-finished = Solving finished
+no-suitable-solver = No suitable solver found
+
+view-result = View Results
+</fluent>
+        

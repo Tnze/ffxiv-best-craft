@@ -125,3 +125,25 @@ guide-mode-info =
     注意：向导模式是一项实验性功能，旨在帮助新老工匠们快速生成制作手法。
     如有任何问题请至QQ频道反馈交流。
 </fluent>
+
+<fluent locale="en-US">
+greeting = 
+    { $time ->
+        [beforedawn] Good morning
+        [morning] Good morning
+        [noon] Good afternoon
+        [afternoon] Good afternoon
+        [evening] Good evening
+        [night] It's getting late at night
+        *[other] Nice to see you
+    }
+welcome = { greeting }. What do you want to craft?
+input-recipe-name = Input recipe name
+loading = Loading
+no-match = No match recipe
+no-data = No recipe
+
+guide-mode-info =
+    Note: Wizard mode is an experimental feature designed to help new and old craftsmen quickly generate crafting action sequences.
+    If you have any questions, please issue an Github Issue for feedback and communication.
+</fluent>
