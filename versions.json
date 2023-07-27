@@ -1,19 +1,19 @@
 {
-  "version": "0.11.0",
-  "notes": "- 圆角！\n- 修复翻译文本错误\n- 修复玩家等级低于配方等级时模拟器白屏的问题\n- 修复本地数据源配方数据不正确的问题\n- 新增向导模式\n- 修复使用Xivapi数据源技能图标职业不正确的问题",
-  "pub_date": "2023-07-23T17:28:47.464Z",
+  "version": "0.11.1",
+  "notes": "- 修复在Win10上亚克力材质导致看不清内容的问题\n- 向导模式允许选择是否使用“掌握”",
+  "pub_date": "2023-07-27T15:11:12.363Z",
   "platforms": {
-    "darwin-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmlYNnc4VmVQQXZ6ZzRsekRwdEpCNkFtajM2bTRPcUZvRW42VHRPY1hVRWppZUpIRER6bmtueWdkc0c4U3JLSHZsYjZEbHpVYm5WZWlHM25Ddzl5WWdRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkwMTMzMjM3CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKQTU5bFRLUUpJTkZxVitLU3FnOXFjREVBeUl4b3JTWHRtS29qcmdDeXhxaXFnTHZiMjJPVFUxYW9mckk1WVFiNTZTQ3pNQlFoZHREbHo4Y3JjekNsRGc9PQo=",
-      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.11.0/BestCraft_x64.app.tar.gz"
-    },
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm1lWWVtSzVqUmV0K0x0Q1VoeXFtdjRmLzIwWkF3RFhtVTZYN1BNK3ZGZ1hJaXFMaWkrNVM2Si9JaE15RzR5OE9tcXZMYUo1RkYxTkdnZzREUW5yNFFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkwMTMzMTIxCWZpbGU6YmVzdC1jcmFmdF8wLjExLjBfYW1kNjQuQXBwSW1hZ2UudGFyLmd6Ckk5RFU0RDkxODhKU2NQRW5sbHlvSnZZRGplalRCYU04MWtBWmFtVEIyd0dtSEp4MEtGdDhkS1hkbFdCSWpHQTRCcVVZY2JSN1hOMzVEcC9qM1dlYURnPT0K",
-      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.11.0/best-craft_0.11.0_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9CTjJmQjY1eGpYcGdXeTQ5cUVzbjZRcDVkbk1BTS9BWnJkcTJ3MjJFQTBCSlJHNGNaUXFrVXMwWjE1SENaUXREQmczNWRZcmFTRHpOdHhWNG5vZVFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkwNDcwMzEzCWZpbGU6YmVzdC1jcmFmdF8wLjExLjFfYW1kNjQuQXBwSW1hZ2UudGFyLmd6ClNhS2pKZCthd294TmozMkZnY01aL21VellhWG1xTEpEVHhEN2hEZFdKbkl0LzNReGJRUmVXdjNxa0JtaXV6S256cFlVT0JaYzF0RlBOeEtuOGd5RUN3PT0K",
+      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.11.1/best-craft_0.11.1_amd64.AppImage.tar.gz"
+    },
+    "darwin-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5iVFUyaFZyMGNzdEVVTnMrTXdVTnhtU1p5R2syVXhHbWcrRmFIdkM4cG8xVzlCSXhURnFTRHE4ekIwKzhEK1BNUnhuejBLWjFLZEt5N0VIYUNhcncwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkwNDcwNTgwCWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKbWg4WlRrL0RVTUttWXBJV3RqU3RVWEJWZFhBUWprVmlkcVBGMmdxU1dBWjNBY093SGYvTzliTmtLNzZtU1Q0OXBuT2hSNXNzVEU0VnVtOWh0OVJaQmc9PQo=",
+      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.11.1/BestCraft_x64.app.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmdzR21vcUo5KzJoUzNPcWdyaWkzVjk3bnlpMitSNFE2S1FWUmRrN3ZqeDFFRWg2MnZDUzNNcG9KL0pxTkVUcUI1VzZacXhZQThPMTVWanhmMFJYSXcwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkwMTMzMzIwCWZpbGU6QmVzdENyYWZ0XzAuMTEuMF94NjRfemgtQ04ubXNpLnppcApZaHU1YnpMTVJiZlRsSWNvVDc1NlYrUHVSRGFiWWRXc1BHeThsV1ZaZTZwWUhtcFR4V3Q4R2o0RzBNR3lmSHZYV3Q3ZTZRZEQ4VlN5RXE4SnFTeElDdz09Cg==",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.11.0/BestCraft_0.11.0_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnNWMXdGNXhEeDg0Rzd6ZVA5ejFwdyswMjRHbHFPZndtRXlad0RhUC9rNVk2L29ReDV4K0lBQXd0Z1hoRGZkQlVqNmgzWG9vblJLeGVEb1h2MWNrT1EwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkwNDcwNjY2CWZpbGU6QmVzdENyYWZ0XzAuMTEuMV94NjRfemgtQ04ubXNpLnppcApMTXFqRk91WmFqUGU5TlVWU1hHaHJrdUc5S3hoYWU4a0hvV1FNVFZqeVBmZ0FYenZiWjJtTlF3OFBQNSsxM0JQb3dQNWZpR1RyUllJOTBXRGZUZGlBdz09Cg==",
+      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.11.1/BestCraft_0.11.1_x64_zh-CN.msi.zip"
     }
   }
 }
