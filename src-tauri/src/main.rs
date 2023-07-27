@@ -494,8 +494,7 @@ fn main() {
 
             #[cfg(target_os = "windows")]
             {
-                sbt = window_vibrancy::apply_mica(&window, None).is_ok()
-                    || window_vibrancy::apply_acrylic(&window, None).is_ok();
+                sbt = window_vibrancy::apply_mica(&window, None).is_ok();
             }
 
             state
