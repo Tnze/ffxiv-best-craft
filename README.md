@@ -1,53 +1,56 @@
 # FFXIV-Best-Craft
 
-最终幻想14生产模拟器
+This is a crafting simulator with solver algorithms for Final Fantasy XIV(FF14).
 
-推荐配置：
+最终幻想14生产模拟器（附带智能求解算法）
 
-- 操作系统：Windows 11、MacOS或Linux
-- 内存：16GiB以上
+推荐配置 Recommended setup:
 
-最低配置：
+- 操作系统 OS: Windows 11, MacOS, Linux
+- 内存 Memory: 16GiB
 
-- 操作系统：Windows 10
-- 内存：8GiB
+最低配置 Required setup:
+
+- 操作系统 OS: Windows 10
+- 内存 Memory: 8GiB
 
 ## Download 下载
 
-Windows用户请在[发行版页面](https://gitee.com/Tnze/ffxiv-best-craft/releases)下载包含`.msi`字样的安装包
+下载地址：[Gitee](https://gitee.com/Tnze/ffxiv-best-craft/releases) (Windows Only)  
+Download: [Github](https://gitee.com/Tnze/ffxiv-best-craft/releases)
 
-Linux 与 MacOS 用户请移步[Github Releases](https://github.com/Tnze/ffxiv-best-craft/releases)下载对应的安装包
-
+- Windows用户请下载 `.msi` 或者 `.nsis` 安装包
 - Mac 用户请下载`dmg`或`app`文件
 - Debian 及 Ubuntu 用户请下载`AppImage`或`deb`文件
 - 其他 Linux 用户请下载`AppImage`文件
 
 ## Dev （开发人员帮助）
 
-### 安装依赖项
+### 安装依赖项 Install Dependencies
 
 按照这篇教程安装Rust、Node和WebView2等组件：[Tauri Getting Started](https://tauri.app/zh/v1/guides/getting-started/prerequisites/)
 
 ```bash
-yarn install # download requirements
+yarn install # 下载依赖 download requirements
 ```
 
 ### Develop build
 
 ```bash
 yarn tauri dev
-# or
+# 或 or
 yarn tauri dev --release
 ```
 
-> Solving could be very very slow in debug mode.
+> ⚠️ 调试模式构建的程序运行求解器可能极慢。  
+> ⚠️ Solving could be very very slow in debug mode.
 
 ### Release build
 
 ```bash
-# set enviroments
+# 设置环境变量 set enviroments
 export TAURI_PRIVATE_KEY="Path or String of your private key"
 export TAURI_KEY_PASSWORD="Your private key password (optional)"
-# build and signing
+# 构建和签名 build and signing
 yarn tauri build
 ```
