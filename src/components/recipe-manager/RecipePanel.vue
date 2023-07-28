@@ -2,9 +2,9 @@
 import { ref, watchEffect, reactive } from 'vue'
 import { ElContainer, ElHeader, ElMain, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
-import { Jobs, newRecipe, RecipeInfo } from '../../Craft'
+import { newRecipe, RecipeInfo } from '../../Craft'
 import { useRouter } from 'vue-router';
-import { useChecklistStore, useDesignerStore, useSettingsStore } from '../../store';
+import { useChecklistStore, useSettingsStore } from '../../store';
 import { useFluent } from 'fluent-vue';
 import { selectRecipe } from './common';
 
