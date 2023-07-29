@@ -60,12 +60,7 @@ const enhancedAttributes = computed<Attributes>(() => {
         .filter((v) => v.cp && v.cp_max)
         .map((v) => Math.min((craft_points * v.cp!) / 100, v.cp_max!))
         .reduce(sum, 0);
-    return {
-        level,
-        craftsmanship,
-        control,
-        craft_points,
-    };
+    return { level, craftsmanship, control, craft_points };
 });
 
 // Attribution Alert

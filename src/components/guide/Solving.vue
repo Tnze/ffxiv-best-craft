@@ -69,7 +69,7 @@ async function selectSolver() {
             title: $t('solver-result', {
                 solverName: $t(name),
                 quality: fstatus.quality,
-                highQuality: await high_quality_probability(fstatus) ?? '',
+                highQuality: await high_quality_probability(fstatus) ?? '?? ',
             }),
             actionQueue: { job, slots, errList },
             timestamp: formatDuration(stopTime - startTime),
@@ -112,7 +112,7 @@ async function selectSolver() {
         return () => {
             // sort the results and choice the first one
             solveResults.sort((a, b) => compareStatus(a.status, b.status))
-            const { actions } = solveResults[0]
+            const { actions } = solveResults[solveResults.length - 1]
             store.setBestResult(actions)
         }
     }

@@ -28,6 +28,19 @@ export const useGuideStore = defineStore('guide', {
             this.craftTypeAttr = attr
         },
         setBestResult(actions: Actions[]) { this.bestResult = actions }
+    },
+    getters: {
+        finalAttr(): Attributes | null {
+            if (this.craftTypeAttr == null) return null
+            let { level, craftsmanship, control, craft_points } = this.craftTypeAttr;
+            for (const v of [this.food, this.potion]) {
+                if (!v) continue;
+                if (v.cm && v.cm_max) craftsmanship += Math.min((craftsmanship * v.cm) / 100, v.cm_max)
+                if (v.ct && v.ct_max) control += Math.min((control * v.ct) / 100, v.ct_max)
+                if (v.cp && v.cp_max) craft_points += Math.min((craft_points * v.cp) / 100, v.cp_max)
+            }
+            return { level, craftsmanship, control, craft_points }
+        }
     }
 })
 
