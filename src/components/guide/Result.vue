@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from 'vue';
-import { ElAlert } from 'element-plus';
+import { ref, watchEffect } from 'vue';
+import { ElAlert, ElStatistic, ElRow, ElCol } from 'element-plus';
 import { useRouter } from 'vue-router';
 import { useGuideStore } from '../../store';
-import { Actions, Attributes, Jobs, Recipe, RecipeInfo, RecipeLevel, Status, newStatus, simulate } from '../../Craft';
+import { Actions, Attributes, Jobs, Recipe, RecipeInfo, RecipeLevel, Status, high_quality_probability, newStatus, simulate } from '../../Craft';
 import ActionQueue from '../designer/ActionQueue.vue';
 import StatusBar from '../designer/StatusBar.vue';
 import { Enhancer } from '../attr-enhancer/Enhancer';
@@ -25,6 +25,7 @@ const requiredGearsets = ref<{
     craftsmanship: number,
     control: number
 }>()
+const hqRate = ref(0)
 
 watchEffect(async () => {
     const attr = store.craftTypeAttr
@@ -46,6 +47,7 @@ watchEffect(async () => {
     findRequiredAttributes(recipe, recipeLevel, store.recipeInfo!, actions, finalAttr).then(v => requiredGearsets.value = v)
     const slots = actions.map((action, id) => ({ id, action }))
     const { status, errors: errList } = await simulate(s, actions)
+    hqRate.value = await high_quality_probability(status) ?? 0
 
     const enhancers: Enhancer[] = []
     if (store.food) enhancers.push(store.food)
@@ -100,8 +102,30 @@ async function findRequiredAttributes(recipe: Recipe, recipeLevel: RecipeLevel, 
         <template v-if="simulatedResult">
             <StatusBar :status="simulatedResult.status" :attributes="simulatedResult.attr"
                 :enhancers="simulatedResult.enhancers" :show-condition="false" />
-                <span>{{ requiredGearsets }}</span>
             <ActionQueue :list="simulatedResult.slots" :job="simulatedResult.job" :err-list="simulatedResult.errList" />
+            <el-row class="info">
+                <el-col :span="6">
+                    <el-statistic :value="simulatedResult.status.step">
+                        <template #title>{{ $t("steps") }}</template>
+                    </el-statistic>
+                </el-col>
+                <el-col :span="6">
+                    <el-statistic :value="requiredGearsets?.craftsmanship ?? 0">
+                        <template #title>{{ $t("required-craftsmanship") }}</template>
+                    </el-statistic>
+                </el-col>
+                <el-col :span="6">
+                    <el-statistic :value="requiredGearsets?.control ?? 0">
+                        <template #title>{{ $t("required-control") }}</template>
+                    </el-statistic>
+                </el-col>
+                <el-col :span="6">
+                    <el-statistic :value="hqRate">
+                        <template #title>{{ $t("hq-rate") }}</template>
+                        <template #suffix>%</template>
+                    </el-statistic>
+                </el-col>
+            </el-row>
         </template>
     </div>
 </template>
@@ -110,9 +134,17 @@ async function findRequiredAttributes(recipe: Recipe, recipeLevel: RecipeLevel, 
 .container {
     margin: 10px;
 }
+
+.info {
+    margin: 15px;
+}
 </style>
 
 <fluent locale="zh-CN">
+required-craftsmanship = 最低{{ craftsmanship }}
+required-control = 最低{{ control }}
+hq-rate = HQ率
+
 unfinished = 该页面尚未制作完成，请等待软件版本更新。
 </fluent>
 
