@@ -349,8 +349,10 @@ async function openListFromJSON() {
         </el-header>
         <el-main>
             <div class="main-page">
-                <el-alert v-if="attributionAlert != undefined" :title="attributionAlert.title"
-                    :description="attributionAlert.descryption" type="warning" show-icon center :closable="false" />
+                <div class="crafting-alerts">
+                    <el-alert v-if="attributionAlert != undefined" :title="attributionAlert.title"
+                        :description="attributionAlert.descryption" type="warning" show-icon center :closable="false" />
+                </div>
                 <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers" :status="displayedStatus
                     " @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
                     :show-condition="false" />
@@ -393,9 +395,8 @@ async function openListFromJSON() {
     flex-direction: column;
 }
 
-.el-alert {
-    margin: 0;
-    padding: 15px;
+.crafting-alerts {
+    margin: 5px 15px;
 }
 
 .status-bar {
@@ -485,7 +486,7 @@ read-fail = 读取失败：{ $reason }
 
 and = { $a }和{ $b }
 attributes-do-not-meet-the-requirements = 装备{ $attribute }不满足配方要求
-attributes-requirements = 当前配方要求：作业精度 ≥ { $craftsmanship }，加工精度 ≥ { $control }
+attributes-requirements = 若不满足 作业精度 ≥ { $craftsmanship } 且 加工精度 ≥ { $control }，在游戏中无法开始制作
 </fluent>
 
 <fluent locale="en-US">
