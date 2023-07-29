@@ -24,6 +24,7 @@ mod depth_first_search_solver;
 mod hard_recipe;
 mod memoization_solver;
 mod muscle_memory_solver;
+mod normal_quality_solver;
 mod reflect_solver;
 mod rika_solver;
 mod rika_tnze_solver;
@@ -401,6 +402,11 @@ fn dfs_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
 }
 
 #[tauri::command(async)]
+fn nq_solve(status: Status) -> Vec<Actions> {
+    normal_quality_solver::solve(&status)
+}
+
+#[tauri::command(async)]
 fn reflect_solve(status: Status, use_manipulation: bool) -> Vec<Actions> {
     let solver = reflect_solver::QualitySolver::new(status.clone(), use_manipulation, 8 + 1, true);
     let result1 = solver.read_all(&status);
@@ -464,6 +470,7 @@ fn main() {
             rika_solve,
             rika_solve_tnzever,
             dfs_solve,
+            nq_solve,
             reflect_solve,
             should_be_transparent,
         ])

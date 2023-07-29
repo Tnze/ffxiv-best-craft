@@ -35,6 +35,10 @@ export const dfs_solve = (status: Status, depth: number, specialist: boolean): P
     return invoke("dfs_solve", { status, depth, specialist })
 }
 
+export const nq_solve = (status: Status): Promise<Actions[]> => {
+    return invoke("nq_solve", { status })
+}
+
 export const reflect_solve = (status: Status, useManipulation: boolean): Promise<Actions[]> => {
     return invoke("reflect_solve", { status, useManipulation })
 }

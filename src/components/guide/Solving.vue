@@ -3,7 +3,7 @@ import { VNode, computed, h, onMounted, onUnmounted, ref } from 'vue';
 import { ElText, ElTimeline, ElTimelineItem, ElButton, ElScrollbar, ElIcon, ElResult } from 'element-plus';
 import { Loading } from "@element-plus/icons-vue";
 import { useGuideStore } from '../../store';
-import { dfs_solve, formatDuration, reflect_solve, rika_solve, rika_solve_tnzever } from "../../Solver";
+import { dfs_solve, formatDuration, nq_solve, reflect_solve, rika_solve, rika_solve_tnzever } from "../../Solver";
 import { useFluent } from 'fluent-vue'
 import { Actions, Jobs, Status, compareStatus, high_quality_probability, newStatus, simulate } from '../../Craft';
 import ActionQueue from '../designer/ActionQueue.vue'
@@ -49,6 +49,7 @@ async function selectSolver() {
     const job = store.craftType
     const recipe = store.recipe
     const recipeLevel = store.recipeLevel
+    const recipeInfo = store.recipeInfo
     const useManipulation = store.manipulation
     const status = await newStatus(attr, recipe, recipeLevel)
 
@@ -73,15 +74,13 @@ async function selectSolver() {
             actionQueue: { job, slots, errList },
             timestamp: formatDuration(stopTime - startTime),
             type: fstatus.progress < recipe.difficulty ? 'danger' :
-                fstatus.quality < recipe.quality ? 'warning' : 'primary'
+                fstatus.quality < recipe.quality && recipeInfo.can_hq ? 'warning' : 'primary'
         })
     }
 
-    if (!store.recipeInfo.can_hq) {
-        solverLines.value.push({
-            type: 'warning',
-            title: $t('not-yet-supported-non-hq-recipes'),
-        })
+    if (!recipeInfo.can_hq) {
+        // NQ配方，运行专用的DFS即可
+        await runSolver('nq-solver', () => nq_solve(status))
     } else {
         if (store.recipe.conditions_flag == 15) {
             // 普通配方
@@ -211,11 +210,11 @@ dfs-solver = 深度优先搜索
 reflect-solver = 动态规划
 rika-bfs-solver = Rika原版BFS
 tnze-bfs-solver = Tnze修改版BFS
+nq-solver = NQ深度优先搜索
 
 solving = 正在运行 { $solverName } 求解器
 back = 返回
 
-not-yet-supported-non-hq-recipes = 尚未支持对非 HQ 配方的求解
 solver-result = { $solverName }求解完成，品质：{ $quality }，HQ率：{ $highQuality }%
 
 solve-finished = 求解已结束
@@ -229,11 +228,11 @@ dfs-solver = Deep First Search
 reflect-solver = Dynamic Programing
 rika-bfs-solver = Rika original edition BFS
 tnze-bfs-solver = Tnze modified version BFS
+nq-solver = NQ Deep First Search
 
 solving = Runinng { $solverName } solver
 back = Back
 
-not-yet-supported-non-hq-recipes = Not yet supported for solving non HQ recipes
 solver-result = { $solverName } solving finished, Quality: { $quality }, HQ rate: { $highQuality }%
 
 solve-finished = Solving finished
