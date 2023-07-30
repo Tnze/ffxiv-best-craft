@@ -177,6 +177,7 @@ struct RecipeInfo {
     difficulty_factor: u16,
     quality_factor: u16,
     durability_factor: u16,
+    material_quality_factor: u8,
 
     required_craftsmanship: u16,
     required_control: u16,
@@ -209,6 +210,10 @@ async fn recipe_table(
         .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
         .column_as(recipes::Column::QualityFactor, "quality_factor")
         .column_as(recipes::Column::DurabilityFactor, "durability_factor")
+        .column_as(
+            recipes::Column::MaterialQualityFactor,
+            "material_quality_factor",
+        )
         .column_as(
             recipes::Column::RequiredCraftsmanship,
             "required_craftsmanship",

@@ -102,7 +102,8 @@ async function findRequiredAttributes(recipe: Recipe, recipeLevel: RecipeLevel, 
         <template v-if="simulatedResult">
             <StatusBar :status="simulatedResult.status" :attributes="simulatedResult.attr"
                 :enhancers="simulatedResult.enhancers" :show-condition="false" />
-            <ActionQueue :list="simulatedResult.slots" :job="simulatedResult.job" :err-list="simulatedResult.errList" />
+            <ActionQueue :list="simulatedResult.slots" :job="simulatedResult.job" :err-list="simulatedResult.errList"
+                disabled />
             <el-row class="info">
                 <el-col :span="6">
                     <el-statistic :value="simulatedResult.status.step">

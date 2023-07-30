@@ -33,6 +33,7 @@ interface XivapiRecipeResult {
         DifficultyFactor: number
         DurabilityFactor: number
         QualityFactor: number
+        MaterialQualityFactor: number
         RecipeLevelTable: {
             ID: number
         }
@@ -63,7 +64,7 @@ export class XivApiRecipeSource {
             'indexes': 'Recipe',
             'page': String(page),
             'string': searchName,
-            'columns': 'ID,Icon,ItemResult.Name,ItemResult.ID,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,RecipeLevelTable.ID,RequiredCraftsmanship,RequiredControl,CanHq'
+            'columns': 'ID,Icon,ItemResult.Name,ItemResult.ID,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable.ID,RequiredCraftsmanship,RequiredControl,CanHq'
         })
         if (this.language != undefined) query.set('language', this.language)
         const url = new URL('search', this.base).toString() + '?' + query.toString();
@@ -83,6 +84,7 @@ export class XivApiRecipeSource {
                 difficulty_factor: v.DifficultyFactor,
                 quality_factor: v.QualityFactor,
                 durability_factor: v.DurabilityFactor,
+                material_quality_factor: v.MaterialQualityFactor,
 
                 required_craftsmanship: v.RequiredCraftsmanship,
                 required_control: v.RequiredControl,

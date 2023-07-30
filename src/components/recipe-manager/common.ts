@@ -1,4 +1,4 @@
-import { Item, Jobs, Recipe, RecipeLevel, RecipeRequirements } from "../../Craft"
+import { Item, Jobs, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements } from "../../Craft"
 import { useDesignerStore } from "../../store"
 
 const designerStore = useDesignerStore()
@@ -63,11 +63,12 @@ export function craftTypeTojobs(craftType: string): Jobs {
         ?? Jobs.Culinarian
 }
 
-export const selectRecipe = (recipe: Recipe, recipeLevel: RecipeLevel, requirements: RecipeRequirements, item: Item, craftType: string, simulatorMode: boolean) => {
+export const selectRecipe = (recipe: Recipe, recipeLevel: RecipeLevel, materialQualityFactor: number, requirements: RecipeRequirements, item: Item, craftType: string, simulatorMode: boolean) => {
     designerStore.selectRecipe({
         job: craftTypeTojobs(craftType),
         item,
         recipe,
+        materialQualityFactor,
         recipeLevel,
         requirements,
         simulatorMode,

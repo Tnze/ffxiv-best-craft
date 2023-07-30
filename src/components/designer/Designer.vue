@@ -4,7 +4,7 @@ import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
 import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
-import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "../../Craft";
+import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements, RecipeInfo } from "../../Craft";
 import { read_solver } from "../../Solver";
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
@@ -38,6 +38,7 @@ const props = defineProps<{
     recipeLevel: RecipeLevel,
     requirements: RecipeRequirements,
     item: Item,
+    materialQualityFactor: number,
     attributes: Attributes,
     displayJob: Jobs,
 }>()
@@ -342,7 +343,7 @@ async function openListFromJSON() {
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <KeepAlive>
-            <InitialQualitySetting v-model="initQuality" v-model:open="openInitQualitySet" :item="item" :recipe="recipe" />
+            <InitialQualitySetting v-model="initQuality" v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :material-quality-factor="materialQualityFactor" />
         </KeepAlive>
         <el-header>
             <h1>{{ item.name }}</h1>

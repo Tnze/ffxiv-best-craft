@@ -31,14 +31,15 @@ function reload() {
     <Suspense>
         <el-result v-if="errorMessage" icon="error" :title="$t('error-happens')" :sub-title="$t(errorMessage)">
             <template #extra>
-                <el-button @click="reload">{{ $t('reaload') }}</el-button>
+                <el-button @click="reload">{{ $t('reload') }}</el-button>
             </template>
         </el-result>
         <template v-else-if="designerStore.content != null">
             <Designer v-if="!designerStore.content.simulatorMode" :item="designerStore.content.item"
-                :recipe="designerStore.content.recipe" :recipe-level="designerStore.content.recipeLevel"
-                :requirements="designerStore.content.requirements" :attributes="attributes"
-                :display-job="designerStore.content!.job" />
+                :recipe="designerStore.content.recipe"
+                :material-quality-factor="designerStore.content.materialQualityFactor"
+                :recipe-level="designerStore.content.recipeLevel" :requirements="designerStore.content.requirements"
+                :attributes="attributes" :display-job="designerStore.content!.job" />
             <Simulator v-else :item="designerStore.content.item" :recipe="designerStore.content.recipe"
                 :recipe-level="designerStore.content.recipeLevel" :attributes="attributes"
                 :display-job="designerStore.content!.job" />

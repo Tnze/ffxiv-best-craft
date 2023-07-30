@@ -82,7 +82,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
                 $t('please-confirm'),
                 { type: 'warning' }
             )
-            selectRecipe(recipe, recipeLevel, row, info, row.job, false)
+            selectRecipe(recipe, recipeLevel, row.material_quality_factor, row, info, row.job, false)
             router.push({ name: "designer" })
             checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
         } catch {
@@ -90,7 +90,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         }
     } else {
         confirmDialogCallback = (mode: 'designer' | 'simulator') => {
-            selectRecipe(recipe, recipeLevel, row, info, row.job, mode == 'simulator')
+            selectRecipe(recipe, recipeLevel, row.material_quality_factor, row, info, row.job, mode == 'simulator')
             router.push({ name: "designer" })
             confirmDialogVisible.value = false
             confirmDialogCallback = null

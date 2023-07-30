@@ -220,6 +220,7 @@ export interface RecipeInfo {
     difficulty_factor: number;
     quality_factor: number;
     durability_factor: number;
+    material_quality_factor: number;
 
     required_craftsmanship: number;
     required_control: number;

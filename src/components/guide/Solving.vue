@@ -168,7 +168,7 @@ const solverSuccessed = computed(() => solverTitle.value == 'solve-finished')
                 <el-timeline-item v-for="v in solverLines" :timestamp="v.timestamp" :type="v.type">
                     <el-text>{{ v.title }}</el-text>
                     <ActionQueue v-if="v.actionQueue" :list="v.actionQueue.slots" :job="v.actionQueue.job"
-                        :err-list="v.actionQueue.errList" />
+                        :err-list="v.actionQueue.errList" disabled />
                 </el-timeline-item>
             </el-timeline>
         </el-scrollbar>

@@ -2,7 +2,7 @@
 import { ElDialog, ElIcon, ElFormItem, ElInputNumber, ElTable, ElTableColumn, ElButton, ElButtonGroup } from 'element-plus';
 import { ArrowUp } from '@element-plus/icons-vue';
 import { computed, reactive, ref, watchEffect } from 'vue';
-import { Item, ItemWithAmount, Recipe, recipesIngredientions } from '../../Craft';
+import { Item, ItemWithAmount, Recipe, RecipeInfo, recipesIngredientions } from '../../Craft';
 import { useSettingsStore } from '../../store';
 
 const settingStore = useSettingsStore()
@@ -11,6 +11,7 @@ const props = defineProps<{
     open: boolean
     item: Item
     recipe: Recipe
+    materialQualityFactor: number
     modelValue: number
 }>()
 
@@ -54,7 +55,8 @@ watchEffect(() => {
             [totalPrev + total, prevHq + hq]
         )
     const r = totalLvCount == 0 ? 0 : hqLvCount / totalLvCount
-    initQuality.value = Math.floor(props.recipe.quality / 2 * r)
+    const maxInitQualityPs = props.materialQualityFactor / 100
+    initQuality.value = Math.floor(props.recipe.quality * maxInitQualityPs * r)
 })
 
 </script>

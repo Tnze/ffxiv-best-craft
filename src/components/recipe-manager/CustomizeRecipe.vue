@@ -87,7 +87,7 @@ function confirm(simulatorMode: boolean) {
         required_craftsmanship: 0,
         required_control: 0,
     }
-    selectRecipe(customRecipe.value, recipeLevel.value, requirements, itemInfo, '', simulatorMode)
+    selectRecipe(customRecipe.value, recipeLevel.value, 0, requirements, itemInfo, '', simulatorMode)
     router.push({ name: "designer" })
 }
 
