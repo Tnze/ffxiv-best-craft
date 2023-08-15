@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ElDialog, ElIcon, ElFormItem, ElInputNumber, ElTable, ElTableColumn, ElButton, ElButtonGroup } from 'element-plus';
+import { ElDialog, ElIcon, ElFormItem, ElInputNumber, ElTable, ElTableColumn, ElButton, ElButtonGroup, ElSwitch } from 'element-plus';
 import { ArrowUp } from '@element-plus/icons-vue';
 import { computed, reactive, ref, watchEffect } from 'vue';
 import { Item, ItemWithAmount, Recipe, RecipeInfo } from '../../Craft';
@@ -41,7 +41,7 @@ const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
 const items = ref<{ item: Item, amount: number, hqAmount: number }[]>([])
 watchEffect(async () => {
     const newId = props.item.id
-    const ri = newId == -1 ? null : await settingStore.getDataSource.recipesIngredientions(props.recipeInfo.id)
+    const ri = newId == -1 ? null : await settingStore.getDataSource.recipesIngredients(props.recipeInfo.id)
     items.value = ri == null ? [] : reactive(await calcItems(ri))
 })
 watchEffect(() => {
@@ -58,15 +58,20 @@ watchEffect(() => {
     initQuality.value = Math.floor(props.recipe.quality * maxInitQualityPs * r)
 })
 
+const noManullyInput = ref(true)
+
 </script>
 
 <template>
     <el-dialog v-model="dialogOpen">
         <div style="display: flex; flex-direction: column;">
+            <el-switch class="initial-quality-input" v-model="noManullyInput" :active-text="$t('select-hq-ingredients')"
+                :inactive-text="$t('manully-input')" />
             <el-form-item :label="$t('initial-quality')" class="initial-quality-input">
-                <el-input-number :disabled="props.item.id != -1" v-model="initQuality" :min="0" :max="recipe.quality" />
+                <el-input-number :disabled="props.item.id != -1 && noManullyInput" v-model="initQuality" :min="0"
+                    :max="recipe.quality" />
             </el-form-item>
-            <el-table v-if="props.item.id != -1" :data="items">
+            <el-table v-if="props.item.id != -1 && noManullyInput" :data="items">
                 <el-table-column :label="$t('name')" prop="item.name" />
                 <el-table-column :label="$t('amount')">
                     <template #default="scope">
@@ -103,14 +108,23 @@ watchEffect(() => {
 <fluent locale="zh-CN">
 nq = 普通
 hq = 优质
+
+select-hq-ingredients = 选择HQ半成品计算
+manully-input = 手动输入
 </fluent>
 
 <fluent locale="en-US">
 nq = NQ
 hq = HQ
+
+select-hq-ingredients = Calculate from HQ ingredients
+manully-input = Manully input
 </fluent>
 
 <fluent locale="ja-JP">
 nq = NQ
 hq = HQ
+
+select-hq-ingredients = HQ成分による計算
+manully-input = 手動入力
 </fluent>

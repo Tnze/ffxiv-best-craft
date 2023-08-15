@@ -3,7 +3,7 @@ import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "../../Craft";
 
 export interface DataSource {
     recipeTable(page: number, searchName: string): Promise<RecipesSourceResult>
-    recipesIngredientions(recipeId: number): Promise<ItemWithAmount[]>
+    recipesIngredients(recipeId: number): Promise<ItemWithAmount[]>
     recipeLevelTable(rlv: number): Promise<RecipeLevel>
     itemInfo(id: number): Promise<Item>
 }
@@ -96,7 +96,7 @@ export class XivApiRecipeSource {
         }
     }
 
-    async recipesIngredientions(recipeId: number): Promise<ItemWithAmount[]> {
+    async recipesIngredients(recipeId: number): Promise<ItemWithAmount[]> {
         const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         const needs = new Map<number, ItemWithAmount>() // item_id as key
         const url = new URL(`Recipe/${recipeId}`, this.base).toString() + '?' + new URLSearchParams({
@@ -180,7 +180,7 @@ export class LocalRecipeSource {
         return { recipes, totalPages }
     }
 
-    async recipesIngredientions(recipeId: number): Promise<ItemWithAmount[]> {
+    async recipesIngredients(recipeId: number): Promise<ItemWithAmount[]> {
         const ings: [number, number][] = await invoke("recipes_ingredientions", { recipeId });
         return ings.map(x => ({ ingredient_id: x[0], amount: x[1] }))
     }
