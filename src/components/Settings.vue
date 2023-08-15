@@ -69,7 +69,7 @@ const onCheckUpdateClick = async () => {
                     Tnze
                 </el-form-item>
                 <el-form-item :label="$t('feedback')">
-                    <el-link href="https://pd.qq.com/s/cofwn9zhx" target="_blank">QQ频道</el-link>
+                    <el-link href="https://pd.qq.com/s/al6b5xo69" target="_blank">QQ频道</el-link>
                     <el-link href="https://gitee.com/Tnze/ffxiv-best-craft" target="_blank">Gitee</el-link>
                     <el-link href="https://github.com/Tnze/ffxiv-best-craft" target="_blank">Github</el-link>
                 </el-form-item>
