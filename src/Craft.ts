@@ -237,12 +237,3 @@ export interface ItemWithAmount {
     ingredient_id: number;
     amount: number;
 }
-
-export const recipesIngredientions = async (checklist: ItemWithAmount[]): Promise<ItemWithAmount[]> => {
-    const ings = await invoke("recipes_ingredientions", {
-        checklist: checklist.map(x => [x.ingredient_id, x.amount])
-    }) as [number, number][];
-    return ings.map(x => {
-        return { ingredient_id: x[0], amount: x[1] }
-    })
-}

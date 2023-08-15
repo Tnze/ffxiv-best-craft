@@ -21,7 +21,6 @@ const Result = () => import('./components/guide/Result.vue')
 const GearsetsVue = () => import('./components/Gearsets.vue')
 const RecipePanelVue = () => import('./components/recipe-manager/RecipePanel.vue')
 const CustomizeRecipe = () => import('./components/recipe-manager/CustomizeRecipe.vue')
-const BillOfMaterial = () => import('./components/bill-of-material/BillOfMaterial.vue')
 const DesignerVue = () => import('./components/designer/Page.vue')
 const SettingsVue = () => import('./components/Settings.vue')
 
@@ -41,7 +40,6 @@ const router = createRouter({
         { path: '/gearsets', component: GearsetsVue },
         { path: '/recipe', component: RecipePanelVue },
         { path: '/recipe/customize', component: CustomizeRecipe },
-        { path: '/bom', component: BillOfMaterial },
         { path: '/designer', name: 'designer', component: DesignerVue },
         { path: '/settings', component: SettingsVue },
     ]

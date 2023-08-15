@@ -2,7 +2,7 @@
 import { ElDialog, ElIcon, ElFormItem, ElInputNumber, ElTable, ElTableColumn, ElButton, ElButtonGroup } from 'element-plus';
 import { ArrowUp } from '@element-plus/icons-vue';
 import { computed, reactive, ref, watchEffect } from 'vue';
-import { Item, ItemWithAmount, Recipe, RecipeInfo, recipesIngredientions } from '../../Craft';
+import { Item, ItemWithAmount, Recipe, RecipeInfo } from '../../Craft';
 import { useSettingsStore } from '../../store';
 
 const settingStore = useSettingsStore()
@@ -11,6 +11,7 @@ const props = defineProps<{
     open: boolean
     item: Item
     recipe: Recipe
+    recipeInfo: RecipeInfo
     materialQualityFactor: number
     modelValue: number
 }>()
@@ -31,18 +32,16 @@ const dialogOpen = computed({
 })
 
 const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
-    async (item) => {
-        return {
-            item: await settingStore.getDataSource.itemInfo(item.ingredient_id),
-            amount: item.amount,
-            hqAmount: 0,
-        }
-    }
+    async (item) => ({
+        item: await settingStore.getDataSource.itemInfo(item.ingredient_id),
+        amount: item.amount,
+        hqAmount: 0,
+    })
 ))
 const items = ref<{ item: Item, amount: number, hqAmount: number }[]>([])
 watchEffect(async () => {
     const newId = props.item.id
-    const ri = newId == -1 ? null : await recipesIngredientions([{ ingredient_id: newId, amount: 1 }])
+    const ri = newId == -1 ? null : await settingStore.getDataSource.recipesIngredientions(props.recipeInfo.id)
     items.value = ri == null ? [] : reactive(await calcItems(ri))
 })
 watchEffect(() => {

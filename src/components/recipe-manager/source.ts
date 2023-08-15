@@ -1,8 +1,9 @@
 import { invoke } from "@tauri-apps/api";
-import { Item, RecipeInfo, RecipeLevel } from "../../Craft";
+import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "../../Craft";
 
 export interface DataSource {
     recipeTable(page: number, searchName: string): Promise<RecipesSourceResult>
+    recipesIngredientions(recipeId: number): Promise<ItemWithAmount[]>
     recipeLevelTable(rlv: number): Promise<RecipeLevel>
     itemInfo(id: number): Promise<Item>
 }
@@ -95,6 +96,34 @@ export class XivApiRecipeSource {
         }
     }
 
+    async recipesIngredientions(recipeId: number): Promise<ItemWithAmount[]> {
+        const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        const needs = new Map<number, ItemWithAmount>() // item_id as key
+        const url = new URL(`Recipe/${recipeId}`, this.base).toString() + '?' + new URLSearchParams({
+            'columns': nums.map(n => `AmountIngredient${n},ItemIngredient${n}TargetID`).join(',')
+        }).toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        })
+        const data = await resp.json()
+        for (const n of nums) {
+            const obj = {
+                ingredient_id: data[`ItemIngredient${n}TargetID`] as number,
+                amount: data[`AmountIngredient${n}`] as number,
+            }
+            if (obj.amount > 0) {
+                let record = needs.get(obj.ingredient_id)
+                if (record != null) {
+                    record.ingredient_id += obj.amount
+                } else {
+                    needs.set(obj.ingredient_id, obj)
+                }
+            }
+        }
+        return Array.from(needs.values()).sort((a, b) => a.ingredient_id - b.ingredient_id)
+    }
+
     async recipeLevelTable(rlv: number): Promise<RecipeLevel> {
         const url = new URL(`RecipeLevelTable/${rlv}`, this.base).toString() + '?' + new URLSearchParams({
             'columns': 'ID,Stars,ClassJobLevel,SuggestedCraftsmanship,SuggestedControl,Difficulty,Quality,Durability,ProgressDivider,QualityDivider,ProgressModifier,QualityModifier,ConditionsFlag'
@@ -103,7 +132,7 @@ export class XivApiRecipeSource {
             method: 'GET',
             mode: 'cors'
         })
-        let data = await resp.json()
+        const data = await resp.json()
         return {
             stars: data.Stars,
             class_job_level: data.ClassJobLevel,
@@ -150,6 +179,12 @@ export class LocalRecipeSource {
         let [recipes, totalPages]: [RecipeInfo[], number] = await invoke("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
         return { recipes, totalPages }
     }
+
+    async recipesIngredientions(recipeId: number): Promise<ItemWithAmount[]> {
+        const ings: [number, number][] = await invoke("recipes_ingredientions", { recipeId });
+        return ings.map(x => ({ ingredient_id: x[0], amount: x[1] }))
+    }
+
     async recipeLevelTable(rlv: number): Promise<RecipeLevel> {
         const val = await invoke("recipe_level_table", { rlv })
         let result: RecipeLevel = {
@@ -158,6 +193,7 @@ export class LocalRecipeSource {
         }
         return result
     }
+
     async itemInfo(itemId: number): Promise<Item> {
         const { id, name, level, can_be_hq, category_id } = await invoke("item_info", { itemId }) as {
             id: number,

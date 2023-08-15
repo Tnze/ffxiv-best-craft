@@ -229,40 +229,22 @@ async fn recipe_table(
 
 #[tauri::command(async)]
 async fn recipes_ingredientions(
-    checklist: Vec<(i32, i32)>,
+    recipe_id: u32,
     app_state: tauri::State<'_, AppState>,
     app_handle: tauri::AppHandle,
 ) -> Result<Vec<(i32, i32)>, String> {
     let db = app_state.get_db(app_handle).await?;
     let mut needs = BTreeMap::new();
-    for (item_id, amount) in checklist {
-        let r = Recipes::find()
-            .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
-            .filter(item_with_amount::Column::IngredientId.eq(item_id))
-            .one(db)
-            .await
-            .map_err(err_to_string)?;
-        match r {
-            Some(r) => {
-                let ing = ItemWithAmount::find()
-                    .filter(item_with_amount::Column::RecipeId.eq(r.id))
-                    .all(db)
-                    .await
-                    .map_err(err_to_string)?;
-                for v in &ing {
-                    needs
-                        .entry(v.ingredient_id)
-                        .and_modify(|e| *e += v.amount)
-                        .or_insert(v.amount * amount);
-                }
-            }
-            None => {
-                needs
-                    .entry(item_id)
-                    .and_modify(|e| *e += amount)
-                    .or_insert(amount);
-            }
-        }
+    let ing = ItemWithAmount::find()
+        .filter(item_with_amount::Column::RecipeId.eq(recipe_id))
+        .all(db)
+        .await
+        .map_err(err_to_string)?;
+    for v in &ing {
+        needs
+            .entry(v.ingredient_id)
+            .and_modify(|e| *e += v.amount)
+            .or_insert(v.amount);
     }
     Ok(needs.into_iter().collect())
 }

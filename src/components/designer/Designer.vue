@@ -35,6 +35,7 @@ interface Sequence {
 
 const props = defineProps<{
     recipe: Recipe,
+    recipeInfo: RecipeInfo,
     recipeLevel: RecipeLevel,
     requirements: RecipeRequirements,
     item: Item,
@@ -343,7 +344,8 @@ async function openListFromJSON() {
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <KeepAlive>
-            <InitialQualitySetting v-model="initQuality" v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :material-quality-factor="materialQualityFactor" />
+            <InitialQualitySetting v-model="initQuality" v-model:open="openInitQualitySet" :item="item" :recipe="recipe"
+                :recipe-info="recipeInfo" :material-quality-factor="materialQualityFactor" />
         </KeepAlive>
         <el-header>
             <h1>{{ item.name }}</h1>

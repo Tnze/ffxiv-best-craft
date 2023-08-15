@@ -36,7 +36,7 @@ function reload() {
         </el-result>
         <template v-else-if="designerStore.content != null">
             <Designer v-if="!designerStore.content.simulatorMode" :item="designerStore.content.item"
-                :recipe="designerStore.content.recipe"
+                :recipe="designerStore.content.recipe" :recipe-info="designerStore.content.recipeInfo"
                 :material-quality-factor="designerStore.content.materialQualityFactor"
                 :recipe-level="designerStore.content.recipeLevel" :requirements="designerStore.content.requirements"
                 :attributes="attributes" :display-job="designerStore.content!.job" />

@@ -31,12 +31,6 @@ const guideStore = useGuideStore()
             </el-icon>
             <template #title>{{ $t('recipe') }}</template>
         </el-menu-item>
-        <el-menu-item index="/bom" :disabled="disableBom" @click.stop.prevent.right="disableBom = false">
-            <el-icon>
-                <box />
-            </el-icon>
-            <template #title>{{ $t('bom') }}</template>
-        </el-menu-item>
         <el-menu-item index="/designer">
             <el-icon>
                 <edit />
