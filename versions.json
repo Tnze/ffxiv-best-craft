@@ -1,19 +1,19 @@
 {
-  "version": "0.11.4",
-  "notes": "我忘记写了什么了！\n并且懒得查询提交记录（x）",
-  "pub_date": "2023-07-30T13:01:34.291Z",
+  "version": "0.11.5",
+  "notes": "- 修复了使用『Xivapi』时初期品质设置窗口原材料列表不正确的问题\n- 初期品质设置窗口添加手动输入初期品质的功能",
+  "pub_date": "2023-08-15T15:49:30.042Z",
   "platforms": {
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmtVSjFGTEpUb2V1Wlh6NkQ3ZGI2RlFUTU90Zk1qN3J0dWEzcjVXL1Z6Zjl1NFJIblB3RHVHdVRSbDRNbUJmRVpWNSt5K3pxQlBrblBaYmxJRHFZQ2drPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkwNzIxODcyCWZpbGU6YmVzdC1jcmFmdF8wLjExLjRfYW1kNjQuQXBwSW1hZ2UudGFyLmd6CllFSFcvV2k0Z0tGc2VFOC91ZE9POS9IUVFwTXJSV1ZpRERIUnYyNXNFY045VXlGeGNsbm9Nb0p4R1I3QVBLekpvUlNLcE0vSG94TjZEUGRCR1pLQUJBPT0K",
-      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.11.4/best-craft_0.11.4_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmlkRzcxc1V4S3k1U05QUkpTV0lTbEZNSERFT1hTOGZaT2QxMEpmSWx0NFcwQmdNeXdOYjg4bWlCS25oeWs0RFgzay91Ym9EZFptSWlQSVJyUzMvUGdFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkyMTE0MzU5CWZpbGU6YmVzdC1jcmFmdF8wLjExLjVfYW1kNjQuQXBwSW1hZ2UudGFyLmd6CmF2eVFaZllVMGdWUzVXZHRQRTcyTjg4L2R0WW05WFlXa2loOWNNdXQ2eThDOUh1VWVmSHJoeHRMM0xiNW41MXJrNkNJYTlxb1hxOC9jcW1YNG1BRUNBPT0K",
+      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.11.5/best-craft_0.11.5_amd64.AppImage.tar.gz"
     },
     "darwin-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnZwR0lUck1JVmc4MlJTT3Y5MTRCeWYyaWxqZ1dvZXk2Zndyc0NaSDlOVXpDalNPZkRzS3JmZXNjRVFxdXBhMEFZanFQVkx5Yy9qZlQwdkEwZE9LWWcwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkwNzIyMDEyCWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKRmJleERyc1FsNE1wdHYxMURqVzhBK2ZwVUF4cFlrNVBCVVB1MlN1VmpnUUFwZDRIRDdYYXVQTW1tM1pFNE9QYmlla1I5bS9JdVI2Rnl3b2M2djZ3QWc9PQo=",
-      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.11.4/BestCraft_x64.app.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5SMkZkeG5oTHgvTXFVdW9kMHl4dlptK09WQnZ4M1Z0cGsreGp5bEU2RTlTN1R1ZFhHaHlSUk8wRFloRG9QSWNqTFZyMHpLZDFHRmM5T3BncStLWkFrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkyMTE0NTY1CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKZmpuSGt2OUFnQU9HclUxRHhHQXR4OEM1b0w4NUtRY3hRc21YbEpDdFoxSnkwWUs3N3BxUmVNYzZ0Yy9CQ05WdHVTRzF3RnhkcGhvUHM3QWNwSU1yQlE9PQo=",
+      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.11.5/BestCraft_x64.app.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmxORExEajJyZ3FuKzFkelBRaThSbXY3bFJlN3RqOGsrbWpHaDNRTlYxRWs1WEtobklOTXJSRnQ4aXE3U1J5bCtKOXN6Znlsa2xSM3UrQ3lpQlpjdkFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkwNzIyMDg5CWZpbGU6QmVzdENyYWZ0XzAuMTEuNF94NjRfemgtQ04ubXNpLnppcAo5YzZBWG5YcElMMjQ0QVBwQ3pnWElIOHRqMjRXNnd4SVhpMWpPK0JtTEgwWENqRnZVdHFTRS9QeUl2QjFweDY1UkhZSXhOR1JLYWRRa2JhTjNETmxDQT09Cg==",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.11.4/BestCraft_0.11.4_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9oYzV6ZFY1dGo2bEhxc1hqbXJJQnIwVC83T0dCZ1JISTBvaHE0b1FsYjdsS3BjdjJ0SXpjbWZkTHZHT3JZRnV6SW9hZGFXNXNOMjNZejJEeGw5bkFjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjkyMTE0NDc0CWZpbGU6QmVzdENyYWZ0XzAuMTEuNV94NjRfemgtQ04ubXNpLnppcAp2MVZ5MThRMktUc2dvWmVTeFN2UzA0OThWcnNCOTFwdExWNk5KYk8yNXdxczFSYjZqbEdhOXByN1dVMUtYWWUwcDRTRjlVcVQvdFdRRHpaVDFuVUtCQT09Cg==",
+      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.11.5/BestCraft_0.11.5_x64_zh-CN.msi.zip"
     }
   }
 }
