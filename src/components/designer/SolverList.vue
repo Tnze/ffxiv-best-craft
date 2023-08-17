@@ -110,8 +110,8 @@ async function runRikaSolver() {
         const result = await rika_solve(props.initStatus)
         const stopTime = new Date().getTime()
         ElMessage({
-            type: 'success',
-            message: $t('rika-solve-finished', {
+            type: result.length > 0 ? 'success' : 'error',
+            message: $t(result.length > 0 ? 'rika-solve-finished' : 'rika-solve-finished-no-result', {
                 solveTime: formatDuration(stopTime - startTime),
                 solverName: $t('bfs-solver'),
             }),
@@ -154,8 +154,8 @@ async function runTnzeVerRikaSolver() {
         )
         const stopTime = new Date().getTime()
         ElMessage({
-            type: 'success',
-            message: $t('rika-solve-finished', {
+            type: result.length > 0 ? 'success' : 'error',
+            message: $t(result.length > 0 ? 'rika-solve-finished' : 'rika-solve-finished-no-result', {
                 solveTime: formatDuration(stopTime - startTime),
                 solverName: $t('tnzever-rika-solver'),
             }),
@@ -361,6 +361,7 @@ solver-start = 开始求解
 rika-solver-warning = 当前配方不满足 Rika 求解器的使用条件，是否强制运行？
 rika-solving = 正在求解中
 rika-solve-finished =「{ $solverName }」求解完成({ $solveTime })
+rika-solve-finished-no-result = 发动了「{ $solverName }」求解器，没有获得任何结果({ $solveTime })
 
 sum-info = 警告：以下内容包含许多对您没有帮助的碎碎念，使用求解器请直接点击“{ solver-start }”按钮。
 
@@ -418,6 +419,7 @@ solver-start = Start
 rika-solver-warning = The current recipe does not meet the usage conditions of the Rika's solver. Do you want to force it to run?
 rika-solving = Solving
 rika-solve-finished = Solver "{ $solverName }" finished. ({ $solveTime })
+rika-solve-finished-no-result = "{ $solverName }" is finished. None of result is returned. ({ $solveTime })
 
 sum-info = Warning: The following content contains many fragmented ideas that are not helpful to you. To use the solvers, please click on the '{ solver-start }' button directly.
 
