@@ -48,7 +48,7 @@ fn search(
 
         if !matches!(next_action, Actions::FocusedSynthesis | Actions::FocusedTouch if status.buffs.observed == 0)
             && !matches!(next_action, Actions::FinalAppraisal if status.buffs.final_appraisal == 0)
-            && !matches!(next_action, Actions::HeartAndSoul if !specialist)
+            && (!matches!(next_action, Actions::HeartAndSoul) || specialist)
             && stack_seq.len() <= maximum_depth
             && status.is_action_allowed(next_action).is_ok()
         {

@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { ElText, ElScrollbar, ElCollapse, ElCollapseItem, ElButton, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage, ElMessageBox, ElSlider, ElRadioGroup, ElRadio } from 'element-plus'
 import { Actions, Status } from "../../Craft"
-import { create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve } from '../../Solver'
+import { create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve, nq_solve } from '../../Solver'
 import { useFluent } from 'fluent-vue';
 
 const props = defineProps<{
     initStatus: Status,
-    recipeName: string
+    recipeName: string,
+    canHq: boolean
 }>()
 const emits = defineEmits<{
     (event: 'solverLoad', solver: Solver): void
@@ -176,7 +177,13 @@ async function runTnzeVerRikaSolver() {
 
 const maxDepth = ref(6);
 const useSpecialist = ref(false);
+const doNotTouch = ref(false);
 const dfsSolving = ref(false);
+
+watch(() => props.canHq, v => {
+    // single way update
+    doNotTouch.value = !v
+})
 
 function dfsFormatTooltip(value: number): string {
     let str = String(value);
@@ -194,7 +201,8 @@ async function runDfsSolver() {
     try {
         dfsSolving.value = true
         const startTime = new Date().getTime()
-        const result = await dfs_solve(props.initStatus, maxDepth.value, useSpecialist.value)
+        const solver = doNotTouch.value ? nq_solve : dfs_solve
+        const result = await solver(props.initStatus, maxDepth.value, useSpecialist.value)
         const stopTime = new Date().getTime()
         ElMessage({
             type: 'success',
@@ -236,6 +244,7 @@ async function runDfsSolver() {
                             <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip"
                                 :label="$t('dfs-max-depth')" />
                         </div>
+                        <el-checkbox v-model="doNotTouch" :label="$t('do-not-touch')" /><br />
                         <el-checkbox v-model="useSpecialist" :label="$t('specialist')" /><br />
                         <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
                             {{ dfsSolving ? $t('rika-solving') : $t('solver-start') }}
@@ -347,6 +356,7 @@ bfs-solver = 广度优先搜索 v1
 tnzever-rika-solver = 广度优先搜索 ~ Tnze Impv. ~ v2
 dfs-solver = 深度优先搜索 v2 力大砖飞版
 
+do-not-touch = 不推品质
 reduce-steps-info = 最少资源方案
 start-solver = 创建求解器
 release-solver = 释放
@@ -405,6 +415,7 @@ bfs-solver = Breadth First Search v1
 tnzever-rika-solver = Breadth First Search ~ Tnze Impv. ~ v2
 dfs-solver = Depth First Search v2
 
+do-not-touch = Do not "touching"
 reduce-steps-info = Minimum resource
 start-solver = Create solver
 release-solver = Release

@@ -334,8 +334,8 @@ async function openListFromJSON() {
 <template>
     <el-container>
         <el-drawer v-model="openSolverDrawer" :title="$t('solvers')" size="45%">
-            <SolverList :init-status="initStatus" :recipe-name="item.name" @solver-load="readSolver(activeSeq.status)"
-                @solver-result="handleSolverResult" />
+            <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
+                @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
         </el-drawer>
         <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
             <MacroExporter :actions="displayActions" />
