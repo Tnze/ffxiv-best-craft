@@ -11,7 +11,7 @@ const props = defineProps<{
     open: boolean
     item: Item
     recipe: Recipe
-    recipeInfo: RecipeInfo
+    recipeId: number
     materialQualityFactor: number
     modelValue: number
 }>()
@@ -41,7 +41,7 @@ const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
 const items = ref<{ item: Item, amount: number, hqAmount: number }[]>([])
 watchEffect(async () => {
     const newId = props.item.id
-    const ri = newId == -1 ? null : await settingStore.getDataSource.recipesIngredients(props.recipeInfo.id)
+    const ri = newId == -1 ? null : await settingStore.getDataSource.recipesIngredients(props.recipeId)
     items.value = ri == null ? [] : reactive(await calcItems(ri))
 })
 watchEffect(() => {

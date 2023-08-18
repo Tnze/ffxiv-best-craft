@@ -35,7 +35,7 @@ interface Sequence {
 
 const props = defineProps<{
     recipe: Recipe,
-    recipeInfo: RecipeInfo,
+    recipeId?: number,
     recipeLevel: RecipeLevel,
     requirements: RecipeRequirements,
     item: Item,
@@ -344,8 +344,8 @@ async function openListFromJSON() {
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <KeepAlive>
-            <InitialQualitySetting v-model="initQuality" v-model:open="openInitQualitySet" :item="item" :recipe="recipe"
-                :recipe-info="recipeInfo" :material-quality-factor="materialQualityFactor" />
+            <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" v-model:open="openInitQualitySet"
+                :item="item" :recipe="recipe" :recipe-id="recipeId" :material-quality-factor="materialQualityFactor" />
         </KeepAlive>
         <el-header>
             <h1>{{ item.name }}</h1>
@@ -356,8 +356,9 @@ async function openListFromJSON() {
                     <el-alert v-if="attributionAlert != undefined" :title="attributionAlert.title"
                         :description="attributionAlert.descryption" type="warning" show-icon center :closable="false" />
                 </div>
-                <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers" :status="displayedStatus
-                    " @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
+                <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
+                    :status="displayedStatus" :disabled-init-quality="recipeId == undefined"
+                    @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
                     :show-condition="false" />
                 <div class="actionpanel-and-savedqueue">
                     <el-scrollbar class="action-panel">

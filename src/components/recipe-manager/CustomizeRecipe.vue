@@ -4,7 +4,7 @@ import { ElContainer, ElHeader, ElRow, ElCol, ElMain, ElButton, ElInputNumber, E
 import { useRouter } from 'vue-router';
 import { selectRecipe } from './common';
 import { useFluent } from 'fluent-vue';
-import { Conditions, Item, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements } from '../../Craft';
+import { Conditions, Item, Jobs, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements } from '../../Craft';
 import { useSettingsStore } from '../../store';
 
 const router = useRouter()
@@ -87,7 +87,7 @@ function confirm(simulatorMode: boolean) {
         required_craftsmanship: 0,
         required_control: 0,
     }
-    selectRecipe(customRecipe.value, recipeLevel.value, 0, requirements, itemInfo, '', simulatorMode)
+    selectRecipe(customRecipe.value, undefined, recipeLevel.value, 0, requirements, itemInfo, '', simulatorMode)
     router.push({ name: "designer" })
 }
 

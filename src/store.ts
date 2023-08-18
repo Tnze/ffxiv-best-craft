@@ -112,7 +112,7 @@ export const useDesignerStore = defineStore('designer', {
             item: Item,
             job: Jobs,
             recipe: Recipe,
-            recipeInfo: RecipeInfo,
+            recipeId?: number,
             recipeLevel: RecipeLevel,
             materialQualityFactor: number,
             requirements: RecipeRequirements,
@@ -124,7 +124,7 @@ export const useDesignerStore = defineStore('designer', {
             job: Jobs,
             item: Item,
             recipe: Recipe,
-            recipeInfo: RecipeInfo
+            recipeId?: number,
             recipeLevel: RecipeLevel,
             materialQualityFactor: number,
             requirements: RecipeRequirements,

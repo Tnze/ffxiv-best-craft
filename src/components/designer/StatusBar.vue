@@ -13,7 +13,7 @@ const props = defineProps<{
     enhancers: Enhancer[];
     disabledInitQuality?: boolean;
     disabledEnhancer?: boolean;
-    showCondition: boolean
+    showCondition: boolean;
 }>()
 
 const emits = defineEmits<{
