@@ -6,6 +6,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  typescript-checks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16
+    - name: run tsc
+      run: yarn && yarn tsc --noEmit
+
   publish-tauri:
     strategy:
       fail-fast: false
