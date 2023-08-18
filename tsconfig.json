@@ -12,7 +12,8 @@
     "lib": [
       "esnext",
       "dom"
-    ]
+    ],
+    "skipLibCheck": true
   },
   "include": [
     "./*.ts",

@@ -10,7 +10,7 @@ import {
 export default defineConfig({
   plugins: [
     vue(),
-    ElementPlus(undefined),
+    ElementPlus({}),
     SFCFluentPlugin(),
     ExternalFluentPlugin({
       locales: ['zh-CN'], // required - list of locales
