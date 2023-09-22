@@ -1,15 +1,48 @@
 <script setup lang="ts">
-import { ElText, ElSelect, ElOption } from 'element-plus';
+import { ElText, ElButton, ElCascaderPanel, CascaderOption, CascaderValue, CascaderProps } from 'element-plus';
 import { computed, ref } from 'vue';
 import { useGuideStore, useSettingsStore } from '../../store';
-import { RecipeInfo } from '../../Craft';
-import { useRouter } from 'vue-router';
+// import { Recipe, RecipeInfo } from '../../Craft';
+// import { useRouter } from 'vue-router';
+// import { DataSource } from '../recipe-manager/source';
 
-const router = useRouter()
+// const router = useRouter()
 const store = useGuideStore()
-const settingStore = useSettingsStore()
+// const settingStore = useSettingsStore()
 
 store.setCurrentPage('welcome')
+
+// async function recipes(ids: number[], ds: DataSource): Promise<CascaderOption[]> {
+//     return await Promise.all(ids.map(async id => {
+//         let info = await ds.recipeInfo(id)
+//         return { value: id, label: info.item_name }
+//     }))
+// }
+
+// const recipeSelectorProps: CascaderProps = {
+//     lazy: true,
+//     lazyLoad(node, resolve) {
+//         const { level } = node
+//         switch (level) {
+//             case 0:
+//                 resolve([
+//                     { label: "640HQ", value: "640HQ" }
+//                 ])
+//                 break;
+//             case 1:
+//                 break;
+//             default:
+//                 resolve([])
+//         }
+//     },
+// }
+
+// async function selectedRecipe(value: CascaderValue) {
+//     while (Array.isArray(value)) // 取数组最后一项
+//         value = value.at(-1) ?? 0;
+//     readyToConfirm.value = true
+//     console.log("selected recipe " + value)
+// }
 
 const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'beforedawn'>(() => {
     const hour = new Date().getHours();
@@ -27,26 +60,6 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
         return 'night'
 })
 
-const recipeSelected = ref<RecipeInfo>()
-const recipeOptions = ref<RecipeInfo[]>([])
-const loading = ref(false)
-async function searchRecipe(name: string) {
-    try {
-        loading.value = true
-        const { recipes } = await settingStore.getDataSource.recipeTable(1, name)
-        recipeOptions.value = recipes
-    } catch (e: unknown) {
-        recipeOptions.value = []
-        console.error(e)
-    } finally {
-        loading.value = false
-    }
-}
-function recipeChange(val: RecipeInfo) {
-    store.setRecipeInfo(val)
-    router.push('see-recipe')
-}
-
 </script>
 
 <template>
@@ -56,13 +69,12 @@ function recipeChange(val: RecipeInfo) {
                 {{ $t('welcome', { time }) }}
             </el-text>
         </div>
-        <div class="select-box">
-            <el-select v-model="recipeSelected" value-key="id" size="large" :default-first-option="true"
-                :placeholder="$t('input-recipe-name')" :loading-text="$t('loading')" :no-match-text="$t('no-match')"
-                :no-data-text="$t('no-data')" :remote-method="searchRecipe" v-on:change="recipeChange" remote
-                remote-show-suffix filterable :loading="loading">
-                <el-option v-for="r in recipeOptions" :key="r.id" :label="r.item_name" :value="r" />
-            </el-select>
+        <!-- <div class="select-box">
+            <el-cascader-panel :props="recipeSelectorProps" @change="selectedRecipe" />
+        </div> -->
+        <div class="confirm-button">
+            <!-- <el-button type="primary" :disabled="!readyToConfirm">{{ $t('confirm') }}</el-button> -->
+            <el-button type="primary" size="large" @click="$router.push('/recipe')" >{{ $t('select-recipe') }}</el-button>
         </div>
         <el-text class="info-text" type="info">{{ $t('guide-mode-info') }}</el-text>
     </div>
@@ -78,7 +90,7 @@ function recipeChange(val: RecipeInfo) {
 }
 
 .greeting-box {
-    flex: 3 1 0;
+    flex: 2 1 0;
     display: flex;
 }
 
@@ -89,11 +101,12 @@ function recipeChange(val: RecipeInfo) {
 }
 
 .select-box {
-    flex: 2 1 0;
+    flex: 4 auto 0;
 }
 
 .confirm-button {
-    margin-top: 50px;
+    flex: 1 0 0;
+    margin-top: 10px;
 }
 
 .info-text {
@@ -121,9 +134,11 @@ loading = 加载中
 no-match = 没有匹配的配方
 no-data = 无配方
 
+confirm = 确认
+select-recipe = 选择配方
+
 guide-mode-info =
-    注意：向导模式是一项实验性功能，旨在帮助新老工匠们快速生成制作手法。
-    如有任何问题请至QQ频道反馈交流。
+    注意：实验性向导模式已删除。如有疑问欢迎反馈。
 </fluent>
 
 <fluent locale="en-US">
@@ -143,7 +158,10 @@ loading = Loading
 no-match = No match recipe
 no-data = No recipe
 
+confirm = Confirm
+select-recipe = Select recipe
+
 guide-mode-info =
-    Note: Wizard mode is an experimental feature designed to help new and old craftsmen quickly generate crafting action sequences.
-    If you have any questions, please issue an Github Issue for feedback and communication.
+    Note: The wizard mode as an experimental feature is removed.
+    If you have any questions, welcome to feedback in Github.
 </fluent>

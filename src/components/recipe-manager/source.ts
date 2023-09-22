@@ -5,6 +5,7 @@ export interface DataSource {
     recipeTable(page: number, searchName: string): Promise<RecipesSourceResult>
     recipesIngredients(recipeId: number): Promise<ItemWithAmount[]>
     recipeLevelTable(rlv: number): Promise<RecipeLevel>
+    recipeInfo(recipeId: number): Promise<RecipeInfo>
     itemInfo(id: number): Promise<Item>
 }
 
@@ -153,6 +154,10 @@ export class XivApiRecipeSource {
         }
     }
 
+    async recipeInfo(recipeId: number): Promise<RecipeInfo> {
+        throw "todo"
+    }
+
     async itemInfo(id: number): Promise<Item> {
         const query = new URLSearchParams({
             'columns': 'ID,Name,LevelItem,CanBeHq'
@@ -192,6 +197,10 @@ export class LocalRecipeSource {
             stars: 0,
         }
         return result
+    }
+
+    async recipeInfo(recipeId: number): Promise<RecipeInfo> {
+        throw "todo"
     }
 
     async itemInfo(itemId: number): Promise<Item> {
