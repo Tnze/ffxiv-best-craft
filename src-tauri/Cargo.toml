@@ -7,7 +7,7 @@ license = ""
 name = "app"
 repository = "https://github.com/Tnze/ffxiv-best-craft"
 rust-version = "1.71"
-version = "0.12.1"
+version = "0.12.2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
