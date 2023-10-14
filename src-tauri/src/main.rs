@@ -5,7 +5,6 @@
 #![feature(int_roundings)]
 
 use std::collections::{hash_map::Entry, BTreeMap, HashMap};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 use ffxiv_crafting::{
