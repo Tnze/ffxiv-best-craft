@@ -434,8 +434,8 @@ fn set_theme(app_handle: tauri::AppHandle, is_dark: Option<bool>) -> bool {
     let window = app_handle.get_window("main").unwrap();
     #[allow(unused_mut, unused_assignments)]
     let mut sbt = false;
-    #[rustfmt::skip]
     #[cfg(target_os = "macos")]
+    #[rustfmt::skip]
     {
         use window_vibrancy::NSVisualEffectMaterial;
         sbt = window_vibrancy::apply_vibrancy(
