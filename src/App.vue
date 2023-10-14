@@ -95,8 +95,12 @@ onMounted(() => checkUpdate($t, true))
 
 .el-main {
     padding: 0;
-    background-color: var(--el-fill-color-light);
+    background-color: rgba(255, 255, 255, 0.5);
     border-top-left-radius: var(--tnze-content-raduis);
+}
+
+:root.dark .el-main {
+    background-color: rgba(46, 46, 46, 0.5);
 }
 
 .el-menu:not(.el-menu--collapse) {

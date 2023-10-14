@@ -168,8 +168,8 @@ const selectRecipeRow = async (row: RecipeInfo) => {
 .el-table {
     user-select: none;
     border-top-left-radius: var(--tnze-content-raduis);
-    --el-table-header-bg-color: var(--el-fill-color-lighter);
-    --el-table-tr-bg-color: var(--el-fill-color-lighter);
+    --el-table-header-bg-color: transparent;
+    --el-table-tr-bg-color: transparent;
 }
 
 .el-pagination {
