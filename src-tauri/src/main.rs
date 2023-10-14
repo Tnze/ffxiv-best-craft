@@ -429,25 +429,27 @@ async fn destroy_solver(
     Ok(())
 }
 
+/// Set the window to Dark mode or Light mode by passing the is_dark argument.
+/// if the is_dark is None, means use the system's default value.
+/// 
+/// This function also try its best to set the window to be vibrancy. And return true if successed,
+/// which means the front-end should make its background transparent to show the window effect below.
 #[tauri::command]
 fn set_theme(app_handle: tauri::AppHandle, is_dark: Option<bool>) -> bool {
     let window = app_handle.get_window("main").unwrap();
-    #[allow(unused_mut, unused_assignments)]
-    let mut sbt = false;
     #[cfg(target_os = "macos")]
-    #[rustfmt::skip]
     {
-        use window_vibrancy::NSVisualEffectMaterial;
-        sbt = window_vibrancy::apply_vibrancy(
-            &window, NSVisualEffectMaterial::HudWindow, None, None
-        )
-        .is_ok();
+        use window_vibrancy::NSVisualEffectMaterial::HudWindow;
+        window_vibrancy::apply_vibrancy(&window, HudWindow, None, None).is_ok()
     }
     #[cfg(target_os = "windows")]
     {
-        sbt = window_vibrancy::apply_mica(&window, is_dark).is_ok();
+        window_vibrancy::apply_mica(&window, is_dark).is_ok()
     }
-    return sbt;
+    #[cfg(all(not(target_os = "macos"), not(target_os = "windows")))]
+    {
+        false // Linux doesn't support vibrancy window
+    }
 }
 
 fn main() {
