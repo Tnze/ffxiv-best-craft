@@ -111,6 +111,28 @@ onMounted(() => checkUpdate($t, true))
     border-radius: var(--el-border-radius-base);
 }
 
+.el-dialog {
+    --el-dialog-border-radius: var(--el-border-radius-round) !important;
+}
+
+.el-drawer {
+    box-shadow: var(--el-box-shadow-light) !important;
+}
+
+.el-drawer.btt {
+    border-top-left-radius: var(--tnze-content-raduis);
+    border-top-right-radius: var(--tnze-content-raduis);
+}
+
+.el-drawer.rtl {
+    border-top-left-radius: var(--tnze-content-raduis);
+    border-bottom-left-radius: var(--tnze-content-raduis);
+}
+
+.el-card {
+    --el-card-border-radius: var(--el-border-radius-base) !important;
+}
+
 :root {
     --el-color-primary: #3fb42d;
     --el-color-primary-light-3: #5ec35d;
@@ -121,11 +143,11 @@ onMounted(() => checkUpdate($t, true))
     --el-color-primary-dark-2: #288b23;
     --el-fill-color-blank: transparent;
 
-    --el-border-radius-base: 9px;
+    --el-border-radius-base: 10px;
     --el-border-radius-small: 5px;
     --el-border-radius-round: 20px;
 
-    --tnze-content-raduis: 16px;
+    --tnze-content-raduis: var(--el-border-radius-round);
 }
 
 :root.dark {

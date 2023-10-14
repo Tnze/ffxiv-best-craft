@@ -229,7 +229,7 @@ async function runDfsSolver() {
 
 <template>
     <el-scrollbar class="container">
-        <el-text type="info">{{ $t('sum-info') }}</el-text>
+        <el-text type="info" class="sum-info">{{ $t('sum-info') }}</el-text>
         <el-collapse v-model="activeNames" accordion>
             <el-collapse-item :title="$t('dfs-solver')" name="dfs">
                 <i18n path="dfs-solver-info" tag="span" class="solver-info">
@@ -313,6 +313,11 @@ async function runDfsSolver() {
 </template>
 
 <style scoped>
+.sum-info {
+    display: block;
+    margin-bottom: 7px;
+}
+
 .container {
     display: flex;
     flex-direction: column;
