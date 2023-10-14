@@ -74,7 +74,7 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
         </div> -->
         <div class="confirm-button">
             <!-- <el-button type="primary" :disabled="!readyToConfirm">{{ $t('confirm') }}</el-button> -->
-            <el-button type="primary" size="large" @click="$router.push('/recipe')" >{{ $t('select-recipe') }}</el-button>
+            <el-button type="primary" size="large" @click="$router.push('/recipe')">{{ $t('select-recipe') }}</el-button>
         </div>
         <el-text class="info-text" type="info">{{ $t('guide-mode-info') }}</el-text>
     </div>

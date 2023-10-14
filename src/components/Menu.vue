@@ -51,6 +51,11 @@ const guideStore = useGuideStore()
     height: 100%;
     border: none;
     user-select: none;
+    padding: 5px;
+}
+
+.el-menu-item {
+    border-radius: var(--tnze-content-raduis);
 }
 </style>
 

@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElMessage } from 'element-plus'
+import { ref } from 'vue'
+import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton } from 'element-plus'
 import { useFluent } from 'fluent-vue'
 import { getName, getVersion, getTauriVersion } from '@tauri-apps/api/app'
 import { checkUpdate } from '../update'
 import { useSettingsStore } from '../store'
 import { languages } from '../lang'
+import { useColorMode } from '@vueuse/core'
 
 const { $t } = useFluent()
 const store = useSettingsStore()
+const colorMode = useColorMode().store
 
 const appName = ref('')
 const version = ref('')
@@ -38,6 +40,13 @@ const onCheckUpdateClick = async () => {
                         <el-option :label="$t('system-lang')" value="system" />
                         <el-option v-for="[v, name] in languages" :label="name" :value="v" />
                     </el-select>
+                </el-form-item>
+                <el-form-item :label="$t('theme')">
+                    <el-radio-group v-model="colorMode">
+                        <el-radio-button label="light">{{ $t('light') }}</el-radio-button>
+                        <el-radio-button label="dark">{{ $t('dark') }}</el-radio-button>
+                        <el-radio-button label="auto">{{ $t('auto') }}</el-radio-button>
+                    </el-radio-group>
                 </el-form-item>
                 <el-form-item :label="$t('data-source')">
                     <el-select v-model="store.dataSource">
@@ -91,6 +100,10 @@ const onCheckUpdateClick = async () => {
 <fluent locale="zh-CN">
 settings = 设置
 # language =
+theme = 主题
+light = 亮
+dark = 暗
+auto = 自动
 data-source = 数据源
 ds-local = 本地
 # ds-xivapi =
@@ -112,6 +125,10 @@ checking-update = 正在检查更新
 <fluent locale="en-US">
 settings = Settings
 language = Language
+theme = Theme
+light = Light
+dark = Dark
+auto = Auto
 data-source = Data Source
 ds-local = Local
 ds-xivapi = Xivapi

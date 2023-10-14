@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watchEffect } from 'vue';
-import { useDark, usePreferredLanguages, useCssVar } from '@vueuse/core';
+import { useColorMode, usePreferredLanguages, useCssVar } from '@vueuse/core';
 import { ElContainer, ElAside, ElMain, ElConfigProvider } from 'element-plus';
 import { useFluent } from 'fluent-vue';
 
@@ -13,7 +13,7 @@ import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
 import { checkUpdate } from './update'
 
-useDark()
+const colorMode = useColorMode()
 const { $t } = useFluent()
 const settingStore = useSettingsStore()
 const gearsetsStore = useGearsetsStore()
@@ -47,9 +47,15 @@ settingStore.$subscribe((_mutation, state) => writeJson('settings.json', state))
 gearsetsStore.$subscribe((_mutation, state) => writeJson('gearsets.json', state))
 
 // Ask the rust side if the window transparent.
-invoke('should_be_transparent').then(v => {
-    bgColor.value = v ? 'transparent' : 'var(--el-bg-color)'
-});
+watchEffect(() => {
+    let isDark: boolean | null;
+    if (colorMode.value == 'dark') isDark = true;
+    else if (colorMode.value == 'light') isDark = false;
+    else isDark = null;
+    invoke('set_theme', { isDark }).then(v => {
+        bgColor.value = v ? 'transparent' : 'var(--el-bg-color)'
+    });
+})
 
 // Check update
 onMounted(() => checkUpdate($t, true))
@@ -89,6 +95,8 @@ onMounted(() => checkUpdate($t, true))
 
 .el-main {
     padding: 0;
+    background-color: var(--el-fill-color-light);
+    border-top-left-radius: var(--tnze-content-raduis);
 }
 
 .el-menu:not(.el-menu--collapse) {
@@ -116,6 +124,8 @@ onMounted(() => checkUpdate($t, true))
     --el-border-radius-base: 9px;
     --el-border-radius-small: 5px;
     --el-border-radius-round: 20px;
+
+    --tnze-content-raduis: 16px;
 }
 
 :root.dark {

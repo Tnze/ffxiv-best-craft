@@ -267,7 +267,6 @@ type SolverInstance = Arc<Mutex<Option<Box<dyn Solver + Send>>>>;
 struct AppState {
     solver_list: Mutex<HashMap<solver::SolverHash, SolverInstance>>,
     db: OnceCell<DatabaseConnection>,
-    should_be_transparent: AtomicBool,
 }
 
 impl AppState {
@@ -275,7 +274,6 @@ impl AppState {
         Self {
             solver_list: Mutex::new(HashMap::new()),
             db: OnceCell::new(),
-            should_be_transparent: AtomicBool::new(false),
         }
     }
 
@@ -433,8 +431,24 @@ async fn destroy_solver(
 }
 
 #[tauri::command]
-fn should_be_transparent(app_state: tauri::State<AppState>) -> bool {
-    app_state.should_be_transparent.load(Ordering::SeqCst)
+fn set_theme(app_handle: tauri::AppHandle, is_dark: Option<bool>) -> bool {
+    let window = app_handle.get_window("main").unwrap();
+    #[allow(unused_mut, unused_assignments)]
+    let mut sbt = false;
+    #[rustfmt::skip]
+    #[cfg(target_os = "macos")]
+    {
+        use window_vibrancy::NSVisualEffectMaterial;
+        sbt = window_vibrancy::apply_vibrancy(
+            &window, NSVisualEffectMaterial::HudWindow, None, None
+        )
+        .is_ok();
+    }
+    #[cfg(target_os = "windows")]
+    {
+        sbt = window_vibrancy::apply_mica(&window, is_dark).is_ok();
+    }
+    return sbt;
 }
 
 fn main() {
@@ -459,7 +473,7 @@ fn main() {
             dfs_solve,
             nq_solve,
             reflect_solve,
-            should_be_transparent,
+            set_theme,
         ])
         .setup(|app| {
             let window = app.get_window("main").unwrap();
@@ -470,31 +484,19 @@ fn main() {
                 format!("{} v{}", window.title()?, packaeg_info.version.to_string()).as_str(),
             )?;
 
-            let state = app.state::<AppState>();
-
-            #[allow(unused_mut, unused_assignments)]
-            let mut sbt = false;
             #[cfg(target_os = "macos")]
             {
                 use window_vibrancy::NSVisualEffectMaterial;
-                sbt = window_vibrancy::apply_vibrancy(
+                window_vibrancy::apply_vibrancy(
                     &window,
                     NSVisualEffectMaterial::HudWindow,
                     None,
                     None,
-                )
-                .is_ok();
+                );
             }
 
             #[cfg(target_os = "windows")]
-            {
-                sbt = window_vibrancy::apply_mica(&window, None).is_ok();
-            }
-
-            state
-                .inner()
-                .should_be_transparent
-                .store(sbt, Ordering::SeqCst);
+            let _ = window_vibrancy::apply_mica(&window, None);
 
             Ok(())
         })
