@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
-import { ElText, ElScrollbar, ElCollapse, ElCollapseItem, ElButton, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage, ElMessageBox, ElSlider, ElRadioGroup, ElRadio } from 'element-plus'
+import { Ref, reactive, ref, watch } from 'vue'
+import { ElAlert, ElCard, ElText, ElScrollbar, ElCollapse, ElCollapseItem, ElButton, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage, ElMessageBox, ElSlider } from 'element-plus'
 import { Actions, Status } from "../../Craft"
-import { create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve, nq_solve } from '../../Solver'
+import { create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve, nq_solve, reflect_solve } from '../../Solver'
 import { useFluent } from 'fluent-vue';
 
 const props = defineProps<{
@@ -85,6 +85,44 @@ const destroySolver = async (s: Solver) => {
     }
 }
 
+async function runSimpleSolver(solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>) {
+    const msg1 = ElMessage({
+        showClose: true,
+        duration: 0,
+        type: 'info',
+        message: $t('solving-info', { solverName: $t(solverId + '-solver') }),
+    })
+    try {
+        solvingRunningState.value = true
+        const startTime = new Date().getTime()
+        const result = await solver(props.initStatus)
+        const stopTime = new Date().getTime()
+        ElMessage({
+            type: result.length > 0 ? 'success' : 'error',
+            message: $t(result.length > 0 ? 'simple-solver-finished' : 'simple-solver-finished-no-result', {
+                solveTime: formatDuration(stopTime - startTime),
+                solverName: $t(solverId + '-solver'),
+            }),
+        })
+        emits('solverResult', result)
+    } catch (err) {
+        ElMessage({
+            showClose: true,
+            duration: 0,
+            type: 'error',
+            message: $t('error-with', { err: $t(err as string) }),
+        })
+    } finally {
+        solvingRunningState.value = false
+        msg1.close()
+    }
+}
+
+const reflectSolveIsSolving = ref(false)
+async function runReflectSolver() {
+    await runSimpleSolver("dp", reflectSolveIsSolving, (initStatus) => reflect_solve(initStatus, useManipulation.value))
+}
+
 const rikaIsSolving = ref(false)
 
 async function runRikaSolver() {
@@ -112,7 +150,7 @@ async function runRikaSolver() {
         const stopTime = new Date().getTime()
         ElMessage({
             type: result.length > 0 ? 'success' : 'error',
-            message: $t(result.length > 0 ? 'rika-solve-finished' : 'rika-solve-finished-no-result', {
+            message: $t(result.length > 0 ? 'simple-solver-finished' : 'simple-solver-finished-no-result', {
                 solveTime: formatDuration(stopTime - startTime),
                 solverName: $t('bfs-solver'),
             }),
@@ -156,7 +194,7 @@ async function runTnzeVerRikaSolver() {
         const stopTime = new Date().getTime()
         ElMessage({
             type: result.length > 0 ? 'success' : 'error',
-            message: $t(result.length > 0 ? 'rika-solve-finished' : 'rika-solve-finished-no-result', {
+            message: $t(result.length > 0 ? 'simple-solver-finished' : 'simple-solver-finished-no-result', {
                 solveTime: formatDuration(stopTime - startTime),
                 solverName: $t('tnzever-rika-solver'),
             }),
@@ -206,7 +244,7 @@ async function runDfsSolver() {
         const stopTime = new Date().getTime()
         ElMessage({
             type: 'success',
-            message: $t('rika-solve-finished', {
+            message: $t('simple-solver-finished', {
                 solveTime: formatDuration(stopTime - startTime),
                 solverName: $t('dfs-solver'),
             }),
@@ -247,7 +285,7 @@ async function runDfsSolver() {
                         <el-checkbox v-model="doNotTouch" :label="$t('do-not-touch')" /><br />
                         <el-checkbox v-model="useSpecialist" :label="$t('specialist')" /><br />
                         <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
-                            {{ dfsSolving ? $t('rika-solving') : $t('solver-start') }}
+                            {{ dfsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
                         </el-button>
                     </template>
                 </i18n>
@@ -259,37 +297,51 @@ async function runDfsSolver() {
                         <el-checkbox v-model="tnzeVerRikaUseObserve" :label="$t('observe')" /><br />
                         <el-checkbox v-model="tnzeVerRikaReduceSteps" :label="$t('reduce-steps-info')" /><br />
                         <el-button type="primary" @click="runTnzeVerRikaSolver" :loading="tnzeVerRikaIsSolving">
-                            {{ tnzeVerRikaIsSolving ? $t('rika-solving') : $t('solver-start') }}
+                            {{ tnzeVerRikaIsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
                         </el-button>
                     </template>
                 </i18n>
             </el-collapse-item>
             <el-collapse-item :title="$t('dp-solver')" name="dp">
-                <el-radio-group v-model="useMuscleMemory">
-                    <el-radio :label="false">{{ $t('reflect') }}</el-radio>
-                    <el-radio :label="true">{{ $t('muscle-memory') }}</el-radio>
-                </el-radio-group><br />
-                <el-checkbox v-model="useManipulation" :label="$t('manipulation')" /><br />
-                <el-checkbox v-model="useObserve" :label="$t('observe')" /><br />
-                <!-- <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" /><br /> -->
-                <el-button type="primary" :disabled="initStatus == undefined" @click="createSolver">
-                    {{ $t('start-solver') }}
-                </el-button>
-                <el-table :data="solvers" :empty-text="$t('dp-solver-empty-text')" style="width: 100%">
-                    <el-table-column>
-                        <template #default="scope">
-                            {{ scope.row.name }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column align="right">
-                        <template #default="scope">
-                            <el-button size="small" type="danger" @click="destroySolver(scope.row)"
-                                :disabled="scope.row.status != 'prepared'" :loading="scope.row.status != 'prepared'">
-                                {{ $t('release-solver') }}
-                            </el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
+                <i18n path="dp-solver-info" tag="span" class="solver-info">
+                    <template #usageBlock="{ muscleMemoryMsg }">
+                        <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" /><br />
+                        <el-checkbox v-model="useManipulation" :label="$t('manipulation')" /><br />
+                        <el-checkbox v-model="useObserve" :label="$t('observe')" /><br />
+                        <el-alert v-if="useMuscleMemory" type="warning" :title="muscleMemoryMsg" show-icon
+                            :closable="false" />
+                        <el-button v-if="useMuscleMemory" type="primary" :disabled="initStatus == undefined"
+                            @click="createSolver">
+                            {{ $t('start-solver') }}
+                        </el-button>
+                        <el-button v-else type="primary" @click="runReflectSolver" :loading="reflectSolveIsSolving">
+                            {{ reflectSolveIsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
+                        </el-button>
+                        <el-table v-if="useMuscleMemory" :data="solvers" :empty-text="$t('dp-solver-empty-text')"
+                            style="width: 100%">
+                            <el-table-column>
+                                <template #default="scope">
+                                    {{ scope.row.name }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column align="right">
+                                <template #default="scope">
+                                    <el-button size="small" type="danger" @click="destroySolver(scope.row)"
+                                        :disabled="scope.row.status != 'prepared'"
+                                        :loading="scope.row.status != 'prepared'">
+                                        {{ $t('release-solver') }}
+                                    </el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </template>
+                    <template #infoBlock="{ infoMsg }">
+                        <el-alert type="info" :title="infoMsg" show-icon :closable="false" style="white-space: normal;" />
+                    </template>
+                    <template #calcCard="{ calcMsg }">
+                        <el-card shadow="never">{{ calcMsg }}</el-card>
+                    </template>
+                </i18n>
             </el-collapse-item>
             <el-collapse-item :title="$t('bfs-solver')" name="bfs">
                 <i18n path="rika-solver-info" tag="span" class="solver-info">
@@ -300,7 +352,7 @@ async function runDfsSolver() {
                     </template>
                     <template #startButton>
                         <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving">
-                            {{ rikaIsSolving ? $t('rika-solving') : $t('solver-start') }}
+                            {{ rikaIsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
                         </el-button>
                     </template>
                     <template #rikaSaidLine="{ rikaSaid }">
@@ -374,16 +426,97 @@ error-with = 错误：{ $err }
 warning = 警告
 solver-start = 开始求解
 rika-solver-warning = 当前配方不满足 Rika 求解器的使用条件，是否强制运行？
-rika-solving = 正在求解中
-rika-solve-finished =「{ $solverName }」求解完成({ $solveTime })
-rika-solve-finished-no-result = 发动了「{ $solverName }」求解器，没有获得任何结果({ $solveTime })
+simple-solver-solving = 正在求解中
+simple-solver-finished =「{ $solverName }」求解完成({ $solveTime })
+simple-solver-finished-no-result = 发动了「{ $solverName }」求解器，没有获得任何结果({ $solveTime })
 
-sum-info = 警告：以下内容包含许多对您没有帮助的碎碎念，使用求解器请直接点击“{ solver-start }”按钮。
+sum-info = 提示：下面会显示对您没有帮助的碎碎念，使用求解器请直接点击“{ solver-start }”按钮。
+
+dp-solver-info =
+    基于记忆化搜索的动态规划算法。
+    {$infoBlock}
+    {$usageBlock}
+
+    可以将该算法理解为一种精心优化的穷举方法。
+
+    它穷举所有状态，而不是所有手法。因此将DFS的指数时间复杂度，降低到了多项式时间复杂度。使得原本不可行的穷举变为可行。
+
+    但是即使降低到了多项式时间复杂度，生产中的状态维度依然很多。如果考虑所有的状态，算法会占用大量内存，且仍然需要较长的时间才能求解完成。
+
+    生产中的状态包括以下几个维度：
+    · 当前耐久值
+    · 剩余制作力
+    · 坚信剩余步数（0~5）
+    · 内静层数（0~10）
+    · 俭约剩余次数（0~8）
+    · 掌握剩余次数（0~8）
+    · 崇敬剩余次数（0~4）
+    · 改革剩余次数（0~4）
+    · 阔步剩余步数（0~3）
+    · 加工连击状态（0~3）
+    · 是否已观察（0~1）
+    以及最重要的：
+    · 当前进展
+    · 当前品质。
+    共13个维度。
+
+    而计算完整状态空间大小，需要将每个维度的大小相乘。
+    以70耐久、500制作力估算：（我们先不考虑当前进展和品质）
+    {$calcCard}
+    而我们需要为每个状态记录：
+    1. 当前状态得分
+    2. 下一步最优动作
+
+    不难发现，如果不做进一步优化，运行该算法将需要PB级的空间，成本过高。（别忘了我们还没考虑进展和品质）
+    因此有必要做出以下两个必要妥协：
+    1. 状态空间下不考虑当前品质和当前进展
+    2. 将推品质和推进展拆分为两个过程，进行两次动态规划
+
+    （具体的方案难以用语言描述，如果没能理解可以翻阅本软件的源代码。）
+
+    这样便得到两个好处：
+    1. 不把进展当作State，而是当作Value，多项式中可以不乘进去一个夸张的大约几千的数。
+    2. 将一个大的多项式拆分为两个小的多项式，推品质相关的状态和推进展相关的状态可以分离，降低了空间复杂度。
+
+    但是也有一些小缺点：
+    1. 没有同时考虑加工和制作穿插使用的情况（{delicate-synthesis}做了特殊处理），但数学上无法再保证穷举得到的结果为最优解。
+    2. 两次动态规划衔接处只考虑了各种耐久和制作力的组合，品质阶段不会特意为进展阶段留Buff类资源。
+    3. 难以处理坚信手法的情况：需要先推进展，再推品质，最后再次推进展完成制作。
+
+    另外，为了降低空间复杂度，只记录了下一步最优动作，而没有记录状态得分。
+    经过实际测试，并没有明显的求解耗时增加。
+
+    由于算法难以处理坚信，而当前版本坚信又是绝对的优势手法。因此本软件提供了一个不得已而为之的方案：
+
+    由用户手动指定坚信起手。该方案具体工作方式如下：
+
+    1. 由用户设置好配方的所有参数，然后点击{start-solver}按钮。创建一个针对当前配方和装备属性的求解器对象。
+       该求解器对象会分配内存，用以储存所有状态的下一步最优动作。
+
+    2. 用户在工作区输入坚信起手，并且需要将进展推动至“差最后一步制作即可完成”的状态。
+       具体定义为可以通过“{ basic-synthesis }（效率100）”、“{ delicate-synthesis }（效率180）”或“{ observe }-{ focused-synthesis }（效率200）”之一完成的状态。
+
+    3. 当算法识别到可以处理的情况后，计算需要留给最后一步的资源，并基于当前的Buff状态运行推动品质的动态规划。
+       这时可以看到工作区出现一个正在转圈的Loading标志。几分钟后，求解结果会显示在用户输入的技能后面。
+
+    4. 此时用户可以调整输入，尝试不同的起手，并实时预览求解结果。调整结果一般可以在不到1秒内运算完成。
+
+    .muscle-memory-msg =
+        坚信模式的使用方法与其余求解器略有不同，请酌情摸索使用，或阅读下方的说明后使用。
+    .info-msg =
+        旧版本中的实现是普通的动态规划，在初始化时会计算完全部状态。
+        目前实现为记忆化搜索，会实时计算当前及依赖的所有状态，二者体验上会有一点小区别。
+    .calc-msg =
+        70 × 500 × 6 × 11 × 9 × 9 × 5 × 5 × 4 × 4 × 2
+        = 149,688,000,000
+        = 146,179,687.5 Ki
+        ≈ 142,753.6 Mi
+        ≈ 139.4 Gi
 
 rika-solver-info =
     由{$rikaRepoLink}，作者同意后移植至本应用。
-    注：该算法通过激进的剪枝策略暴力搜索求解，
-    其中剪枝策略由作者根据经验手工指定，适用于特定版本的配方。
+    注：该算法通过激进的剪枝策略与穷举法求解，
+    其中剪枝策略由作者根据经验手工指定，仅适用于特定版本的配方。
 
     {$startButton}
 
@@ -433,9 +566,9 @@ error-with = Error: { $err }
 warning = Warning
 solver-start = Start
 rika-solver-warning = The current recipe does not meet the usage conditions of the Rika's solver. Do you want to force it to run?
-rika-solving = Solving
-rika-solve-finished = Solver "{ $solverName }" finished. ({ $solveTime })
-rika-solve-finished-no-result = "{ $solverName }" is finished. None of result is returned. ({ $solveTime })
+simple-solver-solving = Solving
+simple-solver-finished = Solver "{ $solverName }" finished. ({ $solveTime })
+simple-solver-finished-no-result = "{ $solverName }" is finished. None of result is returned. ({ $solveTime })
 
 sum-info = Warning: The following content contains many fragmented ideas that are not helpful to you. To use the solvers, please click on the '{ solver-start }' button directly.
 
