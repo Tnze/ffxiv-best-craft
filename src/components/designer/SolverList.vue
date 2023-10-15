@@ -188,39 +188,6 @@ async function runDfsSolver() {
     <el-scrollbar class="container">
         <el-text type="info" class="sum-info">{{ $t('sum-info') }}</el-text>
         <el-collapse v-model="activeNames" accordion>
-            <el-collapse-item :title="$t('dfs-solver')" name="dfs">
-                <i18n path="dfs-solver-info" tag="span" class="solver-info">
-                    <template #ffxivCraftingAlgo="{ commandLineTool }">
-                        <el-link type="primary" href="https://github.com/Tnze/ffxiv-crafting-algo" target="_blank">
-                            {{ commandLineTool }}
-                        </el-link>
-                    </template>
-                    <template #startButton>
-                        <div class="argument-block">
-                            <span class="slider-label">{{ $t('dfs-max-depth') }}</span>
-                            <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip"
-                                :label="$t('dfs-max-depth')" />
-                        </div>
-                        <el-checkbox v-model="doNotTouch" :label="$t('do-not-touch')" /><br />
-                        <el-checkbox v-model="useSpecialist" :label="$t('specialist')" /><br />
-                        <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
-                            {{ dfsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
-                        </el-button>
-                    </template>
-                </i18n>
-            </el-collapse-item>
-            <el-collapse-item :title="$t('tnzever-rika-solver')" name="bfs-dp">
-                <i18n path="tnzever-rika-solver-info" tag="span" class="solver-info">
-                    <template #startButton>
-                        <el-checkbox v-model="tnzeVerRikaUseManipulation" :label="$t('manipulation')" /><br />
-                        <el-checkbox v-model="tnzeVerRikaUseObserve" :label="$t('observe')" /><br />
-                        <el-checkbox v-model="tnzeVerRikaReduceSteps" :label="$t('reduce-steps-info')" /><br />
-                        <el-button type="primary" @click="runTnzeVerRikaSolver" :loading="tnzeVerRikaIsSolving">
-                            {{ tnzeVerRikaIsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
-                        </el-button>
-                    </template>
-                </i18n>
-            </el-collapse-item>
             <el-collapse-item :title="$t('dp-solver')" name="dp">
                 <i18n path="dp-solver-info" tag="span" class="solver-info">
                     <template #usageBlock="{ muscleMemoryMsg }">
@@ -262,6 +229,27 @@ async function runDfsSolver() {
                     </template>
                 </i18n>
             </el-collapse-item>
+            <el-collapse-item :title="$t('dfs-solver')" name="dfs">
+                <i18n path="dfs-solver-info" tag="span" class="solver-info">
+                    <template #ffxivCraftingAlgo="{ commandLineTool }">
+                        <el-link type="primary" href="https://github.com/Tnze/ffxiv-crafting-algo" target="_blank">
+                            {{ commandLineTool }}
+                        </el-link>
+                    </template>
+                    <template #startButton>
+                        <div class="argument-block">
+                            <span class="slider-label">{{ $t('dfs-max-depth') }}</span>
+                            <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip"
+                                :label="$t('dfs-max-depth')" />
+                        </div>
+                        <el-checkbox v-model="doNotTouch" :label="$t('do-not-touch')" /><br />
+                        <el-checkbox v-model="useSpecialist" :label="$t('specialist')" /><br />
+                        <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
+                            {{ dfsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
+                        </el-button>
+                    </template>
+                </i18n>
+            </el-collapse-item>
             <el-collapse-item :title="$t('bfs-solver')" name="bfs">
                 <i18n path="rika-solver-info" tag="span" class="solver-info">
                     <template #rikaRepoLink="{ designByRika }">
@@ -276,6 +264,18 @@ async function runDfsSolver() {
                     </template>
                     <template #rikaSaidLine="{ rikaSaid }">
                         {{ rikaSaid }}
+                    </template>
+                </i18n>
+            </el-collapse-item>
+            <el-collapse-item :title="$t('tnzever-rika-solver')" name="bfs-dp">
+                <i18n path="tnzever-rika-solver-info" tag="span" class="solver-info">
+                    <template #startButton>
+                        <el-checkbox v-model="tnzeVerRikaUseManipulation" :label="$t('manipulation')" /><br />
+                        <el-checkbox v-model="tnzeVerRikaUseObserve" :label="$t('observe')" /><br />
+                        <el-checkbox v-model="tnzeVerRikaReduceSteps" :label="$t('reduce-steps-info')" /><br />
+                        <el-button type="primary" @click="runTnzeVerRikaSolver" :loading="tnzeVerRikaIsSolving">
+                            {{ tnzeVerRikaIsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
+                        </el-button>
                     </template>
                 </i18n>
             </el-collapse-item>
@@ -327,7 +327,7 @@ async function runDfsSolver() {
 </style>
 
 <fluent locale="zh-CN">
-dp-solver = 动态规划求解 v2.1
+dp-solver = 动态规划求解 v2.2
 bfs-solver = 广度优先搜索 v1
 tnzever-rika-solver = 广度优先搜索 ~ Tnze Impv. ~ v2
 dfs-solver = 深度优先搜索 v2 力大砖飞版
@@ -467,7 +467,7 @@ dfs-solver-info =
 </fluent>
 
 <fluent locale="en-US">
-dp-solver = Dynamic Programing v2.1
+dp-solver = Dynamic Programing v2.2
 bfs-solver = Breadth First Search v1
 tnzever-rika-solver = Breadth First Search ~ Tnze Impv. ~ v2
 dfs-solver = Depth First Search v2
@@ -603,4 +603,6 @@ dfs-solver-info =
     This solver is usually suitable for recipes that are 10-level lower than the player or above.
     { $startButton }
     .command-line-tool = Command line tool
+</fluent>
+<fluent locale="ja-JP">
 </fluent>
