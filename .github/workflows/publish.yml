@@ -50,6 +50,19 @@ jobs:
       with:
         tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
         releaseName: "BestCraft v__VERSION__"
-        releaseBody: "- Update QQ channel link url\n- Add \"No touching\" option for DFS solver\n- Fix \"Specialist\" option doesn't work problem"
+        releaseBody: |
+          v0.12.3
+          - Add DP solver description
+          - Optimize DP solver (add non-musule-memory mode)
+          - Optimize coding, reduce repeating code.
+          - Optimize el-dialog shadows effect
+          - Adjust the order of solvers
+          v0.12.2
+          - Add more rounded corners.
+          - Optimize transparent panel effects.
+          v0.12.1
+          - Update dependencies
+          - Optimize UI
+          - Add light/dark mode switching options
         releaseDraft: false
         prerelease: false
