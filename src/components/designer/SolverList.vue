@@ -349,7 +349,7 @@ simple-solver-solving = 正在求解中
 simple-solver-finished =「{ $solverName }」求解完成({ $solveTime })
 simple-solver-finished-no-result = 发动了「{ $solverName }」求解器，没有获得任何结果({ $solveTime })
 
-sum-info = 提示：下面会显示对您没有帮助的碎碎念，使用求解器请直接点击“{ solver-start }”按钮。
+sum-info = 提示：下面会显示对您没有帮助的碎碎念，使用求解器请直接点击“{solver-start}”按钮。
 
 dp-solver-info =
     基于记忆化搜索的动态规划算法。
@@ -413,7 +413,7 @@ dp-solver-info =
        该求解器对象会分配内存，用以储存所有状态的下一步最优动作。
 
     2. 用户在工作区输入坚信起手，并且需要将进展推动至“差最后一步制作即可完成”的状态。
-       具体定义为可以通过“{ basic-synthesis }（效率100）”、“{ delicate-synthesis }（效率180）”或“{ observe }-{ focused-synthesis }（效率200）”之一完成的状态。
+       具体定义为可以通过“{basic-synthesis}（效率100）”、“{delicate-synthesis}（效率180）”或“{observe}-{focused-synthesis}（效率200）”之一完成的状态。
 
     3. 当算法识别到可以处理的情况后，计算需要留给最后一步的资源，并基于当前的Buff状态运行推动品质的动态规划。
        这时可以看到工作区出现一个正在转圈的Loading标志。几分钟后，求解结果会显示在用户输入的技能后面。
@@ -489,7 +489,84 @@ simple-solver-solving = Solving
 simple-solver-finished = Solver "{ $solverName }" finished. ({ $solveTime })
 simple-solver-finished-no-result = "{ $solverName }" is finished. None of result is returned. ({ $solveTime })
 
-sum-info = Warning: The following content contains many fragmented ideas that are not helpful to you. To use the solvers, please click on the '{ solver-start }' button directly.
+sum-info = Warning: The following content contains many fragmented ideas that are not helpful to you. To use the solvers, please click on the '{solver-start}' button directly.
+dp-solver-info =
+    Dynamic programming algorithm based on Memoization Search.
+    {$infoBlock}
+    {$usageBlock}
+
+    This algorithm can be understood as a carefully optimized exhaustive method.
+
+    It exhausts all states, not all actions. Therefore, the exponential time complexity of DFS has been reduced to polynomial time complexity. Make the previously infeasible things feasible.
+
+    However, even if the polynomial time complexity is much better, there are still many state dimensions in the crafting. If all states are considered, the algorithm will occupy a large amount of memory and still take a long time to solve.
+
+    The state dimensions include：
+    · Current {durability}
+    · Residue {craft-point}
+    · Residue {muscle-memory} (0~5)
+    · Current Inner Quiet (0~10)
+    · Residue {waste-not} (0~8)
+    · Residue {manipulation} (0~8)
+    · Residue {veneration} (0~4)
+    · Residue {innovation} (0~4)
+    · Residue {great-strides} (0~3)
+    · Touch Combos State (0~3)
+    · Is Observed (0~1)
+    And most importantly:
+    · Current {progress}
+    · Current {quality}
+    13 dimensions in total。
+
+    To calculate the size of the complete state space, we multiply the sizes of each dimension.
+    Estimated at 70 {durability} and 500 {craft-point}: (We will not consider current {progress} and {quality} for now)
+    {$calcCard}
+    And record these for each state：
+    1. Score of current state 
+    2. The best action to next state
+
+    It is not difficult to find that without further optimization, running this algorithm will require space in PB and the cost will be too high. (Don't forget that we haven't considered {progress} and {quality} yet)
+    Therefore, it is necessary to make the following two necessary compromises:
+    1. Regardless of current {quality} and {progress} in state space
+    2. Split quality phase and progress phase into two processes and conduct two dynamic programming.
+
+    (The specific solution is difficult to describe in language, and if you cannot understand it, you can refer to the source code of this software.)
+
+    This results in two benefits:
+    1. Do not treat progress as a State, but as a Value. And avoid the polynomial to be multiplied by an exaggerated number of thousands.
+    2. By splitting a large DP into two small DPs, the quality related states and the progress related states can be separated, reducing spatial complexity.
+
+    But there are also some minor drawbacks:
+    1. There is no need to consider both processing and production interweaving ({delicate-synthesis} has been specially treated), but mathematically, it is no longer guaranteed that the exhaustive result is the optimal solution.
+    2. The connection between the two dynamic programming only considers the combination of various {durability} and {craft-point}, and the quality stage does not intentionally leave Buff resources for the progress stage.
+    3. Difficulty in handling {muscle-memory}: progress needs to be promoted first, quality needs to be promoted, and finally the progress needs to be promoted again for completing the crafting.
+
+    In addition, in order to reduce spatial complexity, only the next optimal action was recorded, without recording the state score.
+    Actual testing shows that there was no significant increase of solving time.
+
+    Due to the algorithm's difficulty in handling {muscle-memory}, which is an absolute advantage in the current version. Therefore, this software provides a last-minute solution:
+
+    The user manually specifies the {muscle-memory} starting action. The specific working method of this plan is as follows:
+
+    1. The user sets all the parameters of the recipe and then clicks the {start-solver} button. Create a solver object for the current recipe and equipment attributes.
+       The solver object will allocate memory to store the next optimal action for all states.
+    2. The user enters a {muscle-memory} and some other actions in the workspace pushs the progress to a state which left only one step away from completing the crafting,
+       which is specifically defined as a state that can be completed through one of "{basic-synthesis} (efficiency 1.0)", "{delicate-synthesis} (efficiency 1.8)", or "{observe} - {focused-synthesis} (efficiency 2.0)".
+    3. After the algorithm recognizes the situation that can be processed, it needs to allocate resources for the final step and run the DP to drive quality based on the current Buffs state.
+       At this point, you can see a rotating Loading icon in the workspace. After a few minutes, the solving results will be displayed after the actions inputed by the user.
+    4. The user can adjust the inputs, try different starting actions, and preview the solving results in real-time. The adjustment results can generally be completed in less than 1 second.
+
+    .muscle-memory-msg =
+        The usage for {muscle-memory} mode is a little bit different from other solvers. Please discretionary explore how to use it. Or you can read the instructions below before using it.
+    .info-msg =
+        The implementation in the old version was a regular dynamic programming, which would calculate all states during initialization.
+        Currently implemented as a Memoization Search, it will calculate all current and dependent states in real-time, and there will be a slight difference in the experience between the two.
+    .calc-msg =
+        70 × 500 × 6 × 11 × 9 × 9 × 5 × 5 × 4 × 4 × 2
+        = 149,688,000,000
+        = 146,179,687.5 Ki
+        ≈ 142,753.6 Mi
+        ≈ 139.4 Gi
 
 rika-solver-info =
     {$rikaRepoLink}. Transplant with the consent of the author.
