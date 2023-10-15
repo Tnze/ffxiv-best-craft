@@ -117,10 +117,11 @@ onMounted(() => checkUpdate($t, true))
 
 .el-dialog {
     --el-dialog-border-radius: var(--el-border-radius-round) !important;
+    box-shadow: var(--el-box-shadow-lighter) !important;
 }
 
 .el-drawer {
-    box-shadow: var(--el-box-shadow-light) !important;
+    box-shadow: var(--el-box-shadow-lighter) !important;
 }
 
 .el-drawer.btt {
