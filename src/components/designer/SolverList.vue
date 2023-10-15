@@ -120,18 +120,12 @@ async function runSimpleSolver(solverId: string, solvingRunningState: Ref<Boolea
 
 const reflectSolveIsSolving = ref(false)
 async function runReflectSolver() {
-    await runSimpleSolver("dp", reflectSolveIsSolving, (initStatus) => reflect_solve(initStatus, useManipulation.value))
+    await runSimpleSolver("dp", reflectSolveIsSolving, initStatus => reflect_solve(initStatus, useManipulation.value))
 }
 
 const rikaIsSolving = ref(false)
 
 async function runRikaSolver() {
-    const msg1 = ElMessage({
-        showClose: true,
-        duration: 0,
-        type: 'info',
-        message: $t('solving-info', { solverName: $t('bfs-solver') }),
-    })
     if (props.initStatus.recipe.rlv < 560 || props.initStatus.recipe.difficulty < 70) {
         try {
             await ElMessageBox.confirm(
@@ -143,30 +137,7 @@ async function runRikaSolver() {
             return
         }
     }
-    try {
-        rikaIsSolving.value = true
-        const startTime = new Date().getTime()
-        const result = await rika_solve(props.initStatus)
-        const stopTime = new Date().getTime()
-        ElMessage({
-            type: result.length > 0 ? 'success' : 'error',
-            message: $t(result.length > 0 ? 'simple-solver-finished' : 'simple-solver-finished-no-result', {
-                solveTime: formatDuration(stopTime - startTime),
-                solverName: $t('bfs-solver'),
-            }),
-        })
-        emits('solverResult', result)
-    } catch (err) {
-        ElMessage({
-            showClose: true,
-            duration: 0,
-            type: 'error',
-            message: $t('error-with', { err: $t(err as string) }),
-        })
-    } finally {
-        rikaIsSolving.value = false
-        msg1.close()
-    }
+    await runSimpleSolver("bfs", rikaIsSolving, rika_solve)
 }
 
 const tnzeVerRikaIsSolving = ref(false)
@@ -175,42 +146,15 @@ const tnzeVerRikaUseObserve = ref(true)
 const tnzeVerRikaReduceSteps = ref(true)
 
 async function runTnzeVerRikaSolver() {
-    const msg1 = ElMessage({
-        showClose: true,
-        duration: 0,
-        type: 'info',
-        message: $t('solving-info', { solverName: $t('tnzever-rika-solver') }),
-    })
-    try {
-        tnzeVerRikaIsSolving.value = true
-        const startTime = new Date().getTime()
-        const result = await rika_solve_tnzever(
-            props.initStatus,
+    await runSimpleSolver("tnzever-rika", tnzeVerRikaIsSolving,
+        initStatus => rika_solve_tnzever(
+            initStatus,
             tnzeVerRikaUseManipulation.value,
             8,
             tnzeVerRikaUseObserve.value,
             tnzeVerRikaReduceSteps.value
         )
-        const stopTime = new Date().getTime()
-        ElMessage({
-            type: result.length > 0 ? 'success' : 'error',
-            message: $t(result.length > 0 ? 'simple-solver-finished' : 'simple-solver-finished-no-result', {
-                solveTime: formatDuration(stopTime - startTime),
-                solverName: $t('tnzever-rika-solver'),
-            }),
-        })
-        emits('solverResult', result)
-    } catch (err) {
-        ElMessage({
-            showClose: true,
-            duration: 0,
-            type: 'error',
-            message: $t('error-with', { err: $t(err as string) }),
-        })
-    } finally {
-        tnzeVerRikaIsSolving.value = false
-        msg1.close()
-    }
+    )
 }
 
 const maxDepth = ref(6);
@@ -230,37 +174,12 @@ function dfsFormatTooltip(value: number): string {
 }
 
 async function runDfsSolver() {
-    const msg1 = ElMessage({
-        showClose: true,
-        duration: 0,
-        type: 'info',
-        message: $t('solving-info', { solverName: $t('dfs-solver') }),
-    })
-    try {
-        dfsSolving.value = true
-        const startTime = new Date().getTime()
-        const solver = doNotTouch.value ? nq_solve : dfs_solve
-        const result = await solver(props.initStatus, maxDepth.value, useSpecialist.value)
-        const stopTime = new Date().getTime()
-        ElMessage({
-            type: 'success',
-            message: $t('simple-solver-finished', {
-                solveTime: formatDuration(stopTime - startTime),
-                solverName: $t('dfs-solver'),
-            }),
-        })
-        emits('solverResult', result)
-    } catch (err) {
-        ElMessage({
-            showClose: true,
-            duration: 0,
-            type: 'error',
-            message: $t('error-with', { err: $t(err as string) }),
-        })
-    } finally {
-        dfsSolving.value = false
-        msg1.close()
-    }
+    await runSimpleSolver("dfs", dfsSolving,
+        initStatus => {
+            const solver = doNotTouch.value ? nq_solve : dfs_solve
+            return solver(initStatus, maxDepth.value, useSpecialist.value)
+        }
+    )
 }
 
 </script>
