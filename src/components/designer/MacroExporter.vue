@@ -31,7 +31,7 @@ const chunkedActions = computed(() => {
 })
 
 const copyChunk = async (i: number, macro: string[]) => {
-    await writeText(macro.join('\r\n'))
+    await writeText(macro.join('\r\n').replaceAll(/\u2068|\u2069/g, ''))
     ElMessage({
         type: 'success',
         duration: 2000,
