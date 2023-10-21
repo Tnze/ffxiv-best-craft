@@ -5,15 +5,15 @@
   "platforms": {
     "linux-x86_64": {
       "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5YN1JGa0I1dXdrSktRQTAvRDBxYmZoZDE2Y3Y5L1RESGZzeHBENnhOWjlBSEZWTWwrV3dXZnRUc2NnekpDQm1yTENRSFlwYlBjb0tkbU9CVGZTaWdZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjk3MzQ4NjQzCWZpbGU6YmVzdC1jcmFmdF8wLjEyLjNfYW1kNjQuQXBwSW1hZ2UudGFyLmd6Ckpsb0NQUFBkdHluRDlERi8yL25BbHdFNHNXVkI3V2NrMGswTXBjMmZTa1ZjdEFnaUxlZlpSU1ZmSnZ0cXVWbE5QMStUMGRTcjNFSXQzUEIxK2ZMV0N3PT0K",
-      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.12.3/best-craft_0.12.3_amd64.AppImage.tar.gz"
+      "url": "https://tnze.yyyy.games/best-craft_0.12.3_amd64.AppImage.tar.gz"
     },
     "darwin-x86_64": {
       "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmdWTmN5VUdKUVFacEsrQUpFUUdCd3hBVTRRcFRQYUlYSEZQUXpMaHhPbkFuRTU4dCtsSUt5WmtLZFlRTVNtRDRTcGVXUGpxNi9EeFNKUTgvRlNEYkFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjk3MzQ4NzEyCWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKVFVZeEFDNWgxMXBBcHZHSE83WFdIZWZxS2VET1RCTkx2SkxzTExlZFpoWkpFSW5qOVNUT2k3RjM1eWV0d3pvc3BsVk5mUFBpbWRncmhZQVR6UkdYRHc9PQo=",
-      "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.12.3/BestCraft_x64.app.tar.gz"
+      "url": "https://tnze.yyyy.games/BestCraft_x64.app.tar.gz"
     },
     "windows-x86_64": {
       "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnZLVTJzOEYrUHhIa0paV2EvdUJnWmY1WmhHTlhaUURON0xmemNqVlBTdGN2bVJtd0o0T3lUUHFQWm1pMHRTaFF3eG5RYzZiT3FJRXBSZGxzUnJhb1FnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNjk3MzQ4ODk1CWZpbGU6QmVzdENyYWZ0XzAuMTIuM194NjRfemgtQ04ubXNpLnppcApWeUhqdWV0Mi84Zk5adTcySlJPOGNmNHJad3pNNTl3L1dta3p1TFJZNERLZmNFOGhuQkpMNEh2SGF0cy9RVkRLVkV6Q3RIeVdpL0tLWTU1TlYrdi9BZz09Cg==",
-      "url": "https://gitee.com/Tnze/ffxiv-best-craft/releases/download/v0.12.3/BestCraft_0.12.3_x64_zh-CN.msi.zip"
+      "url": "https://tnze.yyyy.games/BestCraft_0.12.3_x64_zh-CN.msi.zip"
     }
   }
 }
