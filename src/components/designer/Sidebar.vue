@@ -6,6 +6,8 @@ const props = defineProps<{
     previewSolver: boolean;
 }>();
 
+const isOnTauri = import.meta.env.VITE_BESTCRAFT_TARGET == 'tauri'
+
 const emits = defineEmits<{
     (event: "plus"): void;
     (event: "delete"): void;

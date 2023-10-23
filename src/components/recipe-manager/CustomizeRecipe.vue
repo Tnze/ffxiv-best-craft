@@ -65,7 +65,7 @@ watch(
         try {
             autoLoadLoading.value = true
             if (recipeLevelPromise != null) await recipeLevelPromise
-            recipeLevelPromise = dataSource.recipeLevelTable(rlv ?? 0)
+            recipeLevelPromise = (await dataSource).recipeLevelTable(rlv ?? 0)
             recipeLevel.value = await recipeLevelPromise
             recipeLevelPromise = null
         } catch {

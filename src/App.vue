@@ -3,15 +3,15 @@ import { onMounted, ref, watchEffect } from 'vue';
 import { useColorMode, usePreferredLanguages, useCssVar } from '@vueuse/core';
 import { ElContainer, ElAside, ElMain, ElConfigProvider } from 'element-plus';
 import { useFluent } from 'fluent-vue';
-
-import { Dir, exists, createDir, readTextFile, writeTextFile } from '@tauri-apps/api/fs';
-import { invoke } from "@tauri-apps/api/tauri";
+if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    var pkgTauriFs = import('@tauri-apps/api/fs')
+    var pkgTauri = import("@tauri-apps/api/tauri")
+}
 
 import Menu from './components/Menu.vue';
 import { useSettingsStore, useGearsetsStore } from './store';
 import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
-import { checkUpdate } from './update'
 
 const colorMode = useColorMode()
 const { $t } = useFluent()
@@ -30,35 +30,55 @@ watchEffect(() => {
     console.log("language switched to", lang.value)
 })
 
-readTextFile("settings.json", { dir: Dir.App }).then(settingStore.fromJson).catch(e => console.error(e))
-readTextFile("gearsets.json", { dir: Dir.App }).then(gearsetsStore.fromJson).catch(e => console.error(e))
+async function initApp() {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        const { Dir, readTextFile } = await pkgTauriFs
+        readTextFile("settings.json", { dir: Dir.App }).then(settingStore.fromJson).catch(e => console.error(e))
+        readTextFile("gearsets.json", { dir: Dir.App }).then(gearsetsStore.fromJson).catch(e => console.error(e))
+
+        // Check update
+        const { checkUpdate } = await import('./update')
+        onMounted(() => checkUpdate($t, true))
+    } else {
+        const ifNotNullThen = (v: string | null, f: (v: string) => void) => { if (v != null) f(v) }
+        ifNotNullThen(window.localStorage.getItem("settings.json"), settingStore.fromJson)
+        ifNotNullThen(window.localStorage.getItem("gearsets.json"), gearsetsStore.fromJson)
+    }
+}
+initApp()
 
 async function writeJson(name: string, val: any) {
     let jsonStr = JSON.stringify(val)
-    try {
-        if (!await exists('', { dir: Dir.App }))
-            await createDir('', { dir: Dir.App })
-        await writeTextFile({ contents: jsonStr, path: name }, { dir: Dir.App })
-    } catch (err) {
-        console.error(err)
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        const { Dir, exists, createDir, writeTextFile } = await pkgTauriFs
+        try {
+            if (!await exists('', { dir: Dir.App }))
+                await createDir('', { dir: Dir.App })
+            await writeTextFile({ contents: jsonStr, path: name }, { dir: Dir.App })
+        } catch (err) {
+            console.error(err)
+        }
+    } else {
+        window.localStorage.setItem(name, jsonStr)
     }
 }
 settingStore.$subscribe((_mutation, state) => writeJson('settings.json', state))
 gearsetsStore.$subscribe((_mutation, state) => writeJson('gearsets.json', state))
 
-// Ask the rust side if the window transparent.
-watchEffect(() => {
+watchEffect(async () => {
     let isDark: boolean | null;
     if (colorMode.value == 'dark') isDark = true;
     else if (colorMode.value == 'light') isDark = false;
     else isDark = null;
-    invoke('set_theme', { isDark }).then(v => {
-        bgColor.value = v ? 'transparent' : 'var(--el-bg-color)'
-    });
-})
 
-// Check update
-onMounted(() => checkUpdate($t, true))
+    let shouldBeTransparent = false;
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        // Ask the rust side if the window transparent.
+        shouldBeTransparent = await invoke('set_theme', { isDark })
+    }
+    bgColor.value = shouldBeTransparent ? 'transparent' : 'var(--el-bg-color)'
+})
 
 </script>
 

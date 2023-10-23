@@ -2,8 +2,6 @@
 import { ref } from 'vue'
 import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton } from 'element-plus'
 import { useFluent } from 'fluent-vue'
-import { getName, getVersion, getTauriVersion } from '@tauri-apps/api/app'
-import { checkUpdate } from '../update'
 import { useSettingsStore } from '../store'
 import { languages } from '../lang'
 import { useColorMode } from '@vueuse/core'
@@ -12,18 +10,25 @@ const { $t } = useFluent()
 const store = useSettingsStore()
 const colorMode = useColorMode().store
 
-const appName = ref('')
+const appName = ref('BestCraft')
 const version = ref('')
 const tauriVersion = ref('')
-getName().then(n => appName.value = n)
-getVersion().then(v => version.value = v)
-getTauriVersion().then(t => tauriVersion.value = t)
+var checkingUpdate = ref(false)
+var onCheckUpdateClick = async () => { }
 
-const checkingUpdate = ref(false)
-const onCheckUpdateClick = async () => {
-    checkingUpdate.value = true
-    await checkUpdate($t)
-    checkingUpdate.value = false
+const isOnTauri = import.meta.env.VITE_BESTCRAFT_TARGET == 'tauri'
+if (isOnTauri) {
+    import('@tauri-apps/api/app').then(({ getName, getVersion, getTauriVersion }) => {
+        getName().then(n => appName.value = n)
+        getVersion().then(v => version.value = v)
+        getTauriVersion().then(t => tauriVersion.value = t)
+    })
+    onCheckUpdateClick = async () => {
+        let { checkUpdate } = await import('../update')
+        checkingUpdate.value = true
+        await checkUpdate($t)
+        checkingUpdate.value = false
+    }
 }
 
 </script>
@@ -50,7 +55,7 @@ const onCheckUpdateClick = async () => {
                 </el-form-item>
                 <el-form-item :label="$t('data-source')">
                     <el-select v-model="store.dataSource">
-                        <el-option :label="$t('ds-local')" value="local" />
+                        <el-option v-if="isOnTauri" :label="$t('ds-local')" value="local" />
                         <el-option :label="$t('ds-xivapi')" value="xivapi" />
                         <el-option :label="$t('ds-cafe')" value="cafe" />
                     </el-select>
@@ -63,17 +68,19 @@ const onCheckUpdateClick = async () => {
                         <el-option :label="$t('dslang-fr')" value="fr" />
                     </el-select>
                 </el-form-item>
-                <el-form-item :label="$t('version-number')">
-                    {{ version }}
-                </el-form-item>
-                <el-form-item :label="$t('tauri')">
-                    {{ tauriVersion }}
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="onCheckUpdateClick" :loading="checkingUpdate">{{
-                        checkingUpdate ? $t('checking-update') : $t('check-update')
-                    }}</el-button>
-                </el-form-item>
+                <template v-if="isOnTauri">
+                    <el-form-item :label="$t('version-number')">
+                        {{ version }}
+                    </el-form-item>
+                    <el-form-item :label="$t('tauri')">
+                        {{ tauriVersion }}
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="onCheckUpdateClick" :loading="checkingUpdate">{{
+                            checkingUpdate ? $t('checking-update') : $t('check-update')
+                        }}</el-button>
+                    </el-form-item>
+                </template>
                 <el-form-item :label="$t('developer')">
                     Tnze
                 </el-form-item>

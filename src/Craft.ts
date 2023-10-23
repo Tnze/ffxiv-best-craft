@@ -1,4 +1,8 @@
-import { invoke } from "@tauri-apps/api/tauri";
+if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    var pkgTauri = import("@tauri-apps/api/tauri")
+} else {
+    var pkgWasm = import("../pkg-wasm")
+}
 
 export interface Attributes {
     level: number;
@@ -169,12 +173,18 @@ export const newRecipe = async (
     };
 };
 
-export const newStatus = (
+export async function newStatus(
     attrs: Attributes,
     recipe: Recipe,
     recipeLevel: RecipeLevel,
-): Promise<Status> => {
-    return invoke("new_status", { attrs, recipe, recipeLevel })
+): Promise<Status> {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("new_status", { attrs, recipe, recipeLevel })
+    } else {
+        let { new_status } = await pkgWasm
+        return new_status(attrs, recipe, recipeLevel)
+    }
 };
 
 export interface SimulateResult {
@@ -185,8 +195,14 @@ export interface SimulateResult {
     }[];
 }
 
-export const simulate = (status: Status, actions: Actions[]): Promise<SimulateResult> => {
-    return invoke("simulate", { status, actions });
+export async function simulate(status: Status, actions: Actions[]): Promise<SimulateResult> {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("simulate", { status, actions });
+    } else {
+        let { simulate } = await pkgWasm
+        return simulate(status, actions)
+    }
 };
 
 export interface SimulateOneStepResult {
@@ -194,20 +210,44 @@ export interface SimulateOneStepResult {
     is_success: boolean;
 }
 
-export const simulateOneStep = (status: Status, action: Actions, forceSuccess: boolean): Promise<SimulateOneStepResult> => {
-    return invoke("simulate_one_step", { status, action, forceSuccess });
+export async function simulateOneStep(status: Status, action: Actions, forceSuccess: boolean): Promise<SimulateOneStepResult> {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("simulate_one_step", { status, action, forceSuccess });
+    } else {
+        let { simulate_one_step } = await pkgWasm
+        return simulate_one_step(status, action, forceSuccess)
+    }
 };
 
-export const high_quality_probability = (status: Status): Promise<number | null> => {
-    return invoke("high_quality_probability", { status });
+export async function high_quality_probability(status: Status): Promise<number | null> {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("high_quality_probability", { status });
+    } else {
+        let { high_quality_probability } = await pkgWasm
+        return high_quality_probability(status)
+    }
 }
 
-export const allowedList = (status: Status, actions: Actions[]): Promise<string[]> => {
-    return invoke("allowed_list", { status, skills: actions });
+export async function allowedList(status: Status, actions: Actions[]): Promise<string[]> {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("allowed_list", { status, skills: actions });
+    } else {
+        let { allowed_list } = await pkgWasm
+        return allowed_list(status, actions)
+    }
 };
 
-export const craftPointsList = (status: Status, actions: Actions[]): Promise<number[]> => {
-    return invoke("craftpoints_list", { status, skills: actions })
+export async function craftPointsList(status: Status, actions: Actions[]): Promise<number[]> {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("craftpoints_list", { status, skills: actions })
+    } else {
+        let { craftpoints_list } = await pkgWasm
+        return craftpoints_list(status, actions)
+    }
 };
 
 export interface RecipeInfo {

@@ -1,4 +1,4 @@
-import { Item, Jobs, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements } from "../../Craft"
+import { Item, Jobs, Recipe, RecipeLevel, RecipeRequirements } from "../../Craft"
 import { useDesignerStore } from "../../store"
 
 const designerStore = useDesignerStore()

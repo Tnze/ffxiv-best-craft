@@ -42,6 +42,9 @@ tauri = { version = "1.5", features = [
 tokio = "1.33.0"
 window-vibrancy = "0.4"
 
+# internal deps
+app-libs = { path = "../src-libs" }
+
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL

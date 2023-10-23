@@ -33,7 +33,7 @@ const dialogOpen = computed({
 
 const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
     async (item) => ({
-        item: await settingStore.getDataSource.itemInfo(item.ingredient_id),
+        item: await (await settingStore.getDataSource).itemInfo(item.ingredient_id),
         amount: item.amount,
         hqAmount: 0,
     })
@@ -41,7 +41,7 @@ const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
 const items = ref<{ item: Item, amount: number, hqAmount: number }[]>([])
 watchEffect(async () => {
     const newId = props.item.id
-    const ri = newId == -1 ? null : await settingStore.getDataSource.recipesIngredients(props.recipeId)
+    const ri = newId == -1 ? null : await (await settingStore.getDataSource).recipesIngredients(props.recipeId)
     items.value = ri == null ? [] : reactive(await calcItems(ri))
 })
 watchEffect(() => {

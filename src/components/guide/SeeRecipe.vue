@@ -36,7 +36,7 @@ async function retry() {
     }
     loading.value = true
     try {
-        const dataSource = settingStore.getDataSource
+        const dataSource = await settingStore.getDataSource
         const [iinfo, rlv] = await Promise.all([
             dataSource.itemInfo(recipeInfo.value.item_id),
             dataSource.recipeLevelTable(recipeInfo.value.rlv),

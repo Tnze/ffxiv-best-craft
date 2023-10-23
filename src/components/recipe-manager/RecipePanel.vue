@@ -36,7 +36,8 @@ let loadRecipeTableResult: Promise<{ recipes: RecipeInfo[], totalPages: number }
 watchEffect(async () => {
     try {
         isRecipeTableLoading.value = true
-        let promise = settingStore.getDataSource.recipeTable(pagination.Page, searchText.value)
+        console.debug(pagination.Page)
+        let promise = (await settingStore.getDataSource).recipeTable(pagination.Page, searchText.value)
         loadRecipeTableResult = promise
         let { recipes, totalPages } = await promise
         if (loadRecipeTableResult == promise) {
@@ -58,8 +59,8 @@ const selectRecipeRow = async (row: RecipeInfo) => {
     try {
         isRecipeTableLoading.value = true
         var [recipeLevel, info] = await Promise.all([
-            settingStore.getDataSource.recipeLevelTable(row.rlv),
-            settingStore.getDataSource.itemInfo(row.item_id)
+            (await settingStore.getDataSource).recipeLevelTable(row.rlv),
+            (await settingStore.getDataSource).itemInfo(row.item_id)
         ])
     } catch (e: any) {
         ElMessage.error(String(e))
@@ -98,7 +99,6 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         confirmDialogVisible.value = true
     }
 }
-
 
 </script>
 

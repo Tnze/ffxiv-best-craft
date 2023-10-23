@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { Actions, Attributes, Item, ItemWithAmount, Jobs, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements, Status } from './Craft'
-import { CafeMakerApiBase, DataSource, LocalRecipeSource, XivApiRecipeSource, XivapiBase } from './components/recipe-manager/source'
+import { Actions, Attributes, Item, ItemWithAmount, Jobs, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements } from './Craft'
+import { CafeMakerApiBase, XivApiRecipeSource, XivapiBase } from './components/recipe-manager/remote-source'
+import { DataSource } from './components/recipe-manager/source'
 import { Enhancer } from './components/attr-enhancer/Enhancer'
 
 export const useGuideStore = defineStore('guide', {
@@ -138,7 +139,7 @@ export const useDesignerStore = defineStore('designer', {
 export const useSettingsStore = defineStore('settings', {
     state: () => ({
         language: 'system',
-        dataSource: <'local' | 'xivapi' | 'cafe'>'local',
+        dataSource: <'local' | 'xivapi' | 'cafe'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'local' : 'xivapi'),
         dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined
     }),
     getters: {
@@ -147,12 +148,22 @@ export const useSettingsStore = defineStore('settings', {
                 language: this.language,
             })
         },
-        getDataSource(): DataSource {
-            switch (this.dataSource) {
-                case 'local': return new LocalRecipeSource()
-                case 'xivapi': return new XivApiRecipeSource(XivapiBase, this.dataSourceLang)
-                case 'cafe': return new XivApiRecipeSource(CafeMakerApiBase)
-                default: return new LocalRecipeSource()
+        async getDataSource(): Promise<DataSource> {
+            if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+                var { LocalRecipeSource } = await import('./components/recipe-manager/local-source')
+                switch (this.dataSource) {
+                    case 'local':
+                        return new LocalRecipeSource()
+                    case 'xivapi': return new XivApiRecipeSource(XivapiBase, this.dataSourceLang)
+                    case 'cafe': return new XivApiRecipeSource(CafeMakerApiBase)
+                    default: return new LocalRecipeSource()
+                }
+            } else {
+                switch (this.dataSource) {
+                    case 'xivapi': return new XivApiRecipeSource(XivapiBase, this.dataSourceLang)
+                    case 'cafe': return new XivApiRecipeSource(CafeMakerApiBase)
+                    default: return new XivApiRecipeSource(CafeMakerApiBase)
+                }
             }
         }
     },
