@@ -31,9 +31,9 @@ async fn main() {
     let router = Router::new()
         .hoop(affix::inject(state))
         .push(Router::with_path("recipe_level_table").get(recipe_level_table))
-        .push(Router::with_path("recipe_table").post(recipe_table))
-        .push(Router::with_path("recipes_ingredientions").post(recipes_ingredientions))
-        .push(Router::with_path("item_info").post(item_info));
+        .push(Router::with_path("recipe_table").get(recipe_table))
+        .push(Router::with_path("recipes_ingredientions").get(recipes_ingredientions))
+        .push(Router::with_path("item_info").get(item_info));
     let listener = TcpListener::new(server_url);
     let acceptor = listener.bind().await;
     Server::new(acceptor).serve(router).await;
