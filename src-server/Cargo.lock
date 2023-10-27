@@ -3070,6 +3070,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ca6ad05a4870b2bf5fe995117d3728437bd27d7cd5f06f13c17443ef369775a1"
 
 [[package]]
+name = "web-source-server"
+version = "0.1.1"
+dependencies = [
+ "dotenvy",
+ "ffxiv-crafting",
+ "salvo",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "whoami"
 version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3179,19 +3192,6 @@ name = "xxhash-rust"
 version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9828b178da53440fa9c766a3d2f73f7cf5d0ac1fe3980c1e5018d899fd19e07b"
-
-[[package]]
-name = "yyyy-server"
-version = "0.1.1"
-dependencies = [
- "dotenvy",
- "ffxiv-crafting",
- "salvo",
- "sea-orm",
- "serde",
- "serde_json",
- "tokio",
-]
 
 [[package]]
 name = "zerocopy"

@@ -1,7 +1,7 @@
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "../../Craft";
 import { DataSourceType, RecipesSourceResult } from "./source";
 
-export class YYYYGamesSource {
+export class WebSource {
     public sourceType = DataSourceType.SingleShot
     base: string
 

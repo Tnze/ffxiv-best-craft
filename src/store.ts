@@ -3,7 +3,7 @@ import { Actions, Attributes, Item, ItemWithAmount, Jobs, Recipe, RecipeInfo, Re
 import { CafeMakerApiBase, XivApiRecipeSource, XivapiBase } from './components/recipe-manager/remote-source'
 import { DataSource } from './components/recipe-manager/source'
 import { Enhancer } from './components/attr-enhancer/Enhancer'
-import { YYYYGamesApiBase, YYYYGamesSource } from './components/recipe-manager/yyyygames-source'
+import { YYYYGamesApiBase, WebSource } from './components/recipe-manager/web-source'
 
 export const useGuideStore = defineStore('guide', {
     state: () => ({
@@ -161,7 +161,7 @@ export const useSettingsStore = defineStore('settings', {
                 }
             } else {
                 switch (this.dataSource) {
-                    case 'yyyy.games': return new YYYYGamesSource(YYYYGamesApiBase)
+                    case 'yyyy.games': return new WebSource(YYYYGamesApiBase)
                     case 'xivapi': return new XivApiRecipeSource(XivapiBase, this.dataSourceLang)
                     case 'cafe': return new XivApiRecipeSource(CafeMakerApiBase)
                     default: return new XivApiRecipeSource(CafeMakerApiBase)
