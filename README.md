@@ -4,6 +4,12 @@ This is a crafting simulator with solver algorithms for Final Fantasy XIV(FF14).
 
 最终幻想14生产模拟器（附带智能求解算法）
 
+## Online Version 在线版
+
+
+
+## Download 下载
+
 推荐配置 Recommended setup:
 
 - 操作系统 OS: Windows 11, MacOS, Linux
@@ -13,8 +19,6 @@ This is a crafting simulator with solver algorithms for Final Fantasy XIV(FF14).
 
 - 操作系统 OS: Windows 10
 - 内存 Memory: 8GiB
-
-## Download 下载
 
 下载地址：[Gitee](https://gitee.com/Tnze/ffxiv-best-craft/releases) (Windows Only)  
 Download: [Github](https://gitee.com/Tnze/ffxiv-best-craft/releases)
@@ -26,15 +30,40 @@ Download: [Github](https://gitee.com/Tnze/ffxiv-best-craft/releases)
 
 ## Dev （开发人员帮助）
 
-### 安装依赖项 Install Dependencies
-
-按照这篇教程安装Rust、Node和WebView2等组件：[Tauri Getting Started](https://tauri.app/zh/v1/guides/getting-started/prerequisites/)
-
 ```bash
 yarn install # 下载依赖 download requirements
 ```
 
-### Develop build
+### For Web Only
+
+#### 安装Web依赖 Install Web Dependencies
+
+为了编译Wasm模块，下载：[rustup](https://rustup.rs/)、[wasm-pack](https://rustwasm.github.io/wasm-pack/installer/)
+
+#### Develop Hotload Server
+
+```bash
+yarn dev-web
+```
+
+#### Release Build
+
+```bash
+yarn build-web
+```
+
+### For Tauri
+
+#### 安装Tauri依赖 Install Tauri Dependencies
+
+按照这篇教程安装Rust、Node和WebView2等组件：[Tauri Getting Started](https://tauri.app/zh/v1/guides/getting-started/prerequisites/)
+
+> 以下 `yarn tauri` 开头的命令可以根据你安装 tauri-cli 方式的不同而有所变化
+> 见：<https://tauri.app/v1/guides/getting-started/setup/>
+> The commands start with `yarn tauri` below could be different, depending on the way you install tauri-cli.
+> See: <https://tauri.app/v1/guides/getting-started/setup/>
+
+#### Develop build
 
 ```bash
 yarn tauri dev
@@ -42,10 +71,10 @@ yarn tauri dev
 yarn tauri dev --release
 ```
 
-> ⚠️ 调试模式构建的程序运行求解器可能极慢。  
-> ⚠️ Solving could be very very slow in debug mode.
+> ⚠️ 调试模式构建的程序运行求解器可能比发布模式慢得多。  
+> ⚠️ Solving in debug mode could be much slower than release mode.
 
-### Release build
+#### Release build
 
 ```bash
 # 设置环境变量 set enviroments

@@ -16,6 +16,45 @@ jobs:
         node-version: 16
     - name: run tsc
       run: yarn && yarn tsc --noEmit
+  
+  publish-web:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16
+    - name: install Rust stable
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+    - name: install wasm-pack
+      run:
+        npm install -g wasm-pack
+    - name: install app dependencies and build it
+      run: yarn && yarn build-web
+    - name: upload files
+      uses: actions/upload-artifact@v3
+      with:
+        name: bestcraft-dist
+        path: dist/
+
+  deploy-web:
+    needs: publish-web
+    runs-on: ubuntu-latest
+    steps:
+    - name: download files
+      uses: actions/download-artifact@v3
+      with:
+        name: bestcraft-dist
+    - name: sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ vars.FTP_SERVER }}
+        username: ${{ vars.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
 
   publish-tauri:
     strategy:
