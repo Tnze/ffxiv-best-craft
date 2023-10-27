@@ -1943,8 +1943,20 @@ version = "0.58.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f0206b25c533ed47049843951c74e884a005dcfe057b3af783059d9ae0e40d0f"
 dependencies = [
+ "salvo-cors",
  "salvo_core",
  "salvo_extra",
+]
+
+[[package]]
+name = "salvo-cors"
+version = "0.58.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dfb22893312d2d456a9c8cf0dacddd66b8237ca52ebfbf0815dc102f8d7c937b"
+dependencies = [
+ "bytes",
+ "salvo_core",
+ "tracing",
 ]
 
 [[package]]
@@ -2548,19 +2560,6 @@ dependencies = [
  "tracing",
  "url",
  "uuid",
-]
-
-[[package]]
-name = "src-server"
-version = "0.1.0"
-dependencies = [
- "dotenvy",
- "ffxiv-crafting",
- "salvo",
- "sea-orm",
- "serde",
- "serde_json",
- "tokio",
 ]
 
 [[package]]
@@ -3180,6 +3179,19 @@ name = "xxhash-rust"
 version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9828b178da53440fa9c766a3d2f73f7cf5d0ac1fe3980c1e5018d899fd19e07b"
+
+[[package]]
+name = "yyyy-server"
+version = "0.1.1"
+dependencies = [
+ "dotenvy",
+ "ffxiv-crafting",
+ "salvo",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "tokio",
+]
 
 [[package]]
 name = "zerocopy"

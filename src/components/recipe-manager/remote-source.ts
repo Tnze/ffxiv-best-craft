@@ -1,5 +1,5 @@
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "../../Craft";
-import { RecipesSourceResult } from './source'
+import { DataSourceType, RecipesSourceResult } from './source'
 
 interface XivapiRecipeResult {
     Pagination: {
@@ -42,6 +42,7 @@ interface XivapiItemResult {
 export class XivApiRecipeSource {
     base: string;
     language: 'en' | 'ja' | 'de' | 'fr' | undefined
+    public sourceType = DataSourceType.SingleShot
 
     constructor(base: string, language?: 'en' | 'ja' | 'de' | 'fr') {
         this.base = base

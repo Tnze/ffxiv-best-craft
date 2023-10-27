@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, reactive } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { ElContainer, ElHeader, ElMain, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
 import { newRecipe, RecipeInfo } from '../../Craft'
@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router';
 import { useChecklistStore, useSettingsStore } from '../../store';
 import { useFluent } from 'fluent-vue';
 import { selectRecipe } from './common';
+import { DataSource, DataSourceType } from './source';
 
 
 // let jsonData = JSON.stringify(data.map(elem => ({
@@ -33,11 +34,12 @@ const displayTable = ref<RecipeInfo[]>([])
 const isRecipeTableLoading = ref(false)
 
 let loadRecipeTableResult: Promise<{ recipes: RecipeInfo[], totalPages: number }> | null = null
-watchEffect(async () => {
+
+async function updateRecipePage(dataSource: DataSource, pageNumber: number, searching: string) {
+    // 对于已有缓存的加载会很快，只有较慢的情况才需要显示Loading
+    let timer = setTimeout(() => isRecipeTableLoading.value = true, 200)
     try {
-        isRecipeTableLoading.value = true
-        console.debug(pagination.Page)
-        let promise = (await settingStore.getDataSource).recipeTable(pagination.Page, searchText.value)
+        let promise = dataSource.recipeTable(pageNumber, searching)
         loadRecipeTableResult = promise
         let { recipes, totalPages } = await promise
         if (loadRecipeTableResult == promise) {
@@ -48,9 +50,35 @@ watchEffect(async () => {
     } catch (e: any) {
         ElMessage.error(String(e))
     } finally {
+        clearTimeout(timer)
         isRecipeTableLoading.value = false
     }
+}
+
+// 搜索时更新
+watch(searchText, async searching => {
+    const source = await settingStore.getDataSource
+    if (source.sourceType == DataSourceType.Realtime) {
+        await updateRecipePage(source, pagination.Page, searching)
+    }
 })
+
+// 翻页时更新
+watch(() => pagination.Page, async pageNumber => {
+    const source = await settingStore.getDataSource
+    await updateRecipePage(source, pageNumber, searchText.value)
+})
+
+// 回车手动更新
+async function triggerSearch() {
+    const source = await settingStore.getDataSource
+    const pageNumber = pagination.Page
+    const searching = searchText.value
+    await updateRecipePage(source, pageNumber, searching)
+}
+
+// 页面载入后更新
+onMounted(triggerSearch)
 
 const confirmDialogVisible = ref(false)
 let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null = null
@@ -126,7 +154,8 @@ const selectRecipeRow = async (row: RecipeInfo) => {
                     </span>
                 </template>
             </el-dialog>
-            <el-input v-model="searchText" class="search-input" :placeholder="$t('search')" clearable>
+            <el-input v-model="searchText" @keydown.enter="triggerSearch" class="search-input" :placeholder="$t('search')"
+                clearable>
                 <template #append>
                     <el-button :icon="EditPen" @click="router.push('/recipe/customize')" />
                 </template>

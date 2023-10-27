@@ -1,7 +1,8 @@
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "../../Craft";
-import { RecipesSourceResult } from "./source";
+import { DataSourceType, RecipesSourceResult } from "./source";
 
 export class LocalRecipeSource {
+    public sourceType = DataSourceType.Realtime
     invoke = import("@tauri-apps/api").then(pkg => pkg.invoke);
 
     async recipeTable(page: number, searchName: string): Promise<RecipesSourceResult> {

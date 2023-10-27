@@ -1,7 +1,9 @@
 use std::{collections::BTreeMap, env};
 
-use salvo::affix;
+use salvo::cors::Cors;
+use salvo::hyper::Method;
 use salvo::prelude::*;
+use salvo::{affix, cors};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::Serialize;
 
@@ -28,7 +30,18 @@ async fn main() {
     let conn = Database::connect(&db_url).await.unwrap();
     let state = AppState { conn };
 
-    let router = Router::new()
+    let cors = Cors::new()
+        .allow_origin(cors::Any)
+        .allow_methods([Method::GET])
+        .allow_headers(vec![
+            "Access-Control-Request-Method",
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Headers",
+            "Access-Control-Max-Age",
+        ])
+        .into_handler();
+
+    let router = Router::with_hoop(cors)
         .hoop(affix::inject(state))
         .push(Router::with_path("recipe_level_table").get(recipe_level_table))
         .push(Router::with_path("recipe_table").get(recipe_table))
@@ -41,9 +54,9 @@ async fn main() {
 
 #[derive(FromQueryResult, Serialize)]
 struct RecipeInfo {
-    id: i32,
-    rlv: i32,
-    item_id: i32,
+    id: u32,
+    rlv: u32,
+    item_id: u32,
     item_name: String,
     job: String,
 
@@ -69,7 +82,7 @@ async fn recipe_level_table(
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
     let rlv = req
-        .query::<i32>("rlv")
+        .query::<u32>("rlv")
         .ok_or_else(|| StatusError::bad_request())?;
     let Some(rt) = RecipeLevelTables::find_by_id(rlv)
         .one(&state.conn)
@@ -88,15 +101,15 @@ async fn recipe_level_table(
 async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
     let state = depot
         .obtain::<AppState>()
-        .map_err(|_| StatusError::internal_server_error())?;
+        .map_err(|_| StatusError::internal_server_error().detail("Obtain AppState error"))?;
     let page_id = req
         .query::<u64>("page_id")
-        .ok_or_else(|| StatusError::bad_request())?;
+        .ok_or_else(|| StatusError::bad_request().detail("Need 'page_id'"))?;
     let search_name = req
         .query::<String>("search_name")
-        .ok_or_else(|| StatusError::bad_request())?;
+        .ok_or_else(|| StatusError::bad_request().detail("Need 'search_name'"))?;
 
-    let paginate = Recipes::find()
+    let query = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
         .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
         .join(
@@ -104,6 +117,7 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
             recipes::Relation::RecipeLevelTables.def(),
         )
         .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
+        .select_only()
         .filter(items::Column::Name.like(&search_name))
         .column_as(recipes::Column::Id, "id")
         .column_as(recipes::Column::RecipeLevelId, "rlv")
@@ -122,17 +136,17 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
             "required_craftsmanship",
         )
         .column_as(recipes::Column::RequiredControl, "required_control")
-        .column_as(recipes::Column::CanHq, "can_hq")
-        .into_model::<RecipeInfo>()
-        .paginate(&state.conn, 200);
-    let p = paginate
-        .num_pages()
-        .await
-        .map_err(|_| StatusError::internal_server_error())?;
-    let data = paginate
-        .fetch_page(page_id)
-        .await
-        .map_err(|_| StatusError::internal_server_error())?;
+        .column_as(recipes::Column::CanHq, "can_hq");
+    let paginate = query.into_model::<RecipeInfo>().paginate(&state.conn, 200);
+
+    let p = paginate.num_pages().await.map_err(|err| {
+        println!("Failed to get total page numbers: {err}");
+        StatusError::internal_server_error().detail("Failed to get total page numbers")
+    })?;
+    let data = paginate.fetch_page(page_id).await.map_err(|err| {
+        println!("Failed to get recipe data: {err}");
+        StatusError::internal_server_error().detail("Failed to get recipe data")
+    })?;
 
     #[derive(Serialize)]
     struct Resp {
@@ -181,7 +195,7 @@ async fn item_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -> 
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
     let item_id = req
-        .query::<i32>("item_id")
+        .query::<u32>("item_id")
         .ok_or_else(|| StatusError::bad_request())?;
     let result = Items::find_by_id(item_id)
         .one(&state.conn)

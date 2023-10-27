@@ -3,6 +3,7 @@ import { Actions, Attributes, Item, ItemWithAmount, Jobs, Recipe, RecipeInfo, Re
 import { CafeMakerApiBase, XivApiRecipeSource, XivapiBase } from './components/recipe-manager/remote-source'
 import { DataSource } from './components/recipe-manager/source'
 import { Enhancer } from './components/attr-enhancer/Enhancer'
+import { YYYYGamesApiBase, YYYYGamesSource } from './components/recipe-manager/yyyygames-source'
 
 export const useGuideStore = defineStore('guide', {
     state: () => ({
@@ -139,7 +140,7 @@ export const useDesignerStore = defineStore('designer', {
 export const useSettingsStore = defineStore('settings', {
     state: () => ({
         language: 'system',
-        dataSource: <'local' | 'xivapi' | 'cafe'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'local' : 'xivapi'),
+        dataSource: <'local' | "yyyy.games" | 'xivapi' | 'cafe'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'local' : 'yyyy.games'),
         dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined
     }),
     getters: {
@@ -160,6 +161,7 @@ export const useSettingsStore = defineStore('settings', {
                 }
             } else {
                 switch (this.dataSource) {
+                    case 'yyyy.games': return new YYYYGamesSource(YYYYGamesApiBase)
                     case 'xivapi': return new XivApiRecipeSource(XivapiBase, this.dataSourceLang)
                     case 'cafe': return new XivApiRecipeSource(CafeMakerApiBase)
                     default: return new XivApiRecipeSource(CafeMakerApiBase)
