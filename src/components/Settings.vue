@@ -133,6 +133,9 @@ if (isOnTauri) {
     margin-right: 8px;
 }
 
+.el-main {
+    background-color: transparent !important;
+}
 </style>
 
 <fluent locale="zh-CN">

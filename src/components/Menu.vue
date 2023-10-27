@@ -18,13 +18,11 @@
 
 <script setup lang="ts">
 import { ElMenu, ElMenuItem, ElIcon } from 'element-plus'
-import { Notebook, Suitcase, Edit, Setting, Box, Guide } from '@element-plus/icons-vue'
-import { ref } from 'vue';
+import { Notebook, Suitcase, Edit, Setting, Guide } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
 import { useGuideStore } from '../store';
 
 const router = useRouter()
-const disableBom = ref(true)
 const guideStore = useGuideStore()
 
 </script>

@@ -206,6 +206,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: transparent !important;
 }
 
 .search-input {
@@ -223,6 +224,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
     justify-content: center;
     /* margin-bottom: 10px; */
 }
+
 </style>
 
 <fluent locale="zh-CN">

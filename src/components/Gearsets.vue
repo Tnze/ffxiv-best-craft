@@ -83,6 +83,10 @@ const jobPage = ref('default')
 .el-tabs {
     user-select: none;
 }
+
+.el-main {
+    background-color: transparent !important;
+}
 </style>
 
 <fluent locale="zh-CN">

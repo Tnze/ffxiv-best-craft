@@ -37,6 +37,7 @@ const settingStore = useSettingsStore()
 const gearsetsStore = useGearsetsStore()
 const preferredLang = usePreferredLanguages()
 const bgColor = useCssVar('--app-bg-color', ref(null))
+const bgMainColor = useCssVar('--tnze-main-bg-color', ref(null))
 
 const lang = ref('zh-CN')
 watchEffect(() => {
@@ -96,6 +97,7 @@ watchEffect(async () => {
         shouldBeTransparent = await invoke('set_theme', { isDark })
     }
     bgColor.value = shouldBeTransparent ? 'transparent' : 'var(--el-bg-color)'
+    bgMainColor.value = shouldBeTransparent ? '#2e2e2e80' : '#242424'
 })
 
 </script>
@@ -133,12 +135,12 @@ watchEffect(async () => {
 
 .el-main {
     padding: 0;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(246, 246, 246, 0.5);
     border-top-left-radius: var(--tnze-content-raduis);
 }
 
 :root.dark .el-main {
-    background-color: rgba(46, 46, 46, 0.5);
+    background-color: var(--tnze-main-bg-color);
 }
 
 .el-menu:not(.el-menu--collapse) {

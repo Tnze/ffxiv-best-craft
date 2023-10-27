@@ -411,6 +411,10 @@ async function openListFromJSON() {
 </template>
 
 <style scoped>
+.el-main {
+    background-color: transparent !important;
+}
+
 .main-page {
     height: 100%;
     display: flex;
