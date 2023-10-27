@@ -6,6 +6,7 @@ version = "0.0.0"
 edition = "2021"
 authors = ["Tnze"]
 default-target = "wasm32-unknown-unknown"
+license = "AGPL-3.0-or-later"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

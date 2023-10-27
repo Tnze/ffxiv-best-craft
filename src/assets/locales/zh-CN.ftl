@@ -1,3 +1,10 @@
+licenses-notices-1 = BestCraft 是自由软件：您可以在遵守由自由软件基金会发布的 GNU Affero 通用公共许可协议的情况下重新分发且或修改软件；或第三版许可协议，或（根据您的选择）任何更新版本。
+licenses-notices-2 = BestCraft 本着可用的意愿分发，但不作任何担保；甚至没有商业性的或对特定目的适用性的暗指。更多细节请参看 GNU Affero 通用公共许可协议。
+licenses-notices-3 = 您应该随 BestCraft 收到一份 GNU Affero 通用公共许可协议。否则请参阅：http://www.gnu.org/licenses/
+copyright-notices = 
+    版权所有 2023 Tnze. All Rights Reserved.
+    技能图标等：Copyright (C) 2010 - 2023 SQUARE ENIX CO., LTD. All Rights Reserved.
+
 level = 等级
 recipe-level = 配方等级
 class-job-level = 特职等级

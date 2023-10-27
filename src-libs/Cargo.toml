@@ -3,6 +3,7 @@ name = "app-libs"
 version = "0.0.0"
 edition = "2021"
 authors = ["Tnze"]
+license = "AGPL"
 
 [dependencies]
 ffxiv-crafting = { version = "6.3.3", features = ["serde-support"] }

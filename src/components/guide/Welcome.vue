@@ -1,3 +1,21 @@
+<!-- 
+    This file is part of BestCraft.
+    Copyright (C) 2023  <name of author>
+
+    BestCraft is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    BestCraft is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <script setup lang="ts">
 import { ElText, ElButton, ElCascaderPanel, CascaderOption, CascaderValue, CascaderProps } from 'element-plus';
 import { computed, ref } from 'vue';
@@ -76,7 +94,7 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
             <!-- <el-button type="primary" :disabled="!readyToConfirm">{{ $t('confirm') }}</el-button> -->
             <el-button type="primary" size="large" @click="$router.push('/recipe')">{{ $t('select-recipe') }}</el-button>
         </div>
-        <el-text class="info-text" type="info">{{ $t('guide-mode-info') }}</el-text>
+        <el-text class="info-text" type="info">{{ $t('copyright-notices') }}</el-text>
     </div>
 </template>
 

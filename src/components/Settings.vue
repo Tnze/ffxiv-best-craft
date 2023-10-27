@@ -1,6 +1,24 @@
+<!-- 
+    This file is part of BestCraft.
+    Copyright (C) 2023  <name of author>
+
+    BestCraft is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    BestCraft is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton } from 'element-plus'
+import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton, ElCard, ElDialog } from 'element-plus'
 import { useFluent } from 'fluent-vue'
 import { useSettingsStore } from '../store'
 import { languages } from '../lang'
@@ -15,6 +33,7 @@ const version = ref('')
 const tauriVersion = ref('')
 var checkingUpdate = ref(false)
 var onCheckUpdateClick = async () => { }
+const licenseDialogVisible = ref(false)
 
 const isOnTauri = import.meta.env.VITE_BESTCRAFT_TARGET == 'tauri'
 if (isOnTauri) {
@@ -87,8 +106,18 @@ if (isOnTauri) {
                 </el-form-item>
                 <el-form-item :label="$t('feedback')">
                     <el-link href="https://pd.qq.com/s/al6b5xo69" target="_blank">QQ频道</el-link>
+                </el-form-item>
+                <el-form-item :label="$t('source')">
                     <el-link href="https://gitee.com/Tnze/ffxiv-best-craft" target="_blank">Gitee</el-link>
                     <el-link href="https://github.com/Tnze/ffxiv-best-craft" target="_blank">Github</el-link>
+                </el-form-item>
+                <el-form-item :label="$t('license')">
+                    <el-button @click="licenseDialogVisible = true">AGPL</el-button>
+                    <el-dialog class="licenses-dialog" v-model="licenseDialogVisible" :title="$t('license')" width="50%">
+                        <p>{{ $t('licenses-notices-1') }}</p>
+                        <p>{{ $t('licenses-notices-2') }}</p>
+                        <p>{{ $t('licenses-notices-3') }}</p>
+                    </el-dialog>
                 </el-form-item>
             </el-form>
         </el-main>
@@ -103,6 +132,7 @@ if (isOnTauri) {
 .el-link {
     margin-right: 8px;
 }
+
 </style>
 
 <fluent locale="zh-CN">
@@ -125,6 +155,8 @@ version-number = 版本号
 tauri = Tauri
 developer = ๐•ᴗ•๐
 feedback = 反馈
+license = 许可
+source = 源代码
 
 check-update = 检查更新
 checking-update = 正在检查更新
@@ -151,6 +183,8 @@ version-number = Version
 tauri = Tauri
 developer = Developer
 feedback = Feedback
+license = License
+source = Source
 
 check-update = Check Update
 checking-update = Checking Update
@@ -171,6 +205,8 @@ version-number = バージョン
 tauri = Tauri
 developer = 開発者
 feedback = フィードバック
+license = ライセンス
+source = ソースコード
 
 check-update = 更新のチェック
 checking-update = 更新をチェックしています
