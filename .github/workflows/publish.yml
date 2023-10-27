@@ -6,17 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  typescript-checks:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: setup node
-      uses: actions/setup-node@v1
-      with:
-        node-version: 16
-    - name: run tsc
-      run: yarn && yarn tsc --noEmit
-  
   publish-web:
     runs-on: ubuntu-latest
     steps:
@@ -35,6 +24,9 @@ jobs:
         npm install -g wasm-pack
     - name: install app dependencies and build it
       run: yarn && yarn build-web
+    # Run type check after the wasm package is built
+    - name: run tsc
+      run: yarn && yarn tsc --noEmit
     - name: upload files
       uses: actions/upload-artifact@v3
       with:
@@ -44,6 +36,7 @@ jobs:
   deploy-web:
     needs: publish-web
     runs-on: ubuntu-latest
+    environment: FTP Deployer
     steps:
     - name: download files
       uses: actions/download-artifact@v3
@@ -62,7 +55,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
-
+    environment: UpdaterSigner
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v2
