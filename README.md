@@ -6,8 +6,6 @@ This is a crafting simulator with solver algorithms for Final Fantasy XIV(FF14).
 
 ## Online Version 在线版
 
-
-
 ## Download 下载
 
 推荐配置 Recommended setup:
@@ -28,7 +26,11 @@ Download: [Github](https://gitee.com/Tnze/ffxiv-best-craft/releases)
 - Debian 及 Ubuntu 用户请下载`AppImage`或`deb`文件
 - 其他 Linux 用户请下载`AppImage`文件
 
-## Dev （开发人员帮助）
+## Develope 开发指引
+
+<details>
+<summary>Click to expand 点击展开</summary>
+<p>
 
 ```bash
 yarn install # 下载依赖 download requirements
@@ -83,3 +85,6 @@ export TAURI_KEY_PASSWORD="Your private key password (optional)"
 # 构建和签名 build and signing
 yarn tauri build
 ```
+
+</p>
+</details>
