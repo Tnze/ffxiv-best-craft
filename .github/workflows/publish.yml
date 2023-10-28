@@ -76,6 +76,7 @@ jobs:
     - name: install app dependencies and build it
       run: yarn install
     - uses: tauri-apps/tauri-action@v0
+      id: tauri_build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
@@ -91,3 +92,4 @@ jobs:
           - 修复各种数字框输入小数会报错的问题
         releaseDraft: false
         prerelease: false
+    - run: echo ${{ steps.tauri_build.outputs.artifactPaths }}
