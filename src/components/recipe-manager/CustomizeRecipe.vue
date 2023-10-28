@@ -181,6 +181,10 @@ function confirm(simulatorMode: boolean) {
 .conditions-flag {
     margin-right: 5px;
 }
+
+.el-main {
+    margin: 20px;
+}
 </style>
 
 <fluent locale="zh-CN">

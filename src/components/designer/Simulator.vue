@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ElContainer, ElHeader, ElMain, ElScrollbar, ElDialog, ElButton, ElTable, ElTableColumn } from 'element-plus';
+import { ElContainer, ElHeader, ElMain, ElScrollbar, ElDialog, ElButton, ElTable, ElTableColumn, ElCard, ElSwitch } from 'element-plus';
 import { computed, ref, watch } from 'vue';
 import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep, RecipeLevel } from '../../Craft';
 import { Enhancer } from "../attr-enhancer/Enhancer";
@@ -72,6 +72,7 @@ const openAttrEnhSelector = ref(false)
 const results = ref<Status[]>([])
 const waiting = ref(false)
 const preview = ref<Status | null>(null)
+const rapidMode = ref(true)
 let timer: any;
 
 const sleep = (t: number) => new Promise((resolve) => setTimeout(resolve, t))
@@ -79,8 +80,11 @@ async function pushAction(action: Actions) {
     if (waiting.value) return;
     leaveAction()
     try {
+        let wait;
         waiting.value = true
-        const wait = sleep(1500)
+        if (!rapidMode.value) {
+        }
+        wait = sleep(rapidMode.value ? 300 : 1500)
         const { status, is_success } = await simulateOneStep(currentStatus.value, action, false);
         await wait;
         currentStatus.value = status
@@ -147,14 +151,17 @@ function leaveAction() {
                             :status="currentStatus" simulator-mode #lower @mousehover-action="hoverAction"
                             @mouseleave-action="leaveAction" />
                         <el-button class="drop" @click="restart" type="danger">{{ $t('restart') }}</el-button>
+                        <el-switch v-model="rapidMode" inline-prompt active-text="高速模式" inactive-text="真实体验" />
                     </el-scrollbar>
-                    <el-scrollbar class="results">
-                        <el-table :data="results">
-                            <el-table-column prop="step" :label="$t('steps')" />
-                            <el-table-column prop="progress" :label="$t('progress')" />
-                            <el-table-column prop="quality" :label="$t('quality')" />
-                        </el-table>
-                    </el-scrollbar>
+                    <el-card class="results">
+                        <el-scrollbar>
+                            <el-table :data="results">
+                                <el-table-column prop="step" :label="$t('steps')" />
+                                <el-table-column prop="progress" :label="$t('progress')" />
+                                <el-table-column prop="quality" :label="$t('quality')" />
+                            </el-table>
+                        </el-scrollbar>
+                    </el-card>
                 </div>
             </div>
         </el-main>
@@ -162,6 +169,10 @@ function leaveAction() {
 </template>
 
 <style scoped>
+.el-main {
+    background-color: transparent !important;
+}
+
 .main-page {
     height: 100%;
     display: flex;
@@ -189,6 +200,7 @@ function leaveAction() {
 
 .results {
     flex: auto;
+    margin: 20px;
 }
 
 .drop {
@@ -197,6 +209,7 @@ function leaveAction() {
 
 .el-table {
     --el-table-header-bg-color: transparent;
+    --el-table-tr-bg-color: transparent;
 }
 </style>
 

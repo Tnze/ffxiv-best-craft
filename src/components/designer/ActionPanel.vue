@@ -197,7 +197,7 @@ watchEffect(() => {
 <template>
     <div class="container" @click.stop.prevent.right>
         <div v-for="group in usedActions" class="group">
-            <el-popover v-for="action in group" :show-after="1000" :hide-after="0"
+            <el-popover v-for="action in group" :show-after="1000" :hide-after="0" :offset="30"
                 :title="$t(action.replaceAll('_', '-'))" :content="$t('desc-' + action.replaceAll('_', '-'))">
                 <template #reference>
                     <Action :job="job" class="item" @click="emit('clickedAction', action)"
