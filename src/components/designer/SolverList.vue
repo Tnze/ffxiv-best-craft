@@ -44,6 +44,7 @@ const useManipulation = ref(false)
 const useMuscleMemory = ref(false)
 const useObserve = ref(true)
 const activeNames = ref<string[]>([])
+const platform = import.meta.env.VITE_BESTCRAFT_TARGET
 
 const createSolver = async () => {
     const msg1 = ElMessage({
@@ -204,6 +205,9 @@ async function runDfsSolver() {
 
 <template>
     <el-scrollbar class="container">
+        <template v-if="platform != 'tauri'">
+            <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false" /><br />
+        </template>
         <el-text type="info" class="sum-info">{{ $t('sum-info') }}</el-text>
         <el-collapse v-model="activeNames" accordion>
             <el-collapse-item :title="$t('dp-solver')" name="dp">
@@ -345,6 +349,7 @@ async function runDfsSolver() {
 </style>
 
 <fluent locale="zh-CN">
+solver-not-avaliable = 网页版 BestCraft 求解器功能暂未开发完成。如需运行自动求解算法，请下载桌面版。
 dp-solver = 动态规划求解 v2.2
 bfs-solver = 广度优先搜索 v1
 tnzever-rika-solver = 广度优先搜索 ~ Tnze Impv. ~ v2
@@ -485,6 +490,7 @@ dfs-solver-info =
 </fluent>
 
 <fluent locale="en-US">
+solver-not-avaliable = Developments of web-based BestCraft haven't done yet. Downloading the Desktop version is required to run these solvers.
 dp-solver = Dynamic Programing v2.2
 bfs-solver = Breadth First Search v1
 tnzever-rika-solver = Breadth First Search ~ Tnze Impv. ~ v2
