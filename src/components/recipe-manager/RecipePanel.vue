@@ -38,6 +38,7 @@ import { DataSource, DataSourceType } from './source';
 //     name: elem.name.cn + (elem.hq ? " HQ" : "")
 // })), null, '    ')
 
+const searchingDelayMs = 200
 const checklistStore = useChecklistStore()
 const settingStore = useSettingsStore()
 const router = useRouter()
@@ -74,10 +75,22 @@ async function updateRecipePage(dataSource: DataSource, pageNumber: number, sear
 }
 
 // 搜索时更新
+let searchTimer: any = null;
 watch(searchText, async searching => {
     const source = await settingStore.getDataSource
-    if (source.sourceType == DataSourceType.Realtime) {
-        await updateRecipePage(source, pagination.Page, searching)
+    if (searchTimer != null) {
+        clearTimeout(searchTimer)
+    }
+    switch (source.sourceType) {
+        case DataSourceType.Realtime:
+            updateRecipePage(source, pagination.Page, searching)
+            break;
+        case DataSourceType.RemoteRealtime:
+            searchTimer = setTimeout(() => {
+                updateRecipePage(source, pagination.Page, searching)
+                searchTimer = null
+            }, searchingDelayMs)
+            break;
     }
 })
 
@@ -175,7 +188,8 @@ const selectRecipeRow = async (row: RecipeInfo) => {
             <el-input v-model="searchText" @keydown.enter="triggerSearch" class="search-input" :placeholder="$t('search')"
                 clearable>
                 <template #append>
-                    <el-button :icon="EditPen" @click="router.push('/recipe/customize')">{{ $t('custom-recipe') }}</el-button>
+                    <el-button :icon="EditPen" @click="router.push('/recipe/customize')">{{ $t('custom-recipe')
+                    }}</el-button>
                 </template>
             </el-input>
             <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row

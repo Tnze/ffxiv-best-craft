@@ -168,6 +168,7 @@ function confirm(simulatorMode: boolean) {
                 </el-form-item>
             </el-form>
             <span>
+                <el-button type="default" @click="router.back()">{{ $t('back') }}</el-button>
                 <el-button type="primary" @click="confirm(false)">{{ $t('confirm') }}</el-button>
                 <el-button type="primary" v-if="customRecipe.conditions_flag != 15" @click="confirm(true)">
                     {{ $t('simulator-mode') }}

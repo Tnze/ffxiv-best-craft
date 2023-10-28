@@ -58,7 +58,7 @@ interface XivapiItemResult {
 export class XivApiRecipeSource {
     base: string;
     language: 'en' | 'ja' | 'de' | 'fr' | undefined
-    public sourceType = DataSourceType.SingleShot
+    public sourceType = DataSourceType.RemoteRealtime
 
     constructor(base: string, language?: 'en' | 'ja' | 'de' | 'fr') {
         this.base = base

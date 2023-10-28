@@ -18,7 +18,7 @@ import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "../../Craft";
 import { DataSourceType, RecipesSourceResult } from "./source";
 
 export class WebSource {
-    public sourceType = DataSourceType.SingleShot
+    public sourceType = DataSourceType.RemoteRealtime
     base: string
 
     constructor(base: string) {

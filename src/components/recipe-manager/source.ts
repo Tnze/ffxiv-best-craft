@@ -26,7 +26,7 @@ export interface DataSource {
 }
 
 export enum DataSourceType {
-    Realtime, SingleShot
+    Realtime, RemoteRealtime, SingleShot
 }
 
 export interface RecipesSourceResult {
