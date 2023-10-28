@@ -3,7 +3,7 @@ licenses-notices-2 = BestCraft is distributed in the hope that it will be useful
 licenses-notices-3 = You should have received a copy of the GNU Affero General Public License along with BestCraft. If not, see https://www.gnu.org/licenses/.
 copyright-notices = 
     Copyright 2023 Tnze. All Rights Reserved.
-    Action Icons: Copyright (C) 2010 - 2023 SQUARE ENIX CO., LTD. All Rights Reserved.
+    Referenced FFXIV related resources: Copyright (C) 2010 - 2023 SQUARE ENIX CO., LTD.
 
 level = Lv
 recipe-level = Recipe Lv
