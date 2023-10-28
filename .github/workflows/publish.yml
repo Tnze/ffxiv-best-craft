@@ -92,4 +92,3 @@ jobs:
           - 修复各种数字框输入小数会报错的问题
         releaseDraft: false
         prerelease: false
-    - run: echo ${{ steps.tauri_build.outputs.artifactPaths }}
