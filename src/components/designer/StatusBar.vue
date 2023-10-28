@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ElProgress, ElLink } from 'element-plus';
+import { ElProgress, ElLink, ElButton } from 'element-plus';
 import { computed } from 'vue'
 import { Attributes, Status } from '../../Craft';
 import Buffs from './Buffs.vue';
@@ -96,9 +96,8 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
         <div id="progress-and-buffs">
             <span class="bar-title">{{ $t('progress') }}</span>
             <el-progress :percentage="progress" :color="progressColor">
-                {{ status?.progress }} /
-                {{ status?.recipe.difficulty }} /
-                {{ status?.recipe.difficulty - status?.progress }}
+                {{ status?.progress }} + {{ status?.recipe.difficulty - status?.progress }} =
+                {{ status?.recipe.difficulty }}
             </el-progress>
             <span class="bar-title">{{ $t('quality') }}</span>
             <el-progress :percentage="quality" :color="qualityColor">
@@ -106,7 +105,7 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
                     {{ status?.quality }} /
                     {{ status?.recipe.quality }}
                 </template>
-                <el-link v-else @click="emits('click-quality')" :icon="Setting">
+                <el-link v-else @click="emits('click-quality')" :icon="Setting" style="text-decoration: solid;">
                     {{ status?.quality }} /
                     {{ status?.recipe.quality }}
                 </el-link>
@@ -114,48 +113,47 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
         <div id="attributes">
-            <el-link class="attributes-link" @click="emits('click-attributes')" :icon="Setting"
-                :disabled="disabledEnhancer">
-                <div>
-                    {{ $t('display-attrs', { what: $t('level'), value: status?.attributes.level }) }}
-                    <br />
-                    {{ $t('display-attrs', {
-                        what: $t('craftsmanship'),
-                        value: attributes.craftsmanship + enhancers
-                            .filter(v => v.cm && v.cm_max)
-                            .map(v => Math.min(
-                                status?.attributes.craftsmanship * v.cm!,
-                                v.cm_max!
-                            ))
-                            .map(cm => ` + ${cm}`).join('')
-                    })
-                    }}
-                    <br />
-                    {{ $t('display-attrs', {
-                        what: $t('control'),
-                        value: attributes.control + enhancers
-                            .filter(v => v.ct && v.ct_max)
-                            .map(v => Math.min(
-                                status?.attributes.control * v.ct!,
-                                v.ct_max!
-                            ))
-                            .map(ct => ` + ${ct}`).join('')
-                    })
-                    }}
-                    <br />
-                    {{ $t('display-attrs', {
-                        what: $t('craft-point'),
-                        value: attributes.craft_points + enhancers
-                            .filter(v => v.cp && v.cp_max)
-                            .map(v => Math.min(
-                                status?.attributes.craft_points * v.cp!,
-                                v.cp_max!
-                            ))
-                            .map(cp => ` + ${cp}`).join('')
-                    })
-                    }}
-                </div>
-            </el-link>
+            <div>
+                {{ $t('display-attrs', { what: $t('level'), value: status?.attributes.level }) }}
+                <br />
+                {{ $t('display-attrs', {
+                    what: $t('craftsmanship'),
+                    value: attributes.craftsmanship + enhancers
+                        .filter(v => v.cm && v.cm_max)
+                        .map(v => Math.min(
+                            status?.attributes.craftsmanship * v.cm!,
+                            v.cm_max!
+                        ))
+                        .map(cm => ` + ${cm}`).join('')
+                })
+                }}
+                <br />
+                {{ $t('display-attrs', {
+                    what: $t('control'),
+                    value: attributes.control + enhancers
+                        .filter(v => v.ct && v.ct_max)
+                        .map(v => Math.min(
+                            status?.attributes.control * v.ct!,
+                            v.ct_max!
+                        ))
+                        .map(ct => ` + ${ct}`).join('')
+                })
+                }}
+                <br />
+                {{ $t('display-attrs', {
+                    what: $t('craft-point'),
+                    value: attributes.craft_points + enhancers
+                        .filter(v => v.cp && v.cp_max)
+                        .map(v => Math.min(
+                            status?.attributes.craft_points * v.cp!,
+                            v.cp_max!
+                        ))
+                        .map(cp => ` + ${cp}`).join('')
+                })
+                }}
+            </div>
+            <el-button v-if="!disabledEnhancer" :icon="Setting" @click="emits('click-attributes')">{{
+                $t('set-meal-and-potions') }}</el-button>
         </div>
     </div>
 </template>
@@ -215,8 +213,10 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
 
 <fluent locale="zh-CN">
 display-attrs = { $what }：{ $value }
+set-meal-and-potions = 设置食物、药水和专家水晶
 </fluent>
 
 <fluent locale="en-US">
 display-attrs = { $what }: { $value }
+set-meal-and-potions = Meal and Potions
 </fluent>

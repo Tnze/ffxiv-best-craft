@@ -85,8 +85,9 @@ jobs:
         tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
         releaseName: "BestCraft v__VERSION__"
         releaseBody: |
-          v0.12.4
-          - 添加了版权声明
-          - 优化了背景颜色
+          v0.12.5
+          - 优化了高难模式UI界面，添加高速模式
+          - 优化了自定义配方界面
+          - 修复各种数字框输入小数会报错的问题
         releaseDraft: false
         prerelease: false

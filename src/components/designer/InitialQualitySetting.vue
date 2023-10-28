@@ -81,13 +81,13 @@ const noManullyInput = ref(true)
 </script>
 
 <template>
-    <el-dialog v-model="dialogOpen">
+    <el-dialog v-model="dialogOpen" :title="$t('config-init-quality')">
         <div style="display: flex; flex-direction: column;">
             <el-switch class="initial-quality-input" v-model="noManullyInput" :active-text="$t('select-hq-ingredients')"
                 :inactive-text="$t('manully-input')" />
             <el-form-item :label="$t('initial-quality')" class="initial-quality-input">
                 <el-input-number :disabled="props.item.id != -1 && noManullyInput" v-model="initQuality" :min="0"
-                    :max="recipe.quality" />
+                    :max="recipe.quality" :step-strictly="true" />
             </el-form-item>
             <el-table v-if="props.item.id != -1 && noManullyInput" :data="items">
                 <el-table-column :label="$t('name')" prop="item.name" />
@@ -127,6 +127,10 @@ const noManullyInput = ref(true)
 nq = 普通
 hq = 优质
 
+please-input-init-quality = 请输入初期品质
+config-init-quality = 设置初期品质
+please-input-integers = 请输入整数
+
 select-hq-ingredients = 选择HQ半成品计算
 manully-input = 手动输入
 </fluent>
@@ -142,6 +146,10 @@ manully-input = Manully input
 <fluent locale="ja-JP">
 nq = NQ
 hq = HQ
+
+please-input-init-quality = Please input initial quality
+config-init-quality = Set initial quality
+please-input-integers = Please input a integer
 
 select-hq-ingredients = HQ成分による計算
 manully-input = 手動入力

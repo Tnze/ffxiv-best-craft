@@ -175,7 +175,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
             <el-input v-model="searchText" @keydown.enter="triggerSearch" class="search-input" :placeholder="$t('search')"
                 clearable>
                 <template #append>
-                    <el-button :icon="EditPen" @click="router.push('/recipe/customize')" />
+                    <el-button :icon="EditPen" @click="router.push('/recipe/customize')">{{ $t('custom-recipe') }}</el-button>
                 </template>
             </el-input>
             <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row
@@ -224,11 +224,11 @@ const selectRecipeRow = async (row: RecipeInfo) => {
     justify-content: center;
     /* margin-bottom: 10px; */
 }
-
 </style>
 
 <fluent locale="zh-CN">
 select-recipe = 选择配方
+custom-recipe = 自定义配方
 
 confirm-select = 确定要制作“{ $itemName }”吗？
 confirm-select2 = 这是一个高难度配方，请选择模式。
@@ -248,6 +248,7 @@ name = 名称
 
 <fluent locale="en-US">
 select-recipe = Select Recipe
+custom-recipe = Custom Recipe
 
 confirm-select = Start crafting "{ $itemName }"?
 confirm-select2 = This is a 高难度配方. Please make a choice.

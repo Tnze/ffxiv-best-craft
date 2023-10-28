@@ -34,19 +34,22 @@ const jobPage = ref('default')
         <el-main>
             <el-tabs v-model="jobPage" tab-position="left">
                 <el-tab-pane name="default" :label="$t('default')">
-                    <el-form label-position="right" label-width="130px" :model="store.default"
-                        style="max-width: 500px">
+                    <el-form label-position="right" label-width="130px" :model="store.default" style="max-width: 500px">
                         <el-form-item :label="$t('level')">
-                            <el-input-number v-model="store.default.level" :min="1" :max="90"></el-input-number>
+                            <el-input-number v-model="store.default.level" :min="1" :max="90"
+                                :step-strictly="true"></el-input-number>
                         </el-form-item>
                         <el-form-item :label="$t('craftsmanship')">
-                            <el-input-number v-model="store.default.craftsmanship" :min="0"></el-input-number>
+                            <el-input-number v-model="store.default.craftsmanship" :min="0"
+                                :step-strictly="true"></el-input-number>
                         </el-form-item>
                         <el-form-item :label="$t('control')">
-                            <el-input-number v-model="store.default.control" :min="0"></el-input-number>
+                            <el-input-number v-model="store.default.control" :min="0"
+                                :step-strictly="true"></el-input-number>
                         </el-form-item>
                         <el-form-item :label="$t('craft-point')">
-                            <el-input-number v-model="store.default.craft_points" :min="0"></el-input-number>
+                            <el-input-number v-model="store.default.craft_points" :min="0"
+                                :step-strictly="true"></el-input-number>
                         </el-form-item>
                     </el-form>
                 </el-tab-pane>
@@ -57,20 +60,20 @@ const jobPage = ref('default')
                                 @change="v.value = v.value == null ? { ...store.default } : null" />
                         </el-form-item>
                         <el-form-item :label="$t('level')">
-                            <el-input-number v-model="(v.value || store.default).level" :disabled="v.value == null"
-                                :min="0" :max="90"></el-input-number>
+                            <el-input-number v-model="(v.value || store.default).level" :disabled="v.value == null" :min="0"
+                                :max="90" :step-strictly="true"></el-input-number>
                         </el-form-item>
                         <el-form-item :label="$t('craftsmanship')">
-                            <el-input-number v-model="(v.value || store.default).craftsmanship"
-                                :disabled="v.value == null" :min="0"></el-input-number>
+                            <el-input-number v-model="(v.value || store.default).craftsmanship" :disabled="v.value == null"
+                                :min="0" :step-strictly="true"></el-input-number>
                         </el-form-item>
                         <el-form-item :label="$t('control')">
                             <el-input-number v-model="(v.value || store.default).control" :disabled="v.value == null"
-                                :min="0"></el-input-number>
+                                :min="0" :step-strictly="true"></el-input-number>
                         </el-form-item>
                         <el-form-item :label="$t('craft-point')">
-                            <el-input-number v-model="(v.value || store.default).craft_points"
-                                :disabled="v.value == null" :min="0"></el-input-number>
+                            <el-input-number v-model="(v.value || store.default).craft_points" :disabled="v.value == null"
+                                :min="0" :step-strictly="true"></el-input-number>
                         </el-form-item>
                     </el-form>
                 </el-tab-pane>

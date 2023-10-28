@@ -25,7 +25,6 @@ import { craftTypeTojobs } from '../recipe-manager/common'
 import { useRouter } from 'vue-router';
 import meal from '../../assets/data/meal.json'
 import potions from '../../assets/data/potions.json'
-import { Enhancer } from '../attr-enhancer/Enhancer';
 
 const router = useRouter()
 const store = useGuideStore()

@@ -495,10 +495,6 @@ solvers = 求解器
 export-macro = 导出宏
 attributes-enhance = 属性加成
 
-please-input-init-quality = 请输入初期品质
-config-init-quality = 设置初期品质
-please-input-integers = 请输入整数
-
 number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
 waring = 警告
 
@@ -519,10 +515,6 @@ attributes-requirements = 若不满足 作业精度 ≥ { $craftsmanship } 且 �
 solvers = Solvers
 export-macro = Export
 attributes-enhance = Attributes Enhance
-
-please-input-init-quality = Please input initial quality
-config-init-quality = Set initial quality
-please-input-integers = Please input a integer
 
 number-of-macros-is-zero = Number of macros is 0, continue?
 waring = Warning
