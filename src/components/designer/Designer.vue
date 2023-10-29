@@ -508,7 +508,7 @@ read-fail = 读取失败：{ $reason }
 
 and = { $a }和{ $b }
 attributes-do-not-meet-the-requirements = 装备{ $attribute }不满足配方要求
-attributes-requirements = 若不满足 作业精度 ≥ { $craftsmanship } 且 加工精度 ≥ { $control }，在游戏中无法开始制作
+attributes-requirements = 制作该配方要求：作业精度 ≥ { $craftsmanship } 且 加工精度 ≥ { $control }
 </fluent>
 
 <fluent locale="en-US">
@@ -516,7 +516,7 @@ solvers = Solvers
 export-macro = Export
 attributes-enhance = Attributes Enhance
 
-number-of-macros-is-zero = Number of macros is 0, continue?
+number-of-macros-is-zero = Number of macros is 0. Continue?
 waring = Warning
 
 macro-file-type-name = BestCraft saved macros file

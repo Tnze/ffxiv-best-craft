@@ -172,5 +172,5 @@ solved-in = 求解完成（{ $time }）
 </fluent>
 
 <fluent locale="en-US">
-solved-in = Solved ({ $time })
+solved-in = Solving finished ({ $time })
 </fluent>

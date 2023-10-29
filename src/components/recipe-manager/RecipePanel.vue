@@ -244,7 +244,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
 select-recipe = 选择配方
 custom-recipe = 自定义配方
 
-confirm-select = 确定要制作“{ $itemName }”吗？
+confirm-select = 开始制作“{ $itemName }”吗？
 confirm-select2 = 这是一个高难度配方，请选择模式。
 please-confirm = 请确认
 
