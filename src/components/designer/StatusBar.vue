@@ -220,4 +220,3 @@ set-meal-and-potions = 设置食物、药水和专家水晶
 display-attrs = { $what }: { $value }
 set-meal-and-potions = Meal and Potions
 </fluent>
-../../libs/Craft

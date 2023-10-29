@@ -275,4 +275,3 @@ class-job-attributes-too-low-detail = You may need to consider replacing better 
 crafting-check-success = It's all ready to crafting!
 crafting-check-success-detail = Click the { start } button to running the solver algorithms and generating macros.
 </fluent>
-    ../../stores/store../../libs/Craft

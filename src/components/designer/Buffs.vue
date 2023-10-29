@@ -82,4 +82,4 @@ const buffsDisplay = computed<{
     pointer-events: none;
     user-select: none;
 }
-</style>../../libs/Craft
+</style>

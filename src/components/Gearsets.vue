@@ -108,4 +108,4 @@ inherit-from-default = Inherit from default
 attributes = 属性
 default = デフォルト
 inherit-from-default = デフォルトから継承
-</fluent>../stores/store
+</fluent>

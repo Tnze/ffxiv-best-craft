@@ -213,4 +213,4 @@ source = ソースコード
 
 check-update = 更新のチェック
 checking-update = 更新をチェックしています
-</fluent>../stores/store
+</fluent>

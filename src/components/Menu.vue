@@ -100,4 +100,4 @@ recipe = フォーミュラ
 bom = 材料リスト
 # simulator = デザイン
 settings = 設定
-</fluent>../stores/store
+</fluent>

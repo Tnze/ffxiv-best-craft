@@ -174,4 +174,3 @@ solved-in = 求解完成（{ $time }）
 <fluent locale="en-US">
 solved-in = Solving finished ({ $time })
 </fluent>
-../../libs/Craft../../libs/Solver

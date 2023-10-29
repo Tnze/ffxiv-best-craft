@@ -237,4 +237,4 @@ watchEffect(() => {
 
 <fluent locale="zh-CN">
 action-panel = 技能面板
-</fluent>../../libs/Craft
+</fluent>

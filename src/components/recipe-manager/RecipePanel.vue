@@ -277,4 +277,3 @@ please-wait = Please wait...
 type = Type
 name = Name
 </fluent>
-../../stores/store../../libs/Craft

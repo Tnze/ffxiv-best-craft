@@ -258,4 +258,3 @@ no-suitable-solver = No suitable solver found
 
 view-result = View Results
 </fluent>
-        ../../stores/store../../libs/Craft../../libs/Solver

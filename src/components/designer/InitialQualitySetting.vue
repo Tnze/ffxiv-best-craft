@@ -153,4 +153,4 @@ please-input-integers = Please input a integer
 
 select-hq-ingredients = HQ成分による計算
 manully-input = 手動入力
-</fluent>../../stores/store../../libs/Craft
+</fluent>

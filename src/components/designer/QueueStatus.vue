@@ -67,4 +67,3 @@ status-text = { quality }：{ $quality }
 status-text = { quality }: { $quality }
     { steps }: { $steps }
 </fluent>
-../../libs/Craft

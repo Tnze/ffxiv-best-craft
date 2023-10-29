@@ -131,4 +131,3 @@ marco-finished = 宏#{ $id } 已完成！
 copied-marco = Copied M#{ $id } to system clipboard!
 marco-finished = M#{ $id } is finished!
 </fluent>
-../../libs/Craft

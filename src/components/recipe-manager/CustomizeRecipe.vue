@@ -213,4 +213,3 @@ cancel = Cancel
 confirm = Confirm
 simulator-mode = Simulator Mode
 </fluent>
-../../stores/store../../libs/Craft

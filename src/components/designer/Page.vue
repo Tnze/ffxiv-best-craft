@@ -89,4 +89,4 @@ reload = 刷新
 not-selected = Please select recipe first
 loading = Loading
 reload = Reload
-</fluent>../../stores/store
+</fluent>

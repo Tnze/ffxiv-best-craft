@@ -545,4 +545,4 @@ attributes-requirements = Require: craftsmanship ≥ { $craftsmanship } and cont
 and = { $a }と{ $b }
 attributes-do-not-meet-the-requirements = { $attribute }が足りないため
 attributes-requirements = 製作可能条件：{ craftsmanship }{ $craftsmanship}以上 と { control }{ $control }以上
-</fluent>../../libs/Craft../../libs/Solver
+</fluent>

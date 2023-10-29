@@ -206,4 +206,3 @@ watchEffect(async () => {
     --el-color-primary-dark-2: #5cc952;
 }
 </style>
-./stores/store@/stores/settings

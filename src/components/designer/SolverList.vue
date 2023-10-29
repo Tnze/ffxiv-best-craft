@@ -629,4 +629,4 @@ dfs-solver-info =
     .command-line-tool = Command line tool
 </fluent>
 <fluent locale="ja-JP">
-</fluent>../../libs/Craft../../libs/Solver
+</fluent>

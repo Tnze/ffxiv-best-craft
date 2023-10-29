@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { checkUpdate as tauriCheckUpdate, installUpdate, onUpdaterEvent, } from '@tauri-apps/api/updater'
-import { ElButton, ElMessage, ElMessageBox, ElNotification, ElText } from 'element-plus'
+import { ElButton, ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import { FluentVariable } from '@fluent/bundle';
 import { h } from 'vue'
 

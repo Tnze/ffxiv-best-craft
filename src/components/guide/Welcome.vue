@@ -182,4 +182,4 @@ select-recipe = Select recipe
 guide-mode-info =
     Note: The wizard mode as an experimental feature is removed.
     If you have any questions, welcome to feedback in Github.
-</fluent>../../stores/store@/stores/settings
+</fluent>

@@ -223,4 +223,4 @@ restart = 倒
 title = { $recipe } (Simulator Mode)
 meal-and-potion = Meal & Potions
 restart = Restart
-</fluent>../../libs/Craft
+</fluent>
