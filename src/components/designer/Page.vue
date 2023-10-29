@@ -18,16 +18,18 @@
 
 <script setup lang="ts">
 import { ElEmpty, ElResult, ElButton } from 'element-plus';
-import { computed, onErrorCaptured, ref } from 'vue';
+import { computed, defineAsyncComponent, onErrorCaptured, ref } from 'vue';
 import useGearsetsStore from '@/stores/gearsets';
 import useDesignerStore from '@/stores/designer';
-import Designer from './Designer.vue';
-import Simulator from './Simulator.vue';
 import { useFluent } from 'fluent-vue';
+import DesignerSkeleton from './DesignerSkeleton.vue'
 
 const gearsetsStore = useGearsetsStore()
 const designerStore = useDesignerStore()
 const { $t } = useFluent()
+
+const Designer = defineAsyncComponent(() => import('./Designer.vue'))
+const Simulator = defineAsyncComponent(() => import('./Simulator.vue'))
 
 const attributes = computed(() => {
     if (designerStore.content == null)
@@ -47,7 +49,7 @@ function reload() {
 </script>
 
 <template>
-    <Suspense>
+    <Suspense :timeout="300">
         <el-result v-if="errorMessage" icon="error" :title="$t('error-happens')" :sub-title="$t(errorMessage)">
             <template #extra>
                 <el-button @click="reload">{{ $t('reload') }}</el-button>
@@ -65,7 +67,7 @@ function reload() {
         </template>
         <el-empty v-else :description="$t('not-selected')" style="height: 100%;" />
         <template #fallback>
-            <el-empty :description="$t('loading')" style="height: 100%;" />
+            <DesignerSkeleton />
         </template>
     </Suspense>
 </template>
