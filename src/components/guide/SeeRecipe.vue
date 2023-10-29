@@ -19,12 +19,14 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue';
 import { ElDescriptions, ElDescriptionsItem, ElButton, ElResult, ElSelectV2, ElCheckbox } from 'element-plus';
-import { useGearsetsStore, useGuideStore, useSettingsStore } from '../../store';
-import { newRecipe } from '../../Craft';
+import useGearsetsStore from '@/stores/gearsets';
+import useGuideStore from '@/stores/guide';
+import useSettingsStore from '@/stores/settings';
+import { newRecipe } from '@/libs/Craft';
 import { craftTypeTojobs } from '../recipe-manager/common'
 import { useRouter } from 'vue-router';
-import meal from '../../assets/data/meal.json'
-import potions from '../../assets/data/potions.json'
+import meal from '@/assets/data/meal.json'
+import potions from '@/assets/data/potions.json'
 
 const router = useRouter()
 const store = useGuideStore()
@@ -273,4 +275,4 @@ class-job-attributes-too-low-detail = You may need to consider replacing better 
 crafting-check-success = It's all ready to crafting!
 crafting-check-success-detail = Click the { start } button to running the solver algorithms and generating macros.
 </fluent>
-    
+    ../../stores/store../../libs/Craft

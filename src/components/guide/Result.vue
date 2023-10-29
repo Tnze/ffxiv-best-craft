@@ -20,8 +20,8 @@
 import { ref, watchEffect } from 'vue';
 import { ElAlert, ElStatistic, ElRow, ElCol } from 'element-plus';
 import { useRouter } from 'vue-router';
-import { useGuideStore } from '../../store';
-import { Actions, Attributes, Jobs, Recipe, RecipeInfo, RecipeLevel, Status, high_quality_probability, newStatus, simulate } from '../../Craft';
+import useGuideStore from '@/stores/guide';
+import { Actions, Attributes, Jobs, Recipe, RecipeInfo, RecipeLevel, Status, high_quality_probability, newStatus, simulate } from '@/libs/Craft';
 import ActionQueue from '../designer/ActionQueue.vue';
 import StatusBar from '../designer/StatusBar.vue';
 import { Enhancer } from '../attr-enhancer/Enhancer';
@@ -169,4 +169,4 @@ unfinished = 该页面尚未制作完成，请等待软件版本更新。
 
 <fluent locale="en-US">
 unfinished = This page has not been developed yet. Please wait for updates.
-</fluent>
+</fluent>../../stores/store../../libs/Craft

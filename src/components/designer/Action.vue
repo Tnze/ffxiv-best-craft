@@ -19,8 +19,8 @@
 <script setup lang="ts">
 
 import { computed } from 'vue'
-import hoverUrl from '../../assets/icons/icona_frame_tex.png'
-import { Jobs, Actions } from '../../Craft';
+import hoverUrl from '@/assets/icons/icona_frame_tex.png'
+import { Jobs, Actions } from '@/libs/Craft';
 
 const props = defineProps<{
     job: Jobs,
@@ -182,4 +182,4 @@ const onAnimationEnd = (event: AnimationEvent) => {
         #fff 0px 0px 5px,
         #fff 0px 0px 6px;
 }
-</style>
+</style>../../libs/Craft

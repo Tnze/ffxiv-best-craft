@@ -26,8 +26,9 @@ if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
     var pkgTauri = import("@tauri-apps/api/tauri")
 }
 
-import Menu from './components/Menu.vue';
-import { useSettingsStore, useGearsetsStore } from './store';
+import Menu from '@/components/Menu.vue';
+import useSettingsStore from '@/stores/settings';
+import useGearsetsStore from '@/stores/gearsets';
 import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
 
@@ -205,3 +206,4 @@ watchEffect(async () => {
     --el-color-primary-dark-2: #5cc952;
 }
 </style>
+./stores/store@/stores/settings

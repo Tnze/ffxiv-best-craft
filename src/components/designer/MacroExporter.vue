@@ -20,7 +20,7 @@
 import { computed } from 'vue';
 import { ElSpace, ElCard, ElMessage } from 'element-plus'
 import { writeText } from '@tauri-apps/api/clipboard'
-import { Actions } from '../../Craft';
+import { Actions } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 
 const props = defineProps<{
@@ -131,3 +131,4 @@ marco-finished = 宏#{ $id } 已完成！
 copied-marco = Copied M#{ $id } to system clipboard!
 marco-finished = M#{ $id } is finished!
 </fluent>
+../../libs/Craft

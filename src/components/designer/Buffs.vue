@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Buffs } from '../../Craft';
+import { Buffs } from '@/libs/Craft';
 
 const props = defineProps<{
     buffs: Buffs
@@ -36,12 +36,12 @@ const buffsDisplay = computed<{
         .map(([buffName, duration]) => {
             if (buffName == 'inner_quiet') {
                 return {
-                    url: new URL(`../../assets/buffs/${buffName}_${duration as number}.png`, import.meta.url),
+                    url: new URL(`@/libs/assets/buffs/${buffName}_${duration as number}.png`, import.meta.url),
                     duration: undefined
                 }
             } else {
                 return {
-                    url: new URL(`../../assets/buffs/${buffName}.png`, import.meta.url),
+                    url: new URL(`@/libs/assets/buffs/${buffName}.png`, import.meta.url),
                     duration: buffName == 'heart_and_soul' ? undefined : duration as number,
                 }
             }
@@ -82,4 +82,4 @@ const buffsDisplay = computed<{
     pointer-events: none;
     user-select: none;
 }
-</style>
+</style>../../libs/Craft

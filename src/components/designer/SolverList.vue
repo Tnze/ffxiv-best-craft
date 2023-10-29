@@ -19,8 +19,8 @@
 <script setup lang="ts">
 import { Ref, reactive, ref, watch } from 'vue'
 import { ElAlert, ElCard, ElText, ElScrollbar, ElCollapse, ElCollapseItem, ElButton, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage, ElMessageBox, ElSlider } from 'element-plus'
-import { Actions, Status } from "../../Craft"
-import { create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve, nq_solve, reflect_solve } from '../../Solver'
+import { Actions, Status } from "@/libs/Craft"
+import { create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve, nq_solve, reflect_solve } from '@/libs/Solver'
 import { useFluent } from 'fluent-vue';
 
 const props = defineProps<{
@@ -629,4 +629,4 @@ dfs-solver-info =
     .command-line-tool = Command line tool
 </fluent>
 <fluent locale="ja-JP">
-</fluent>
+</fluent>../../libs/Craft../../libs/Solver

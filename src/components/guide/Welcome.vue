@@ -17,9 +17,9 @@
 -->
 
 <script setup lang="ts">
-import { ElText, ElButton, ElCascaderPanel, CascaderOption, CascaderValue, CascaderProps } from 'element-plus';
-import { computed, ref } from 'vue';
-import { useGuideStore, useSettingsStore } from '../../store';
+import { ElText, ElButton } from 'element-plus';
+import { computed } from 'vue';
+import useGuideStore  from '@/stores/guide';
 // import { Recipe, RecipeInfo } from '../../Craft';
 // import { useRouter } from 'vue-router';
 // import { DataSource } from '../recipe-manager/source';
@@ -182,4 +182,4 @@ select-recipe = Select recipe
 guide-mode-info =
     Note: The wizard mode as an experimental feature is removed.
     If you have any questions, welcome to feedback in Github.
-</fluent>
+</fluent>../../stores/store@/stores/settings

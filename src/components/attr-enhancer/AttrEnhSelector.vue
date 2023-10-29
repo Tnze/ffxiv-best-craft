@@ -19,8 +19,8 @@
 <script setup lang="ts">
 import { ElTag, ElTable, ElTableColumn } from 'element-plus';
 import { ref } from 'vue'
-import meal from '../../assets/data/meal.json'
-import potions from '../../assets/data/potions.json'
+import meal from '@/assets/data/meal.json'
+import potions from '@/assets/data/potions.json'
 import { Enhancer } from './Enhancer';
 import { useFluent } from 'fluent-vue';
 

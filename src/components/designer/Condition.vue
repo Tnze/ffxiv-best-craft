@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { useDark } from '@vueuse/core';
-import { Conditions } from '../../Craft'
+import { Conditions } from '@/libs/Craft'
 
 const props = defineProps<{
     cond: Conditions
@@ -127,4 +127,4 @@ condition = 制作状态
 
 <fluent locale="en-US">
 condition = Condition
-</fluent>
+</fluent>../../libs/Craft

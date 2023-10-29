@@ -18,9 +18,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton, ElCard, ElDialog } from 'element-plus'
+import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton, ElDialog } from 'element-plus'
 import { useFluent } from 'fluent-vue'
-import { useSettingsStore } from '../store'
+import useSettingsStore from '@/stores/settings'
 import { languages } from '../lang'
 import { useColorMode } from '@vueuse/core'
 
@@ -213,4 +213,4 @@ source = ソースコード
 
 check-update = 更新のチェック
 checking-update = 更新をチェックしています
-</fluent>
+</fluent>../stores/store

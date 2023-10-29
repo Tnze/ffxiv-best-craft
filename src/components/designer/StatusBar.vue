@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { ElProgress, ElLink, ElButton } from 'element-plus';
 import { computed } from 'vue'
-import { Attributes, Status } from '../../Craft';
+import { Attributes, Status } from '@/libs/Craft';
 import Buffs from './Buffs.vue';
 import { Enhancer } from '../attr-enhancer/Enhancer';
 import { Setting } from '@element-plus/icons-vue';
@@ -220,3 +220,4 @@ set-meal-and-potions = 设置食物、药水和专家水晶
 display-attrs = { $what }: { $value }
 set-meal-and-potions = Meal and Potions
 </fluent>
+../../libs/Craft

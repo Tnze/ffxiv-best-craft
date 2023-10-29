@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { ElContainer, ElHeader, ElMain, ElScrollbar, ElDialog, ElButton, ElTable, ElTableColumn, ElCard, ElSwitch } from 'element-plus';
 import { computed, ref, watch } from 'vue';
-import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep, RecipeLevel } from '../../Craft';
+import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep, RecipeLevel } from '@/libs/Craft';
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import StatusBarVue from './StatusBar.vue';
 import ActionPanelVue from './ActionPanel.vue';
@@ -223,4 +223,4 @@ restart = 倒
 title = { $recipe } (Simulator Mode)
 meal-and-potion = Meal & Potions
 restart = Restart
-</fluent>
+</fluent>../../libs/Craft

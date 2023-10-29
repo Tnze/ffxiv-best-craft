@@ -17,7 +17,7 @@
 if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
     var pkgTauri = import("@tauri-apps/api/tauri")
 } else {
-    var pkgWasm = import("../pkg-wasm")
+    var pkgWasm = import("@/../pkg-wasm/app_wasm")
 }
 
 export interface Attributes {

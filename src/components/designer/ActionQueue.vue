@@ -22,8 +22,8 @@ import draggable from 'vuedraggable'
 import { ElIcon } from 'element-plus';
 import { Loading } from "@element-plus/icons-vue";
 
-import { Actions, Jobs } from '../../Craft';
-import { formatDuration } from "../../Solver";
+import { Actions, Jobs } from '@/libs/Craft';
+import { formatDuration } from "@/libs/Solver";
 import Action from './Action.vue'
 
 interface Slot {
@@ -174,3 +174,4 @@ solved-in = 求解完成（{ $time }）
 <fluent locale="en-US">
 solved-in = Solving finished ({ $time })
 </fluent>
+../../libs/Craft../../libs/Solver

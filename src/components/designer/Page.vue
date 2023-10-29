@@ -19,8 +19,9 @@
 <script setup lang="ts">
 import { ElEmpty, ElResult, ElButton } from 'element-plus';
 import { computed, onErrorCaptured, ref } from 'vue';
-import { useGearsetsStore, useDesignerStore } from '../../store';
-import Designer from './Designer.vue'
+import useGearsetsStore from '@/stores/gearsets';
+import useDesignerStore from '@/stores/designer';
+import Designer from './Designer.vue';
 import Simulator from './Simulator.vue';
 import { useFluent } from 'fluent-vue';
 
@@ -86,4 +87,4 @@ reload = 刷新
 not-selected = Please select recipe first
 loading = Loading
 reload = Reload
-</fluent>
+</fluent>../../stores/store

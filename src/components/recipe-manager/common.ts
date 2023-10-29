@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Item, Jobs, Recipe, RecipeLevel, RecipeRequirements } from "../../Craft"
-import { useDesignerStore } from "../../store"
+import { Item, Jobs, Recipe, RecipeLevel, RecipeRequirements } from "@/libs/Craft"
+import useDesignerStore from "@/stores/designer"
 
 const designerStore = useDesignerStore()
 

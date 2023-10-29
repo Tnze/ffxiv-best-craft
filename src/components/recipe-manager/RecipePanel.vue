@@ -20,12 +20,12 @@
 import { ref, reactive, watch, onMounted } from 'vue'
 import { ElContainer, ElHeader, ElMain, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
-import { newRecipe, RecipeInfo } from '../../Craft'
+import { newRecipe, RecipeInfo } from '@/libs/Craft'
 import { useRouter } from 'vue-router';
-import { useChecklistStore, useSettingsStore } from '../../store';
 import { useFluent } from 'fluent-vue';
 import { selectRecipe } from './common';
 import { DataSource, DataSourceType } from './source';
+import useSettingsStore from '@/stores/settings'
 
 
 // let jsonData = JSON.stringify(data.map(elem => ({
@@ -39,7 +39,6 @@ import { DataSource, DataSourceType } from './source';
 // })), null, '    ')
 
 const searchingDelayMs = 200
-const checklistStore = useChecklistStore()
 const settingStore = useSettingsStore()
 const router = useRouter()
 const { $t } = useFluent()
@@ -144,7 +143,6 @@ const selectRecipeRow = async (row: RecipeInfo) => {
             )
             selectRecipe(recipe, row.id, recipeLevel, row.material_quality_factor, row, info, row.job, false)
             router.push({ name: "designer" })
-            checklistStore.addToChecklist({ ingredient_id: row.item_id, amount: 1 })
         } catch {
             // operation canceled by user
         }
@@ -279,3 +277,4 @@ please-wait = Please wait...
 type = Type
 name = Name
 </fluent>
+../../stores/store../../libs/Craft

@@ -20,7 +20,7 @@
 import { ElTooltip, ElIcon } from 'element-plus';
 import { SuccessFilled, WarningFilled } from '@element-plus/icons-vue'
 import { computed } from 'vue';
-import { Status } from '../../Craft';
+import { Status } from '@/libs/Craft';
 
 const props = defineProps<{
     status: Status
@@ -67,3 +67,4 @@ status-text = { quality }：{ $quality }
 status-text = { quality }: { $quality }
     { steps }: { $steps }
 </fluent>
+../../libs/Craft

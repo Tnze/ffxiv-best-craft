@@ -20,8 +20,8 @@
 import { ElDialog, ElIcon, ElFormItem, ElInputNumber, ElTable, ElTableColumn, ElButton, ElButtonGroup, ElSwitch } from 'element-plus';
 import { ArrowUp } from '@element-plus/icons-vue';
 import { computed, reactive, ref, watchEffect } from 'vue';
-import { Item, ItemWithAmount, Recipe, RecipeInfo } from '../../Craft';
-import { useSettingsStore } from '../../store';
+import { Item, ItemWithAmount, Recipe } from '@/libs/Craft';
+import useSettingsStore from '@/stores/settings';
 
 const settingStore = useSettingsStore()
 
@@ -153,4 +153,4 @@ please-input-integers = Please input a integer
 
 select-hq-ingredients = HQ成分による計算
 manully-input = 手動入力
-</fluent>
+</fluent>../../stores/store../../libs/Craft

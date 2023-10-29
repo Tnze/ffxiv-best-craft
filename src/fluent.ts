@@ -16,9 +16,9 @@
 
 import { FluentBundle } from '@fluent/bundle'
 import { createFluentVue } from 'fluent-vue';
-import zhCNMessages from './assets/locales/zh-CN.ftl'
-import enMessages from './assets/locales/en-US.ftl'
-import jaMessages from './assets/locales/ja-JP.ftl'
+import zhCNMessages from '@/assets/locales/zh-CN.ftl'
+import enMessages from '@/assets/locales/en-US.ftl'
+import jaMessages from '@/assets/locales/ja-JP.ftl'
 
 const zhCNBundle = new FluentBundle('zh-CN')
 zhCNBundle.addResource(zhCNMessages)

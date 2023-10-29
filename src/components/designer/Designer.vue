@@ -22,8 +22,8 @@ import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
 import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
-import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements, RecipeInfo } from "../../Craft";
-import { read_solver } from "../../Solver";
+import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
+import { read_solver } from "@/libs/Solver";
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
 import StatusBar from "./StatusBar.vue";
@@ -545,4 +545,4 @@ attributes-requirements = Require: craftsmanship ≥ { $craftsmanship } and cont
 and = { $a }と{ $b }
 attributes-do-not-meet-the-requirements = { $attribute }が足りないため
 attributes-requirements = 製作可能条件：{ craftsmanship }{ $craftsmanship}以上 と { control }{ $control }以上
-</fluent>
+</fluent>../../libs/Craft../../libs/Solver

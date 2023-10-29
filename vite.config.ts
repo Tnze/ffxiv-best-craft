@@ -23,6 +23,9 @@ import {
 } from 'unplugin-fluent-vue/vite'
 import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
+import { resolve } from 'path';
+
+const projectRootDir = resolve(__dirname);
 
 const defineTarget = () => {
   let config: { env: any; }
@@ -58,5 +61,10 @@ export default defineConfig({
       baseDir: 'src', // base directory for Vue files
       ftlDir: 'src/assets/locales', // directory with ftl files
     }),
-  ]
+  ],
+  resolve: {
+    alias: [
+      { find: "@", replacement: resolve(projectRootDir, 'src') }
+    ]
+  }
 })

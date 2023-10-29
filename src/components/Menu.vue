@@ -20,7 +20,7 @@
 import { ElMenu, ElMenuItem, ElIcon } from 'element-plus'
 import { Notebook, Suitcase, Edit, Setting, Guide } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
-import { useGuideStore } from '../store';
+import useGuideStore from '@/stores/guide';
 
 const router = useRouter()
 const guideStore = useGuideStore()
@@ -100,4 +100,4 @@ recipe = フォーミュラ
 bom = 材料リスト
 # simulator = デザイン
 settings = 設定
-</fluent>
+</fluent>../stores/store

@@ -22,8 +22,8 @@ import { ElContainer, ElHeader, ElRow, ElCol, ElMain, ElButton, ElInputNumber, E
 import { useRouter } from 'vue-router';
 import { selectRecipe } from './common';
 import { useFluent } from 'fluent-vue';
-import { Conditions, Item, Jobs, Recipe, RecipeInfo, RecipeLevel, RecipeRequirements } from '../../Craft';
-import { useSettingsStore } from '../../store';
+import { Conditions, Item, Recipe, RecipeLevel, RecipeRequirements } from '@/libs/Craft';
+import  useSettingsStore from '@/stores/settings';
 
 const router = useRouter()
 const { $t } = useFluent()
@@ -213,3 +213,4 @@ cancel = Cancel
 confirm = Confirm
 simulator-mode = Simulator Mode
 </fluent>
+../../stores/store../../libs/Craft

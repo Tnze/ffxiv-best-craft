@@ -20,7 +20,7 @@
 import { ElPopover } from 'element-plus';
 import { computed, reactive, watchEffect } from 'vue'
 import Action from './Action.vue'
-import { Jobs, Actions, Status, allowedList, craftPointsList, Conditions } from '../../Craft'
+import { Jobs, Actions, Status, allowedList, craftPointsList, Conditions } from '@/libs/Craft'
 
 const props = defineProps<{
     job: Jobs,
@@ -237,4 +237,4 @@ watchEffect(() => {
 
 <fluent locale="zh-CN">
 action-panel = 技能面板
-</fluent>
+</fluent>../../libs/Craft

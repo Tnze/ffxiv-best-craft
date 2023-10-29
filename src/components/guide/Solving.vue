@@ -17,13 +17,13 @@
 -->
 
 <script setup lang="ts">
-import { VNode, computed, h, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { ElText, ElTimeline, ElTimelineItem, ElButton, ElScrollbar, ElIcon, ElResult } from 'element-plus';
 import { Loading } from "@element-plus/icons-vue";
-import { useGuideStore } from '../../store';
-import { dfs_solve, formatDuration, nq_solve, reflect_solve, rika_solve, rika_solve_tnzever } from "../../Solver";
+import useGuideStore from '@/stores/guide';
+import { dfs_solve, formatDuration, nq_solve, reflect_solve, rika_solve, rika_solve_tnzever } from "@/libs/Solver";
 import { useFluent } from 'fluent-vue'
-import { Actions, Jobs, Status, compareStatus, high_quality_probability, newStatus, simulate } from '../../Craft';
+import { Actions, Jobs, Status, compareStatus, high_quality_probability, newStatus, simulate } from '@/libs/Craft';
 import ActionQueue from '../designer/ActionQueue.vue'
 import { useRouter } from 'vue-router';
 
@@ -258,4 +258,4 @@ no-suitable-solver = No suitable solver found
 
 view-result = View Results
 </fluent>
-        
+        ../../stores/store../../libs/Craft../../libs/Solver
