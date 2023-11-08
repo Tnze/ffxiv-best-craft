@@ -4,9 +4,11 @@ This is a crafting simulator with solver algorithms for Final Fantasy XIV(FF14).
 
 最终幻想14生产模拟器（附带智能求解算法）
 
-## Online Version 在线版
+## Online Edition 在线版
 
-## Download 下载
+☞ <https://tnze.yyyy.games/#/>
+
+## Desktop Edition 桌面版（支持求解器）
 
 推荐配置 Recommended setup:
 
