@@ -17,9 +17,8 @@
 -->
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { ElSpace, ElCard, ElMessage } from 'element-plus'
-import { writeText } from '@tauri-apps/api/clipboard'
+import { computed, reactive } from 'vue';
+import { ElSpace, ElCard, ElMessage, ElCheckbox } from 'element-plus'
 import { Actions } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 
@@ -28,28 +27,49 @@ const props = defineProps<{
 }>()
 const { $t } = useFluent()
 
+const genOptions = reactive({
+    hasNotify: true, // 宏执行完成是否提示
+    hasLock: false, // 添加锁定宏语句
+    avgSize: true, // 让每个宏的长度尽量相同
+})
+
 const chunkedActions = computed(() => {
     const macros = []
-    const minChunks = Math.ceil(props.actions.length / 14);
+    let maxLinesPerChunk = 15
+    if (genOptions.hasNotify)
+        maxLinesPerChunk--
+    if (genOptions.hasLock)
+        maxLinesPerChunk--
+    const minChunks = Math.ceil(props.actions.length / maxLinesPerChunk);
     const size = props.actions.length / minChunks || 14;
     for (let sec = 0; sec < minChunks; sec++) {
         const section = props.actions.slice(sec * size, Math.min(props.actions.length, (sec + 1) * size))
         let lines = [];
+        if (genOptions.hasLock)
+            lines.push(`/mlock`)
         for (let action of section) {
             let actionName = $t(action.replaceAll('_', '-'))
-            if(actionName.includes(' ')) {
+            if (actionName.includes(' ')) {
                 actionName = `"${actionName}"`
             }
             lines.push(`/ac ${actionName} <wait.${waitTimes.get(action)}>`)
         }
-        lines.push(`/echo ${$t('marco-finished', { id: sec + 1 })}<se.1>`)
+        if (genOptions.hasNotify)
+            lines.push(`/echo ${$t('marco-finished', { id: sec + 1 })}<se.1>`)
         macros.push(lines)
     }
     return macros
 })
 
 const copyChunk = async (i: number, macro: string[]) => {
-    await writeText(macro.join('\r\n').replaceAll(/\u2068|\u2069/g, ''))
+    const macroText = macro.join('\r\n').replaceAll(/\u2068|\u2069/g, '')
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { writeText } = await import('@tauri-apps/api/clipboard')
+        await writeText(macroText)
+    } else {
+        let { useClipboard } = await import("@vueuse/core")
+        useClipboard().copy(macroText)
+    }
     ElMessage({
         type: 'success',
         duration: 2000,
@@ -97,6 +117,11 @@ const waitTimes = new Map([
 </script>
 
 <template>
+    <div>
+        <el-checkbox v-model="genOptions.hasNotify" :label="$t('has-notify')" />
+        <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
+        <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" disabled />
+    </div>
     <el-space wrap alignment="flex-start">
         <el-card v-for="(marco, i) in chunkedActions" class="box-card" shadow="hover" @click="copyChunk(i, marco)">
             <span v-for="line in marco">
@@ -123,6 +148,9 @@ const waitTimes = new Map([
 </style>
 
 <fluent locale="zh-CN">
+has-notify = 添加完成提示
+has-lock = 锁定宏指令
+avg-size = 长度平均化
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
 marco-finished = 宏#{ $id } 已完成！
 </fluent>

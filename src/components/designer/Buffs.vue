@@ -34,14 +34,15 @@ const buffsDisplay = computed<{
         .filter(v => !fakeBuffs.includes(v[0]))
         .filter(v => v[1] > 0)
         .map(([buffName, duration]) => {
+            console.log(buffName, duration)
             if (buffName == 'inner_quiet') {
                 return {
-                    url: new URL(`@/libs/assets/buffs/${buffName}_${duration as number}.png`, import.meta.url),
+                    url: new URL(`../../assets/buffs/${buffName}_${duration as number}.png`, import.meta.url),
                     duration: undefined
                 }
             } else {
                 return {
-                    url: new URL(`@/libs/assets/buffs/${buffName}.png`, import.meta.url),
+                    url: new URL(`../../assets/buffs/${buffName}.png`, import.meta.url),
                     duration: buffName == 'heart_and_soul' ? undefined : duration as number,
                 }
             }
