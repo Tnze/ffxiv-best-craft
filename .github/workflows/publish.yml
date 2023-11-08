@@ -15,10 +15,10 @@ jobs:
       with:
         node-version: 18
     - run: corepack enable
-    - name: install Rust stable
+    - name: install Rust nightly
       uses: dtolnay/rust-toolchain@stable
       with:
-        toolchain: stable
+        toolchain: nightly
     - name: install wasm-pack
       run:
         npm install -g wasm-pack
