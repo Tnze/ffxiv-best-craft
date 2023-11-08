@@ -18,7 +18,6 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-#![feature(int_roundings)]
 
 use std::collections::{hash_map::Entry, BTreeMap, HashMap};
 use std::sync::Arc;
