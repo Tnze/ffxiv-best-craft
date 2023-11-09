@@ -1,0 +1,6 @@
+[workspace]
+resolver = "2"
+members = ["src-libs", "src-tauri", "src-wasm", "src-server"]
+
+[profile.release]
+lto = true
