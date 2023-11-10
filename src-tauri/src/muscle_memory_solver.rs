@@ -19,7 +19,6 @@ use ffxiv_crafting::{Actions, Status};
 
 use crate::memoization_solver::Solver as MemorizationSolver;
 
-
 pub struct PreprogressSolver {
     quality_solver: MemorizationSolver,
 }

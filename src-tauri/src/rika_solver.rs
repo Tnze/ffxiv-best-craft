@@ -236,7 +236,7 @@ pub fn generate_routes_phase2(
 
 #[cfg(test)]
 mod test {
-    use ffxiv_crafting::{Attributes, Recipe, Status, data::recipe_level_table};
+    use ffxiv_crafting::{data::recipe_level_table, Attributes, Recipe, Status};
 
     use super::solve;
 
@@ -255,7 +255,7 @@ mod test {
             control: 3528,
             craft_points: 691,
         };
-        Status::new(a, r,recipe_level_table(r.rlv))
+        Status::new(a, r, recipe_level_table(r.rlv))
     }
 
     #[test]

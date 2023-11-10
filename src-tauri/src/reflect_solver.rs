@@ -404,7 +404,7 @@ impl Solver for ProgressSolver {
 
 #[cfg(test)]
 mod test {
-    use ffxiv_crafting::{Attributes, Recipe, Status, data::recipe_level_table};
+    use ffxiv_crafting::{data::recipe_level_table, Attributes, Recipe, Status};
 
     use super::ProgressSolver;
     use super::QualitySolver;
