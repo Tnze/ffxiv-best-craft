@@ -24,14 +24,14 @@ if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
 } else {
     // They are using the Web edition. Only wasm solvers could be used.
     // Check if the browser supports Web Worker.
-    supported = !window.Worker
+    if (!window.Worker) supported = false
 }
 
 function invokeWasmSolver(name: string, args: any): Promise<Actions[]> {
     return new Promise((resolve, reject) => {
-        const worker = new Worker(new URL('./WorkerSolver.ts', import.meta.url), { type: 'module' })
+        const worker = new Worker(new URL('./SolverWorker.ts', import.meta.url), { type: 'module' })
         worker.onmessage = ev => resolve(ev.data)
-        worker.onerror = reject
+        worker.onerror = ev => reject(ev)
         worker.postMessage({ name, args: JSON.stringify(args) })
     })
 }
@@ -54,7 +54,7 @@ export async function create_solver(
 export async function destroy_solver(status: Status) {
     let { invoke } = await pkgTauri
     return invoke("destroy_solver", { status });
-}; 
+};
 
 export async function read_solver(status: Status): Promise<Actions[]> {
     let { invoke } = await pkgTauri
@@ -73,16 +73,18 @@ export async function rika_solve_tnzever(status: Status, useManipulation: boolea
 
 export async function dfs_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
-        let { invoke } = await pkgTauri
-        return invoke("dfs_solve", { status, depth, specialist })
+        return (await pkgTauri).invoke("dfs_solve", { status, depth, specialist })
     } else {
         return invokeWasmSolver("dfs_solve", { status, depth, specialist })
     }
 }
 
-export async function nq_solve(status: Status): Promise<Actions[]> {
-    let { invoke } = await pkgTauri
-    return invoke("nq_solve", { status })
+export async function nq_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        return (await pkgTauri).invoke("nq_solve", { status, depth, specialist })
+    } else {
+        return invokeWasmSolver("nq_solve", { status, depth, specialist })
+    }
 }
 
 export async function reflect_solve(status: Status, useManipulation: boolean): Promise<Actions[]> {

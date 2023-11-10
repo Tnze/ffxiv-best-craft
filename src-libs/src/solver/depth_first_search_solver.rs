@@ -23,7 +23,7 @@ use crate::solver::Score;
 /// status为开始制作时的初始状态
 /// maximum_depth为限制最深搜索深度
 #[cfg(not(target_family = "wasm"))]
-pub fn solve(status: &Status, maximum_depth: usize, specialist: bool) -> Vec<Actions> {
+pub fn solve(status: Status, maximum_depth: usize, specialist: bool) -> Vec<Actions> {
     use std::sync::atomic::{AtomicUsize, Ordering};
     fn search(
         status: Status,
@@ -114,10 +114,10 @@ pub fn solve(status: &Status, maximum_depth: usize, specialist: bool) -> Vec<Act
 }
 
 #[cfg(target_family = "wasm")]
-pub fn solve(status: &Status, maximum_depth: usize, specialist: bool) -> Vec<Actions> {
+pub fn solve(status: Status, maximum_depth: usize, specialist: bool) -> Vec<Actions> {
     let mut stack_seq: Vec<Actions> = Vec::new();
     let mut best_actions: Vec<Actions> = Vec::new();
-    let mut best_score = Score::from(status);
+    let mut best_score = Score::from(&status);
     fn search(
         status: &Status,
         stack_seq: &mut Vec<Actions>,
@@ -159,7 +159,7 @@ pub fn solve(status: &Status, maximum_depth: usize, specialist: bool) -> Vec<Act
         }
     }
     search(
-        status,
+        &status,
         &mut stack_seq,
         maximum_depth,
         &mut best_score,

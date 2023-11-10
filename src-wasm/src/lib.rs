@@ -81,6 +81,14 @@ pub fn high_quality_probability(status: JsValue) -> Result<JsValue, JsValue> {
 pub fn dfs_solve(status: JsValue, depth: usize, specialist: bool) -> Result<JsValue, JsValue> {
     use app_libs::solver::depth_first_search_solver::solve;
     let status: Status = from_value(status)?;
-    let result: Vec<Actions> = solve(&status, depth, specialist);
+    let result: Vec<Actions> = solve(status, depth, specialist);
+    Ok(to_value(&result)?)
+}
+
+#[wasm_bindgen]
+pub fn nq_solve(status: JsValue, depth: usize, specialist: bool) -> Result<JsValue, JsValue> {
+    use app_libs::solver::normal_quality_solver::solve;
+    let status: Status = from_value(status)?;
+    let result: Vec<Actions> = solve(status, depth, specialist);
     Ok(to_value(&result)?)
 }

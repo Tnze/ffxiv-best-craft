@@ -20,7 +20,7 @@
 import { Ref, reactive, ref, watch } from 'vue'
 import { ElAlert, ElCard, ElText, ElScrollbar, ElCollapse, ElCollapseItem, ElButton, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage, ElMessageBox, ElSlider } from 'element-plus'
 import { Actions, Status } from "@/libs/Craft"
-import { create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve, nq_solve, reflect_solve } from '@/libs/Solver'
+import { supported as solverSupported, create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve, nq_solve, reflect_solve } from '@/libs/Solver'
 import { useFluent } from 'fluent-vue';
 
 const props = defineProps<{
@@ -131,6 +131,7 @@ async function runSimpleSolver(solverId: string, solvingRunningState: Ref<Boolea
             type: 'error',
             message: $t('error-with', { err: $t(err as string) }),
         })
+        console.error(err)
     } finally {
         solvingRunningState.value = false
         msg1.close()
@@ -176,7 +177,10 @@ async function runTnzeVerRikaSolver() {
     )
 }
 
-const maxDepth = ref(6);
+// dfs求解器最大深度，设置超过该深度会显示警告
+const warningDepth = platform == "tauri" ? 6 : 4
+
+const maxDepth = ref(warningDepth);
 const useSpecialist = ref(false);
 const doNotTouch = ref(false);
 const dfsSolving = ref(false);
@@ -188,7 +192,7 @@ watch(() => props.canHq, v => {
 
 function dfsFormatTooltip(value: number): string {
     let str = String(value);
-    if (value > 6) str = '⚠️' + str
+    if (value > warningDepth) str = '⚠️' + str
     return str
 }
 
@@ -206,16 +210,26 @@ async function runDfsSolver() {
 <template>
     <el-scrollbar class="container">
         <template v-if="platform != 'tauri'">
-            <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false" /><br />
+            <el-alert type="warning" :title="$t('please-use-desktop-solvers')" show-icon :closable="false" />
+            <br />
+        </template>
+        <template v-if="!solverSupported">
+            <el-alert type="error" :title="$t('web-worker-not-avaliable')" show-icon :closable="false" />
+            <br />
         </template>
         <el-text type="info" class="sum-info">{{ $t('sum-info') }}</el-text>
         <el-collapse v-model="activeNames" accordion>
             <el-collapse-item :title="$t('dp-solver')" name="dp">
-                <i18n path="dp-solver-info" tag="span" class="solver-info">
+                <el-alert v-if="platform != 'tauri'" type="error" :title="$t('solver-not-avaliable')" show-icon
+                    :closable="false" />
+                <i18n v-else path="dp-solver-info" tag="span" class="solver-info">
                     <template #usageBlock="{ muscleMemoryMsg }">
-                        <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" /><br />
-                        <el-checkbox v-model="useManipulation" :label="$t('manipulation')" /><br />
-                        <el-checkbox v-model="useObserve" :label="$t('observe')" /><br />
+                        <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" />
+                        <br />
+                        <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
+                        <br />
+                        <el-checkbox v-model="useObserve" :label="$t('observe')" />
+                        <br />
                         <el-alert v-if="useMuscleMemory" type="warning" :title="muscleMemoryMsg" show-icon
                             :closable="false" />
                         <el-button v-if="useMuscleMemory" type="primary" :disabled="initStatus == undefined"
@@ -252,6 +266,7 @@ async function runDfsSolver() {
                 </i18n>
             </el-collapse-item>
             <el-collapse-item :title="$t('dfs-solver')" name="dfs">
+
                 <i18n path="dfs-solver-info" tag="span" class="solver-info">
                     <template #ffxivCraftingAlgo="{ commandLineTool }">
                         <el-link type="primary" href="https://github.com/Tnze/ffxiv-crafting-algo" target="_blank">
@@ -262,10 +277,12 @@ async function runDfsSolver() {
                         <div class="argument-block">
                             <span class="slider-label">{{ $t('dfs-max-depth') }}</span>
                             <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip"
-                                :label="$t('dfs-max-depth')" />
+                                :label="$t('dfs-max-depth')" :disabled="dfsSolving" />
                         </div>
-                        <el-checkbox v-model="doNotTouch" :label="$t('do-not-touch')" /><br />
-                        <el-checkbox v-model="useSpecialist" :label="$t('specialist')" /><br />
+                        <el-alert v-if="maxDepth > warningDepth" type="warning" :title="$t('dfs-too-depth')" show-icon
+                            :closable="false" />
+                        <el-checkbox v-model="doNotTouch" :label="$t('do-not-touch')" :disabled="dfsSolving" /><br />
+                        <el-checkbox v-model="useSpecialist" :label="$t('specialist')" :disabled="dfsSolving" /><br />
                         <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
                             {{ dfsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
                         </el-button>
@@ -273,7 +290,9 @@ async function runDfsSolver() {
                 </i18n>
             </el-collapse-item>
             <el-collapse-item :title="$t('bfs-solver')" name="bfs">
-                <i18n path="rika-solver-info" tag="span" class="solver-info">
+                <el-alert v-if="platform != 'tauri'" type="error" :title="$t('solver-not-avaliable')" show-icon
+                    :closable="false" />
+                <i18n v-else path="rika-solver-info" tag="span" class="solver-info">
                     <template #rikaRepoLink="{ designByRika }">
                         <el-link type="primary" href="https://github.com/RikaKagurasaka/xiv_craft_solver" target="_blank">
                             {{ designByRika }}
@@ -290,7 +309,9 @@ async function runDfsSolver() {
                 </i18n>
             </el-collapse-item>
             <el-collapse-item :title="$t('tnzever-rika-solver')" name="bfs-dp">
-                <i18n path="tnzever-rika-solver-info" tag="span" class="solver-info">
+                <el-alert v-if="platform != 'tauri'" type="error" :title="$t('solver-not-avaliable')" show-icon
+                    :closable="false" />
+                <i18n v-else path="tnzever-rika-solver-info" tag="span" class="solver-info">
                     <template #startButton>
                         <el-checkbox v-model="tnzeVerRikaUseManipulation" :label="$t('manipulation')" /><br />
                         <el-checkbox v-model="tnzeVerRikaUseObserve" :label="$t('observe')" /><br />
@@ -349,11 +370,14 @@ async function runDfsSolver() {
 </style>
 
 <fluent locale="zh-CN">
-solver-not-avaliable = 网页版 BestCraft 求解器功能暂未开发完成。如需运行自动求解算法，请下载桌面版。
+please-use-desktop-solvers = 网页版求解器性能较差，请考虑使用桌面版。
+solver-not-avaliable = 该求解器尚未适配 Web 版 BestCraft，如需使用请下载桌面版。
+web-worker-not-avaliable = 您正在使用的浏览器不支持 Web Worker 功能，无法运行求解器。
+
 dp-solver = 动态规划求解 v2.2
 bfs-solver = 广度优先搜索 v1
 tnzever-rika-solver = 广度优先搜索 ~ Tnze Impv. ~ v2
-dfs-solver = 深度优先搜索 v2 力大砖飞版
+dfs-solver = 深度优先搜索 v2
 
 do-not-touch = 不推品质
 reduce-steps-info = 最少资源方案
@@ -482,14 +506,18 @@ dfs-solver-info =
     此款求解器源于 Tnze 早期开发的一款{ $ffxivCraftingAlgo }，最初用于搜索最短的巨匠手法。
 
     该算法采用朴素的暴力搜索，所需时间随搜索深度限制指数级增大。推荐将搜索深度限制为6。
-    更新至v2后采用拥有多线程加速。
+    更新至v2后拥有多线程加速。
 
     此求解器通常适合低于玩家10级以上的配方。
     { $startButton }
     .command-line-tool = 命令行工具
+dfs-too-depth = 选择的最大深度过大，求解所需时间可能极长
 </fluent>
 
 <fluent locale="en-US">
+solver-not-avaliable = The Web edition of BestCraft doesn't support this solver. Please download the Desktop edition if needed.
+web-worker-not-avaliable = Your browser doesn't support Web Worker, which is required to running solvers.
+    
 solver-not-avaliable = Developments of web-based BestCraft haven't done yet. Downloading the Desktop version is required to run these solvers.
 dp-solver = Dynamic Programing v2.2
 bfs-solver = Breadth First Search v1
@@ -627,6 +655,7 @@ dfs-solver-info =
     This solver is usually suitable for recipes that are 10-level lower than the player or above.
     { $startButton }
     .command-line-tool = Command line tool
+dfs-too-depth = The depth is too big. Solving time could be very long.
 </fluent>
 <fluent locale="ja-JP">
 </fluent>

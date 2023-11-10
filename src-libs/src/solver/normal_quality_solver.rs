@@ -16,8 +16,8 @@
 
 use ffxiv_crafting::{Actions, Status};
 
-pub fn solve(status: &Status) -> Vec<Actions> {
-    let (_, mut actions) = search(status.clone(), 6, false);
+pub fn solve(status: Status, maximum_depth: usize, specialist: bool) -> Vec<Actions> {
+    let (_, mut actions) = search(status, maximum_depth, specialist);
     actions.reverse();
     actions
 }
@@ -30,7 +30,11 @@ fn search(status: Status, maximum_depth: usize, specialist: bool) -> (i32, Vec<A
     }
     SKILL_LIST
         .into_iter()
-        .filter(|x| status.is_action_allowed(*x).is_ok())
+        .filter(|&next_action| {
+            !matches!(next_action, Actions::FocusedSynthesis if status.buffs.observed == 0)
+                && (!matches!(next_action, Actions::HeartAndSoul) || specialist)
+                && status.is_action_allowed(next_action).is_ok()
+        })
         .filter_map(|x| {
             let mut new_s = status.clone();
             new_s.cast_action(x);

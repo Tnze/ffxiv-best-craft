@@ -22,7 +22,9 @@
 use std::collections::{hash_map::Entry, BTreeMap, HashMap};
 use std::sync::Arc;
 
-use app_libs::solver::{Solver, Score, SolverHash, depth_first_search_solver};
+use app_libs::solver::{
+    depth_first_search_solver, normal_quality_solver, Score, Solver, SolverHash,
+};
 use app_libs::{SimulateOneStepResult, SimulateResult};
 use ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status};
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
@@ -35,7 +37,6 @@ mod db;
 mod hard_recipe;
 mod memoization_solver;
 mod muscle_memory_solver;
-mod normal_quality_solver;
 mod reflect_solver;
 mod rika_solver;
 mod rika_tnze_solver;
@@ -319,12 +320,12 @@ fn rika_solve_tnzever(
 
 #[tauri::command(async)]
 fn dfs_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
-    depth_first_search_solver::solve(&status, depth, specialist)
+    depth_first_search_solver::solve(status, depth, specialist)
 }
 
 #[tauri::command(async)]
-fn nq_solve(status: Status) -> Vec<Actions> {
-    normal_quality_solver::solve(&status)
+fn nq_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
+    normal_quality_solver::solve(status, depth, specialist)
 }
 
 #[tauri::command(async)]
