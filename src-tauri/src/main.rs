@@ -22,17 +22,16 @@
 use std::collections::{hash_map::Entry, BTreeMap, HashMap};
 use std::sync::Arc;
 
+use app_libs::solver::{Solver, Score, SolverHash, depth_first_search_solver};
 use app_libs::{SimulateOneStepResult, SimulateResult};
 use ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status};
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::Serialize;
-use solver::Score;
 use tauri::Manager;
 use tokio::sync::{Mutex, OnceCell};
 
 mod db;
-mod depth_first_search_solver;
 mod hard_recipe;
 mod memoization_solver;
 mod muscle_memory_solver;
@@ -40,9 +39,7 @@ mod normal_quality_solver;
 mod reflect_solver;
 mod rika_solver;
 mod rika_tnze_solver;
-mod solver;
 
-use crate::solver::Solver;
 use db::{craft_types, item_with_amount, items, prelude::*, recipes};
 
 /// 创建新的Recipe对象，蕴含了模拟一次制作过程所必要的全部配方信息
@@ -204,7 +201,7 @@ async fn item_info(
 
 type SolverInstance = Arc<Mutex<Option<Box<dyn Solver + Send>>>>;
 struct AppState {
-    solver_list: Mutex<HashMap<solver::SolverHash, SolverInstance>>,
+    solver_list: Mutex<HashMap<SolverHash, SolverInstance>>,
     db: OnceCell<DatabaseConnection>,
 }
 
@@ -238,7 +235,7 @@ async fn create_solver(
     use_observe: bool,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
-    let key = solver::SolverHash {
+    let key = SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
@@ -280,7 +277,7 @@ async fn read_solver(
     status: Status,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<Vec<Actions>, String> {
-    let key = solver::SolverHash {
+    let key = SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };
@@ -356,7 +353,7 @@ async fn destroy_solver(
     status: Status,
     app_state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
-    let key = solver::SolverHash {
+    let key = SolverHash {
         attributes: status.attributes,
         recipe: status.recipe,
     };

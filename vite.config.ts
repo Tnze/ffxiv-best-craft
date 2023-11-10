@@ -66,5 +66,11 @@ export default defineConfig({
     alias: [
       { find: "@", replacement: resolve(projectRootDir, 'src') }
     ]
+  },
+  worker: {
+    plugins: [
+      wasm(),
+      topLevelAwait(),
+    ]
   }
 })

@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+use app_libs::solver::Solver;
 use ffxiv_crafting::{Actions, Buffs, Status};
 use micro_ndarray::Array;
 use std::cell::Cell;
@@ -185,7 +186,7 @@ impl QualitySolver {
     }
 }
 
-impl crate::solver::Solver for QualitySolver {
+impl Solver for QualitySolver {
     fn init(&mut self) {}
 
     fn read(&self, s: &Status) -> Option<Actions> {
@@ -353,7 +354,7 @@ impl ProgressSolver {
     }
 }
 
-impl crate::solver::Solver for ProgressSolver {
+impl Solver for ProgressSolver {
     fn init(&mut self) {}
 
     fn read(&self, s: &Status) -> Option<Actions> {
@@ -407,7 +408,7 @@ mod test {
 
     use super::ProgressSolver;
     use super::QualitySolver;
-    use crate::solver::Solver;
+    use app_libs::solver::Solver;
 
     fn init() -> Status {
         let r = Recipe {

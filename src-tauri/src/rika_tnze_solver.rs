@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+use app_libs::solver::Score;
 use ffxiv_crafting::{Actions, Status};
 
-use crate::{memoization_solver, solver::Score};
+use crate::memoization_solver;
 
 pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool, reduce_steps: bool) -> Vec<Actions> {
     let tnzes_quality_solver = memoization_solver::Solver::new(craft.clone(), mn, wn, obz);

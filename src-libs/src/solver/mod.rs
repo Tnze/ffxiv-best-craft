@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+pub mod depth_first_search_solver;
+
 use std::cmp::Ordering;
 
 use ffxiv_crafting::{Actions, Attributes, Recipe, Status};
@@ -45,10 +47,10 @@ pub trait Solver {
 }
 
 #[derive(PartialEq, Eq)]
-pub(crate) struct Score {
-    pub(crate) quality: u32,
-    pub(crate) prgress: u16,
-    pub(crate) steps: u16,
+pub struct Score {
+    pub quality: u32,
+    pub prgress: u16,
+    pub steps: u16,
 }
 
 impl From<&Status> for Score {

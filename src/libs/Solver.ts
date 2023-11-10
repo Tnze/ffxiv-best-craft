@@ -15,14 +15,34 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Actions, Status } from "./Craft";
-import { invoke } from "@tauri-apps/api/tauri";
 
-export const create_solver = (
+export let supported = true;
+
+if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    // Good, the user is using our Desktop edition. Use the native solvers.
+    var pkgTauri = import("@tauri-apps/api/tauri")
+} else {
+    // They are using the Web edition. Only wasm solvers could be used.
+    // Check if the browser supports Web Worker.
+    supported = !window.Worker
+}
+
+function invokeWasmSolver(name: string, args: any): Promise<Actions[]> {
+    return new Promise((resolve, reject) => {
+        const worker = new Worker(new URL('./WorkerSolver.ts', import.meta.url), { type: 'module' })
+        worker.onmessage = ev => resolve(ev.data)
+        worker.onerror = reject
+        worker.postMessage({ name, args: JSON.stringify(args) })
+    })
+}
+
+export async function create_solver(
     status: Status,
     useMuscleMemory: boolean,
     useManipulation: boolean,
     useObserve: boolean,
-) => {
+) {
+    let { invoke } = await pkgTauri
     return invoke("create_solver", {
         status,
         useMuscleMemory,
@@ -31,35 +51,46 @@ export const create_solver = (
     });
 };
 
-export const destroy_solver = (status: Status) => {
+export async function destroy_solver(status: Status) {
+    let { invoke } = await pkgTauri
     return invoke("destroy_solver", { status });
-};
+}; 
 
-export const read_solver = (status: Status): Promise<Actions[]> => {
+export async function read_solver(status: Status): Promise<Actions[]> {
+    let { invoke } = await pkgTauri
     return invoke("read_solver", { status });
 };
 
-export const rika_solve = (status: Status): Promise<Actions[]> => {
+export async function rika_solve(status: Status): Promise<Actions[]> {
+    let { invoke } = await pkgTauri
     return invoke("rika_solve", { status })
 }
 
-export const rika_solve_tnzever = (status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean, reduceSteps: boolean): Promise<Actions[]> => {
+export async function rika_solve_tnzever(status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean, reduceSteps: boolean): Promise<Actions[]> {
+    let { invoke } = await pkgTauri
     return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve, reduceSteps })
 }
 
-export const dfs_solve = (status: Status, depth: number, specialist: boolean): Promise<Actions[]> => {
-    return invoke("dfs_solve", { status, depth, specialist })
+export async function dfs_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("dfs_solve", { status, depth, specialist })
+    } else {
+        return invokeWasmSolver("dfs_solve", { status, depth, specialist })
+    }
 }
 
-export const nq_solve = (status: Status): Promise<Actions[]> => {
+export async function nq_solve(status: Status): Promise<Actions[]> {
+    let { invoke } = await pkgTauri
     return invoke("nq_solve", { status })
 }
 
-export const reflect_solve = (status: Status, useManipulation: boolean): Promise<Actions[]> => {
+export async function reflect_solve(status: Status, useManipulation: boolean): Promise<Actions[]> {
+    let { invoke } = await pkgTauri
     return invoke("reflect_solve", { status, useManipulation })
 }
 
-export const formatDuration = (u: number): string => {
+export function formatDuration(u: number): string {
     if (u < 1000) {
         return u + "ms"
     } else {

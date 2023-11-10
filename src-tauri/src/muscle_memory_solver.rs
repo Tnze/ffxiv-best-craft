@@ -14,23 +14,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+use app_libs::solver::{Score, Solver};
 use ffxiv_crafting::{Actions, Status};
 
-use crate::{memoization_solver::Solver, solver::Score};
+use crate::memoization_solver::Solver as MemorizationSolver;
+
 
 pub struct PreprogressSolver {
-    quality_solver: Solver,
+    quality_solver: MemorizationSolver,
 }
 
 impl PreprogressSolver {
     pub fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
         Self {
-            quality_solver: Solver::new(init_status, mn, wn, obz),
+            quality_solver: MemorizationSolver::new(init_status, mn, wn, obz),
         }
     }
 }
 
-impl crate::solver::Solver for PreprogressSolver {
+impl Solver for PreprogressSolver {
     fn init(&mut self) {}
 
     fn read(&self, s: &Status) -> Option<Actions> {
