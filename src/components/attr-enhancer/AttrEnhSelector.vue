@@ -59,7 +59,7 @@ const cancelSelection = (e: Enhancer) => {
     <el-tag v-for="tag in modelValue" class="item" @close="cancelSelection(tag)" closable>
         {{ tag.name }}
     </el-tag>
-    <el-table class="enhancer-table" :data="items" max-height="400" @selection-change="handleSelectionChange"
+    <el-table class="enhancer-table" :data="items" height="100%" @selection-change="handleSelectionChange"
         ref="multipleTableRef">
         <el-table-column type="selection" width="50" />
         <el-table-column prop="name" :label="$t('name')" />

@@ -20,7 +20,7 @@
 import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
-import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElCard } from "element-plus";
+import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElCard, ElTabs, ElTabPane } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
@@ -118,6 +118,7 @@ const openInitQualitySet = ref(false);
 const openSolverDrawer = ref(false);
 const openExportMacro = ref(false);
 const openAttrEnhSelector = ref(false);
+const activeTab = ref('history')
 
 let isReadingSolverDisplayStopTimer: NodeJS.Timeout | null = null;
 watch(isReadingSolver, (irs, irsPrev) => {
@@ -355,17 +356,6 @@ async function openListFromJSON() {
             <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
                 @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
         </el-drawer>
-        <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
-            <MacroExporter :actions="displayActions" />
-        </el-drawer>
-        <el-dialog v-model="openAttrEnhSelector" :title="$t('attributes-enhance')" draggable>
-            <AttrEnhSelector v-model="attributesEnhancers" />
-        </el-dialog>
-        <KeepAlive>
-            <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" v-model:open="openInitQualitySet"
-                :item="item" :recipe="recipe" :recipe-id="recipeId" :material-quality-factor="materialQualityFactor"
-                draggable />
-        </KeepAlive>
         <el-header>
             <h1>{{ item.name }}</h1>
         </el-header>
@@ -379,13 +369,13 @@ async function openListFromJSON() {
                     :status="displayedStatus" :disabled-init-quality="recipeId == undefined"
                     @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
                     :show-condition="false" />
-                <div class="actionpanel-and-savedqueue">
-                    <el-card class="action-panel" shadow="never" body-style="height: 100%;">
+                <div class="above-panel">
+                    <el-card class="above-left-panel" shadow="never" body-style="height: 100%;">
                         <el-scrollbar>
                             <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
                         </el-scrollbar>
                     </el-card>
-                    <div class="actionqueue-and-savedqueue">
+                    <div class="above-right-panel">
                         <div class="action-queue">
                             <el-card shadow="never" body-style="padding: 6px 3px 4px 3px;">
                                 <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
@@ -393,21 +383,41 @@ async function openListFromJSON() {
                                     :loading-solver-result="isReadingSolverDisplay" />
                             </el-card>
                         </div>
-                        <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver" @plus="saveSequence"
+                        <div class="multi-functional-area">
+                            <el-tabs v-model="activeTab">
+                                <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance">
+                                    <AttrEnhSelector v-model="attributesEnhancers" />
+                                </el-tab-pane>
+                                <el-tab-pane label="历史记录" name="history">
+                                    <el-scrollbar class="savedqueue-scrollbar">
+                                        <el-card v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" shadow="never">
+                                            <div class="savedqueue-item">
+                                                <QueueStatus :status="seq.status" />
+                                                <ActionQueue :job="displayJob" :list="seq.slots" :err-list="seq.errors"
+                                                    disabled />
+                                                <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
+                                                    @click="loadSeq(seq)" />
+                                                <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
+                                                    @click="savedSeqs.ary.splice(i, 1)" />
+                                            </div>
+                                        </el-card>
+                                    </el-scrollbar>
+                                </el-tab-pane>
+                                <el-tab-pane :label="$t('export-macro')" name="export-macro">
+                                    <el-scrollbar>
+                                        <MacroExporter :actions="displayActions" />
+                                    </el-scrollbar>
+                                </el-tab-pane>
+                                <el-tab-pane :label="$t('init-quality')" name="init-quality">
+                                    <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
+                                        v-model:open="openInitQualitySet" :item="item" :recipe="recipe"
+                                        :recipe-id="recipeId" :material-quality-factor="materialQualityFactor" />
+                                </el-tab-pane>
+                            </el-tabs>
+                        </div>
+                        <!-- <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver" @plus="saveSequence"
                             @delete="clearSeq" @solver="openSolverDrawer = true" @print="openExportMacro = true"
-                            @save-list="saveListToJSON" @open-list="openListFromJSON" />
-                        <el-scrollbar class="savedqueue-scrollbar">
-                            <el-card v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" shadow="never">
-                                <div class="savedqueue-item">
-                                    <QueueStatus :status="seq.status" />
-                                    <ActionQueue :job="displayJob" :list="seq.slots" :err-list="seq.errors" disabled />
-                                    <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                        @click="loadSeq(seq)" />
-                                    <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
-                                        @click="savedSeqs.ary.splice(i, 1)" />
-                                </div>
-                            </el-card>
-                        </el-scrollbar>
+                            @save-list="saveListToJSON" @open-list="openListFromJSON" /> -->
                     </div>
                 </div>
             </div>
@@ -440,19 +450,32 @@ async function openListFromJSON() {
     flex: none;
 }
 
-.actionpanel-and-savedqueue {
+.above-panel {
     display: flex;
     flex: auto;
     overflow: hidden;
+}
+
+.above-left-panel {
+    flex: none;
+    margin: 14px;
+    margin-right: 0;
+    width: 233px;
+}
+
+.above-right-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
 }
 
 .savedqueue-list-sidebar {
     flex: auto;
 }
 
-.actionqueue-and-savedqueue {
-    display: flex;
-    flex-direction: column;
+.multi-functional-area {
+    margin: 0px 20px 0px 20px;
     flex: auto;
 }
 
@@ -460,10 +483,8 @@ async function openListFromJSON() {
     flex: auto;
 }
 
-.action-panel {
-    margin: 14px;
-    margin-right: 0;
-    max-width: 25%;
+.savedqueue-scrollbar .el-card {
+    margin-left: 0;
 }
 
 .savedqueue-list {
@@ -497,6 +518,7 @@ async function openListFromJSON() {
 solvers = 求解器
 export-macro = 导出宏
 attributes-enhance = 属性加成
+init-quality = 初期品质
 
 number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
 waring = 警告

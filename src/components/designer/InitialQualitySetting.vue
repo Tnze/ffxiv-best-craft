@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ElDialog, ElIcon, ElFormItem, ElInputNumber, ElTable, ElTableColumn, ElButton, ElButtonGroup, ElSwitch } from 'element-plus';
+import { ElIcon, ElForm, ElFormItem, ElInputNumber, ElButton, ElButtonGroup, ElSwitch } from 'element-plus';
 import { ArrowUp } from '@element-plus/icons-vue';
 import { computed, reactive, ref, watchEffect } from 'vue';
 import { Item, ItemWithAmount, Recipe } from '@/libs/Craft';
@@ -26,7 +26,6 @@ import useSettingsStore from '@/stores/settings';
 const settingStore = useSettingsStore()
 
 const props = defineProps<{
-    open: boolean
     item: Item
     recipe: Recipe
     recipeId: number
@@ -42,11 +41,6 @@ const emits = defineEmits<{
 const initQuality = computed({
     get() { return props.modelValue },
     set(v: number) { emits('update:modelValue', v) }
-})
-
-const dialogOpen = computed({
-    get() { return props.open },
-    set(v: boolean) { emits('update:open', v) }
 })
 
 const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
@@ -81,47 +75,42 @@ const noManullyInput = ref(true)
 </script>
 
 <template>
-    <el-dialog v-model="dialogOpen" :title="$t('config-init-quality')">
-        <div style="display: flex; flex-direction: column;">
-            <el-switch class="initial-quality-input" v-model="noManullyInput" :active-text="$t('select-hq-ingredients')"
-                :inactive-text="$t('manully-input')" />
-            <el-form-item :label="$t('initial-quality')" class="initial-quality-input">
+    <div style="display: flex; flex-direction: column;">
+        <el-form label-width="120px">
+            <el-form-item>
+                <el-switch v-model="noManullyInput" :active-text="$t('select-hq-ingredients')"
+                    :inactive-text="$t('manully-input')" />
+            </el-form-item>
+            <el-form-item :label="$t('initial-quality')">
                 <el-input-number :disabled="props.item.id != -1 && noManullyInput" v-model="initQuality" :min="0"
                     :max="recipe.quality" :step-strictly="true" />
             </el-form-item>
-            <el-table v-if="props.item.id != -1 && noManullyInput" :data="items">
-                <el-table-column :label="$t('name')" prop="item.name" />
-                <el-table-column :label="$t('amount')">
-                    <template #default="scope">
-                        <el-button-group v-if="scope.row.item.can_be_hq" class="ml-4">
-                            <el-button :icon="ArrowUp" size="small" :disabled="scope.row.hqAmount <= 0"
-                                @click="scope.row.hqAmount -= 1">
-                                {{ $t('nq') }} {{ scope.row.amount - scope.row.hqAmount }}
-                            </el-button>
-                            <el-button size="small" :disabled="scope.row.hqAmount >= scope.row.amount"
-                                @click="scope.row.hqAmount += 1">
-                                {{ $t('hq') }} {{ scope.row.hqAmount }}
-                                <el-icon class="el-icon--right">
-                                    <ArrowUp />
-                                </el-icon>
-                            </el-button>
-                        </el-button-group>
-                        <template v-else>
-                            {{ scope.row.amount }}
-                        </template>
+            <template v-if="props.item.id != -1 && noManullyInput">
+                <el-form-item v-for="row in items" :label="row.item.name">
+                    <el-button-group v-if="row.item.can_be_hq" class="ml-4">
+                        <el-button :icon="ArrowUp" size="small" :disabled="row.hqAmount <= 0"
+                            @click="row.hqAmount -= 1">
+                            {{ $t('nq') }} {{ row.amount - row.hqAmount }}
+                        </el-button>
+                        <el-button size="small" :disabled="row.hqAmount >= row.amount"
+                            @click="row.hqAmount += 1">
+                            {{ $t('hq') }} {{ row.hqAmount }}
+                            <el-icon class="el-icon--right">
+                                <ArrowUp />
+                            </el-icon>
+                        </el-button>
+                    </el-button-group>
+                    <template v-else>
+                        <el-button :icon="ArrowUp" size="small" disabled>
+                            {{ $t('nq') }} {{ row.amount }}
+                        </el-button>
+                        
                     </template>
-                </el-table-column>
-            </el-table>
-        </div>
-    </el-dialog>
+                </el-form-item>
+            </template>
+        </el-form>
+    </div>
 </template>
-
-<style scoped>
-.initial-quality-input {
-    align-self: center;
-    margin-bottom: 15px;
-}
-</style>
 
 <fluent locale="zh-CN">
 nq = 普通
