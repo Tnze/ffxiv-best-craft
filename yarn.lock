@@ -51,14 +51,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/types@npm:7.23.0":
-  version: 7.23.0
-  resolution: "@babel/types@npm:7.23.0"
+"@babel/types@npm:7.23.3":
+  version: 7.23.3
+  resolution: "@babel/types@npm:7.23.3"
   dependencies:
     "@babel/helper-string-parser": "npm:^7.22.5"
     "@babel/helper-validator-identifier": "npm:^7.22.20"
     to-fast-properties: "npm:^2.0.0"
-  checksum: ca5b896a26c91c5672254725c4c892a35567d2122afc47bd5331d1611a7f9230c19fc9ef591a5a6f80bf0d80737e104a9ac205c96447c74bee01d4319db58001
+  checksum: 05ec1527d0468aa6f3e30fa821625322794055fb572c131aaa8befdf24d174407e2e5954c2b0a292a5456962e23383e36cf9d7cbb01318146d6140ce2128d000
   languageName: node
   linkType: hard
 
@@ -654,20 +654,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/web-bluetooth@npm:^0.0.18":
-  version: 0.0.18
-  resolution: "@types/web-bluetooth@npm:0.0.18"
-  checksum: c8e8688d6b06fca3330be504a2d1852d0be78fc0fbb6f293885611f1dc69501694a9a19b8dbdea28b281208bc4231af6640512e1a293402359b99e9238da0548
+"@types/web-bluetooth@npm:^0.0.20":
+  version: 0.0.20
+  resolution: "@types/web-bluetooth@npm:0.0.20"
+  checksum: 2faa323e5c994e9468fff4675e3b6d35f3730eb4dc7c761d02267fb6246dbfd659fd8f3583db0872aae05b3ee139799c25655bbe79bf1b56c08c06e665db814b
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-vue@npm:4.4.0":
-  version: 4.4.0
-  resolution: "@vitejs/plugin-vue@npm:4.4.0"
+"@vitejs/plugin-vue@npm:4.4.1":
+  version: 4.4.1
+  resolution: "@vitejs/plugin-vue@npm:4.4.1"
   peerDependencies:
     vite: ^4.0.0
     vue: ^3.2.25
-  checksum: d1ce98135f3b38a3daa57993f429c40cc20259ea6b9b303f65d1787a8c08edad17ae470cc2e85f9802b1d507af0c5ee01e6ed54da30bac0dc1a548d0c549d892
+  checksum: 7e2e9f9dd7c1040496c26abdd6cd4b7646095c21994cde751fc1f315e674e510fd574332235be918138758dcb3495c59e55050e02d4bd96ef4d2c8d5b282410b
   languageName: node
   linkType: hard
 
@@ -868,15 +868,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vueuse/core@npm:10.5.0":
-  version: 10.5.0
-  resolution: "@vueuse/core@npm:10.5.0"
+"@vueuse/core@npm:10.6.0":
+  version: 10.6.0
+  resolution: "@vueuse/core@npm:10.6.0"
   dependencies:
-    "@types/web-bluetooth": "npm:^0.0.18"
-    "@vueuse/metadata": "npm:10.5.0"
-    "@vueuse/shared": "npm:10.5.0"
+    "@types/web-bluetooth": "npm:^0.0.20"
+    "@vueuse/metadata": "npm:10.6.0"
+    "@vueuse/shared": "npm:10.6.0"
     vue-demi: "npm:>=0.14.6"
-  checksum: 713423adfb435dcb2d30783c1dbbfc52e42e0860876cbbf853ba9f42f05cc01c5ff7b212a355366309ac2677af7adedf9568208a8c8310c2bee499047b37758e
+  checksum: 31de41fd3870ed8ffc1143fef5bd85ba3d30c2a4fe285e6494c5ba517fcef0fe364b20f7826cd090b21257bdf8c0faec81107e761a26fd75f54b1cea7eb050b8
   languageName: node
   linkType: hard
 
@@ -892,10 +892,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vueuse/metadata@npm:10.5.0":
-  version: 10.5.0
-  resolution: "@vueuse/metadata@npm:10.5.0"
-  checksum: c8bf0fa99498d33932b37814e1bfa2d1fca0f4aba9be360c6b46b9bc45ec53ae4ffe8c49ef07e87cb68c17d87ae4f54499c1d1e0e3a015572be53ad5ae6c71ae
+"@vueuse/metadata@npm:10.6.0":
+  version: 10.6.0
+  resolution: "@vueuse/metadata@npm:10.6.0"
+  checksum: 5f78a56e6f7fcc3624638e6976a78352799b7a4037532e2b37ae89460b84065b53b9ccda9cf9d09ae07f284244227726126263f8b281c9a0d127c8b8d32be052
   languageName: node
   linkType: hard
 
@@ -906,12 +906,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vueuse/shared@npm:10.5.0":
-  version: 10.5.0
-  resolution: "@vueuse/shared@npm:10.5.0"
+"@vueuse/shared@npm:10.6.0":
+  version: 10.6.0
+  resolution: "@vueuse/shared@npm:10.6.0"
   dependencies:
     vue-demi: "npm:>=0.14.6"
-  checksum: 88c3f975db6b0a4ccdbc41c1553bdf24c73d4a0ec09213d8d07dd0ab16edd9b5f3ce0f5ef672a3df911499daf70a83508ad6efc4620dc86e07f05f1ad1b05a17
+  checksum: ffd16c2ddfe3d33a8ff16051f0d504cdf3228d79d019805ae6b9cb04717b54584e7bbc93a7715f629dc7e666fb724c2cd79055a38428bca47ad5e6a2de1b1123
   languageName: node
   linkType: hard
 
@@ -1362,14 +1362,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "ffxiv-best-craft@workspace:."
   dependencies:
-    "@babel/types": "npm:7.23.0"
+    "@babel/types": "npm:7.23.3"
     "@fluent/bundle": "npm:0.18.0"
     "@tauri-apps/api": "npm:1.5.1"
     "@tauri-apps/cli": "npm:1.5.6"
     "@types/lodash-es": "npm:4.17.11"
     "@types/node": "npm:20.9.0"
-    "@vitejs/plugin-vue": "npm:4.4.0"
-    "@vueuse/core": "npm:10.5.0"
+    "@vitejs/plugin-vue": "npm:4.4.1"
+    "@vueuse/core": "npm:10.6.0"
     element-plus: "npm:2.4.2"
     fluent-vue: "npm:3.5.0"
     pinia: "npm:2.1.7"
