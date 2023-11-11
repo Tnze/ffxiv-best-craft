@@ -20,7 +20,7 @@
 import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
-import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert } from "element-plus";
+import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElCard } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
@@ -358,12 +358,13 @@ async function openListFromJSON() {
         <el-drawer v-model="openExportMacro" :title="$t('export-macro')" direction="btt" size="80%">
             <MacroExporter :actions="displayActions" />
         </el-drawer>
-        <el-dialog v-model="openAttrEnhSelector" :title="$t('attributes-enhance')">
+        <el-dialog v-model="openAttrEnhSelector" :title="$t('attributes-enhance')" draggable>
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
         <KeepAlive>
             <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" v-model:open="openInitQualitySet"
-                :item="item" :recipe="recipe" :recipe-id="recipeId" :material-quality-factor="materialQualityFactor" />
+                :item="item" :recipe="recipe" :recipe-id="recipeId" :material-quality-factor="materialQualityFactor"
+                draggable />
         </KeepAlive>
         <el-header>
             <h1>{{ item.name }}</h1>
@@ -379,29 +380,33 @@ async function openListFromJSON() {
                     @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
                     :show-condition="false" />
                 <div class="actionpanel-and-savedqueue">
-                    <el-scrollbar class="action-panel">
-                        <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
-                    </el-scrollbar>
+                    <el-card class="action-panel" shadow="never" body-style="height: 100%;">
+                        <el-scrollbar>
+                            <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
+                        </el-scrollbar>
+                    </el-card>
                     <div class="actionqueue-and-savedqueue">
                         <div class="action-queue">
-                            <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
-                                :preview-solver="previewSolver" :err-list="activeSeq.errors"
-                                :loading-solver-result="isReadingSolverDisplay" />
+                            <el-card shadow="never" body-style="padding: 6px 3px 4px 3px;">
+                                <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
+                                    :preview-solver="previewSolver" :err-list="activeSeq.errors"
+                                    :loading-solver-result="isReadingSolverDisplay" />
+                            </el-card>
                         </div>
                         <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver" @plus="saveSequence"
                             @delete="clearSeq" @solver="openSolverDrawer = true" @print="openExportMacro = true"
                             @save-list="saveListToJSON" @open-list="openListFromJSON" />
                         <el-scrollbar class="savedqueue-scrollbar">
-                            <TransitionGroup class="savedqueue-list" name="savedqueues" tag="ul">
-                                <li v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" class="savedqueue-item">
+                            <el-card v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" shadow="never">
+                                <div class="savedqueue-item">
                                     <QueueStatus :status="seq.status" />
                                     <ActionQueue :job="displayJob" :list="seq.slots" :err-list="seq.errors" disabled />
                                     <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
                                         @click="loadSeq(seq)" />
                                     <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
                                         @click="savedSeqs.ary.splice(i, 1)" />
-                                </li>
-                            </TransitionGroup>
+                                </div>
+                            </el-card>
                         </el-scrollbar>
                     </div>
                 </div>
@@ -413,6 +418,12 @@ async function openListFromJSON() {
 <style scoped>
 .el-main {
     background-color: transparent !important;
+}
+
+.el-card {
+    --el-card-padding: 4px 5px;
+    --el-card-border-radius: 15px;
+    margin: 15px;
 }
 
 .main-page {
@@ -429,13 +440,7 @@ async function openListFromJSON() {
     flex: none;
 }
 
-.action-queue {
-    border-top: 1px solid var(--el-border-color);
-    border-bottom: 1px solid var(--el-border-color);
-}
-
 .actionpanel-and-savedqueue {
-    border-bottom: 1px solid var(--el-border-color);
     display: flex;
     flex: auto;
     overflow: hidden;
@@ -456,9 +461,8 @@ async function openListFromJSON() {
 }
 
 .action-panel {
-    border-top: 1px solid var(--el-border-color);
-    border-right: 1px solid var(--el-border-color);
-    margin-bottom: 6px;
+    margin: 14px;
+    margin-right: 0;
     max-width: 25%;
 }
 
@@ -470,7 +474,6 @@ async function openListFromJSON() {
 .savedqueue-item {
     display: flex;
     align-items: center;
-    border-bottom: 1px solid var(--el-border-color);
     min-height: 50px;
 }
 

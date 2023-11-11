@@ -158,7 +158,8 @@ watchEffect(async () => {
 
 .el-dialog {
     --el-dialog-border-radius: var(--el-border-radius-round) !important;
-    box-shadow: var(--el-box-shadow-lighter) !important;
+    box-shadow: none !important;
+    border: 1px solid var(--el-border-color-light);
 }
 
 .el-drawer {
@@ -176,7 +177,7 @@ watchEffect(async () => {
 }
 
 .el-card {
-    --el-card-border-radius: var(--el-border-radius-base) !important;
+    --el-card-border-radius: var(--el-border-radius-base);
 }
 
 :root {
@@ -204,5 +205,6 @@ watchEffect(async () => {
     --el-color-primary-light-8: #16331b;
     --el-color-primary-light-9: #18222c;
     --el-color-primary-dark-2: #5cc952;
+    /* --el-bg-color: var(--tnze-main-bg-color) !important; */
 }
 </style>

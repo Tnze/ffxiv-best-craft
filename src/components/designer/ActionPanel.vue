@@ -221,7 +221,7 @@ watchEffect(() => {
 <style scoped>
 .container {
     box-sizing: border-box;
-    padding: 0px 6px;
+    padding: 4px 6px 6px 6px;
 }
 
 .group {
