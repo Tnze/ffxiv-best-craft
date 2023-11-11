@@ -143,7 +143,9 @@ pub fn solve(status: Status, maximum_depth: usize, specialist: bool) -> Vec<Acti
                         *best_score = score;
                         *best_actions = stack_seq.clone();
                     }
-                } else {
+                } else if best_score.quality != new_s.recipe.quality
+                    || best_score.steps >= new_s.step as u16
+                {
                     search(
                         &new_s,
                         stack_seq,

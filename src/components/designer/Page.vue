@@ -49,7 +49,7 @@ function reload() {
 </script>
 
 <template>
-    <Suspense :timeout="300">
+    <Suspense :timeout="30">
         <el-result v-if="errorMessage" icon="error" :title="$t('error-happens')" :sub-title="$t(errorMessage)">
             <template #extra>
                 <el-button @click="reload">{{ $t('reload') }}</el-button>

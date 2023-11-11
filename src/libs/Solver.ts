@@ -25,16 +25,16 @@ if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
     // They are using the Web edition. Only wasm solvers could be used.
     // Check if the browser supports Web Worker.
     if (!window.Worker) supported = false
+    var invokeWasmSolver = (name: string, args: any): Promise<Actions[]> => {
+        return new Promise((resolve, reject) => {
+            const worker = new Worker(new URL('./SolverWorker.ts', import.meta.url), { type: 'module' })
+            worker.onmessage = ev => resolve(ev.data)
+            worker.onerror = ev => reject(ev)
+            worker.postMessage({ name, args: JSON.stringify(args) })
+        })
+    }
 }
 
-function invokeWasmSolver(name: string, args: any): Promise<Actions[]> {
-    return new Promise((resolve, reject) => {
-        const worker = new Worker(new URL('./SolverWorker.ts', import.meta.url), { type: 'module' })
-        worker.onmessage = ev => resolve(ev.data)
-        worker.onerror = ev => reject(ev)
-        worker.postMessage({ name, args: JSON.stringify(args) })
-    })
-}
 
 export async function create_solver(
     status: Status,

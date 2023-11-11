@@ -70,6 +70,7 @@ export default defineConfig({
   worker: {
     format: "es",
     plugins: [
+      defineTarget(),
       wasm(),
       topLevelAwait(),
     ],
