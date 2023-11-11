@@ -266,7 +266,6 @@ async function runDfsSolver() {
                 </i18n>
             </el-collapse-item>
             <el-collapse-item :title="$t('dfs-solver')" name="dfs">
-
                 <i18n path="dfs-solver-info" tag="span" class="solver-info">
                     <template #ffxivCraftingAlgo="{ commandLineTool }">
                         <el-link type="primary" href="https://github.com/Tnze/ffxiv-crafting-algo" target="_blank">
@@ -290,9 +289,7 @@ async function runDfsSolver() {
                 </i18n>
             </el-collapse-item>
             <el-collapse-item :title="$t('bfs-solver')" name="bfs">
-                <el-alert v-if="platform != 'tauri'" type="error" :title="$t('solver-not-avaliable')" show-icon
-                    :closable="false" />
-                <i18n v-else path="rika-solver-info" tag="span" class="solver-info">
+                <i18n path="rika-solver-info" tag="span" class="solver-info">
                     <template #rikaRepoLink="{ designByRika }">
                         <el-link type="primary" href="https://github.com/RikaKagurasaka/xiv_craft_solver" target="_blank">
                             {{ designByRika }}

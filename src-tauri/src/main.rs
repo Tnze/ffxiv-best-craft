@@ -23,7 +23,7 @@ use std::collections::{hash_map::Entry, BTreeMap, HashMap};
 use std::sync::Arc;
 
 use app_libs::solver::{
-    depth_first_search_solver, normal_quality_solver, Score, Solver, SolverHash,
+    depth_first_search_solver, normal_quality_solver, rika_solver, Score, Solver, SolverHash,
 };
 use app_libs::{SimulateOneStepResult, SimulateResult};
 use ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status};
@@ -38,7 +38,6 @@ mod hard_recipe;
 mod memoization_solver;
 mod muscle_memory_solver;
 mod reflect_solver;
-mod rika_solver;
 mod rika_tnze_solver;
 
 use db::{craft_types, item_with_amount, items, prelude::*, recipes};

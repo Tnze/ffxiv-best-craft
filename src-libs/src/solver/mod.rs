@@ -16,6 +16,7 @@
 
 pub mod depth_first_search_solver;
 pub mod normal_quality_solver;
+pub mod rika_solver;
 
 use std::cmp::Ordering;
 

@@ -35,7 +35,6 @@ if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
     }
 }
 
-
 export async function create_solver(
     status: Status,
     useMuscleMemory: boolean,
@@ -62,8 +61,11 @@ export async function read_solver(status: Status): Promise<Actions[]> {
 };
 
 export async function rika_solve(status: Status): Promise<Actions[]> {
-    let { invoke } = await pkgTauri
-    return invoke("rika_solve", { status })
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        return (await pkgTauri).invoke("rika_solve", { status })
+    } else {
+        return invokeWasmSolver("rika_solve", { status })
+    }
 }
 
 export async function rika_solve_tnzever(status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean, reduceSteps: boolean): Promise<Actions[]> {

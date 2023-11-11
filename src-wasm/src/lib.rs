@@ -78,6 +78,14 @@ pub fn high_quality_probability(status: JsValue) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
+pub fn rika_solve(status: JsValue) -> Result<JsValue, JsValue> {
+    use app_libs::solver::rika_solver::solve;
+    let status: Status = from_value(status)?;
+    let result: Vec<Actions> = solve(status);
+    Ok(to_value(&result)?)
+}
+
+#[wasm_bindgen]
 pub fn dfs_solve(status: JsValue, depth: usize, specialist: bool) -> Result<JsValue, JsValue> {
     use app_libs::solver::depth_first_search_solver::solve;
     let status: Status = from_value(status)?;
