@@ -371,7 +371,8 @@ async function runDfsSolver() {
 
 <fluent locale="zh-CN">
 please-use-desktop-solvers = 网页版求解器性能较差，请考虑使用桌面版。
-solver-not-avaliable = 该求解器尚未适配 Web 版 BestCraft，如需使用请下载桌面版。
+    网页版求解器依赖于浏览器对 Wasm、ESM WebWorker 的支持，如遇无法使用的情况，请尝试升级您的浏览器。
+solver-not-avaliable = 该求解器尚未适配网页版 BestCraft，如需使用请下载桌面版。
 web-worker-not-avaliable = 您正在使用的浏览器不支持 Web Worker 功能，无法运行求解器。
 
 dp-solver = 动态规划求解 v2.2
