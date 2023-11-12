@@ -363,66 +363,59 @@ async function openListFromJSON() {
                     :status="displayedStatus" :disabled-init-quality="recipeId == undefined"
                     @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
                     :show-condition="false" />
-                <div class="above-panel">
-                    <el-scrollbar class="above-left-panel">
-                        <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
-                    </el-scrollbar>
-                    <div class="above-right-panel">
-                        <div class="action-queue">
-                            <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
-                                :preview-solver="previewSolver" :err-list="activeSeq.errors"
-                                :loading-solver-result="isReadingSolverDisplay" />
+                <el-tabs v-model="activeTab" tab-position="left" style="height: auto;" class="above-panel">
+                    <el-tab-pane :label="$t('action-editor')" name="staged" class="staged-panel">
+                        <el-scrollbar class="staged-left-panel">
+                            <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
+                        </el-scrollbar>
+                        <div class="staged-right-panel">
+                            <div class="action-queue">
+                                <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
+                                    :preview-solver="previewSolver" :err-list="activeSeq.errors"
+                                    :loading-solver-result="isReadingSolverDisplay" />
+                            </div>
+                            <el-button-group>
+                                <el-button @click="saveSequence" :icon="Bottom">
+                                    {{ $t('save-workspace') }}
+                                </el-button>
+                                <el-button @click="clearSeq" :icon="Close">
+                                    {{ $t('clear-workspace') }}
+                                </el-button>
+                                <el-checkbox-button v-model:model-value="previewSolver">
+                                    {{ $t('preview-solver') }}
+                                </el-checkbox-button>
+                            </el-button-group>
+                            <div class="savedqueue-item" v-for="({ key, seq }, i) in savedSeqs.ary" :key="key">
+                                <QueueStatus :status="seq.status" />
+                                <ActionQueue class="savedqueue-item-actions" :job="displayJob" :list="seq.slots"
+                                    :err-list="seq.errors" disabled />
+                                <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
+                                    @click="loadSeq(seq)">
+                                    {{ $t('edit') }}
+                                </el-link>
+                                <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
+                                    @click="savedSeqs.ary.splice(i, 1)">
+                                    {{ $t('delete') }}
+                                </el-link>
+                            </div>
                         </div>
-                        <div class="multi-functional-area" style="overflow: auto;">
-                            <el-tabs v-model="activeTab" tab-position="top" style="height: auto;">
-                                <el-tab-pane :label="$t('staged')" name="staged">
-                                    <el-button-group>
-                                        <el-button @click="saveSequence" :icon="Bottom">
-                                            {{ $t('save-workspace') }}
-                                        </el-button>
-                                        <el-button @click="clearSeq" :icon="Close">
-                                            {{ $t('clear-workspace') }}
-                                        </el-button>
-                                        <el-checkbox-button v-model:model-value="previewSolver">
-                                            {{ $t('preview-solver') }}
-                                        </el-checkbox-button>
-                                    </el-button-group>
-                                    <div class="savedqueue-item" v-for="({ key, seq }, i) in savedSeqs.ary" :key="key">
-                                        <QueueStatus :status="seq.status" />
-                                        <ActionQueue class="savedqueue-item-actions" :job="displayJob" :list="seq.slots"
-                                            :err-list="seq.errors" disabled />
-                                        <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                            @click="loadSeq(seq)">
-                                            {{ $t('edit') }}
-                                        </el-link>
-                                        <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
-                                            @click="savedSeqs.ary.splice(i, 1)">
-                                            {{ $t('delete') }}
-                                        </el-link>
-                                    </div>
-                                </el-tab-pane>
-                                <el-tab-pane :label="$t('init-quality')" name="init-quality">
-                                    <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
-                                        v-model:open="openInitQualitySet" :item="item" :recipe="recipe"
-                                        :recipe-id="recipeId" :material-quality-factor="materialQualityFactor" />
-                                </el-tab-pane>
-                                <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance">
-                                    <AttrEnhSelector v-model="attributesEnhancers" />
-                                </el-tab-pane>
-                                <el-tab-pane :label="$t('export-macro')" name="export-macro">
-                                    <MacroExporter :actions="displayActions" />
-                                </el-tab-pane>
-                                <el-tab-pane :label="$t('solvers')" name="solver-list">
-                                    <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
-                                        @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
-                                </el-tab-pane>
-                            </el-tabs>
-                        </div>
-                        <!-- <Sidebar class="savedqueue-list-sidebar" v-model:previewSolver="previewSolver" @plus="saveSequence"
-                            @delete="clearSeq" @solver="openSolverDrawer = true" @print="openExportMacro = true"
-                            @save-list="saveListToJSON" @open-list="openListFromJSON" /> -->
-                    </div>
-                </div>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('init-quality')" name="init-quality">
+                        <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
+                            v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :recipe-id="recipeId"
+                            :material-quality-factor="materialQualityFactor" />
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance">
+                        <AttrEnhSelector v-model="attributesEnhancers" />
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('export-macro')" name="export-macro">
+                        <MacroExporter :actions="displayActions" />
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('solvers')" name="solver-list">
+                        <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
+                            @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
+                    </el-tab-pane>
+                </el-tabs>
             </div>
         </el-main>
     </el-container>
@@ -463,31 +456,38 @@ async function openListFromJSON() {
     overflow: hidden;
 }
 
-.above-left-panel {
-    flex: none;
-    margin: 5px;
-    width: 233px;
+.above-panel :deep(.el-tabs__content) {
+    flex: auto;
+    display: flex;
 }
 
-.above-right-panel {
+.staged-panel {
+    display: flex;
+    flex-direction: row;
+    flex: auto;
+}
+
+.staged-left-panel {
+    width: 233px;
+    height: auto;
+}
+
+.staged-right-panel {
     display: flex;
     flex-direction: column;
     flex: 1;
     height: 100%;
+    margin-left: 1rem;
 }
 
 .savedqueue-list-sidebar {
     flex: auto;
 }
 
-.multi-functional-area {
-    margin: 0;
-    flex: auto;
-}
-
 .action-queue {
     border-left: 5px solid var(--el-border-color);
-    border-bottom: 2px solid var(--el-border-color);
+    /* border-bottom: 2px solid var(--el-border-color); */
+    margin-bottom: 10px;
 }
 
 .savedqueue-list {
@@ -528,11 +528,11 @@ solvers = 求解器
 export-macro = 导出宏
 attributes-enhance = 食药&装备
 init-quality = 初期品质
-staged = 暂存区
+action-editor = 编排技能
 
-save-workspace = 暂存工作区
-clear-workspace = 清空工作区
-preview-solver = 预览求解结果
+save-workspace = 暂存
+clear-workspace = 清空
+preview-solver = 求解预览
 
 number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
 waring = 警告

@@ -221,11 +221,11 @@ watchEffect(() => {
 <style scoped>
 .container {
     box-sizing: border-box;
-    padding: 4px 6px 6px 6px;
+    padding: 0 6px 6px 6px;
 }
 
 .group {
-    border-bottom: 1px solid var(--el-border-color);
+    border-bottom: 1px dashed var(--el-border-color);
     padding-top: 5px;
 }
 
