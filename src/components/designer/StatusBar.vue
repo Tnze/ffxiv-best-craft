@@ -17,20 +17,17 @@
 -->
 
 <script setup lang="ts">
-import { ElProgress, ElLink, ElButton } from 'element-plus';
+import { ElProgress } from 'element-plus';
 import { computed } from 'vue'
 import { Attributes, Status } from '@/libs/Craft';
 import Buffs from './Buffs.vue';
 import { Enhancer } from '../attr-enhancer/Enhancer';
-import { Setting } from '@element-plus/icons-vue';
 import Condition from './Condition.vue'
 
 const props = defineProps<{
     status: Status;
     attributes: Attributes;
     enhancers: Enhancer[];
-    disabledInitQuality?: boolean;
-    disabledEnhancer?: boolean;
     showCondition: boolean;
 }>()
 
@@ -48,6 +45,9 @@ const progress = computed<number>(() => {
     return props.status === undefined
         ? 100
         : props.status.progress / props.status.recipe.difficulty * 100
+})
+const remainingProgress = computed(() => {
+    return props.status.recipe.difficulty - props.status.progress
 })
 const quality = computed<number>(() => {
     return props.status === undefined
@@ -94,22 +94,20 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
             </div>
         </div>
         <div id="progress-and-buffs">
-            <span class="bar-title">{{ $t('progress') }}</span>
-            <el-progress :percentage="progress" :color="progressColor">
-                {{ status?.progress }} + {{ status?.recipe.difficulty - status?.progress }} =
-                {{ status?.recipe.difficulty }}
-            </el-progress>
-            <span class="bar-title">{{ $t('quality') }}</span>
-            <el-progress :percentage="quality" :color="qualityColor">
-                <template v-if="disabledInitQuality">
-                    {{ status?.quality }} /
-                    {{ status?.recipe.quality }}
+            <span class="bar-title">
+                {{ $t('progress') }}
+                {{ status?.progress }} / {{ status?.recipe.difficulty }}
+                <template v-if="remainingProgress > 0">
+                    {{ $t('remaining') }} {{ remainingProgress }}
                 </template>
-                <el-link v-else @click="emits('click-quality')" :icon="Setting" style="text-decoration: solid;">
-                    {{ status?.quality }} /
-                    {{ status?.recipe.quality }}
-                </el-link>
-            </el-progress>
+            </span>
+            <el-progress :percentage="progress" :color="progressColor" :show-text="false" :stroke-width="10" />
+                <br />
+            <span class="bar-title">
+                {{ $t('quality') }}
+                {{ status?.quality }} / {{ status?.recipe.quality }}
+            </span>
+            <el-progress :percentage="quality" :color="qualityColor" :show-text="false" :stroke-width="10" />
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
         <div id="attributes">
@@ -152,8 +150,6 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
                 })
                 }}
             </div>
-            <el-button v-if="!disabledEnhancer" :icon="Setting" @click="emits('click-attributes')">{{
-                $t('set-meal-and-potions') }}</el-button>
         </div>
     </div>
 </template>
@@ -213,10 +209,10 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
 
 <fluent locale="zh-CN">
 display-attrs = { $what }：{ $value }
-set-meal-and-potions = 设置食物、药水和专家水晶
+remaining = 剩余
 </fluent>
 
 <fluent locale="en-US">
 display-attrs = { $what }: { $value }
-set-meal-and-potions = Meal and Potions
+remaining = Remaining
 </fluent>

@@ -140,7 +140,7 @@ function leaveAction() {
         <el-main>
             <div class="main-page">
                 <StatusBarVue class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
-                    :status="preview ?? currentStatus" :disabled-init-quality="true" :show-condition="true"
+                    :status="preview ?? currentStatus" :show-condition="true"
                     @click-attributes="openAttrEnhSelector = true" />
                 <el-scrollbar class="action-queue">
                     <ActionQueueVue :job="displayJob" :list="seq" disabled no-hover />

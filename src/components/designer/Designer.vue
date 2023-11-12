@@ -20,14 +20,13 @@
 import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
-import { ElContainer, ElDrawer, ElDialog, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElCard, ElTabs, ElTabPane } from "element-plus";
+import { ElContainer, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane } from "element-plus";
 import { Delete, Edit } from "@element-plus/icons-vue";
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
 import StatusBar from "./StatusBar.vue";
-import Sidebar from "./Sidebar.vue";
 import SolverList from "./SolverList.vue";
 import MacroExporter from "./MacroExporter.vue";
 import QueueStatus from "./QueueStatus.vue";
@@ -115,10 +114,8 @@ const isReadingSolver = ref(0);
 const isReadingSolverDisplay = ref(false); // This is basicly (isReadingSolver != 0), with a 500ms delay on rising edge
 const previewSolver = ref(false);
 const openInitQualitySet = ref(false);
-const openSolverDrawer = ref(false);
-const openExportMacro = ref(false);
 const openAttrEnhSelector = ref(false);
-const activeTab = ref('history')
+const activeTab = ref('staged')
 
 let isReadingSolverDisplayStopTimer: NodeJS.Timeout | null = null;
 watch(isReadingSolver, (irs, irsPrev) => {
@@ -220,6 +217,7 @@ function pushSequence(seq: Sequence) {
         const ord = compareStatus(b.seq.status, a.seq.status)
         return ord != 0 ? ord : a.key - b.key
     });
+    activeTab.value = 'staged'
 }
 
 const displayedStatus = computed(() => {
@@ -352,10 +350,6 @@ async function openListFromJSON() {
 
 <template>
     <el-container>
-        <el-drawer v-model="openSolverDrawer" :title="$t('solvers')" size="45%">
-            <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
-                @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
-        </el-drawer>
         <el-header>
             <h1>{{ item.name }}</h1>
         </el-header>
@@ -370,48 +364,46 @@ async function openListFromJSON() {
                     @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
                     :show-condition="false" />
                 <div class="above-panel">
-                    <el-card class="above-left-panel" shadow="never" body-style="height: 100%;">
-                        <el-scrollbar>
-                            <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
-                        </el-scrollbar>
-                    </el-card>
+                    <el-scrollbar class="above-left-panel">
+                        <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
+                    </el-scrollbar>
                     <div class="above-right-panel">
                         <div class="action-queue">
-                            <el-card shadow="never" body-style="padding: 6px 3px 4px 3px;">
-                                <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
-                                    :preview-solver="previewSolver" :err-list="activeSeq.errors"
-                                    :loading-solver-result="isReadingSolverDisplay" />
-                            </el-card>
+                            <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
+                                :preview-solver="previewSolver" :err-list="activeSeq.errors"
+                                :loading-solver-result="isReadingSolverDisplay" />
                         </div>
-                        <div class="multi-functional-area">
-                            <el-tabs v-model="activeTab">
-                                <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance">
-                                    <AttrEnhSelector v-model="attributesEnhancers" />
-                                </el-tab-pane>
-                                <el-tab-pane label="历史记录" name="history">
-                                    <el-scrollbar class="savedqueue-scrollbar">
-                                        <el-card v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" shadow="never">
-                                            <div class="savedqueue-item">
-                                                <QueueStatus :status="seq.status" />
-                                                <ActionQueue :job="displayJob" :list="seq.slots" :err-list="seq.errors"
-                                                    disabled />
-                                                <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                                    @click="loadSeq(seq)" />
-                                                <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
-                                                    @click="savedSeqs.ary.splice(i, 1)" />
-                                            </div>
-                                        </el-card>
-                                    </el-scrollbar>
-                                </el-tab-pane>
-                                <el-tab-pane :label="$t('export-macro')" name="export-macro">
-                                    <el-scrollbar>
-                                        <MacroExporter :actions="displayActions" />
-                                    </el-scrollbar>
+                        <div class="multi-functional-area" style="overflow: auto;">
+                            <el-tabs v-model="activeTab" tab-position="top" style="height: auto;">
+                                <el-tab-pane :label="$t('staged')" name="staged">
+                                    <div class="savedqueue-item" v-for="({ key, seq }, i) in savedSeqs.ary" :key="key">
+                                        <QueueStatus :status="seq.status" />
+                                        <ActionQueue class="savedqueue-item-actions" :job="displayJob" :list="seq.slots"
+                                            :err-list="seq.errors" disabled />
+                                        <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
+                                            @click="loadSeq(seq)">
+                                            {{ $t('edit') }}
+                                        </el-link>
+                                        <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
+                                            @click="savedSeqs.ary.splice(i, 1)">
+                                            {{ $t('delete') }}
+                                        </el-link>
+                                    </div>
                                 </el-tab-pane>
                                 <el-tab-pane :label="$t('init-quality')" name="init-quality">
                                     <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
                                         v-model:open="openInitQualitySet" :item="item" :recipe="recipe"
                                         :recipe-id="recipeId" :material-quality-factor="materialQualityFactor" />
+                                </el-tab-pane>
+                                <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance">
+                                    <AttrEnhSelector v-model="attributesEnhancers" />
+                                </el-tab-pane>
+                                <el-tab-pane :label="$t('export-macro')" name="export-macro">
+                                    <MacroExporter :actions="displayActions" />
+                                </el-tab-pane>
+                                <el-tab-pane :label="$t('solvers')" name="solver-list">
+                                    <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
+                                        @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
                                 </el-tab-pane>
                             </el-tabs>
                         </div>
@@ -436,6 +428,10 @@ async function openListFromJSON() {
     margin: 15px;
 }
 
+.el-tabs {
+    user-select: none;
+}
+
 .main-page {
     height: 100%;
     display: flex;
@@ -458,8 +454,7 @@ async function openListFromJSON() {
 
 .above-left-panel {
     flex: none;
-    margin: 14px;
-    margin-right: 0;
+    margin: 5px;
     width: 233px;
 }
 
@@ -475,16 +470,13 @@ async function openListFromJSON() {
 }
 
 .multi-functional-area {
-    margin: 0px 20px 0px 20px;
+    margin: 0;
     flex: auto;
 }
 
-.savedqueue-scrollbar {
-    flex: auto;
-}
-
-.savedqueue-scrollbar .el-card {
-    margin-left: 0;
+.action-queue {
+    border-left: 5px solid var(--el-border-color);
+    border-bottom: 2px solid var(--el-border-color);
 }
 
 .savedqueue-list {
@@ -496,6 +488,12 @@ async function openListFromJSON() {
     display: flex;
     align-items: center;
     min-height: 50px;
+    margin-left: 0;
+}
+
+.savedqueue-item-actions {
+    border-left: 5px solid var(--el-border-color);
+    padding: 3px 0 0 5px;
 }
 
 .savedqueue-item-button {
@@ -517,8 +515,9 @@ async function openListFromJSON() {
 <fluent locale="zh-CN">
 solvers = 求解器
 export-macro = 导出宏
-attributes-enhance = 属性加成
+attributes-enhance = 食药&装备
 init-quality = 初期品质
+staged = 暂存区
 
 number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
 waring = 警告
@@ -531,6 +530,9 @@ open-file = 打开文件
 read-n-macros = 读取了 { $n } 个宏
 read-fail = 读取失败：{ $reason }
 
+edit = 编辑
+delete = 删除
+
 and = { $a }和{ $b }
 attributes-do-not-meet-the-requirements = 装备{ $attribute }不满足配方要求
 attributes-requirements = 制作该配方要求：作业精度 ≥ { $craftsmanship } 且 加工精度 ≥ { $control }
@@ -540,6 +542,7 @@ attributes-requirements = 制作该配方要求：作业精度 ≥ { $craftsmans
 solvers = Solvers
 export-macro = Export
 attributes-enhance = Attributes Enhance
+staged = Staged
 
 number-of-macros-is-zero = Number of macros is 0. Continue?
 waring = Warning
@@ -554,6 +557,9 @@ read-n-macros = Read { $n ->
     *[other] { $n } macros
 }
 read-fail = Reading failed: { $reason }
+
+edit = Edit
+delete = Delete
 
 and = { $a } and { $b }
 attributes-do-not-meet-the-requirements = 
