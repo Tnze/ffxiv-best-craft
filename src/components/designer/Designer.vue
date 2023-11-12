@@ -20,8 +20,8 @@
 import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
-import { ElContainer, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane } from "element-plus";
-import { Delete, Edit } from "@element-plus/icons-vue";
+import { ElContainer, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
+import { Delete, Edit, Bottom, Close, Cpu, View, Upload, DocumentAdd, Folder } from "@element-plus/icons-vue";
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
 import ActionPanel from "./ActionPanel.vue";
@@ -376,6 +376,17 @@ async function openListFromJSON() {
                         <div class="multi-functional-area" style="overflow: auto;">
                             <el-tabs v-model="activeTab" tab-position="top" style="height: auto;">
                                 <el-tab-pane :label="$t('staged')" name="staged">
+                                    <el-button-group>
+                                        <el-button @click="saveSequence" :icon="Bottom">
+                                            {{ $t('save-workspace') }}
+                                        </el-button>
+                                        <el-button @click="clearSeq" :icon="Close">
+                                            {{ $t('clear-workspace') }}
+                                        </el-button>
+                                        <el-checkbox-button v-model:model-value="previewSolver">
+                                            {{ $t('preview-solver') }}
+                                        </el-checkbox-button>
+                                    </el-button-group>
                                     <div class="savedqueue-item" v-for="({ key, seq }, i) in savedSeqs.ary" :key="key">
                                         <QueueStatus :status="seq.status" />
                                         <ActionQueue class="savedqueue-item-actions" :job="displayJob" :list="seq.slots"
@@ -519,6 +530,10 @@ attributes-enhance = 食药&装备
 init-quality = 初期品质
 staged = 暂存区
 
+save-workspace = 暂存工作区
+clear-workspace = 清空工作区
+preview-solver = 预览求解结果
+
 number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
 waring = 警告
 
@@ -543,6 +558,10 @@ solvers = Solvers
 export-macro = Export
 attributes-enhance = Attributes Enhance
 staged = Staged
+
+save-workspace = Save
+clear-workspace = Clear
+preview-solver = Preview
 
 number-of-macros-is-zero = Number of macros is 0. Continue?
 waring = Warning

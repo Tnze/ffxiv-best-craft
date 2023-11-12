@@ -108,20 +108,14 @@ const emits = defineEmits<{
 </style>
 
 <fluent locale="zh-CN">
-save-workspace = 暂存工作区
-clear-workspace = 清空工作区
 solver-setting = 求解器设置
-preview-solver = 预览求解结果
 export-macro = 导出宏
 export-saved-to-file = 导出暂存库到文件
 import-saved-from-file = 从文件导入暂存库
 </fluent>
 
 <fluent locale="en-US">
-save-workspace = Save
-clear-workspace = Clear
 solver-setting = Solver
-preview-solver = Preview
 export-macro = Export
 export-saved-to-file = Export to file
 import-saved-from-file = Import from file
