@@ -93,23 +93,23 @@ function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
 
 <template>
     <div class="action-queue-container" @click.stop.prevent.right>
-        <VueDraggable v-model="listBinded" v-bind="dragOptions" target=".sort-target"
-            @start="isDragging = true" @end="nextTick(() => isDragging = false)">
+        <VueDraggable v-model="listBinded" v-bind="dragOptions" target=".sort-target" @start="isDragging = true"
+            @end="nextTick(() => isDragging = false)">
             <TransitionGroup class="sort-target" type="transition" tag="div" :name="!isDragging ? 'flip-list' : undefined">
                 <div v-for="(element, index) in listBinded" class="list-group-item" :key="element.id">
                     <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)" disabled
                         @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)" :no-hover="noHover" />
                 </div>
+                <div v-if="!hideSolverResult" v-for="elem in solverAdds" class="list-group-item" :key="elem.id">
+                    <Action class="action-icon" :job="job" :action="elem.action" no-hover effect="sunken"
+                        :opacity="previewSolver ? 1 : 0.4" disabled />
+                </div>
+                <div v-if="loadingSolverResult" class="list-group-item loading-icon">
+                    <el-icon class="is-loading loading-icon-inner" :size="19.2">
+                        <Loading />
+                    </el-icon>
+                </div>
             </TransitionGroup>
-            <div v-if="loadingSolverResult" class="list-group-item loading-icon">
-                <el-icon class="is-loading loading-icon-inner" :size="19.2">
-                    <Loading />
-                </el-icon>
-            </div>
-            <div v-if="!hideSolverResult" v-for="elem in solverAdds" class="list-group-item">
-                <Action class="action-icon" :job="job" :action="elem.action" no-hover effect="sunken"
-                    :opacity="previewSolver ? 1 : 0.4" disabled />
-            </div>
             <span v-if="!loadingSolverResult && solverResult && solverResult.length > 0" class="solve-time">
                 {{ $t('solved-in', { 'time': formatDuration(solveTime) }) }}
             </span>
