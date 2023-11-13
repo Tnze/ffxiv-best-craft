@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ElTooltip, ElIcon } from 'element-plus';
-import { SuccessFilled, WarningFilled } from '@element-plus/icons-vue'
+import { SuccessFilled, WarningFilled, CircleCloseFilled } from '@element-plus/icons-vue'
 import { computed } from 'vue';
 import { Status } from '@/libs/Craft';
 
@@ -47,14 +47,15 @@ const color = computed(() => {
     })">
         <el-icon v-if="status != undefined" :color="color" class="savedqueue-status">
             <success-filled v-if="color == '#67C23A'" />
-            <warning-filled v-else-if="color != undefined" />
+            <warning-filled v-else-if="color == '#E6A23C'" />
+            <circle-close-filled v-else />
         </el-icon>
     </el-tooltip>
 </template>
 
 <style scoped>
 .savedqueue-status {
-    margin: 0 -6px 0 8px;
+    margin: 0 -5px 0 0;
 }
 </style>
 

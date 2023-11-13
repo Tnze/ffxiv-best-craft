@@ -21,7 +21,7 @@ import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
 import { ElContainer, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
-import { Delete, Edit, Bottom, Close, Cpu, View, Upload, DocumentAdd, Folder } from "@element-plus/icons-vue";
+import { Delete, Edit, Bottom, Close } from "@element-plus/icons-vue";
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
 import ActionPanel from "./ActionPanel.vue";
@@ -381,23 +381,30 @@ async function openListFromJSON() {
                                 <el-button @click="clearSeq" :icon="Close">
                                     {{ $t('clear-workspace') }}
                                 </el-button>
-                                <el-checkbox-button v-model:model-value="previewSolver">
-                                    {{ $t('preview-solver') }}
+                                <el-checkbox-button v-model:model-value="previewSolver"
+                                    v-if="solverResult.slots.length > 0">
+                                    {{ $t('apply-solver') }}
                                 </el-checkbox-button>
                             </el-button-group>
-                            <div class="savedqueue-item" v-for="({ key, seq }, i) in savedSeqs.ary" :key="key">
-                                <QueueStatus :status="seq.status" />
-                                <ActionQueue class="savedqueue-item-actions" :job="displayJob" :list="seq.slots"
-                                    :err-list="seq.errors" disabled />
-                                <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                    @click="loadSeq(seq)">
-                                    {{ $t('edit') }}
-                                </el-link>
-                                <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
-                                    @click="savedSeqs.ary.splice(i, 1)">
-                                    {{ $t('delete') }}
-                                </el-link>
-                            </div>
+                            <el-scrollbar class="savedqueue-list">
+                                <div class="savedqueue-item" v-for="({ key, seq }, i) in savedSeqs.ary" :key="key">
+                                    <QueueStatus :status="seq.status" />
+                                    <div class="savedqueue-item-right">
+                                        <ActionQueue class="savedqueue-item-actions" :job="displayJob" :list="seq.slots"
+                                            :err-list="seq.errors" disabled />
+                                        <div class="savedqueue-item-above">
+                                            <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
+                                                @click="loadSeq(seq)">
+                                                {{ $t('edit') }}
+                                            </el-link>
+                                            <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
+                                                @click="savedSeqs.ary.splice(i, 1)">
+                                                {{ $t('delete') }}
+                                            </el-link>
+                                        </div>
+                                    </div>
+                                </div>
+                            </el-scrollbar>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('init-quality')" name="init-quality">
@@ -454,6 +461,7 @@ async function openListFromJSON() {
     display: flex;
     flex: auto;
     overflow: hidden;
+    border-top: 1px solid var(--el-border-color);
 }
 
 .above-panel :deep(.el-tabs__content) {
@@ -477,34 +485,39 @@ async function openListFromJSON() {
     flex-direction: column;
     flex: 1;
     height: 100%;
-    margin-left: 1rem;
-}
-
-.savedqueue-list-sidebar {
-    flex: auto;
+    margin-left: 5px;
 }
 
 .action-queue {
     border-left: 5px solid var(--el-border-color);
-    /* border-bottom: 2px solid var(--el-border-color); */
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .savedqueue-list {
-    margin: 0px;
-    padding: 0px;
+    margin: 5px 0;
 }
 
 .savedqueue-item {
     display: flex;
     align-items: center;
     min-height: 50px;
-    margin-left: 0;
+    margin-bottom: 3px;
 }
 
 .savedqueue-item-actions {
+    padding: 3px 0 0 8px;
     border-left: 5px solid var(--el-border-color);
-    padding: 3px 0 0 5px;
+}
+
+.savedqueue-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.savedqueue-item-above {
+    display: flex;
+    margin-left: 10px;
 }
 
 .savedqueue-item-button {
@@ -532,7 +545,7 @@ action-editor = 编排技能
 
 save-workspace = 暂存
 clear-workspace = 清空
-preview-solver = 求解预览
+apply-solver = 应用求解结果
 
 number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
 waring = 警告
@@ -561,7 +574,7 @@ staged = Staged
 
 save-workspace = Save
 clear-workspace = Clear
-preview-solver = Preview
+apply-solver = Apply solver result
 
 number-of-macros-is-zero = Number of macros is 0. Continue?
 waring = Warning

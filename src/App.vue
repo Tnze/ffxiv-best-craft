@@ -50,22 +50,21 @@ watchEffect(() => {
     console.log("language switched to", lang.value)
 })
 
-async function initApp() {
+// Check update
+onMounted(() => import('./update').then(x => x.checkUpdate($t, true)))
+
+async function loadStorages() {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         const { Dir, readTextFile } = await pkgTauriFs
         readTextFile("settings.json", { dir: Dir.App }).then(settingStore.fromJson).catch(e => console.error(e))
         readTextFile("gearsets.json", { dir: Dir.App }).then(gearsetsStore.fromJson).catch(e => console.error(e))
-
-        // Check update
-        const { checkUpdate } = await import('./update')
-        onMounted(() => checkUpdate($t, true))
     } else {
         const ifNotNullThen = (v: string | null, f: (v: string) => void) => { if (v != null) f(v) }
         ifNotNullThen(window.localStorage.getItem("settings.json"), settingStore.fromJson)
         ifNotNullThen(window.localStorage.getItem("gearsets.json"), gearsetsStore.fromJson)
     }
 }
-initApp()
+loadStorages()
 
 async function writeJson(name: string, val: any) {
     let jsonStr = JSON.stringify(val)
