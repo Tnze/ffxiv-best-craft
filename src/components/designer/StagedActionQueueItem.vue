@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ElContainer, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
-import { Delete, Edit } from "@element-plus/icons-vue";
+import { ElButton, ElSpace, ElText, ElTag, ElIcon, ElButtonGroup } from "element-plus";
+import { Delete, Upload, SuccessFilled, WarningFilled, CircleCloseFilled } from "@element-plus/icons-vue";
 import { Sequence } from './Designer.vue'
 import ActionQueue from "./ActionQueue.vue";
-import QueueStatus from "./QueueStatus.vue";
 import { Jobs } from "@/libs/Craft";
+import { computed } from "vue";
 
-defineProps<{
+const props = defineProps<{
     key: number,
     seq: Sequence,
     displayJob: Jobs,
@@ -16,21 +16,52 @@ const emit = defineEmits<{
     (event: 'load'): void
     (event: 'delete'): void
 }>()
+
+const color = computed(() => {
+    if (props.seq.status.progress < props.seq.status.recipe.difficulty)
+        return '#F56C6C'
+    else if (props.seq.status.quality < props.seq.status.recipe.quality)
+        return '#E6A23C'
+    else
+        return '#67C23A'
+})
+
+const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
+    if (props.seq.status.progress < props.seq.status.recipe.difficulty)
+        return 'danger'
+    else if (props.seq.status.quality < props.seq.status.recipe.quality)
+        return 'warning'
+    else
+        return 'success'
+})
 </script>
 
 <template>
     <div class="savedqueue-item" :key="key">
-        <QueueStatus :status="seq.status" />
         <div class="savedqueue-item-right">
             <ActionQueue class="savedqueue-item-actions" :job="displayJob" :list="seq.slots" :err-list="seq.errors"
                 disabled />
             <div class="savedqueue-item-above">
-                <el-link :icon="Edit" :underline="false" class="savedqueue-item-button" @click="emit('load')">
-                    {{ $t('edit') }}
-                </el-link>
-                <el-link :icon="Delete" :underline="false" class="savedqueue-item-button" @click="emit('delete')">
-                    {{ $t('delete') }}
-                </el-link>
+                <el-text size="small">
+                    <el-space>
+                        <el-icon :color="color" class="savedqueue-status">
+                            <success-filled v-if="color == '#67C23A'" />
+                            <warning-filled v-else-if="color == '#E6A23C'" />
+                            <circle-close-filled v-else />
+                        </el-icon>
+                        <el-tag round :type="tagType">{{ $t('quality-tag', { quality: seq.status.quality }) }}</el-tag>
+                        <el-tag round type="info">{{ $t('steps-tag', { steps: seq.status.step }) }}</el-tag>
+                    </el-space>
+                </el-text>
+                <el-button-group>
+                    <el-button :icon="Upload" size="small" round class="savedqueue-item-button" @click="emit('load')">
+                        {{ $t('load') }}
+                    </el-button>
+                    <el-button :icon="Delete" size="small" round class="savedqueue-item-button"
+                        @click="emit('delete')">
+                        {{ $t('delete') }}
+                    </el-button>
+                </el-button-group>
             </div>
         </div>
     </div>
@@ -63,15 +94,18 @@ const emit = defineEmits<{
     padding: 3px 0 0 8px;
     border-left: 5px solid var(--el-border-color);
 }
-
 </style>
 
 <fluent locale="zh-CN">
-edit = 编辑
+load = 加载
 delete = 删除
+quality-tag = { quality }：{ $quality }
+steps-tag = { steps }：{ $steps }
 </fluent>
 
 <fluent locale="en-US">
-edit = Edit
+load = Load
 delete = Delete
+quality-tag = { quality }: { $quality }
+steps-tag = { steps }: { $steps }
 </fluent>
