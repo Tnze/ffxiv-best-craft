@@ -21,7 +21,7 @@ import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { computed, reactive, ref, watch } from "vue";
 import { ElContainer, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
-import { Delete, Edit, Bottom, Close } from "@element-plus/icons-vue";
+import { Bottom, Close } from "@element-plus/icons-vue";
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
 import ActionPanel from "./ActionPanel.vue";
@@ -34,6 +34,7 @@ import InitialQualitySetting from './InitialQualitySetting.vue'
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import { useFluent } from 'fluent-vue';
+import StagedActionQueueItem from './StagedActionQueueItem.vue';
 
 interface Slot {
     id: number;
@@ -43,7 +44,7 @@ interface Slot {
 // 用于表示一个技能的序列，或者说一个宏
 // 为了实现拖拽和删除等动画效果，我们需要给每个技能一个唯一的id
 // maxid储存了当前序列中最大的标志，并用于生成下一个id
-interface Sequence {
+export interface Sequence {
     slots: Slot[];
     maxid: number;
     status: Status;
@@ -387,23 +388,11 @@ async function openListFromJSON() {
                                 </el-checkbox-button>
                             </el-button-group>
                             <el-scrollbar class="savedqueue-list">
-                                <div class="savedqueue-item" v-for="({ key, seq }, i) in savedSeqs.ary" :key="key">
-                                    <QueueStatus :status="seq.status" />
-                                    <div class="savedqueue-item-right">
-                                        <ActionQueue class="savedqueue-item-actions" :job="displayJob" :list="seq.slots"
-                                            :err-list="seq.errors" disabled />
-                                        <div class="savedqueue-item-above">
-                                            <el-link :icon="Edit" :underline="false" class="savedqueue-item-button"
-                                                @click="loadSeq(seq)">
-                                                {{ $t('edit') }}
-                                            </el-link>
-                                            <el-link :icon="Delete" :underline="false" class="savedqueue-item-button"
-                                                @click="savedSeqs.ary.splice(i, 1)">
-                                                {{ $t('delete') }}
-                                            </el-link>
-                                        </div>
-                                    </div>
-                                </div>
+                                <TransitionGroup name="savedqueues" tag="div">
+                                    <StagedActionQueueItem v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" :seq="seq"
+                                        :display-job="displayJob" @load="loadSeq(seq)"
+                                        @delete="savedSeqs.ary.splice(i, 1)" />
+                                </TransitionGroup>
                             </el-scrollbar>
                         </div>
                     </el-tab-pane>
@@ -497,35 +486,9 @@ async function openListFromJSON() {
     margin: 5px 0;
 }
 
-.savedqueue-item {
-    display: flex;
-    align-items: center;
-    min-height: 50px;
-    margin-bottom: 3px;
-}
-
-.savedqueue-item-actions {
-    padding: 3px 0 0 8px;
-    border-left: 5px solid var(--el-border-color);
-}
-
-.savedqueue-item-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.savedqueue-item-above {
-    display: flex;
-    margin-left: 10px;
-}
-
-.savedqueue-item-button {
-    margin-right: 6px;
-}
-
+.savedqueues-move,
 .savedqueues-enter-active,
-.list-leave-active {
+.savedqueues-leave-active {
     transition: all 0.5s ease;
 }
 
@@ -533,6 +496,10 @@ async function openListFromJSON() {
 .savedqueues-leave-to {
     opacity: 0;
     transform: translateX(30px);
+}
+
+.savedqueues-leave-active {
+    position: absolute;
 }
 </style>
 
