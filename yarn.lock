@@ -868,15 +868,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vueuse/core@npm:10.6.0":
-  version: 10.6.0
-  resolution: "@vueuse/core@npm:10.6.0"
+"@vueuse/core@npm:10.6.1":
+  version: 10.6.1
+  resolution: "@vueuse/core@npm:10.6.1"
   dependencies:
     "@types/web-bluetooth": "npm:^0.0.20"
-    "@vueuse/metadata": "npm:10.6.0"
-    "@vueuse/shared": "npm:10.6.0"
+    "@vueuse/metadata": "npm:10.6.1"
+    "@vueuse/shared": "npm:10.6.1"
     vue-demi: "npm:>=0.14.6"
-  checksum: 31de41fd3870ed8ffc1143fef5bd85ba3d30c2a4fe285e6494c5ba517fcef0fe364b20f7826cd090b21257bdf8c0faec81107e761a26fd75f54b1cea7eb050b8
+  checksum: 2e9d69f8a320355c2bc9dd87b8a5ebccdb318ecdc72797ad48128f3a705cba8063b4194c19cc065a0c9b6dd0a2f6fefbab35822b369d63cec7ad7a3ccde07c72
   languageName: node
   linkType: hard
 
@@ -892,10 +892,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vueuse/metadata@npm:10.6.0":
-  version: 10.6.0
-  resolution: "@vueuse/metadata@npm:10.6.0"
-  checksum: 5f78a56e6f7fcc3624638e6976a78352799b7a4037532e2b37ae89460b84065b53b9ccda9cf9d09ae07f284244227726126263f8b281c9a0d127c8b8d32be052
+"@vueuse/metadata@npm:10.6.1":
+  version: 10.6.1
+  resolution: "@vueuse/metadata@npm:10.6.1"
+  checksum: 8c7e55ddb9f3f40a2a9ee4be0fa5f0d0c58ee80281fea2aadb5fb6009bc1ac3ae9b57b50260034655d3fcf9e195c165b1cb26ff7243f46cb913dc7ac5a7b5f34
   languageName: node
   linkType: hard
 
@@ -906,12 +906,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vueuse/shared@npm:10.6.0":
-  version: 10.6.0
-  resolution: "@vueuse/shared@npm:10.6.0"
+"@vueuse/shared@npm:10.6.1":
+  version: 10.6.1
+  resolution: "@vueuse/shared@npm:10.6.1"
   dependencies:
     vue-demi: "npm:>=0.14.6"
-  checksum: ffd16c2ddfe3d33a8ff16051f0d504cdf3228d79d019805ae6b9cb04717b54584e7bbc93a7715f629dc7e666fb724c2cd79055a38428bca47ad5e6a2de1b1123
+  checksum: dbd65d2bcc8bd053c85ff08070627f1bb3983f83f8c9c8c60131977518e3a9a23bbd20e5daff3573ec45da18917649717527b0e5680445d6a93af0c325814a44
   languageName: node
   linkType: hard
 
@@ -1369,7 +1369,7 @@ __metadata:
     "@types/lodash-es": "npm:4.17.11"
     "@types/node": "npm:20.9.0"
     "@vitejs/plugin-vue": "npm:4.4.1"
-    "@vueuse/core": "npm:10.6.0"
+    "@vueuse/core": "npm:10.6.1"
     element-plus: "npm:2.4.2"
     fluent-vue: "npm:3.5.0"
     pinia: "npm:2.1.7"
@@ -1380,9 +1380,9 @@ __metadata:
     vite-plugin-top-level-await: "npm:^1.3.1"
     vite-plugin-wasm: "npm:^3.2.2"
     vue: "npm:3.3.8"
+    vue-draggable-plus: "npm:^0.2.6"
     vue-router: "npm:4.2.5"
     vue-tsc: "npm:1.8.22"
-    vuedraggable: "npm:^4.1.0"
   languageName: unknown
   linkType: soft
 
@@ -2207,13 +2207,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sortablejs@npm:1.14.0":
-  version: 1.14.0
-  resolution: "sortablejs@npm:1.14.0"
-  checksum: 434e0caaabfac2b4f48e102cc40e12fd0af7dc99f14838005e6429e92cc190f0ccfb48b0cb8deed8a9b808543f926e2aad26aa89277ee036e5b4ee959ae47f9e
-  languageName: node
-  linkType: hard
-
 "source-map-js@npm:^1.0.2":
   version: 1.0.2
   resolution: "source-map-js@npm:1.0.2"
@@ -2492,6 +2485,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vue-draggable-plus@npm:^0.2.6":
+  version: 0.2.6
+  resolution: "vue-draggable-plus@npm:0.2.6"
+  peerDependencies:
+    "@types/sortablejs": ^1.15.0
+  peerDependenciesMeta:
+    "@vue/composition-api":
+      optional: true
+  checksum: a022978aebc35d08775564a5ea4e14eb6ea306fc967233ca2d39019bcc0c71f29978258db21faa71542f8b48ede6740995406c58281e35a4b2324be16af2904b
+  languageName: node
+  linkType: hard
+
 "vue-router@npm:4.2.5":
   version: 4.2.5
   resolution: "vue-router@npm:4.2.5"
@@ -2543,17 +2548,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 6d06edc99b35a6dee678086fc52abd76896feee62924806433ac1b3e3c4cbdaf42c4a6b314a992ecb2e87980c178d7790453ebe2420570536e52ad574e605b0b
-  languageName: node
-  linkType: hard
-
-"vuedraggable@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "vuedraggable@npm:4.1.0"
-  dependencies:
-    sortablejs: "npm:1.14.0"
-  peerDependencies:
-    vue: ^3.0.1
-  checksum: 87d4faba83ea27c0c262fcdbe7bc9791560079096a5a9d1dc191ebfe0a00f8324d33ebc15272c4067ddc32b1681534d17acafbe73d18c4cb2a8d99f19d86e74b
   languageName: node
   linkType: hard
 

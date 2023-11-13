@@ -12,13 +12,13 @@
     "dependencies": {
         "@fluent/bundle": "0.18.0",
         "@tauri-apps/api": "1.5.1",
-        "@vueuse/core": "10.6.0",
+        "@vueuse/core": "10.6.1",
         "element-plus": "2.4.2",
         "fluent-vue": "3.5.0",
         "pinia": "2.1.7",
         "vue": "3.3.8",
-        "vue-router": "4.2.5",
-        "vuedraggable": "^4.1.0"
+        "vue-draggable-plus": "^0.2.6",
+        "vue-router": "4.2.5"
     },
     "devDependencies": {
         "@babel/types": "7.23.3",

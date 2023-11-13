@@ -371,7 +371,7 @@ async function openListFromJSON() {
                         </el-scrollbar>
                         <div class="staged-right-panel">
                             <div class="action-queue">
-                                <ActionQueue :job="displayJob" :list="activeSeq.slots" :solver-result="solverResult.slots"
+                                <ActionQueue :job="displayJob" v-model:list="activeSeq.slots" :solver-result="solverResult.slots"
                                     :preview-solver="previewSolver" :err-list="activeSeq.errors"
                                     :loading-solver-result="isReadingSolverDisplay" />
                             </div>
