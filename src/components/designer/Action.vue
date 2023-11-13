@@ -92,6 +92,7 @@ const onAnimationEnd = (event: AnimationEvent) => {
     top: -12px;
     left: -12px;
     position: absolute;
+    pointer-events: none;
     background: url("../../assets/icons/icona_frame_tex.png") no-repeat top 0px left -240px;
     cursor: v-bind("disabled ? 'inherit' : 'pointer'");
 }
