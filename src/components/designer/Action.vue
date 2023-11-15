@@ -58,17 +58,25 @@ const hoverLayerOffset = computed(() => {
 })
 
 const onClick = (event: MouseEvent) => {
-    if (!props.disabled)
-        (event.target as HTMLElement).firstElementChild!.classList.add('click-animation')
+    const animElem = (event.target as HTMLElement).firstElementChild
+    if (!props.disabled && animElem != null) {
+        animElem.classList.add('click-animation')
+        animElem.getAnimations()?.forEach(anim => {
+            anim.cancel()
+            anim.play()
+        })
+    }
 }
 const onAnimationEnd = (event: AnimationEvent) => {
-    (event.target as HTMLElement).classList.remove('click-animation')
+    const animElem = (event.target as HTMLElement)
+    animElem.classList.remove('click-animation')
 }
 
 </script>
 
 <template>
-    <div class="action" @click="onClick" v-bind:class="noHover ? '' : 'action-hover'" v-bind:style="{ opacity: opacity ?? 1 }">
+    <div class="action" @click="onClick" v-bind:class="noHover ? '' : 'action-hover'"
+        v-bind:style="{ opacity: opacity ?? 1 }">
         <div @animationend="onAnimationEnd($event)"></div>
         <div v-if="active" class="active-mask"></div>
         <div v-if="cp != undefined" class="craft-point">{{ cp }}</div>
@@ -105,6 +113,7 @@ const onAnimationEnd = (event: AnimationEvent) => {
     top: -8px;
     left: -8px;
     position: absolute;
+    pointer-events: none;
     background: url("../../assets/icons/icona_frame_tex.png") no-repeat top -72px left -240px;
     animation: clickable-wave 0.3s;
 }

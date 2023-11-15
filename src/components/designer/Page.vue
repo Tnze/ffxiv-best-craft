@@ -40,7 +40,11 @@ const attributes = computed(() => {
 const errorMessage = ref<string>()
 
 onErrorCaptured((err: unknown) => {
-    errorMessage.value = String(err)
+    try {
+        errorMessage.value = $t(String(err))
+    } catch {
+        errorMessage.value = String(err)
+    }
     return false
 })
 function reload() {
@@ -50,7 +54,7 @@ function reload() {
 
 <template>
     <Suspense :timeout="30">
-        <el-result v-if="errorMessage" icon="error" :title="$t('error-happens')" :sub-title="$t(errorMessage)">
+        <el-result v-if="errorMessage" icon="error" :title="$t('error-happens')" :sub-title="errorMessage">
             <template #extra>
                 <el-button @click="reload">{{ $t('reload') }}</el-button>
             </template>
