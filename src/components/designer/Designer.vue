@@ -29,7 +29,6 @@ import ActionQueue from "./ActionQueue.vue";
 import StatusBar from "./StatusBar.vue";
 import SolverList from "./SolverList.vue";
 import MacroExporter from "./MacroExporter.vue";
-import QueueStatus from "./QueueStatus.vue";
 import InitialQualitySetting from './InitialQualitySetting.vue'
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
@@ -371,9 +370,9 @@ async function openListFromJSON() {
                         </el-scrollbar>
                         <div class="staged-right-panel">
                             <div class="action-queue">
-                                <ActionQueue :job="displayJob" v-model:list="activeSeq.slots" :solver-result="solverResult.slots"
-                                    :preview-solver="previewSolver" :err-list="activeSeq.errors"
-                                    :loading-solver-result="isReadingSolverDisplay" />
+                                <ActionQueue :job="displayJob" v-model:list="activeSeq.slots"
+                                    :solver-result="solverResult.slots" :preview-solver="previewSolver"
+                                    :err-list="activeSeq.errors" :loading-solver-result="isReadingSolverDisplay" />
                             </div>
                             <el-button-group>
                                 <el-button @click="saveSequence" :icon="Bottom">
@@ -396,10 +395,12 @@ async function openListFromJSON() {
                             </el-scrollbar>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('init-quality')" name="init-quality">
-                        <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
-                            v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :recipe-id="recipeId"
-                            :material-quality-factor="materialQualityFactor" />
+                    <el-tab-pane :label="$t('init-quality')" name="init-quality" class="init-quality-panel">
+                        <el-scrollbar>
+                            <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
+                                v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :recipe-id="recipeId"
+                                :material-quality-factor="materialQualityFactor" />
+                        </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance">
                         <AttrEnhSelector v-model="attributesEnhancers" />
@@ -475,6 +476,10 @@ async function openListFromJSON() {
     flex: 1;
     height: 100%;
     margin-left: 5px;
+}
+
+.init-quality-panel {
+    flex: auto;
 }
 
 .action-queue {
