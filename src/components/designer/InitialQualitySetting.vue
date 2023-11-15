@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ElIcon, ElForm, ElFormItem, ElInputNumber, ElButton, ElButtonGroup, ElSwitch } from 'element-plus';
+import { ElIcon, ElForm, ElFormItem, ElInputNumber, ElButton, ElButtonGroup, ElRadioGroup, ElRadioButton } from 'element-plus';
 import { ArrowUp } from '@element-plus/icons-vue';
 import { computed, reactive, ref, watchEffect } from 'vue';
 import { Item, ItemWithAmount, Recipe } from '@/libs/Craft';
@@ -50,12 +50,15 @@ const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
         hqAmount: 0,
     })
 ))
+const inputType = ref<'manully' | 'ingredient'>(props.item.id == -1 ? 'manully' : 'ingredient')
 const items = ref<{ item: Item, amount: number, hqAmount: number }[]>([])
+
 watchEffect(async () => {
     const newId = props.item.id
     const ri = newId == -1 ? null : await (await settingStore.getDataSource).recipesIngredients(props.recipeId)
     items.value = ri == null ? [] : reactive(await calcItems(ri))
 })
+
 watchEffect(() => {
     if (items.value == null) return
     const [totalLvCount, hqLvCount] = items.value.
@@ -70,30 +73,29 @@ watchEffect(() => {
     initQuality.value = Math.floor(props.recipe.quality * maxInitQualityPs * r)
 })
 
-const noManullyInput = ref(true)
 
 </script>
 
 <template>
     <div style="display: flex; flex-direction: column;">
-        <el-form label-width="120px">
-            <el-form-item>
-                <el-switch v-model="noManullyInput" :active-text="$t('select-hq-ingredients')"
-                    :inactive-text="$t('manully-input')" />
+        <el-form label-width="auto">
+            <el-form-item label=" ">
+                <el-radio-group v-model="inputType">
+                    <el-radio-button label="manully">{{ $t('manully-input') }}</el-radio-button>
+                    <el-radio-button label="ingredient">{{ $t('select-hq-ingredients') }}</el-radio-button>
+                </el-radio-group>
             </el-form-item>
             <el-form-item :label="$t('initial-quality')">
-                <el-input-number :disabled="props.item.id != -1 && noManullyInput" v-model="initQuality" :min="0"
+                <el-input-number :disabled="props.item.id != -1 && inputType != 'manully'" v-model="initQuality" :min="0"
                     :max="recipe.quality" :step-strictly="true" />
             </el-form-item>
-            <template v-if="props.item.id != -1 && noManullyInput">
+            <template v-if="props.item.id != -1 && inputType == 'ingredient'">
                 <el-form-item v-for="row in items" :label="row.item.name">
                     <el-button-group v-if="row.item.can_be_hq" class="ml-4">
-                        <el-button :icon="ArrowUp" size="small" :disabled="row.hqAmount <= 0"
-                            @click="row.hqAmount -= 1">
+                        <el-button :icon="ArrowUp" size="small" :disabled="row.hqAmount <= 0" @click="row.hqAmount -= 1">
                             {{ $t('nq') }} {{ row.amount - row.hqAmount }}
                         </el-button>
-                        <el-button size="small" :disabled="row.hqAmount >= row.amount"
-                            @click="row.hqAmount += 1">
+                        <el-button size="small" :disabled="row.hqAmount >= row.amount" @click="row.hqAmount += 1">
                             {{ $t('hq') }} {{ row.hqAmount }}
                             <el-icon class="el-icon--right">
                                 <ArrowUp />
@@ -104,7 +106,6 @@ const noManullyInput = ref(true)
                         <el-button :icon="ArrowUp" size="small" disabled>
                             {{ $t('nq') }} {{ row.amount }}
                         </el-button>
-                        
                     </template>
                 </el-form-item>
             </template>

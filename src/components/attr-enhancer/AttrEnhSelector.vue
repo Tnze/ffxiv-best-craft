@@ -17,14 +17,18 @@
 -->
 
 <script setup lang="ts">
-import { ElTag, ElTable, ElTableColumn } from 'element-plus';
-import { ref } from 'vue'
-import meal from '@/assets/data/meal.json'
+import { ElForm, ElFormItem, ElSelectV2, ElSwitch, ElDivider } from 'element-plus';
+import { reactive, watch } from 'vue'
+import meals from '@/assets/data/meal.json'
 import potions from '@/assets/data/potions.json'
+import useGearsets from '@/stores/gearsets'
 import { Enhancer } from './Enhancer';
 import { useFluent } from 'fluent-vue';
+import { Jobs } from '@/libs/Craft';
+import Gearset from '@/components/Gearset.vue';
 
 const { $t } = useFluent();
+const gearsets = useGearsets()
 
 const 专家之证: Enhancer = {
     cm: 100,
@@ -35,35 +39,54 @@ const 专家之证: Enhancer = {
     cp_max: 15,
     name: "【ilv.136】" + $t('soul-of-the-crafter')
 }
-const items: Enhancer[] = [专家之证].concat(meal).concat(potions)
 
 const props = defineProps<{
-    modelValue: Enhancer[]
+    modelValue: Enhancer[],
+    job: Jobs
 }>()
 
 const emits = defineEmits<{
     (event: 'update:modelValue', v: Enhancer[]): void
 }>()
 
-const multipleTableRef = ref<InstanceType<typeof ElTable>>()
+function processData(enhancers: Enhancer[]) {
+    return enhancers.map(value => ({
+        label: value.name, value
+    }))
+}
 
-const handleSelectionChange = (val: Enhancer[]) => {
-    emits('update:modelValue', val)
-}
-const cancelSelection = (e: Enhancer) => {
-    multipleTableRef.value!.toggleRowSelection(e, false)
-}
+const enhancers = reactive<{
+    meal: Enhancer | null,
+    potion: Enhancer | null,
+    soulOfTheCrafter: boolean,
+}>({ meal: null, potion: null, soulOfTheCrafter: false })
+
+watch(enhancers, e => {
+    const result = []
+    if (e.meal != null) result.push(e.meal)
+    if (e.potion != null) result.push(e.potion)
+    if (e.soulOfTheCrafter) result.push(专家之证)
+    emits('update:modelValue', result)
+})
+
 </script>
 
 <template>
-    <el-tag v-for="tag in modelValue" class="item" @close="cancelSelection(tag)" closable>
-        {{ tag.name }}
-    </el-tag>
-    <el-table class="enhancer-table" :data="items" height="100%" @selection-change="handleSelectionChange"
-        ref="multipleTableRef">
-        <el-table-column type="selection" width="50" />
-        <el-table-column prop="name" :label="$t('name')" />
-    </el-table>
+    <el-form :model="enhancers" label-width="auto">
+        <el-form-item :label="$t('meal')">
+            <el-select-v2 v-model="enhancers.meal" :placeholder="$t('none')" :options="processData(meals)" value-key="name"
+                filterable clearable />
+        </el-form-item>
+        <el-form-item :label="$t('potion')">
+            <el-select-v2 v-model="enhancers.potion" :placeholder="$t('none')" :options="processData(potions)"
+                value-key="name" filterable clearable />
+        </el-form-item>
+        <el-form-item :label="$t('soul-of-the-crafter')">
+            <el-switch v-model="enhancers.soulOfTheCrafter" />
+        </el-form-item>
+    </el-form>
+    <el-divider />
+    <Gearset :job="job" />
 </template>
 
 <style scoped>
@@ -79,14 +102,22 @@ const cancelSelection = (e: Enhancer) => {
 
 <fluent locale="zh-CN">
 name = 名称
+none = 无
+meal = 食物
+potion = 药水
 soul-of-the-crafter = 专家之证
 </fluent>
 
 <fluent locale="en-US">
 name = Name
+none = None
+meal = Meal
+potion = Potion
+soul-of-the-crafter = 专家之证
 </fluent>
 
 <fluent locale="en-US">
 name = Name
+none = None
 soul-of-the-crafter = マイスターの証
 </fluent>

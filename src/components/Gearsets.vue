@@ -20,6 +20,7 @@
 import { ElContainer, ElHeader, ElMain, ElTabs, ElTabPane, ElForm, ElFormItem, ElInputNumber, ElSwitch } from 'element-plus'
 import { ref } from 'vue'
 import useGearsetsStore from '@/stores/gearsets'
+import Gearset from '@/components/Gearset.vue'
 
 const store = useGearsetsStore()
 const jobPage = ref('default')
@@ -54,28 +55,7 @@ const jobPage = ref('default')
                     </el-form>
                 </el-tab-pane>
                 <el-tab-pane v-for="v in store.special" :name="v.name" :label="$t(v.name)">
-                    <el-form label-position="right" label-width="130px" :model="v" style="max-width: 500px">
-                        <el-form-item :label="$t('attributes')">
-                            <el-switch :model-value="v.value == null" :active-text="$t('inherit-from-default')"
-                                @change="v.value = v.value == null ? { ...store.default } : null" />
-                        </el-form-item>
-                        <el-form-item :label="$t('level')">
-                            <el-input-number v-model="(v.value || store.default).level" :disabled="v.value == null" :min="0"
-                                :max="90" :step-strictly="true"></el-input-number>
-                        </el-form-item>
-                        <el-form-item :label="$t('craftsmanship')">
-                            <el-input-number v-model="(v.value || store.default).craftsmanship" :disabled="v.value == null"
-                                :min="0" :step-strictly="true"></el-input-number>
-                        </el-form-item>
-                        <el-form-item :label="$t('control')">
-                            <el-input-number v-model="(v.value || store.default).control" :disabled="v.value == null"
-                                :min="0" :step-strictly="true"></el-input-number>
-                        </el-form-item>
-                        <el-form-item :label="$t('craft-point')">
-                            <el-input-number v-model="(v.value || store.default).craft_points" :disabled="v.value == null"
-                                :min="0" :step-strictly="true"></el-input-number>
-                        </el-form-item>
-                    </el-form>
+                    <Gearset :job="v.name" />
                 </el-tab-pane>
             </el-tabs>
         </el-main>
@@ -95,17 +75,14 @@ const jobPage = ref('default')
 <fluent locale="zh-CN">
 attributes = 装备属性
 default = 默认
-inherit-from-default = 继承自默认
 </fluent>
 
 <fluent locale="en-US">
 attributes = Crafter Attributes
 default = Default
-inherit-from-default = Inherit from default
 </fluent>
 
 <fluent locale="ja-JP">
 attributes = 属性
 default = デフォルト
-inherit-from-default = デフォルトから継承
 </fluent>

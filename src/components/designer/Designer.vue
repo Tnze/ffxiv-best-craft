@@ -395,15 +395,17 @@ async function openListFromJSON() {
                             </el-scrollbar>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('init-quality')" name="init-quality" class="init-quality-panel">
-                        <el-scrollbar>
+                    <el-tab-pane :label="$t('init-quality')" name="init-quality" class="above-panel">
+                        <el-scrollbar style="flex: auto; margin-left: 14px;">
                             <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
                                 v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :recipe-id="recipeId"
                                 :material-quality-factor="materialQualityFactor" />
                         </el-scrollbar>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance">
-                        <AttrEnhSelector v-model="attributesEnhancers" />
+                    <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance" class="above-panel">
+                        <el-scrollbar style="flex: auto; margin-left: 14px;">
+                            <AttrEnhSelector v-model="attributesEnhancers" :job="displayJob" />
+                        </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('export-macro')" name="export-macro">
                         <MacroExporter :actions="displayActions" />
@@ -451,12 +453,11 @@ async function openListFromJSON() {
     display: flex;
     flex: auto;
     overflow: hidden;
-    border-top: 1px solid var(--el-border-color);
 }
 
 .above-panel :deep(.el-tabs__content) {
-    flex: auto;
     display: flex;
+    flex: auto;
 }
 
 .staged-panel {
@@ -476,10 +477,6 @@ async function openListFromJSON() {
     flex: 1;
     height: 100%;
     margin-left: 5px;
-}
-
-.init-quality-panel {
-    flex: auto;
 }
 
 .action-queue {

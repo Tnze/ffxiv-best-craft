@@ -161,22 +161,8 @@ watchEffect(async () => {
     border: 1px solid var(--el-border-color-light);
 }
 
-.el-drawer {
-    box-shadow: var(--el-box-shadow-lighter) !important;
-}
-
-.el-drawer.btt {
-    border-top-left-radius: var(--tnze-content-raduis);
-    border-top-right-radius: var(--tnze-content-raduis);
-}
-
-.el-drawer.rtl {
-    border-top-left-radius: var(--tnze-content-raduis);
-    border-bottom-left-radius: var(--tnze-content-raduis);
-}
-
 .el-card {
-    --el-card-border-radius: var(--el-border-radius-base);
+    --el-card-border-radius: var(--el-border-radius-base) !important;
 }
 
 :root {
