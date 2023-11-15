@@ -7,7 +7,6 @@ import { Jobs } from "@/libs/Craft";
 import { computed } from "vue";
 
 const props = defineProps<{
-    key: number,
     seq: Sequence,
     displayJob: Jobs,
 }>()
@@ -37,7 +36,7 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
 </script>
 
 <template>
-    <div class="savedqueue-item" :key="key">
+    <div class="savedqueue-item">
         <div class="savedqueue-item-right">
             <ActionQueue class="savedqueue-item-actions" :job="displayJob" :list="seq.slots" :err-list="seq.errors"
                 disabled />
