@@ -40,6 +40,7 @@ const attributes = computed(() => {
 const errorMessage = ref<string>()
 
 onErrorCaptured((err: unknown) => {
+    console.error(err)
     try {
         errorMessage.value = $t(String(err))
     } catch {

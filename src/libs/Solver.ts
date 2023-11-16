@@ -51,13 +51,21 @@ export async function create_solver(
 };
 
 export async function destroy_solver(status: Status) {
-    let { invoke } = await pkgTauri
-    return invoke("destroy_solver", { status });
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        invoke("destroy_solver", { status });
+    } else {
+        throw "solver-doesn-t-exist"
+    }
 };
 
 export async function read_solver(status: Status): Promise<Actions[]> {
-    let { invoke } = await pkgTauri
-    return invoke("read_solver", { status });
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("read_solver", { status });
+    } else {
+        throw "solver-doesn-t-exist"
+    }
 };
 
 export async function rika_solve(status: Status): Promise<Actions[]> {
@@ -69,8 +77,12 @@ export async function rika_solve(status: Status): Promise<Actions[]> {
 }
 
 export async function rika_solve_tnzever(status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean, reduceSteps: boolean): Promise<Actions[]> {
-    let { invoke } = await pkgTauri
-    return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve, reduceSteps })
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve, reduceSteps })
+    } else {
+        throw "solver-doesn-t-exist"
+    }
 }
 
 export async function dfs_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
@@ -90,8 +102,12 @@ export async function nq_solve(status: Status, depth: number, specialist: boolea
 }
 
 export async function reflect_solve(status: Status, useManipulation: boolean): Promise<Actions[]> {
-    let { invoke } = await pkgTauri
-    return invoke("reflect_solve", { status, useManipulation })
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("reflect_solve", { status, useManipulation })
+    } else {
+        throw "solver-doesn-t-exist"
+    }
 }
 
 export function formatDuration(u: number): string {

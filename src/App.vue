@@ -51,7 +51,9 @@ watchEffect(() => {
 })
 
 // Check update
-onMounted(() => import('./update').then(x => x.checkUpdate($t, true)))
+if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    onMounted(() => import('./update').then(x => x.checkUpdate($t, true)))
+}
 
 async function loadStorages() {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
