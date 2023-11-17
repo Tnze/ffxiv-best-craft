@@ -18,8 +18,8 @@
 
 <script setup lang="ts">
 import { Ref, reactive, ref } from 'vue'
-import { ElAlert, ElSpace, ElDialog, ElCard, ElButton, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage, ElMessageBox, ElSlider, ElTabs, ElTabPane } from 'element-plus'
-import { supported as solverSupported, create_solver, destroy_solver, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve, nq_solve, reflect_solve } from '@/libs/Solver'
+import { ElAlert, ElSpace, ElDialog, ElCard, ElButton, ElCheckbox, ElTable, ElTableColumn, ElMessage } from 'element-plus'
+import { create_solver, destroy_solver, formatDuration, reflect_solve } from '@/libs/Solver'
 import { ChatSquare } from '@element-plus/icons-vue'
 import { Actions, Status } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';

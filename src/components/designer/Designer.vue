@@ -27,7 +27,7 @@ import { read_solver } from "@/libs/Solver";
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
 import StatusBar from "./StatusBar.vue";
-import SolverList from "./SolverList.vue";
+import SolverList from "./solvers/List.vue";
 import MacroExporter from "./MacroExporter.vue";
 import InitialQualitySetting from './InitialQualitySetting.vue'
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
@@ -407,12 +407,16 @@ async function openListFromJSON() {
                             <AttrEnhSelector v-model="attributesEnhancers" :job="displayJob" />
                         </el-scrollbar>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('export-macro')" name="export-macro">
-                        <MacroExporter :actions="displayActions" />
+                    <el-tab-pane :label="$t('export-macro')" name="export-macro" class="above-panel">
+                        <el-scrollbar style="flex: auto; margin-left: 14px;">
+                            <MacroExporter :actions="displayActions" />
+                        </el-scrollbar>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('solvers')" name="solver-list">
-                        <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
-                            @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
+                    <el-tab-pane :label="$t('solvers')" name="solver-list" class="above-panel">
+                        <el-scrollbar style="flex: auto; margin-left: 14px;">
+                            <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
+                                @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
+                        </el-scrollbar>
                     </el-tab-pane>
                 </el-tabs>
             </div>

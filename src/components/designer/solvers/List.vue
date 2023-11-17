@@ -17,13 +17,14 @@
 -->
 
 <script setup lang="ts">
-import { Ref, reactive, ref, watch } from 'vue'
-import { ElAlert, ElCard, ElDialog, ElScrollbar, ElButton, ElCheckbox, ElTable, ElTableColumn, ElLink, ElMessage, ElMessageBox, ElSlider, ElTabs, ElTabPane } from 'element-plus'
+import { Ref, ref } from 'vue'
+import { ElAlert, ElScrollbar, ElButton, ElCheckbox, ElLink, ElMessage, ElMessageBox, ElTabs, ElTabPane } from 'element-plus'
 import { Actions, Status } from "@/libs/Craft"
-import { supported as solverSupported, formatDuration, rika_solve, rika_solve_tnzever, dfs_solve, nq_solve, reflect_solve } from '@/libs/Solver'
+import { supported as solverSupported, formatDuration, rika_solve, rika_solve_tnzever } from '@/libs/Solver'
 import { useFluent } from 'fluent-vue';
-import { Solver } from './solvers/DpSolver.vue'
-import DpSolver from './solvers/DpSolver.vue'
+import { Solver } from './DpSolver.vue'
+import DpSolver from './DpSolver.vue'
+import DfsSolver from './DfsSolver.vue'
 
 const { $t } = useFluent()
 
@@ -111,33 +112,6 @@ async function runTnzeVerRikaSolver() {
     )
 }
 
-// dfs求解器最大深度，设置超过该深度会显示警告
-const warningDepth = platform == "tauri" ? 6 : 4
-
-const maxDepth = ref(warningDepth);
-const useSpecialist = ref(false);
-const doNotTouch = ref(false);
-const dfsSolving = ref(false);
-
-watch(() => props.canHq, v => {
-    // single way update
-    doNotTouch.value = !v
-})
-
-function dfsFormatTooltip(value: number): string {
-    let str = String(value);
-    if (value > warningDepth) str = '⚠️' + str
-    return str
-}
-
-async function runDfsSolver() {
-    await runSimpleSolver("dfs", dfsSolving,
-        initStatus => {
-            const solver = doNotTouch.value ? nq_solve : dfs_solve
-            return solver(initStatus, maxDepth.value, useSpecialist.value)
-        }
-    )
-}
 
 </script>
 
@@ -158,28 +132,8 @@ async function runDfsSolver() {
                     :closable="false" />
                 <DpSolver v-else :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
             </el-tab-pane>
-            <el-tab-pane :label="$t('dfs-solver')" name="dfs">
-                <i18n path="dfs-solver-info" tag="span" class="solver-info">
-                    <template #ffxivCraftingAlgo="{ commandLineTool }">
-                        <el-link type="primary" href="https://github.com/Tnze/ffxiv-crafting-algo" target="_blank">
-                            {{ commandLineTool }}
-                        </el-link>
-                    </template>
-                    <template #startButton>
-                        <div class="argument-block">
-                            <span class="slider-label">{{ $t('dfs-max-depth') }}</span>
-                            <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip"
-                                :label="$t('dfs-max-depth')" :disabled="dfsSolving" />
-                        </div>
-                        <el-alert v-if="maxDepth > warningDepth" type="warning" :title="$t('dfs-too-depth')" show-icon
-                            :closable="false" />
-                        <el-checkbox v-model="doNotTouch" :label="$t('do-not-touch')" :disabled="dfsSolving" /><br />
-                        <el-checkbox v-model="useSpecialist" :label="$t('specialist')" :disabled="dfsSolving" /><br />
-                        <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
-                            {{ dfsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
-                        </el-button>
-                    </template>
-                </i18n>
+            <el-tab-pane :label="$t('dfs-solver')" name="dfs" style="flex: auto;">
+                <DfsSolver :can-hq="canHq" @run-simple-solver="runSimpleSolver" />
             </el-tab-pane>
             <el-tab-pane :label="$t('bfs-solver')" name="bfs">
                 <i18n path="rika-solver-info" tag="span" class="solver-info">
@@ -235,25 +189,6 @@ async function runDfsSolver() {
     margin-top: 7px;
 }
 
-.argument-block {
-    display: flex;
-    align-items: center;
-}
-
-.argument-block .slider-label {
-    font-size: 14px;
-    color: var(--el-text-color-secondary);
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin-bottom: 0;
-}
-
-.argument-block .slider-label+.el-slider {
-    flex: 0 0 70%;
-}
-
 .el-slider {
     margin-right: 40px;
 }
@@ -307,17 +242,6 @@ tnzever-rika-solver-info =
     注：类似于“广度优先搜索”求解器，该版算法可能也只适用于特定版本的配方。
     如您认为遇到了异常情况，请通过 Gitee 或 Github 等渠道提交 issue 反馈。
 
-dfs-max-depth = 最大深度
-dfs-solver-info =
-    此款求解器源于 Tnze 早期开发的一款{ $ffxivCraftingAlgo }，最初用于搜索最短的巨匠手法。
-
-    该算法采用朴素的暴力搜索，所需时间随搜索深度限制指数级增大。推荐将搜索深度限制为6。
-    更新至v2后拥有多线程加速。
-
-    此求解器通常适合低于玩家10级以上的配方。
-    { $startButton }
-    .command-line-tool = 命令行工具
-dfs-too-depth = 选择的最大深度过大，求解所需时间可能极长
 </fluent>
 
 <fluent locale="en-US">
@@ -369,18 +293,6 @@ tnzever-rika-solver-info =
     Note: Similar to the "Breadth First Search" solver, this version of the algorithm may only be applicable to specific some of recipes.
     If you believe that you have encountered an abnormal situation, please submit an issue on Gitee or Github.
 
-dfs-max-depth = Depth
-dfs-solver-info =
-    This solver is based on an early development of the { $ffxivCraftingAlgo } by Tnze, originally usedto search for the shortest steps to create the 巨匠药水.
-
-    The algorithm adopts naive search, which increases exponentially in time with the depth of the searching. 
-    It is recommended to limit the search depth to 6. 
-    After updating to v2, adopt multi threaded acceleration.
-
-    This solver is usually suitable for recipes that are 10-level lower than the player or above.
-    { $startButton }
-    .command-line-tool = Command line tool
-dfs-too-depth = The depth is too big. Solving time could be very long.
 </fluent>
 <fluent locale="ja-JP">
 </fluent>
