@@ -125,7 +125,6 @@ async function runTnzeVerRikaSolver() {
             <el-alert type="error" :title="$t('web-worker-not-avaliable')" show-icon :closable="false" />
             <br />
         </template>
-        <!-- <el-text type="info" class="sum-info">{{ $t('sum-info') }}</el-text> -->
         <el-tabs v-model="activeNames">
             <el-tab-pane :label="$t('dp-solver')" name="dp">
                 <el-alert v-if="platform != 'tauri'" type="error" :title="$t('solver-not-avaliable')" show-icon
@@ -191,6 +190,11 @@ async function runTnzeVerRikaSolver() {
 
 .el-slider {
     margin-right: 40px;
+}
+
+span {
+    font-size: var(--el-font-size-base);
+    color: var(--el-text-color-regular);
 }
 </style>
 

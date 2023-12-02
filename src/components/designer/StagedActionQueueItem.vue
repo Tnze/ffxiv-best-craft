@@ -56,8 +56,9 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
 <template>
     <div class="savedqueue-item">
         <div class="savedqueue-item-right">
-            <ActionQueue class="savedqueue-item-actions" :job="displayJob" :list="seq.slots" :err-list="seq.errors"
-                disabled />
+            <div class="savedqueue-item-actions">
+                <ActionQueue :job="displayJob" :list="seq.slots" :err-list="seq.errors" disabled />
+            </div>
             <div class="savedqueue-item-above">
                 <el-text size="small">
                     <el-space>
@@ -74,8 +75,7 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
                     <el-button :icon="Upload" size="small" round class="savedqueue-item-button" @click="emit('load')">
                         {{ $t('load') }}
                     </el-button>
-                    <el-button :icon="Delete" size="small" round class="savedqueue-item-button"
-                        @click="emit('delete')">
+                    <el-button :icon="Delete" size="small" round class="savedqueue-item-button" @click="emit('delete')">
                         {{ $t('delete') }}
                     </el-button>
                 </el-button-group>
@@ -100,7 +100,6 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
 
 .savedqueue-item-above {
     display: flex;
-    margin-left: 10px;
 }
 
 .savedqueue-item-button {
@@ -108,7 +107,6 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
 }
 
 .savedqueue-item-actions {
-    padding: 3px 0 0 8px;
     border-left: 5px solid var(--el-border-color);
 }
 </style>

@@ -363,7 +363,8 @@ async function openListFromJSON() {
                     :status="displayedStatus" :disabled-init-quality="recipeId == undefined"
                     @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
                     :show-condition="false" />
-                <el-tabs v-model="activeTab" tab-position="left" style="height: auto;" class="above-panel">
+                <el-tabs v-model="activeTab" tab-position="top" style="height: auto; padding-left: 15px;"
+                    class="above-panel">
                     <el-tab-pane :label="$t('action-editor')" name="staged" class="staged-panel">
                         <el-scrollbar class="staged-left-panel">
                             <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
@@ -396,24 +397,24 @@ async function openListFromJSON() {
                         </div>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('init-quality')" name="init-quality" class="above-panel">
-                        <el-scrollbar style="flex: auto; margin-left: 14px;">
+                        <el-scrollbar style="flex: auto;">
                             <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
                                 v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :recipe-id="recipeId"
                                 :material-quality-factor="materialQualityFactor" />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance" class="above-panel">
-                        <el-scrollbar style="flex: auto; margin-left: 14px;">
+                        <el-scrollbar style="flex: auto;">
                             <AttrEnhSelector v-model="attributesEnhancers" :job="displayJob" />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('export-macro')" name="export-macro" class="above-panel">
-                        <el-scrollbar style="flex: auto; margin-left: 14px;">
+                        <el-scrollbar style="flex: auto;">
                             <MacroExporter :actions="displayActions" />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('solvers')" name="solver-list" class="above-panel">
-                        <el-scrollbar style="flex: auto; margin-left: 14px;">
+                        <el-scrollbar style="flex: auto;">
                             <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
                                 @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
                         </el-scrollbar>
@@ -457,6 +458,7 @@ async function openListFromJSON() {
     display: flex;
     flex: auto;
     overflow: hidden;
+    flex-direction: column;
 }
 
 .above-panel :deep(.el-tabs__content) {
