@@ -22,7 +22,6 @@ import { computed, defineAsyncComponent, onErrorCaptured, ref } from 'vue';
 import useGearsetsStore from '@/stores/gearsets';
 import useDesignerStore from '@/stores/designer';
 import { useFluent } from 'fluent-vue';
-import DesignerSkeleton from './DesignerSkeleton.vue'
 
 const gearsetsStore = useGearsetsStore()
 const designerStore = useDesignerStore()
@@ -71,9 +70,6 @@ function reload() {
                 :display-job="designerStore.content!.job" />
         </template>
         <el-empty v-else :description="$t('not-selected')" style="height: 100%;" />
-        <template #fallback>
-            <DesignerSkeleton />
-        </template>
     </Suspense>
 </template>
 
