@@ -85,7 +85,9 @@ jobs:
         tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
         releaseName: "BestCraft v__VERSION__"
         releaseBody: |
-          v0.12.7
-          - 支持 Web 求解器
+          v0.13.2
+          - 更新了UI界面
+          - 优化了代码结构
+          - 更新了依赖库
         releaseDraft: false
         prerelease: false
