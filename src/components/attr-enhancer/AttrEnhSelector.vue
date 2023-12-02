@@ -42,7 +42,7 @@ const 专家之证: Enhancer = {
 
 const props = defineProps<{
     modelValue: Enhancer[],
-    job: Jobs
+    job?: Jobs
 }>()
 
 const emits = defineEmits<{
@@ -85,8 +85,10 @@ watch(enhancers, e => {
             <el-switch v-model="enhancers.soulOfTheCrafter" />
         </el-form-item>
     </el-form>
-    <el-divider />
-    <Gearset :job="job" />
+    <template v-if="job != undefined">
+        <el-divider />
+        <Gearset :job="job" />
+    </template>
 </template>
 
 <style scoped>
