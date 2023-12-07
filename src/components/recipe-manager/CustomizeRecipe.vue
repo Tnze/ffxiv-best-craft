@@ -75,15 +75,16 @@ let recipeLevelPromise: Promise<RecipeLevel> | null = null
 watch(
     [
         autoLoad,
-        () => settingStore.getDataSource,
+        () => settingStore.dataSource,
         () => customRecipe.value.rlv
     ],
     async ([autoLoad, dataSource, rlv]) => {
+        console.log("dataSource", dataSource)
         if (!autoLoad) return;
         try {
             autoLoadLoading.value = true
             if (recipeLevelPromise != null) await recipeLevelPromise
-            recipeLevelPromise = (await dataSource).recipeLevelTable(rlv ?? 0)
+            recipeLevelPromise = (await settingStore.getDataSource).recipeLevelTable(rlv ?? 0)
             recipeLevel.value = await recipeLevelPromise
             recipeLevelPromise = null
         } catch {

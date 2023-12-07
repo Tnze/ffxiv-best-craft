@@ -33,23 +33,20 @@ export default defineStore('settings', {
             })
         },
         async getDataSource(): Promise<DataSource> {
+            let dataSources: Record<string, () => DataSource> = {
+                'yyyy.games': () => new WebSource(YYYYGamesApiBase),
+                'xivapi': () => new XivApiRecipeSource(XivapiBase, this.dataSourceLang),
+                'cafe': () => new XivApiRecipeSource(CafeMakerApiBase),
+            }
+            let defaultSource: () => DataSource = dataSources['yyyy.games']
             if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
                 var { LocalRecipeSource } = await import('../components/recipe-manager/local-source')
-                switch (this.dataSource) {
-                    case 'local':
-                        return new LocalRecipeSource()
-                    case 'xivapi': return new XivApiRecipeSource(XivapiBase, this.dataSourceLang)
-                    case 'cafe': return new XivApiRecipeSource(CafeMakerApiBase)
-                    default: return new LocalRecipeSource()
-                }
-            } else {
-                switch (this.dataSource) {
-                    case 'yyyy.games': return new WebSource(YYYYGamesApiBase)
-                    case 'xivapi': return new XivApiRecipeSource(XivapiBase, this.dataSourceLang)
-                    case 'cafe': return new XivApiRecipeSource(CafeMakerApiBase)
-                    default: return new XivApiRecipeSource(CafeMakerApiBase)
-                }
+                let localSource = () => new LocalRecipeSource()
+                dataSources['local'] = localSource
+                defaultSource = localSource
             }
+
+            return (dataSources[this.dataSource] ?? defaultSource)()
         }
     },
     actions: {
