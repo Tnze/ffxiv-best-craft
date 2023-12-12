@@ -18,13 +18,14 @@
 
 <script setup lang="ts">
 import { Ref, ref } from 'vue'
-import { ElAlert, ElScrollbar, ElButton, ElCheckbox, ElLink, ElMessage, ElMessageBox, ElTabs, ElTabPane } from 'element-plus'
+import { ElAlert, ElScrollbar, ElButton, ElCheckbox, ElLink, ElMessage, ElMessageBox, ElTabs, ElTabPane, ElCard, ElSpace } from 'element-plus'
 import { Actions, Status } from "@/libs/Craft"
 import { supported as solverSupported, formatDuration, rika_solve, rika_solve_tnzever } from '@/libs/Solver'
 import { useFluent } from 'fluent-vue';
 import { Solver } from './DpSolver.vue'
 import DpSolver from './DpSolver.vue'
 import DfsSolver from './DfsSolver.vue'
+import DesktopEditionDownload from '@/components/DesktopEditionDownload.vue';
 
 const { $t } = useFluent()
 
@@ -127,8 +128,10 @@ async function runTnzeVerRikaSolver() {
         </template>
         <el-tabs v-model="activeNames">
             <el-tab-pane :label="$t('dp-solver')" name="dp">
-                <el-alert v-if="platform != 'tauri'" type="error" :title="$t('solver-not-avaliable')" show-icon
-                    :closable="false" />
+                <el-space v-if="platform != 'tauri'" direction="vertical" alignment="flex-start">
+                    <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false" />
+                    <DesktopEditionDownload />
+                </el-space>
                 <DpSolver v-else :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
             </el-tab-pane>
             <el-tab-pane :label="$t('dfs-solver')" name="dfs" style="flex: auto;">
@@ -152,8 +155,10 @@ async function runTnzeVerRikaSolver() {
                 </i18n>
             </el-tab-pane>
             <el-tab-pane :label="$t('tnzever-rika-solver')" name="bfs-dp">
-                <el-alert v-if="platform != 'tauri'" type="error" :title="$t('solver-not-avaliable')" show-icon
-                    :closable="false" />
+                <el-space v-if="platform != 'tauri'" direction="vertical" alignment="flex-start">
+                    <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false" />
+                    <DesktopEditionDownload />
+                </el-space>
                 <i18n v-else path="tnzever-rika-solver-info" tag="span" class="solver-info">
                     <template #startButton>
                         <el-checkbox v-model="tnzeVerRikaUseManipulation" :label="$t('manipulation')" /><br />
