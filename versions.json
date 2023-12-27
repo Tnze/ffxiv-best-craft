@@ -1,19 +1,19 @@
 {
-  "version": "0.13.3",
-  "notes": "v0.13.3\n- 更新配方数据",
-  "pub_date": "2023-12-07T12:29:16.040Z",
+  "version": "0.13.4",
+  "notes": "v0.13.4\n- 修复快速点击删除技能会导致Designer崩溃的问题",
+  "pub_date": "2023-12-27T17:32:36.753Z",
   "platforms": {
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnJNQzBiaWdoVzlqN1NxTkQ2Z1Blb0lOaDRTMWFycUFOVFlMRTg3ei9MWjJIOVYvV0F5S28rQlF6QWt5dno5aXZvNDFjNUorazQ5SnJ0ZGFYMnN3ZEFBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAxOTUxOTE5CWZpbGU6YmVzdC1jcmFmdF8wLjEzLjNfYW1kNjQuQXBwSW1hZ2UudGFyLmd6CnIvTS9nblpFWmp3ZE1CUmtRM0M3cmIxWVVXUzVZaVAwU0JqSHR4VkJkT29tb2VHSVQxdU1leUhmSnBJS1RjSUVSL01xbzBBNFNjaThvVVptNkhBVEJ3PT0K",
-      "url": "https://tnze.yyyy.games/releases/v0.13.3/best-craft_0.13.3_amd64.AppImage.tar.gz"
-    },
-    "darwin-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm1yTGVrMlVwSWxVc1gxQzdCS2VqMUNYek1SdngzWElGTGFtR01QYWJWcTBaQ2g3ZjJkTjBla0dPamV5ODlTWUsyeHdqOFpkS001N2F2cVRNQnZYUFFRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAxOTUxOTM0CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKazcxNVJNTkFNaHNXNjN1eEF3YlZqdGpodlBBVDNBU3FveXRzYTJRRncxT3RXdFV6bE8wV2RCTTJrWFlHcVdsdlExY2RSMGlpaTZKeXY2cDBMREtlQ1E9PQo=",
-      "url": "https://tnze.yyyy.games/releases/v0.13.3/BestCraft_x64.app.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmpoaFlkZk1BOXBlMzYzK0pNVVQxTTE1OWVpb3p6K2FPdjZxekhCaHZydFdHL3BieVplZ3d5b2NDMUJtZ1lFZ3pha0tIb1hCOVZack5uaUJkeGgwY0FrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAzNjk3ODgyCWZpbGU6YmVzdC1jcmFmdF8wLjEzLjRfYW1kNjQuQXBwSW1hZ2UudGFyLmd6CnlXdFdmUnpqMHN5K29RdGxRelFDU1RLS0dMMHJtQUZlVWoxenpGdEZYR1M2cXlQSzlsendjVlpJZitLT2lBdE15SlVmMU03MUl0aDZINlVoSnBaZ0F3PT0K",
+      "url": "https://tnze.yyyy.games/releases/v0.13.4/best-craft_0.13.4_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnY2cEorWkllQ3d4YkdvQWU3aW53N05rRzFoZDdQMGlDdS94cnFwSkUvQTRFUHVOTEpZQlNBRmlkd1JaQTVOaUdxMTcyT3RXTEdvRzNlUnBNSUNXYndrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAxOTUyMTUwCWZpbGU6QmVzdENyYWZ0XzAuMTMuM194NjRfemgtQ04ubXNpLnppcAppc2NibXhYZ3d3aVJ2WFZyL1VhVWRWMjY3RTlNL2xNZDVyV2QzamtCeDJCWkRIRStXSHBZckR2eURGUEtqS29zcDErNkZvM0h5a3RUYzNaaE9kUmtDQT09Cg==",
-      "url": "https://tnze.yyyy.games/releases/v0.13.3/BestCraft_0.13.3_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnZaMTg5WFduQmtqdEtYQ2lublhKNDFzMEhtN0ZFNUhzb3hVd1gvOHNscFpEb050WXJQZ1MwTVgyc1h3ckkybk45b25IRy9Fd2Zsajk1c0hObFcrMVFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAzNjk4MTk0CWZpbGU6QmVzdENyYWZ0XzAuMTMuNF94NjRfemgtQ04ubXNpLnppcApqTGJFdmFlQWRIRzg4MURoTE5WWVVybStydkt3NStmMVVnNzg3VXgvTUtINGlqK0lwUWppWUZoM0xzUnhaN3NXQ3pNbUltRlJNcCsrcS9YamF4TTJBUT09Cg==",
+      "url": "https://tnze.yyyy.games/releases/v0.13.4/BestCraft_0.13.4_x64_zh-CN.msi.zip"
+    },
+    "darwin-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnI3TVdiNFpHY1FBbHhISmRkL1pSU3lDMXo1NVNHcWNYdkE5YWlBSzhWOHBmbFBwalkvNlgyL2ZqMGcwR1FPblByMngvdW0xSnpFLzI5MjMrZUVjQndRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzAzNjk4MzUxCWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKSk16Yi93Mnc1YXhvbUU3WTJkRmRHbDlZeU85dm1aK1ZmTGJHYVJ3a2lsYmxuaGE1d3l3Qk9zcGZCdkM3SE1qZFo2STR6T3JFVy9BSU9LTnZFZnk5RFE9PQo=",
+      "url": "https://tnze.yyyy.games/releases/v0.13.4/BestCraft_x64.app.tar.gz"
     }
   }
 }
