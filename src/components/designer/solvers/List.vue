@@ -56,14 +56,23 @@ async function runSimpleSolver(solverId: string, solvingRunningState: Ref<Boolea
         const startTime = new Date().getTime()
         const result = await solver(props.initStatus)
         const stopTime = new Date().getTime()
-        ElMessage({
-            type: result.length > 0 ? 'success' : 'error',
-            message: $t(result.length > 0 ? 'simple-solver-finished' : 'simple-solver-finished-no-result', {
-                solveTime: formatDuration(stopTime - startTime),
-                solverName: $t(solverId + '-solver'),
-            }),
-        })
-        emits('solverResult', result)
+
+        const msgArgs = {
+            solveTime: formatDuration(stopTime - startTime),
+            solverName: $t(solverId + '-solver'),
+        }
+        if (result.length > 0) {
+            ElMessage({
+                type: 'success',
+                message: $t('simple-solver-finished', msgArgs),
+            })
+            emits('solverResult', result)
+        } else {
+            ElMessage({
+                type: 'error',
+                message: $t('simple-solver-finished-no-result', msgArgs),
+            })
+        }
     } catch (err) {
         ElMessage({
             showClose: true,
