@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, toRaw } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import { ElIcon } from 'element-plus';
 import { Loading } from "@element-plus/icons-vue";
@@ -58,7 +58,7 @@ const dragOptions = computed(() => {
 })
 const listBinded = computed({
     get: () => props.list,
-    set: (v: Slot[]) => emit('update:list', v)
+    set: (v: Slot[]) => emit('update:list', toRaw(v.filter(x => x != undefined)))
 })
 
 let startTime = 0;
@@ -76,9 +76,15 @@ watch(() => props.loadingSolverResult, (newVal, oldVal) => {
     }
 })
 
-function removeAction(index: number) {
-    if (!props.disabled)
-        props.list.splice(index, 1)
+function removeAction(id: number) {
+    if (!props.disabled) {
+        const index = listBinded.value.findIndex(elem => elem.id == id)
+        if (index != -1) {
+            const list = toRaw(props.list).slice()
+            list.splice(index, 1)
+            listBinded.value = list
+        }
+    }
 }
 
 function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
@@ -98,7 +104,8 @@ function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
             <TransitionGroup class="sort-target" type="transition" tag="div" :name="!isDragging ? 'flip-list' : undefined">
                 <div v-for="(element, index) in listBinded" class="list-group-item" :key="element.id">
                     <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)" disabled
-                        @click.stop.prevent.right="removeAction(index)" @click="removeAction(index)" :no-hover="noHover" />
+                        @click.stop.prevent.right="removeAction(element.id)" @click="removeAction(element.id)"
+                        :no-hover="noHover" />
                 </div>
                 <div v-if="!hideSolverResult" v-for="elem in solverAdds" class="list-group-item" :key="elem.id">
                     <Action class="action-icon" :job="job" :action="elem.action" no-hover effect="sunken"

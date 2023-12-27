@@ -85,9 +85,7 @@ jobs:
         tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
         releaseName: "BestCraft v__VERSION__"
         releaseBody: |
-          v0.13.2
-          - 更新了UI界面
-          - 优化了代码结构
-          - 更新了依赖库
+          v0.13.4
+          - 修复快速点击删除技能会导致Designer崩溃的问题
         releaseDraft: false
         prerelease: false

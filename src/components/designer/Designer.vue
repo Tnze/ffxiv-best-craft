@@ -19,8 +19,8 @@
 <script setup lang="ts">
 import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
-import { computed, reactive, ref, watch } from "vue";
-import { ElContainer, ElHeader, ElMain, ElScrollbar, ElLink, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
+import { computed, markRaw, reactive, ref, watch } from "vue";
+import { ElContainer, ElHeader, ElMain, ElScrollbar, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
 import { Bottom, Close } from "@element-plus/icons-vue";
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
@@ -150,14 +150,15 @@ const displayActions = computed(() => {
         : activeSeq.slots.map(v => v.action)
 })
 function pushAction(action: Actions) {
-    activeSeq.slots.push({ id: activeSeq.maxid++, action });
+    activeSeq.slots.push(markRaw({ id: activeSeq.maxid++, action }));
 }
 function loadSeq(seq: Sequence) {
-    activeSeq.slots = seq.slots.slice();
+    const length = activeSeq.slots.length;
+    activeSeq.slots.splice(0, length, ...seq.slots);
     activeSeq.maxid = seq.maxid;
 }
 function clearSeq() {
-    activeSeq.slots = [];
+    activeSeq.slots.splice(0);
     activeSeq.maxid = 0;
 }
 
