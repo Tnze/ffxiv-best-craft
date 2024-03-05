@@ -152,7 +152,8 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
             "required_craftsmanship",
         )
         .column_as(recipes::Column::RequiredControl, "required_control")
-        .column_as(recipes::Column::CanHq, "can_hq");
+        .column_as(recipes::Column::CanHq, "can_hq")
+        .order_by(recipes::Column::Id, Order::Asc);
     let paginate = query.into_model::<RecipeInfo>().paginate(&state.conn, 200);
 
     let p = paginate.num_pages().await.map_err(|err| {
