@@ -67,9 +67,9 @@ if (isOnTauri) {
                 </el-form-item>
                 <el-form-item :label="$t('theme')">
                     <el-radio-group v-model="colorMode">
-                        <el-radio-button label="light">{{ $t('light') }}</el-radio-button>
-                        <el-radio-button label="dark">{{ $t('dark') }}</el-radio-button>
-                        <el-radio-button label="auto">{{ $t('auto') }}</el-radio-button>
+                        <el-radio-button value="light">{{ $t('light') }}</el-radio-button>
+                        <el-radio-button value="dark">{{ $t('dark') }}</el-radio-button>
+                        <el-radio-button value="auto">{{ $t('auto') }}</el-radio-button>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item :label="$t('data-source')">
@@ -97,8 +97,8 @@ if (isOnTauri) {
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="onCheckUpdateClick" :loading="checkingUpdate">{{
-                            checkingUpdate ? $t('checking-update') : $t('check-update')
-                        }}</el-button>
+                checkingUpdate ? $t('checking-update') : $t('check-update')
+            }}</el-button>
                     </el-form-item>
                 </template>
                 <el-form-item :label="$t('developer')">
@@ -113,7 +113,8 @@ if (isOnTauri) {
                 </el-form-item>
                 <el-form-item :label="$t('license')">
                     <el-button @click="licenseDialogVisible = true">AGPL</el-button>
-                    <el-dialog class="licenses-dialog" v-model="licenseDialogVisible" :title="$t('license')" width="50%">
+                    <el-dialog class="licenses-dialog" v-model="licenseDialogVisible" :title="$t('license')"
+                        width="50%">
                         <p>{{ $t('licenses-notices-1') }}</p>
                         <p>{{ $t('licenses-notices-2') }}</p>
                         <p>{{ $t('licenses-notices-3') }}</p>
@@ -131,6 +132,10 @@ if (isOnTauri) {
 
 .el-link {
     margin-right: 8px;
+}
+
+.el-select {
+    width: 210px;
 }
 
 .el-main {

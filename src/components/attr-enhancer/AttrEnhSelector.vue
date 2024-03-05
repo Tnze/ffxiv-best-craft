@@ -92,6 +92,10 @@ watch(enhancers, e => {
 </template>
 
 <style scoped>
+.el-select {
+    width: 300px;
+}
+
 .item {
     margin-right: 10px;
     margin-bottom: 5px;

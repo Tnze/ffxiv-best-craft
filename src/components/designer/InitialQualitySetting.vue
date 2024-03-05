@@ -81,8 +81,8 @@ watchEffect(() => {
         <el-form label-width="auto">
             <el-form-item label=" ">
                 <el-radio-group v-model="inputType">
-                    <el-radio-button label="manully">{{ $t('manully-input') }}</el-radio-button>
-                    <el-radio-button label="ingredient">{{ $t('select-hq-ingredients') }}</el-radio-button>
+                    <el-radio-button value="manully">{{ $t('manully-input') }}</el-radio-button>
+                    <el-radio-button value="ingredient">{{ $t('select-hq-ingredients') }}</el-radio-button>
                 </el-radio-group>
             </el-form-item>
             <el-form-item :label="$t('initial-quality')">

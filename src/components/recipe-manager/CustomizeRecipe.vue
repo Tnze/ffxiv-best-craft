@@ -140,7 +140,7 @@ function confirm(simulatorMode: boolean) {
                 <el-form-item :label="$t('conditions-flag')">
                     <el-text class="conditions-flag">{{ customRecipe.conditions_flag }}</el-text>
                     <el-checkbox-group v-model="conditionsFlag" size="small">
-                        <el-checkbox-button v-for="cond in Conditions" :key="cond" :label="(cond as string)">
+                        <el-checkbox-button v-for="cond in Conditions" :key="cond" :value="(cond as string)">
                             {{ $t(cond.toLowerCase()) }}
                         </el-checkbox-button>
                     </el-checkbox-group>
