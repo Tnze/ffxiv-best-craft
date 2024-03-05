@@ -425,7 +425,7 @@ fn main() {
             #[cfg(target_os = "macos")]
             {
                 use window_vibrancy::NSVisualEffectMaterial;
-                window_vibrancy::apply_vibrancy(
+                let _ = window_vibrancy::apply_vibrancy(
                     &window,
                     NSVisualEffectMaterial::HudWindow,
                     None,
