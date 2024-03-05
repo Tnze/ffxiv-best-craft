@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { checkUpdate as tauriCheckUpdate, installUpdate, onUpdaterEvent, } from '@tauri-apps/api/updater'
-import { ElButton, ElMessage, ElMessageBox, ElNotification } from 'element-plus'
+import { ElButton, ElMessage, ElMessageBox, ElNotification, NotificationHandle } from 'element-plus'
 import { FluentVariable } from '@fluent/bundle';
 import { h } from 'vue'
 
@@ -85,7 +85,7 @@ export const checkUpdate = async ($t: (key: string, value?: Record<string, Fluen
 
         if (shouldUpdate) {
             // Show a dialog asking the user if they want to install the update here.
-            let notification = ElNotification({
+            let notification: NotificationHandle = ElNotification({
                 type: 'info',
                 position: 'bottom-right',
                 duration: 0,
