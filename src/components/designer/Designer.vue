@@ -364,11 +364,12 @@ async function openListFromJSON() {
                     :status="displayedStatus" :disabled-init-quality="recipeId == undefined"
                     @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
                     :show-condition="false" />
-                <el-tabs v-model="activeTab" tab-position="top" style="height: auto; padding-left: 15px;"
+                <el-tabs v-model="activeTab" tab-position="top" style="height: auto; padding: 0 15px 0 15px;"
                     class="above-panel">
                     <el-tab-pane :label="$t('action-editor')" name="staged" class="staged-panel">
                         <el-scrollbar class="staged-left-panel">
-                            <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
+                            <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status"
+                                #lower />
                         </el-scrollbar>
                         <div class="staged-right-panel">
                             <div class="action-queue">
@@ -390,27 +391,27 @@ async function openListFromJSON() {
                             </el-button-group>
                             <el-scrollbar class="savedqueue-list">
                                 <TransitionGroup name="savedqueues" tag="div">
-                                    <StagedActionQueueItem v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" :seq="seq"
-                                        :display-job="displayJob" @load="loadSeq(seq)"
+                                    <StagedActionQueueItem v-for="({ key, seq }, i) in savedSeqs.ary" :key="key"
+                                        :seq="seq" :display-job="displayJob" @load="loadSeq(seq)"
                                         @delete="savedSeqs.ary.splice(i, 1)" />
                                 </TransitionGroup>
                             </el-scrollbar>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('init-quality')" name="init-quality" class="above-panel">
-                        <el-scrollbar style="flex: auto;">
+                        <el-scrollbar style="flex: auto; padding-left: 30px;">
                             <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
                                 v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :recipe-id="recipeId"
                                 :material-quality-factor="materialQualityFactor" />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance" class="above-panel">
-                        <el-scrollbar style="flex: auto;">
+                        <el-scrollbar style="flex: auto; padding-left: 30px;">
                             <AttrEnhSelector v-model="attributesEnhancers" :job="displayJob" />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('export-macro')" name="export-macro" class="above-panel">
-                        <el-scrollbar style="flex: auto;">
+                        <el-scrollbar style="flex: auto; padding-left: 10px;">
                             <MacroExporter :actions="displayActions" />
                         </el-scrollbar>
                     </el-tab-pane>

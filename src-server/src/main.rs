@@ -19,7 +19,7 @@ use std::{collections::BTreeMap, env};
 use salvo::cors::Cors;
 use salvo::hyper::Method;
 use salvo::prelude::*;
-use salvo::{affix, cors};
+use salvo::cors;
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::Serialize;
 

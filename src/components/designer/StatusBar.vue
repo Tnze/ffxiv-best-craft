@@ -36,24 +36,10 @@ const emits = defineEmits<{
     (event: 'click-quality'): void
 }>()
 
-const durability = computed<number>(() => {
-    return props.status === undefined
-        ? 100
-        : props.status.durability / props.status.recipe.durability * 100
-})
-const progress = computed<number>(() => {
-    return props.status === undefined
-        ? 100
-        : props.status.progress / props.status.recipe.difficulty * 100
-})
-const remainingProgress = computed(() => {
-    return props.status.recipe.difficulty - props.status.progress
-})
-const quality = computed<number>(() => {
-    return props.status === undefined
-        ? 100
-        : props.status.quality / props.status.recipe.quality * 100
-})
+const durability = computed<number>(() => props.status === undefined ? 100 : props.status.durability / props.status.recipe.durability * 100)
+const progress = computed<number>(() => props.status === undefined ? 100 : props.status.progress / props.status.recipe.difficulty * 100)
+const remainingProgress = computed(() => props.status.recipe.difficulty - props.status.progress)
+const quality = computed<number>(() => props.status === undefined ? 100 : props.status.quality / props.status.recipe.quality * 100)
 
 const progressColor = computed<string>(() => {
     if (props.status.progress >= props.status.recipe.difficulty)
@@ -62,11 +48,7 @@ const progressColor = computed<string>(() => {
         return '#F56C6C'
     return '#409EFF'
 })
-const qualityColor = computed<string>(() => {
-    if (props.status.quality >= props.status.recipe.quality)
-        return '#13CE66'
-    return '#409EFF'
-})
+const qualityColor = computed<string>(() => props.status.quality >= props.status.recipe.quality ? '#13CE66' : '#409EFF')
 
 const durabilityColor = [
     { color: '#FF999E', percentage: 20 },
@@ -75,6 +57,29 @@ const durabilityColor = [
 ]
 
 const craftPointPercentage = computed(() => props.status?.craft_points / props.status?.attributes.craft_points * 100)
+
+const attrCraftsmanship = computed(() =>
+    props.attributes.craftsmanship +
+    props.enhancers
+        .filter(v => v.cm && v.cm_max)
+        .map(v => Math.min(props.status?.attributes.craftsmanship * v.cm!, v.cm_max!))
+        .map(cm => ` + ${cm}`).join('')
+)
+const attrControl = computed(() =>
+    props.attributes.control +
+    props.enhancers
+        .filter(v => v.ct && v.ct_max)
+        .map(v => Math.min(props.status?.attributes.control * v.ct!, v.ct_max!))
+        .map(ct => ` + ${ct}`).join('')
+)
+const attrCraftPoint = computed(() =>
+    props.attributes.craft_points +
+    props.enhancers
+        .filter(v => v.cp && v.cp_max)
+        .map(v => Math.min(props.status?.attributes.craft_points * v.cp!, v.cp_max!))
+        .map(cp => ` + ${cp}`).join('')
+)
+
 </script>
 
 <template>
@@ -102,7 +107,7 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
                 </template>
             </span>
             <el-progress :percentage="progress" :color="progressColor" :show-text="false" :stroke-width="10" />
-                <br />
+            <br />
             <span class="bar-title">
                 {{ $t('quality') }}
                 {{ status?.quality }} / {{ status?.recipe.quality }}
@@ -111,44 +116,23 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
         <div id="attributes">
-            <div>
-                {{ $t('display-attrs', { what: $t('level'), value: status?.attributes.level }) }}
-                <br />
-                {{ $t('display-attrs', {
-                    what: $t('craftsmanship'),
-                    value: attributes.craftsmanship + enhancers
-                        .filter(v => v.cm && v.cm_max)
-                        .map(v => Math.min(
-                            status?.attributes.craftsmanship * v.cm!,
-                            v.cm_max!
-                        ))
-                        .map(cm => ` + ${cm}`).join('')
-                })
-                }}
-                <br />
-                {{ $t('display-attrs', {
-                    what: $t('control'),
-                    value: attributes.control + enhancers
-                        .filter(v => v.ct && v.ct_max)
-                        .map(v => Math.min(
-                            status?.attributes.control * v.ct!,
-                            v.ct_max!
-                        ))
-                        .map(ct => ` + ${ct}`).join('')
-                })
-                }}
-                <br />
-                {{ $t('display-attrs', {
-                    what: $t('craft-point'),
-                    value: attributes.craft_points + enhancers
-                        .filter(v => v.cp && v.cp_max)
-                        .map(v => Math.min(
-                            status?.attributes.craft_points * v.cp!,
-                            v.cp_max!
-                        ))
-                        .map(cp => ` + ${cp}`).join('')
-                })
-                }}
+            <div class="attr-block">
+                <span class="attr-label">{{ $t('display-attrs-label', { label: $t('level') }) }}</span>
+                <span class="attr-value">{{ status?.attributes.level }}</span>
+            </div>
+            <div class="attr-block">
+                <span class="attr-label">{{ $t('display-attrs-label', { label: $t('craftsmanship') }) }}</span>
+                <span class="attr-value">{{ attrCraftsmanship }}</span>
+            </div>
+            <div class="attr-block">
+                <span class="attr-label">{{ $t('display-attrs-label', { label: $t('control') }) }}</span>
+                <span class="attr-value">{{ attrControl }}</span>
+            </div>
+            <div class="attr-block">
+                <span class="attr-label">{{ $t('display-attrs-label', { label: $t('craft-point') }) }}</span>
+                <span class="attr-value">
+                    {{ attrCraftPoint }}
+                </span>
             </div>
         </div>
     </div>
@@ -187,18 +171,23 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
 #attributes {
     font-size: 14px;
     line-height: 1.5;
-    padding: 0px 20px 0px 0px;
-    flex-grow: 2;
-    text-align: right;
+    padding: 0px 20px 0px 10px;
+    /* flex-grow: 2; */
     color: var(--el-text-color-secondary);
 }
 
-.attributes-link {
-    display: inline-block;
+.attr-block {
+    display: flex;
+    justify-content: space-between;
 }
 
-.craft-points-progressbar {
-    width: 120px;
+.attr-label {
+    text-align: left;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.attr-value {
     display: inline-block;
 }
 
@@ -208,11 +197,11 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
 </style>
 
 <fluent locale="zh-CN">
-display-attrs = { $what }：{ $value }
+display-attrs-label = { $label }：
 remaining = 剩余
 </fluent>
 
 <fluent locale="en-US">
-display-attrs = { $what }: { $value }
+display-attrs-label = { $label }: 
 remaining = Remaining
 </fluent>
