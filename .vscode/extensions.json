@@ -3,6 +3,5 @@
     "Vue.volar",
     "rust-lang.rust-analyzer",
     "tamasfe.even-better-toml",
-    "Vue.vscode-typescript-vue-plugin"
   ]
 }
