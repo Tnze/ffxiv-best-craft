@@ -2,8 +2,8 @@ licenses-notices-1 = BestCraft is free software: you can redistribute it and/or 
 licenses-notices-2 = BestCraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 licenses-notices-3 = You should have received a copy of the GNU Affero General Public License along with BestCraft. If not, see https://www.gnu.org/licenses/.
 copyright-notices = 
-    Copyright 2023 Tnze. All Rights Reserved.
-    Referenced FFXIV related resources: Copyright (C) 2010 - 2023 SQUARE ENIX CO., LTD.
+    Copyright 2024 Tnze. All Rights Reserved.
+    Referenced FFXIV related resources: Copyright (C) 2010 - 2024 SQUARE ENIX CO., LTD.
 
 level = Lv.
 recipe-level = Recipe Lv.
