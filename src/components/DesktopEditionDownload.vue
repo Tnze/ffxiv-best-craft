@@ -32,16 +32,17 @@ interface Versions {
 
 const versions = ref<Versions>()
 
-const endpoints = [
-    "https://gitee.com/Tnze/ffxiv-best-craft/raw/main/versions.json",
-    "https://github.com/Tnze/ffxiv-best-craft/releases/latest/download/latest.json",
-    "https://raw.githubusercontent.com/Tnze/ffxiv-best-craft/main/versions.json",
-];
+// const endpoints = [
+//     "https://gitee.com/Tnze/ffxiv-best-craft/raw/main/versions.json",
+//     "https://github.com/Tnze/ffxiv-best-craft/releases/latest/download/latest.json",
+//     "https://raw.githubusercontent.com/Tnze/ffxiv-best-craft/main/versions.json",
+// ];
 
 async function requestVersions() {
-    const requests = endpoints.map(async endpoint => fetch(endpoint, { method: 'GET', mode: 'cors' }));
-    const firstResponse = await Promise.any(requests);
-    versions.value = await firstResponse.json();
+    // const requests = endpoints.map(async endpoint => fetch(endpoint, { method: 'GET', mode: 'cors' }));
+    // const firstResponse = await Promise.any(requests);
+    // versions.value = await firstResponse.json();
+    versions.value = await import('@/../versions.json')
 }
 
 requestVersions()
