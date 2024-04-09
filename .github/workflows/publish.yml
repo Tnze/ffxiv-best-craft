@@ -85,7 +85,7 @@ jobs:
         tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
         releaseName: "BestCraft v__VERSION__"
         releaseBody: |
-          v0.13.4
-          - 修复快速点击删除技能会导致Designer崩溃的问题
+          v0.13.6
+          - 更新国服 6.51 版本数据
         releaseDraft: false
         prerelease: false
