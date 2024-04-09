@@ -87,5 +87,6 @@ jobs:
         releaseBody: |
           v0.13.6
           - 更新国服 6.51 版本数据
+          - 更新依赖库
         releaseDraft: false
         prerelease: false
