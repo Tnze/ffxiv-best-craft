@@ -1,19 +1,19 @@
 {
-  "version": "0.13.6",
-  "notes": "v0.13.6\n- 更新国服 6.51 版本数据\n- 更新依赖库",
-  "pub_date": "2024-04-09T14:33:02.447Z",
+  "version": "0.14.0",
+  "notes": "v0.13.6\n- 更新国服 6.51 版本数据\n- 更新依赖库\n\nv0.14.0\n- 高难模拟器添加粉球支持",
+  "pub_date": "2024-04-14T03:39:49.343Z",
   "platforms": {
-    "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm82L3lGU2YzWERVWUZWSW45dUxZNER1Y1lqSytZVzUwbzhPY2x3Tk56Nm4yWVdyTjZWNktnejZkVXB2RWZqRnBBVUJ5YjQzeE1mRDNFWVRyK0hkcndrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzEyNjczMDA0CWZpbGU6YmVzdC1jcmFmdF8wLjEzLjZfYW1kNjQuQXBwSW1hZ2UudGFyLmd6CnB0eVVhSVdwQ1dkSHVlV1JlbVFZZXYxcndPL2IzaUFySE0ydVBKMDY1Qy9OVjk3SlZjVXdDb2szMlZZMXY4Nms3VmpCYlh2dmdBUWVoU29pMUhJN0NnPT0K",
-      "url": "https://tnze.yyyy.games/releases/v0.13.6/best-craft_0.13.6_amd64.AppImage.tar.gz"
-    },
     "darwin-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smo2T2YwOTk0NWdKdXpuZGhOR0JReVdZV1g3V3BYS25vNTV3U0UwUFhCeVZGdjNIZ3MyZXB6VG5Lc2tPSXk5Z3htOXhMUjUwTU5NQ3hPR255WU5Ua2c4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzEyNjczMDE5CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKMjdJM3pMRXp6WTVzL0ZwdzEweUVtQlBuQzNmcWtlSlM1Rk0weFBOcFpqWkV2aXQ2Ylh1Wjl6UDlqWWJ6L2RpRVQ4VmUyZ3Y1amMzRlNhOHNRcWxDQ0E9PQo=",
-      "url": "https://tnze.yyyy.games/releases/v0.13.6/BestCraft_x64.app.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmtFT01hWURyS0Nza01VcTdxcnhJZUhUMEpheUlVdjc5UVdQZzJVZ3ViUDF1Q3VOakNaaW5EUDc4ZkZZWElrbTNnMVkyT3JMSXZJOGNNa2V6WTE5UUFBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzEzMDY1ODkyCWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKTk1rYkN6aU1iSU1HUGViZkU0SEdCRmdDYmF6Vm96TmprdjM4VjloZjVoK1lQMlRPQ0MzQXFiWFlQSlY5a29wMlRtWHZzWjl5NDV6SHArMmJlMmZNREE9PQo=",
+      "url": "https://tnze.yyyy.games/releases/v0.14.0/BestCraft_x64.app.tar.gz"
+    },
+    "linux-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnUrK3RTMFlLNXZPUEhFa1dlRTAxcy9STkpvd2krN1FJazhBblRSU3V4Mzl4MXo0bnYxQ2FZcFdqaXA5SVdKSytPVFpnb0daaEdxMWpQejY0MUkvTVE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzEzMDY1OTE1CWZpbGU6YmVzdC1jcmFmdF8wLjE0LjBfYW1kNjQuQXBwSW1hZ2UudGFyLmd6CmdBQ0RkekVCUGcrV0FsU0xSTytDcks2d2RqendyUDdnNFcxZlp0dmZyempJVE55ejgxeXA1QXI0aXdmZDNab2lNSTV2ekhkcityZG9HT2RIY0ZKTEJRPT0K",
+      "url": "https://tnze.yyyy.games/releases/v0.14.0/best-craft_0.14.0_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnFPc3ZPS2ZwZ0tGZ1BxRkVnZTYxRGhuUm1LQlNwT2JJVEQ2QitWTWYwOHcreXFOcDlEenEzVDVhRWJ2YkxwRzdJMnVJSGxIMkdGZ2k3R0VpekwxcXc0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzEyNjc5MjI0CWZpbGU6QmVzdENyYWZ0XzAuMTMuNl94NjRfemgtQ04ubXNpLnppcApDdFZwRklRMGRuSTZwK2dRMkRCaUxkOU0vc09KemJ0VG1FNmlTN292SUUxYVYyMk9WTmNLdXBYWlBTVGVMYUtqaTlybFV6UW11d0RuWXYwY2hMZitBZz09Cg==",
-      "url": "https://tnze.yyyy.games/releases/v0.13.6/BestCraft_0.13.6_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9sTXV3NFAyckc3NkgvSDdoY01BRlo2WmhvMFBXRWl1OWVSTndhUmhTb0haYlVPaHEvNDJxdkN1NHRFMTYzWDdjRFBKWE1iMU5TQW95VEc3dG1IZndNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzEzMDY1OTgzCWZpbGU6QmVzdENyYWZ0XzAuMTQuMF94NjRfemgtQ04ubXNpLnppcApPM3F3bkptMHVSUUtTZ3Z5NjA4clNuUnM2OHRoelJYVklWTmJ0NlR3ZVBRbFJXWisvR0tSM1Z3RTg2VThkV0RXTmFUOVdoaFl3YmE0V2V6WnhjbWNBQT09Cg==",
+      "url": "https://tnze.yyyy.games/releases/v0.14.0/BestCraft_0.14.0_x64_zh-CN.msi.zip"
     }
   }
 }
