@@ -118,6 +118,10 @@ const dark = useDark()
 .primed {
     color: purple;
 }
+
+.goodomen {
+    color: pink;
+}
 </style>
 
 

@@ -7,7 +7,7 @@ license = "AGPL-3.0-or-later"
 name = "app"
 repository = "https://github.com/Tnze/ffxiv-best-craft"
 rust-version = "1.71"
-version = "0.13.7"
+version = "0.14.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -16,7 +16,7 @@ tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
 crossbeam-channel = "0.5.12"
-ffxiv-crafting = { version = "6.3.3", features = ["serde-support"] }
+ffxiv-crafting = { version = "6.5.0", features = ["serde-support"] }
 futures = "0.3"
 micro_ndarray = "0.6"
 msgbox = "0.7.0"

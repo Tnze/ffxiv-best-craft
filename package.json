@@ -1,7 +1,7 @@
 {
     "name": "ffxiv-best-craft",
     "private": true,
-    "version": "0.13.7",
+    "version": "0.14.0",
     "scripts": {
         "dev": "VITE_BESTCRAFT_TARGET=tauri vite",
         "build": "VITE_BESTCRAFT_TARGET=tauri vite build",

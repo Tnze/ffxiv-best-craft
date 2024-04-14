@@ -90,17 +90,20 @@ pub fn simulate_one_step(
         });
     }
     if !matches!(action, Actions::FinalAppraisal | Actions::HeartAndSoul) {
-        status.condition = if force_success {
-            Condition::Normal
-        } else {
-            ConditionIterator::new(
-                status.recipe.conditions_flag as i32,
-                status.attributes.level as i32,
-            )
-            .collect::<Vec<_>>()
-            .choose_weighted(&mut rng, |c| c.1)
-            .unwrap()
-            .0
+        status.condition = match status.condition {
+            Condition::Good if force_success => Condition::Normal,
+            Condition::Poor if force_success => Condition::Excellent,
+            Condition::GoodOmen => Condition::Good,
+            _ => {
+                ConditionIterator::new(
+                    status.recipe.conditions_flag as i32,
+                    status.attributes.level as i32,
+                )
+                .collect::<Vec<_>>()
+                .choose_weighted(&mut rng, |c| c.1)
+                .unwrap()
+                .0
+            }
         };
     }
     Ok(SimulateOneStepResult { status, is_success })

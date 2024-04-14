@@ -118,6 +118,8 @@ export enum Conditions {
     Malleable = 'Malleable',
     // 紫：技能效果持续增加两回合
     Primed = 'Primed',
+    // 粉：下一回合必定是红球
+    GoodOmen = "GoodOmen",
 }
 
 export enum Jobs {
