@@ -13,7 +13,6 @@ sea-orm = { version = "0.12", features = [
   "runtime-tokio-native-tls",
   "macros",
 ] }
-ffxiv-crafting = { version = "6.3.3", features = ["serde-support"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 salvo = { version = "0.66", features = ["affix", "cors"] }

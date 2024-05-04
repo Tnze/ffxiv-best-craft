@@ -5716,7 +5716,6 @@ name = "web-source-server"
 version = "0.1.2"
 dependencies = [
  "dotenvy",
- "ffxiv-crafting",
  "salvo",
  "sea-orm",
  "serde",
