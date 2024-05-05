@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -22,12 +22,14 @@
 use std::collections::{hash_map::Entry, BTreeMap, HashMap};
 use std::sync::Arc;
 
+use app_libs::analyzer::rand_simulations::Statistics;
 use app_libs::solver::{
     depth_first_search_solver, normal_quality_solver, rika_solver, Score, Solver, SolverHash,
 };
 use app_libs::{SimulateOneStepResult, SimulateResult};
 use ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status};
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
+use rand::thread_rng;
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::Serialize;
 use tauri::Manager;
@@ -76,11 +78,14 @@ fn simulate(status: Status, actions: Vec<Actions>) -> SimulateResult {
 
 #[tauri::command(async)]
 fn simulate_one_step(
-    status: Status,
+    mut status: Status,
     action: Actions,
     force_success: bool,
 ) -> Result<SimulateOneStepResult, String> {
-    app_libs::simulate_one_step(status, action, force_success).map_err(err_to_string)
+    let mut rng = thread_rng();
+    app_libs::simulate_one_step(&mut status, action, force_success, &mut rng)
+        .map(|is_success| SimulateOneStepResult { status, is_success })
+        .map_err(err_to_string)
 }
 
 #[tauri::command(async)]
@@ -389,6 +394,11 @@ fn set_theme(app_handle: tauri::AppHandle, is_dark: Option<bool>) -> bool {
     }
 }
 
+#[tauri::command]
+fn rand_simulation(status: Status, actions: Vec<Actions>, n: usize) -> Statistics {
+    app_libs::analyzer::rand_simulations::stat(status, &actions, n)
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(AppState::new())
@@ -412,6 +422,7 @@ fn main() {
             nq_solve,
             reflect_solve,
             set_theme,
+            rand_simulation,
         ])
         .setup(|app| {
             let window = app.get_window("main").unwrap();

@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pub mod solver;
 pub mod analyzer;
+pub mod solver;
 
 use ffxiv_crafting::{
     Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, RecipeLevel, Status,
 };
-use rand::{random, seq::SliceRandom, thread_rng};
+use rand::{seq::SliceRandom, Rng};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -66,19 +66,19 @@ pub fn simulate(status: Status, actions: Vec<Actions>) -> SimulateResult {
 
 #[derive(Serialize)]
 pub struct SimulateOneStepResult {
-    status: Status,
-    is_success: bool,
+    pub status: Status,
+    pub is_success: bool,
 }
 
 /// 只模拟一步制作，计算技能概率和制作状态，更新制作状态
 pub fn simulate_one_step(
-    mut status: Status,
+    status: &mut Status,
     action: Actions,
     force_success: bool,
-) -> Result<SimulateOneStepResult, CastActionError> {
-    let mut rng = thread_rng();
+    rng: &mut impl Rng,
+) -> Result<bool, CastActionError> {
     status.is_action_allowed(action)?;
-    let is_success = force_success || status.success_rate(action) as f32 / 100.0 > random();
+    let is_success = force_success || status.success_rate(action) as f32 / 100.0 > rng.gen();
     if is_success {
         status.cast_action(action);
     } else {
@@ -101,13 +101,13 @@ pub fn simulate_one_step(
                     status.attributes.level as i32,
                 )
                 .collect::<Vec<_>>()
-                .choose_weighted(&mut rng, |c| c.1)
+                .choose_weighted(rng, |c| c.1)
                 .unwrap()
                 .0
             }
         };
     }
-    Ok(SimulateOneStepResult { status, is_success })
+    Ok(is_success)
 }
 
 /// 计算当前状态下可以释放技能的集合，用于模拟界面将不可释放技能置灰

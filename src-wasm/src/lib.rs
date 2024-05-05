@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+use app_libs::SimulateOneStepResult;
 use ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status};
 
+use rand::thread_rng;
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
 
@@ -49,12 +51,13 @@ pub fn simulate_one_step(
     action: JsValue,
     force_success: JsValue,
 ) -> Result<JsValue, JsValue> {
-    let status: Status = from_value(status)?;
+    let mut status: Status = from_value(status)?;
     let action: Actions = from_value(action)?;
     let force_success: bool = from_value(force_success)?;
-    let result =
-        app_libs::simulate_one_step(status, action, force_success).map_err(err_to_string)?;
-    Ok(to_value(&result)?)
+    let is_success =
+        app_libs::simulate_one_step(&mut status, action, force_success, &mut thread_rng())
+            .map_err(err_to_string)?;
+    Ok(to_value(&SimulateOneStepResult { status, is_success })?)
 }
 
 #[wasm_bindgen]
