@@ -34,6 +34,7 @@ import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import { useFluent } from 'fluent-vue';
 import StagedActionQueueItem from './StagedActionQueueItem.vue';
+import Analyzers from './Analyzers.vue';
 
 interface Slot {
     id: number;
@@ -419,6 +420,11 @@ async function openListFromJSON() {
                         <el-scrollbar style="flex: auto;">
                             <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
                                 @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('analyzers')" name="analyzers" class="above-panel">
+                        <el-scrollbar style="flex: auto;">
+                            <Analyzers :init-status="initStatus" :actions="displayActions" />
                         </el-scrollbar>
                     </el-tab-pane>
                 </el-tabs>
