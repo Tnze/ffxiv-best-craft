@@ -7,7 +7,7 @@ license = "AGPL-3.0-or-later"
 name = "app"
 repository = "https://github.com/Tnze/ffxiv-best-craft"
 rust-version = "1.71"
-version = "0.14.0"
+version = "0.14.1"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -39,7 +39,7 @@ tauri = { version = "1.6", features = [
   "devtools",
   "updater",
 ] }
-tokio = "1.36"
+tokio = "1.37"
 window-vibrancy = "0.4"
 
 # internal deps

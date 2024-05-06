@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -76,7 +76,7 @@ function runDfsSolver() {
     </el-dialog>
     <div class="argument-block" style="display: flex;">
         <span class="slider-label">{{ $t('dfs-max-depth') }}</span>
-        <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip" :label="$t('dfs-max-depth')"
+        <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip" :aria-label="$t('dfs-max-depth')"
             :disabled="dfsSolving" />
     </div>
     <el-alert v-if="maxDepth > warningDepth" type="warning" :title="$t('dfs-too-depth')" show-icon :closable="false" />
