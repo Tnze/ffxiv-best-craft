@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -525,6 +525,7 @@ export-macro = 导出宏
 attributes-enhance = 食药&装备
 init-quality = 初期品质
 action-editor = 编排技能
+analyzers = 分析器
 
 save-workspace = 暂存
 clear-workspace = 清空
@@ -554,6 +555,7 @@ solvers = Solvers
 export-macro = Export
 attributes-enhance = Attributes Enhance
 staged = Staged
+analyzers = Analyzers
 
 save-workspace = Save
 clear-workspace = Clear
