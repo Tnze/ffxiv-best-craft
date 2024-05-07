@@ -394,7 +394,7 @@ fn set_theme(app_handle: tauri::AppHandle, is_dark: Option<bool>) -> bool {
     }
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn rand_simulation(status: Status, actions: Vec<Actions>, n: usize) -> Statistics {
     app_libs::analyzer::rand_simulations::stat(status, &actions, n)
 }
