@@ -16,7 +16,6 @@ tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
 crossbeam-channel = "0.5.12"
-ffxiv-crafting = { version = "6.5.0", features = ["serde-support"] }
 futures = "0.3"
 micro_ndarray = "0.6"
 msgbox = "0.7.0"

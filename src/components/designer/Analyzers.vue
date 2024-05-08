@@ -75,7 +75,7 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
 </script>
 
 <template>
-    <ActionQueue class="action-queue" v-if="activeSeq && displayJob" :job="displayJob" v-model:list="activeSeq.slots"
+    <ActionQueue class="action-queue" v-if="activeSeq && activeSeq.slots.length > 0 && displayJob" :job="displayJob" v-model:list="activeSeq.slots"
         :err-list="activeSeq.errors" disabled no-hover />
     <div>
         <el-dropdown split-button type="default" @click="runSimulatios(1000)" @command="(n: number) => runSimulatios(n)"
@@ -90,7 +90,6 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
             </template>
         </el-dropdown>
     </div>
-    <!-- <p v-for="d in arcs">{{ arc(d) }}</p> -->
     <svg v-if="simulationResult" width="200" height="200" viewBox="-100 -100 200 200"
         style="max-width: 100%; height: auto; font: 10px sans-serif; margin-top: 15px;">
         <g>

@@ -17,6 +17,7 @@
 pub mod analyzer;
 pub mod solver;
 
+pub use ffxiv_crafting;
 use ffxiv_crafting::{
     Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, RecipeLevel, Status,
 };

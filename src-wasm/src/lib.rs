@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use app_libs::SimulateOneStepResult;
-use ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status};
+use app_libs::{
+    ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status},
+    SimulateOneStepResult,
+};
 
 use rand::thread_rng;
 use serde_wasm_bindgen::{from_value, to_value};

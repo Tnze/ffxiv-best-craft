@@ -16,7 +16,7 @@
 
 use crate::{simulate_one_step, SimulateOneStepResult};
 use ffxiv_crafting::{Actions, CastActionError, Status};
-use rand::thread_rng;
+use rand::{thread_rng, Rng};
 use serde::Serialize;
 
 #[derive(Default, Serialize)]
@@ -34,9 +34,11 @@ pub struct Statistics {
 }
 
 pub fn stat(status: Status, actions: &[Actions], n: usize) -> Statistics {
+    let mut rng = thread_rng();
+    let mut rng2 = rng.clone();
     let results = std::iter::from_fn(|| {
         let mut s = status.clone();
-        Some(simulation(&mut s, actions).map(|res| (res, s)))
+        Some(simulation(&mut rng, &mut s, actions).map(|res| (res, s)))
     });
     let mut statistics = Statistics::default();
     for result in results.take(n) {
@@ -50,25 +52,24 @@ pub fn stat(status: Status, actions: &[Actions], n: usize) -> Statistics {
             Ok((_history, status)) if status.progress < status.recipe.difficulty => {
                 statistics.fails += 1;
             }
-            Ok((_history, status)) if !matches!(status.high_quality_probability(), Some(100)) => {
-                statistics.normal += 1;
-            }
-            Ok(_) => {
-                statistics.highqual += 1;
-            }
+            Ok((_history, status)) => match status.high_quality_probability() {
+                None => statistics.errors += 1,
+                Some(p) if p > rng2.gen_range(0..100) => statistics.highqual += 1,
+                _ => statistics.normal += 1,
+            },
         }
     }
     statistics
 }
 
 fn simulation(
+    rng: &mut impl Rng,
     s: &mut Status,
     actions: &[Actions],
 ) -> Result<Vec<SimulateOneStepResult>, CastActionError> {
-    let mut rng = thread_rng();
     let mut history = Vec::new();
     for action in actions {
-        let is_success = simulate_one_step(s, *action, false, &mut rng)?;
+        let is_success = simulate_one_step(s, *action, false, rng)?;
         history.push(SimulateOneStepResult {
             status: s.clone(),
             is_success,

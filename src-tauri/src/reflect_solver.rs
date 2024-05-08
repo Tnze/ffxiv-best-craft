@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use app_libs::solver::Solver;
-use ffxiv_crafting::{Actions, Buffs, Status};
+use app_libs::{
+    ffxiv_crafting::{Actions, Buffs, Status},
+    solver::Solver,
+};
 use micro_ndarray::Array;
 use std::cell::Cell;
 
@@ -404,7 +406,7 @@ impl Solver for ProgressSolver {
 
 #[cfg(test)]
 mod test {
-    use ffxiv_crafting::{data::recipe_level_table, Attributes, Recipe, Status};
+    use app_libs::ffxiv_crafting::{data::recipe_level_table, Attributes, Recipe, Status};
 
     use super::ProgressSolver;
     use super::QualitySolver;
@@ -441,7 +443,7 @@ mod test {
     #[test]
     fn test2() {
         let mut init_status = init();
-        init_status.cast_action(ffxiv_crafting::Actions::Reflect);
+        init_status.cast_action(app_libs::ffxiv_crafting::Actions::Reflect);
         let solver = QualitySolver::new(init_status.clone(), true, 8, true);
         let actions = solver.read_all(&init_status);
         println!("{actions:?}");

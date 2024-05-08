@@ -16,7 +16,6 @@ getrandom = { version = "0.2", features = ["js"] }
 wasm-bindgen = "0.2"
 tsify = "0.4.5"
 app-libs = { path = "../src-libs" }
-ffxiv-crafting = { version = "6.5.0", features = ["serde-support"] }
 serde = { version = "1.0", features = ["derive"] }
 rand = "0.8.5"
 
