@@ -85,8 +85,8 @@ jobs:
         tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
         releaseName: "BestCraft v__VERSION__"
         releaseBody: |
-          v0.13.6
-          - 更新国服 6.51 版本数据
-          - 更新依赖库
+          v0.15.0
+          - 新增分析器功能，可用于测试宏的防黑球效果等
+          - 修复特殊情况下模拟不准确的问题
         releaseDraft: false
         prerelease: false
