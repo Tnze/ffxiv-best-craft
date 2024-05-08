@@ -14,9 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Jobs } from '@/libs/Craft'
-import type { InjectionKey, Ref } from 'vue'
-import { Sequence } from "./types"
+import { Actions, Status } from "@/libs/Craft";
 
-export const displayJobKey = Symbol() as InjectionKey<Ref<Jobs>>
-export const activeSeqKey = Symbol() as InjectionKey<Ref<Sequence>>
+export interface Slot {
+    id: number;
+    action: Actions;
+}
+
+export interface Sequence {
+    slots: Slot[];
+    maxid: number;
+    status: Status;
+    errors: { pos: number; err: string }[];
+}

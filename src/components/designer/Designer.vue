@@ -37,20 +37,12 @@ import StagedActionQueueItem from './StagedActionQueueItem.vue';
 import Analyzers from './Analyzers.vue';
 import { activeSeqKey, displayJobKey } from './injectionkeys';
 
-interface Slot {
-    id: number;
-    action: Actions;
-}
+import { Slot, Sequence } from './types';
 
 // 用于表示一个技能的序列，或者说一个宏
 // 为了实现拖拽和删除等动画效果，我们需要给每个技能一个唯一的id
 // maxid储存了当前序列中最大的标志，并用于生成下一个id
-export interface Sequence {
-    slots: Slot[];
-    maxid: number;
-    status: Status;
-    errors: { pos: number; err: string }[];
-}
+
 
 const props = defineProps<{
     recipe: Recipe,
