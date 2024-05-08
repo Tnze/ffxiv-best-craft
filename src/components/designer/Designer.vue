@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
-import { computed, markRaw, reactive, ref, watch } from "vue";
+import { Ref, computed, inject, markRaw, provide, reactive, ref, watch } from "vue";
 import { ElContainer, ElHeader, ElMain, ElScrollbar, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
 import { Bottom, Close } from "@element-plus/icons-vue";
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
@@ -35,6 +35,7 @@ import { Enhancer } from "../attr-enhancer/Enhancer";
 import { useFluent } from 'fluent-vue';
 import StagedActionQueueItem from './StagedActionQueueItem.vue';
 import Analyzers from './Analyzers.vue';
+import { activeSeqKey, displayJobKey } from './injectionkeys';
 
 interface Slot {
     id: number;
@@ -59,9 +60,9 @@ const props = defineProps<{
     item: Item,
     materialQualityFactor: number,
     attributes: Attributes,
-    displayJob: Jobs,
 }>()
 const { $t } = useFluent()
+const displayJob = inject(displayJobKey) as Ref<Jobs>
 
 // 食物和药水效果
 const attributesEnhancers = ref<Enhancer[]>([]);
@@ -144,6 +145,7 @@ const activeSeq = reactive<Sequence>({
     status: initStatus.value,
     errors: [],
 });
+provide(activeSeqKey, ref(activeSeq))
 const actions = computed(() => activeSeq.slots.map(slot => slot.action));
 const displayActions = computed(() => {
     return previewSolver.value && solverResult.slots.length > 0

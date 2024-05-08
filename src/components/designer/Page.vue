@@ -18,10 +18,11 @@
 
 <script setup lang="ts">
 import { ElEmpty, ElResult, ElButton } from 'element-plus';
-import { computed, defineAsyncComponent, onErrorCaptured, ref } from 'vue';
+import { computed, defineAsyncComponent, onErrorCaptured, ref, provide } from 'vue';
 import useGearsetsStore from '@/stores/gearsets';
 import useDesignerStore from '@/stores/designer';
 import { useFluent } from 'fluent-vue';
+import { displayJobKey } from "./injectionkeys"
 
 const gearsetsStore = useGearsetsStore()
 const designerStore = useDesignerStore()
@@ -37,6 +38,8 @@ const attributes = computed(() => {
     return special?.value ?? gearsetsStore.default
 })
 const errorMessage = ref<string>()
+
+provide(displayJobKey, computed(() => designerStore.content!.job))
 
 onErrorCaptured((err: unknown) => {
     console.error(err)
@@ -64,7 +67,7 @@ function reload() {
                 :recipe="designerStore.content.recipe" :recipe-id="designerStore.content.recipeId"
                 :material-quality-factor="designerStore.content.materialQualityFactor"
                 :recipe-level="designerStore.content.recipeLevel" :requirements="designerStore.content.requirements"
-                :attributes="attributes" :display-job="designerStore.content!.job" />
+                :attributes="attributes" />
             <Simulator v-else :item="designerStore.content.item" :recipe="designerStore.content.recipe"
                 :recipe-level="designerStore.content.recipeLevel" :attributes="attributes"
                 :display-job="designerStore.content!.job" />

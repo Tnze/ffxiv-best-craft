@@ -21,18 +21,31 @@ import { ElDropdown, ElDropdownMenu, ElDropdownItem } from "element-plus";
 import { Statistics, rand_simulation } from "@/libs/Analyzer"
 import { Actions, Status } from "@/libs/Craft";
 import * as d3 from "d3";
-import { ref, computed } from "vue";
+import { ref, computed, inject } from "vue";
+import ActionQueue from "./ActionQueue.vue";
+import { displayJobKey, activeSeqKey } from "./injectionkeys"
 
 const props = defineProps<{
     initStatus: Status,
     actions: Actions[],
 }>();
+const displayJob = inject(displayJobKey)
+const activeSeq = inject(activeSeqKey)
+
+const maximiumSimulatonPow = 5
 
 const simulationResult = ref<Statistics>()
+const simulationButtonDisabled = ref(false)
 
 async function runSimulatios(n: number) {
-    simulationResult.value = await rand_simulation(props.initStatus, props.actions, n)
-    console.table(simulationResult.value)
+    simulationResult.value = undefined
+    simulationButtonDisabled.value = true
+    try {
+        simulationResult.value = await rand_simulation(props.initStatus, props.actions, n)
+        console.table(simulationResult.value)
+    } finally {
+        simulationButtonDisabled.value = false
+    }
 }
 
 const arc = d3.arc<d3.PieArcDatum<[string, number]>>()
@@ -62,13 +75,15 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
 </script>
 
 <template>
+    <ActionQueue class="action-queue" v-if="activeSeq && displayJob" :job="displayJob" v-model:list="activeSeq.slots"
+        :err-list="activeSeq.errors" disabled no-hover />
     <div>
-        <el-dropdown split-button type="default" @click="runSimulatios(1000)"
-            @command="(n: number) => runSimulatios(n)">
+        <el-dropdown split-button type="default" @click="runSimulatios(1000)" @command="(n: number) => runSimulatios(n)"
+            :disabled="simulationButtonDisabled">
             {{ $t("run-simulations") }}
             <template #dropdown>
                 <el-dropdown-menu>
-                    <el-dropdown-item v-for="i in 6" :command="10 ** i">
+                    <el-dropdown-item v-for="i in maximiumSimulatonPow" :command="10 ** i">
                         {{ $t("run-n-times", { n: 10 ** i }) }}
                     </el-dropdown-item>
                 </el-dropdown-menu>
@@ -92,6 +107,12 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
         </g>
     </svg>
 </template>
+
+<style scoped>
+.action-queue {
+    margin-left: 0;
+}
+</style>
 
 <fluent locale="zh-CN">
 run-simulations = 运行模拟

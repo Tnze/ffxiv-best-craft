@@ -18,21 +18,22 @@
 
 <script setup lang="ts">
 import { ElContainer, ElHeader, ElMain, ElScrollbar, ElDialog, ElButton, ElTable, ElTableColumn, ElCard, ElSwitch } from 'element-plus';
-import { computed, ref, watch } from 'vue';
+import { Ref, computed, inject, ref, watch } from 'vue';
 import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep, RecipeLevel } from '@/libs/Craft';
 import { Enhancer } from "../attr-enhancer/Enhancer";
 import StatusBarVue from './StatusBar.vue';
 import ActionPanelVue from './ActionPanel.vue';
 import ActionQueueVue from './ActionQueue.vue';
 import AttrEnhSelector from '../attr-enhancer/AttrEnhSelector.vue';
+import { displayJobKey } from './injectionkeys';
 
 const props = defineProps<{
     recipe: Recipe,
     recipeLevel: RecipeLevel,
     item: Item,
     attributes: Attributes,
-    displayJob: Jobs,
 }>()
+const displayJob = inject(displayJobKey) as Ref<Jobs>
 
 interface Slot {
     id: number,
