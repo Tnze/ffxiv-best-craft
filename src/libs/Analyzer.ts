@@ -24,6 +24,11 @@ export async function rand_simulation(status: Status, actions: Actions[], n: num
         let { invoke } = await pkgTauri
         return invoke("rand_simulation", { status, actions, n });
     } else {
-        throw "unsupported yet"
+        return new Promise((resolve, reject) => {
+            const worker = new Worker(new URL('./AnalyzerWorker.ts', import.meta.url), { type: 'module' })
+            worker.onmessage = ev => resolve(ev.data)
+            worker.onerror = ev => reject(ev)
+            worker.postMessage({ name: "rand_simulation", args: JSON.stringify({ status, actions, n }) })
+        })
     }
 }

@@ -105,3 +105,11 @@ pub fn nq_solve(status: JsValue, depth: usize, specialist: bool) -> Result<JsVal
     let result: Vec<Actions> = solve(status, depth, specialist);
     Ok(to_value(&result)?)
 }
+
+#[wasm_bindgen]
+pub fn rand_simulation(status: JsValue, actions: JsValue, n: usize) -> Result<JsValue, JsValue> {
+    let status: Status = from_value(status)?;
+    let actions: Vec<Actions> = from_value(actions)?;
+    let result = app_libs::analyzer::rand_simulations::stat(status, &actions, n);
+    Ok(to_value(&result)?)
+}
