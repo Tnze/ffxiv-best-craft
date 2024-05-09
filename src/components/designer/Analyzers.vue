@@ -43,14 +43,13 @@ async function runSimulatios(n: number) {
     simulationButtonDisabled.value = true
     try {
         simulationResult.value = await rand_simulation(props.initStatus, props.actions, n, ignoreErrors.value)
-        console.table(simulationResult.value)
     } finally {
         simulationButtonDisabled.value = false
     }
 }
 
 const arc = d3.arc<d3.PieArcDatum<[string, number]>>()
-    .innerRadius(0)
+    .innerRadius(50)
     .outerRadius(200 / 2 - 1);
 
 const pie = d3.pie<[string, number]>()
@@ -69,7 +68,7 @@ const arcs = computed(() => {
     return pie(data)
 })
 
-const labelRadius = (200 / 2 - 1) * 0.7;
+const labelRadius = (200 / 2 - 1) * 0.75;
 const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
     .innerRadius(labelRadius)
     .outerRadius(labelRadius);
@@ -111,7 +110,7 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
                         <tspan font-weight="bold" y="-0.4em">
                             {{ $t(d.data[0]) }}
                         </tspan>
-                        <tspan v-if="d.endAngle - d.startAngle > 0.25" x="0" y="0.7em" fill-opacity="0.7">
+                        <tspan v-if="d.endAngle - d.startAngle > 0.1" x="0" y="0.7em" fill-opacity="0.7">
                             {{ d.data[1] }}
                         </tspan>
                     </text>
