@@ -16,18 +16,60 @@
 
 use ffxiv_crafting::{Actions, Status};
 
+#[derive(Default)]
 pub struct Scope {
-    min_craftsmanship: i32,
-    max_craftsmanship: i32,
-
-    min_control: i32,
-    max_control: i32,
-
+    craftsmanship_range: Option<(i32, i32)>,
+    control_range: Option<(i32, i32)>,
     craft_points: i32,
 }
 
 pub fn calc_scope(init_status: Status, actions: &[Actions]) -> Scope {
-    let mut final_status = init_status.clone();
-    actions.iter().for_each(|a| final_status.cast_action(*a));
+    let final_status = simulate(init_status.clone(), actions);
+    Scope {
+        craftsmanship_range: find_craftsmanship_range(&init_status, &final_status, actions),
+        control_range: find_control_range(),
+        craft_points: init_status.craft_points - final_status.craft_points,
+    }
+}
+
+fn simulate(mut status: Status, actions: &[Actions]) -> Status {
+    actions.iter().for_each(|a| {
+        if status.is_action_allowed(*a).is_ok() {
+            status.cast_action(*a);
+        }
+    });
+    status
+}
+
+fn find_craftsmanship_range(
+    init_status: &Status,
+    final_status: &Status,
+    actions: &[Actions],
+) -> Option<(i32, i32)> {
+    let init_craftsmanship = init_status.attributes.craftsmanship;
+    let mut low = None;
+    for cm in (0..init_craftsmanship).rev() {
+        let mut status = init_status.clone();
+        status.attributes.craftsmanship = cm;
+        status = simulate(status, actions);
+        if status.progress < status.recipe.difficulty {
+            break;
+        }
+        low = Some(cm);
+    }
+    let mut high = None;
+    for cm in (init_craftsmanship..).take(5000) {
+        let mut status = init_status.clone();
+        status.attributes.craftsmanship = cm;
+        status = simulate(status, actions);
+        if status.step != final_status.step {
+            break;
+        }
+        high = Some(cm);
+    }
+    Some((low?, high?))
+}
+
+fn find_control_range() -> Option<(i32, i32)> {
     todo!()
 }
