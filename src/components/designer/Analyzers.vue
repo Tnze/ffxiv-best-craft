@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ElDropdown, ElDropdownMenu, ElDropdownItem } from "element-plus";
+import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElSwitch, ElForm, ElFormItem } from "element-plus";
 import { Statistics, rand_simulation } from "@/libs/Analyzer"
 import { Actions, Status } from "@/libs/Craft";
 import * as d3 from "d3";
@@ -36,12 +36,13 @@ const maximiumSimulatonPow = 5
 
 const simulationResult = ref<Statistics>()
 const simulationButtonDisabled = ref(false)
+const ignoreErrors = ref(true)
 
 async function runSimulatios(n: number) {
     simulationResult.value = undefined
     simulationButtonDisabled.value = true
     try {
-        simulationResult.value = await rand_simulation(props.initStatus, props.actions, n)
+        simulationResult.value = await rand_simulation(props.initStatus, props.actions, n, ignoreErrors.value)
         console.table(simulationResult.value)
     } finally {
         simulationButtonDisabled.value = false
@@ -75,47 +76,65 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
 </script>
 
 <template>
-    <ActionQueue class="action-queue" v-if="activeSeq && activeSeq.slots.length > 0 && displayJob" :job="displayJob" v-model:list="activeSeq.slots"
-        :err-list="activeSeq.errors" disabled no-hover />
-    <div>
-        <el-dropdown split-button type="default" @click="runSimulatios(1000)" @command="(n: number) => runSimulatios(n)"
-            :disabled="simulationButtonDisabled">
-            {{ $t("run-simulations") }}
-            <template #dropdown>
-                <el-dropdown-menu>
-                    <el-dropdown-item v-for="i in maximiumSimulatonPow" :command="10 ** i">
-                        {{ $t("run-n-times", { n: 10 ** i }) }}
-                    </el-dropdown-item>
-                </el-dropdown-menu>
-            </template>
-        </el-dropdown>
-    </div>
-    <svg v-if="simulationResult" width="200" height="200" viewBox="-100 -100 200 200"
-        style="max-width: 100%; height: auto; font: 10px sans-serif; margin-top: 15px;">
-        <g>
-            <path v-for="d in arcs" :d="arc(d) ?? undefined" :fill="color(d.data[0]) as string" stroke="white">
-                <title>{{ $t(d.data[0]) + "×" + d.data[1] }}</title>
-            </path>
-        </g>
-        <g text-anchor="middle">
-            <text v-for="d in arcs" :transform="`translate(${arcLabel.centroid(d)})`">
-                <tspan font-weight="bold" y="-0.4em">{{ $t(d.data[0]) }}</tspan>
-                <tspan v-if="d.endAngle - d.startAngle > 0.25" x="0" y="0.7em" fill-opacity="0.7">{{ d.data[1] }}
-                </tspan>
-            </text>
-        </g>
-    </svg>
+    <el-form>
+        <el-form-item :label="$t('action-queue')">
+            <ActionQueue class="action-queue" v-if="activeSeq && activeSeq.slots.length > 0 && displayJob"
+                :job="displayJob" v-model:list="activeSeq.slots" :err-list="activeSeq.errors" disabled no-hover />
+            <template v-else>{{ $t('empty') }}</template>
+        </el-form-item>
+        <el-form-item :label="$t('ignore-errors')">
+            <el-switch v-model="ignoreErrors" />
+        </el-form-item>
+        <el-form-item>
+            <el-dropdown split-button type="default" @click="runSimulatios(1000)"
+                @command="(n: number) => runSimulatios(n)" :disabled="simulationButtonDisabled">
+                {{ $t("run-simulations") }}
+                <template #dropdown>
+                    <el-dropdown-menu>
+                        <el-dropdown-item v-for="i in maximiumSimulatonPow" :command="10 ** i">
+                            {{ $t("run-n-times", { n: 10 ** i }) }}
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </template>
+            </el-dropdown>
+        </el-form-item>
+        <el-form-item v-if="simulationResult">
+            <svg width="200" height="200" viewBox="-100 -100 200 200"
+                style="max-width: 100%; height: auto; font: 10px sans-serif; margin-top: 15px;">
+                <g>
+                    <path v-for="d in arcs" :d="arc(d) ?? undefined" :fill="color(d.data[0]) as string" stroke="white">
+                        <title>{{ $t(d.data[0]) + "×" + d.data[1] }}</title>
+                    </path>
+                </g>
+                <g text-anchor="middle">
+                    <text v-for="d in arcs" :transform="`translate(${arcLabel.centroid(d)})`">
+                        <tspan font-weight="bold" y="-0.4em">
+                            {{ $t(d.data[0]) }}
+                        </tspan>
+                        <tspan v-if="d.endAngle - d.startAngle > 0.25" x="0" y="0.7em" fill-opacity="0.7">
+                            {{ d.data[1] }}
+                        </tspan>
+                    </text>
+                </g>
+            </svg>
+        </el-form-item>
+    </el-form>
 </template>
 
 <style scoped>
 .action-queue {
     margin-left: 0;
+    line-height: 14px;
 }
 </style>
 
 <fluent locale="zh-CN">
 run-simulations = 运行模拟
 run-n-times = 运行 { $n } 次模拟
+action-queue = 技能队列
+ignore-errors = 忽略错误
+
+empty = 空
 
 errors = 错误
 unfinished = 未完成
@@ -127,4 +146,14 @@ highqual = 高品质
 <fluent locale="en-US">
 run-simulations = Run simulations
 run-n-times = Run simulation { $n } times
+action-queue = Action Queue
+ignore-errors = Ignore errors
+
+empty = Empty
+
+errors = Errors
+unfinished = Unfinished
+fails = Fails
+normal = Normal
+highqual = High-quality
 </fluent>

@@ -19,16 +19,17 @@ export interface Statistics {
     highqual: number,
 }
 
-export async function rand_simulation(status: Status, actions: Actions[], n: number): Promise<Statistics> {
+export async function rand_simulation(status: Status, actions: Actions[], n: number, ignoreErrors: boolean): Promise<Statistics> {
+    const args = { status, actions, n, ignoreErrors };
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri
-        return invoke("rand_simulation", { status, actions, n });
+        return invoke("rand_simulation", args);
     } else {
         return new Promise((resolve, reject) => {
             const worker = new Worker(new URL('./AnalyzerWorker.ts', import.meta.url), { type: 'module' })
             worker.onmessage = ev => resolve(ev.data)
             worker.onerror = ev => reject(ev)
-            worker.postMessage({ name: "rand_simulation", args: JSON.stringify({ status, actions, n }) })
+            worker.postMessage({ name: "rand_simulation", args: JSON.stringify(args) })
         })
     }
 }

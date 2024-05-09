@@ -86,18 +86,20 @@ export async function rika_solve_tnzever(status: Status, useManipulation: boolea
 }
 
 export async function dfs_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
+    const args = { status, depth, specialist };
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
-        return (await pkgTauri).invoke("dfs_solve", { status, depth, specialist })
+        return (await pkgTauri).invoke("dfs_solve", args)
     } else {
-        return invokeWasmSolver("dfs_solve", { status, depth, specialist })
+        return invokeWasmSolver("dfs_solve", args)
     }
 }
 
 export async function nq_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
+    const args = { status, depth, specialist };
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
-        return (await pkgTauri).invoke("nq_solve", { status, depth, specialist })
+        return (await pkgTauri).invoke("nq_solve", args)
     } else {
-        return invokeWasmSolver("nq_solve", { status, depth, specialist })
+        return invokeWasmSolver("nq_solve", args)
     }
 }
 

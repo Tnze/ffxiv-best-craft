@@ -33,12 +33,12 @@ pub struct Statistics {
     pub highqual: i32,
 }
 
-pub fn stat(status: Status, actions: &[Actions], n: usize) -> Statistics {
+pub fn stat(status: Status, actions: &[Actions], n: usize, ignore_errors: bool) -> Statistics {
     let mut rng = thread_rng();
     let mut rng2 = rng.clone();
     let results = std::iter::from_fn(|| {
         let mut s = status.clone();
-        Some(simulation(&mut rng, &mut s, actions).map(|res| (res, s)))
+        Some(simulation(&mut rng, &mut s, actions, ignore_errors).map(|res| (res, s)))
     });
     let mut statistics = Statistics::default();
     for result in results.take(n) {
@@ -66,10 +66,17 @@ fn simulation(
     rng: &mut impl Rng,
     s: &mut Status,
     actions: &[Actions],
+    ignore_errors: bool,
 ) -> Result<Vec<SimulateOneStepResult>, CastActionError> {
     let mut history = Vec::new();
     for action in actions {
-        let is_success = simulate_one_step(s, *action, false, rng)?;
+        let result = simulate_one_step(s, *action, false, rng);
+        let is_success = if ignore_errors {
+            result.unwrap_or(false)
+        } else {
+            result?
+        };
+
         history.push(SimulateOneStepResult {
             status: s.clone(),
             is_success,
