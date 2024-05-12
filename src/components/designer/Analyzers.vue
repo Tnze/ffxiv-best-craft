@@ -106,36 +106,43 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
                 </template>
             </el-dropdown>
         </el-form-item>
-        <el-form-item v-if="simulationResult">
-            <svg width="200" height="200" viewBox="-100 -100 200 200"
-                style="max-width: 100%; height: auto; font: 10px sans-serif; margin-top: 15px;">
-                <g>
-                    <path v-for="d in arcs" :d="arc(d) ?? undefined" :fill="color(d.data[0]) as string" stroke="white">
-                        <title>{{ $t(d.data[0]) + "×" + d.data[1] }}</title>
-                    </path>
-                </g>
-                <g text-anchor="middle">
-                    <text v-for="d in arcs" :transform="`translate(${arcLabel.centroid(d)})`">
-                        <tspan font-weight="bold" y="-0.4em">
-                            {{ $t(d.data[0]) }}
-                        </tspan>
-                        <tspan v-if="d.endAngle - d.startAngle > 0.1" x="0" y="0.7em" fill-opacity="0.7">
-                            {{ d.data[1] }}
-                        </tspan>
-                    </text>
-                </g>
-            </svg>
-        </el-form-item>
+        <Transition>
+            <el-form-item v-if="simulationResult">
+                <svg width="200" height="200" viewBox="-100 -100 200 200"
+                    style="max-width: 100%; height: auto; font: 10px sans-serif; margin-top: 15px;">
+                    <g>
+                        <path v-for="d in arcs" :d="arc(d) ?? undefined" :fill="color(d.data[0]) as string"
+                            stroke="white">
+                            <title>{{ $t(d.data[0]) + "×" + d.data[1] }}</title>
+                        </path>
+                    </g>
+                    <g text-anchor="middle">
+                        <text v-for="d in arcs" :transform="`translate(${arcLabel.centroid(d)})`">
+                            <tspan font-weight="bold" y="-0.4em">
+                                {{ $t(d.data[0]) }}
+                            </tspan>
+                            <tspan v-if="d.endAngle - d.startAngle > 0.1" x="0" y="0.7em" fill-opacity="0.7">
+                                {{ d.data[1] }}
+                            </tspan>
+                        </text>
+                    </g>
+                </svg>
+            </el-form-item>
+        </Transition>
         <el-divider />
         <el-form-item>
             <el-button @click="calcScope">{{ $t('calc-scope') }}</el-button>
         </el-form-item>
-        <el-form-item :label="$t('craftsmanship-range')" v-if="attributesScope?.craftsmanship_range">
-            {{ attributesScope.craftsmanship_range[0] }} ~ {{ attributesScope.craftsmanship_range[0] }}
-        </el-form-item>
-        <el-form-item :label="$t('control-range')" v-if="attributesScope?.control_range">
-            {{ attributesScope.control_range }} ~
-        </el-form-item>
+        <Transition>
+            <el-form-item :label="$t('craftsmanship-range')" v-if="attributesScope?.craftsmanship_range">
+                {{ attributesScope.craftsmanship_range[0] }} ~ {{ attributesScope.craftsmanship_range[0] }}
+            </el-form-item>
+        </Transition>
+        <Transition>
+            <el-form-item :label="$t('control-range')" v-if="attributesScope?.control_range">
+                {{ attributesScope.control_range }} ~
+            </el-form-item>
+        </Transition>
     </el-form>
 </template>
 
@@ -143,6 +150,16 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
 .action-queue {
     margin-left: 0;
     line-height: 14px;
+}
+
+.v-enter-active,
+.v-leave-active {
+    transition: all 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
 }
 </style>
 
