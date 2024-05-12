@@ -33,3 +33,24 @@ export async function rand_simulation(status: Status, actions: Actions[], n: num
         })
     }
 }
+
+export interface Scope {
+    craftsmanship_range: [number, number] | null,
+    control_range: number | null,
+    craft_points: number,
+}
+
+export async function calc_attributes_scope(status: Status, actions: Actions[]): Promise<Scope> {
+    const args = { status, actions };
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("calc_attributes_scope", args);
+    } else {
+        return new Promise((resolve, reject) => {
+            const worker = new Worker(new URL('./AnalyzerWorker.ts', import.meta.url), { type: 'module' })
+            worker.onmessage = ev => resolve(ev.data)
+            worker.onerror = ev => reject(ev)
+            worker.postMessage({ name: "calc_attributes_scope", args: JSON.stringify(args) })
+        })
+    }
+}

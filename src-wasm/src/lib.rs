@@ -118,3 +118,11 @@ pub fn rand_simulation(
     let result = app_libs::analyzer::rand_simulations::stat(status, &actions, n, ignore_errors);
     Ok(to_value(&result)?)
 }
+
+#[wasm_bindgen]
+pub fn calc_attributes_scope(status: JsValue, actions: JsValue) -> Result<JsValue, JsValue> {
+    let status: Status = from_value(status)?;
+    let actions: Vec<Actions> = from_value(actions)?;
+    let result = app_libs::analyzer::scope_of_application::calc_scope(status, &actions);
+    Ok(to_value(&result)?)
+}

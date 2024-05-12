@@ -17,8 +17,8 @@
 -->
 
 <script setup lang="ts">
-import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElSwitch, ElForm, ElFormItem } from "element-plus";
-import { Statistics, rand_simulation } from "@/libs/Analyzer"
+import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElSwitch, ElForm, ElFormItem, ElButton, ElDivider } from "element-plus";
+import { Statistics, rand_simulation, calc_attributes_scope, Scope } from "@/libs/Analyzer"
 import { Actions, Status } from "@/libs/Craft";
 import * as d3 from "d3";
 import { ref, computed, inject } from "vue";
@@ -38,6 +38,8 @@ const simulationResult = ref<Statistics>()
 const simulationButtonDisabled = ref(false)
 const ignoreErrors = ref(true)
 
+const attributesScope = ref<Scope>()
+
 async function runSimulatios(n: number) {
     simulationResult.value = undefined
     simulationButtonDisabled.value = true
@@ -45,6 +47,13 @@ async function runSimulatios(n: number) {
         simulationResult.value = await rand_simulation(props.initStatus, props.actions, n, ignoreErrors.value)
     } finally {
         simulationButtonDisabled.value = false
+    }
+}
+
+async function calcScope() {
+    try {
+        attributesScope.value = await calc_attributes_scope(props.initStatus, props.actions)
+    } catch {
     }
 }
 
@@ -117,6 +126,16 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
                 </g>
             </svg>
         </el-form-item>
+        <el-divider />
+        <el-form-item>
+            <el-button @click="calcScope">{{ $t('calc-scope') }}</el-button>
+        </el-form-item>
+        <el-form-item :label="$t('craftsmanship-range')" v-if="attributesScope?.craftsmanship_range">
+            {{ attributesScope.craftsmanship_range[0] }} ~ {{ attributesScope.craftsmanship_range[0] }}
+        </el-form-item>
+        <el-form-item :label="$t('control-range')" v-if="attributesScope?.control_range">
+            {{ attributesScope.control_range }} ~
+        </el-form-item>
     </el-form>
 </template>
 
@@ -140,6 +159,10 @@ unfinished = 未完成
 fails = 失败
 normal = 普通品质
 highqual = 高品质
+
+calc-scope = 计算装备属性适配范围
+craftsmanship-range = { craftsmanship }范围
+control-range = { control }范围
 </fluent>
 
 <fluent locale="en-US">

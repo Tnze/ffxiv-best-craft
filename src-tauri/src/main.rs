@@ -22,6 +22,7 @@
 use std::collections::{hash_map::Entry, BTreeMap, HashMap};
 use std::sync::Arc;
 
+use app_libs::analyzer::scope_of_application::Scope;
 use app_libs::{
     analyzer::rand_simulations::Statistics,
     ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status},
@@ -397,8 +398,18 @@ fn set_theme(app_handle: tauri::AppHandle, is_dark: Option<bool>) -> bool {
 }
 
 #[tauri::command(async)]
-fn rand_simulation(status: Status, actions: Vec<Actions>, n: usize, ignore_errors: bool) -> Statistics {
+fn rand_simulation(
+    status: Status,
+    actions: Vec<Actions>,
+    n: usize,
+    ignore_errors: bool,
+) -> Statistics {
     app_libs::analyzer::rand_simulations::stat(status, &actions, n, ignore_errors)
+}
+
+#[tauri::command(async)]
+fn calc_attributes_scope(status: Status, actions: Vec<Actions>) -> Scope {
+    app_libs::analyzer::scope_of_application::calc_scope(status, &actions)
 }
 
 fn main() {
@@ -425,6 +436,7 @@ fn main() {
             reflect_solve,
             set_theme,
             rand_simulation,
+            calc_attributes_scope,
         ])
         .setup(|app| {
             let window = app.get_window("main").unwrap();

@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use ffxiv_crafting::{Actions, Status};
+use ffxiv_crafting::{data::recipe_level_table, Actions, Caches, Status};
+use serde::Serialize;
 
-#[derive(Default)]
+#[derive(Default, Serialize)]
 pub struct Scope {
     craftsmanship_range: Option<(i32, i32)>,
-    control_range: Option<(i32, i32)>,
+    control_range: Option<i32>,
     craft_points: i32,
 }
 
@@ -27,17 +28,20 @@ pub fn calc_scope(init_status: Status, actions: &[Actions]) -> Scope {
     let final_status = simulate(init_status.clone(), actions);
     Scope {
         craftsmanship_range: find_craftsmanship_range(&init_status, &final_status, actions),
-        control_range: find_control_range(),
+        control_range: find_control_range(&init_status, &final_status, actions),
         craft_points: init_status.craft_points - final_status.craft_points,
     }
 }
 
 fn simulate(mut status: Status, actions: &[Actions]) -> Status {
-    actions.iter().for_each(|a| {
+    for a in actions {
         if status.is_action_allowed(*a).is_ok() {
             status.cast_action(*a);
         }
-    });
+        if status.is_finished() {
+            break;
+        }
+    }
     status
 }
 
@@ -51,6 +55,7 @@ fn find_craftsmanship_range(
     for cm in (0..init_craftsmanship).rev() {
         let mut status = init_status.clone();
         status.attributes.craftsmanship = cm;
+        refrash_caches(&mut status);
         status = simulate(status, actions);
         if status.progress < status.recipe.difficulty {
             break;
@@ -60,6 +65,7 @@ fn find_craftsmanship_range(
     let mut high = None;
     for cm in (init_craftsmanship..).take(5000) {
         let mut status = init_status.clone();
+        refrash_caches(&mut status);
         status.attributes.craftsmanship = cm;
         status = simulate(status, actions);
         if status.step != final_status.step {
@@ -70,6 +76,33 @@ fn find_craftsmanship_range(
     Some((low?, high?))
 }
 
-fn find_control_range() -> Option<(i32, i32)> {
-    todo!()
+fn find_control_range(
+    init_status: &Status,
+    final_status: &Status,
+    actions: &[Actions],
+) -> Option<i32> {
+    if final_status.quality < final_status.recipe.quality {
+        return None;
+    }
+    let init_control = init_status.attributes.control;
+    let mut low = None;
+    for ct in (0..init_control).rev() {
+        let mut status = init_status.clone();
+        status.attributes.control = ct;
+        refrash_caches(&mut status);
+        status = simulate(status, actions);
+        if status.quality < status.recipe.quality {
+            break;
+        }
+        low = Some(ct);
+    }
+    low
+}
+
+fn refrash_caches(status: &mut Status) {
+    status.caches = Caches::new(
+        &status.attributes,
+        &status.recipe,
+        &recipe_level_table(status.recipe.rlv),
+    );
 }
