@@ -135,7 +135,7 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
         </el-form-item>
         <Transition>
             <el-form-item :label="$t('craftsmanship-range')" v-if="attributesScope?.craftsmanship_range">
-                {{ attributesScope.craftsmanship_range[0] }} ~ {{ attributesScope.craftsmanship_range[0] }}
+                {{ attributesScope.craftsmanship_range[0] ?? "" }} ~ {{ attributesScope.craftsmanship_range[1] ?? "" }}
             </el-form-item>
         </Transition>
         <Transition>

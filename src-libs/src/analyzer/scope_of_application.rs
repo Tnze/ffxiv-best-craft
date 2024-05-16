@@ -19,7 +19,7 @@ use serde::Serialize;
 
 #[derive(Default, Serialize)]
 pub struct Scope {
-    craftsmanship_range: Option<(i32, i32)>,
+    craftsmanship_range: (Option<i32>, Option<i32>),
     control_range: Option<i32>,
     craft_points: i32,
 }
@@ -49,7 +49,7 @@ fn find_craftsmanship_range(
     init_status: &Status,
     final_status: &Status,
     actions: &[Actions],
-) -> Option<(i32, i32)> {
+) -> (Option<i32>, Option<i32>) {
     let init_craftsmanship = init_status.attributes.craftsmanship;
     let mut low = None;
     for cm in (0..init_craftsmanship).rev() {
@@ -73,7 +73,7 @@ fn find_craftsmanship_range(
         }
         high = Some(cm);
     }
-    Some((low?, high?))
+    (low, high)
 }
 
 fn find_control_range(

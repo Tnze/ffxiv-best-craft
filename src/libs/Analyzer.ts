@@ -35,7 +35,7 @@ export async function rand_simulation(status: Status, actions: Actions[], n: num
 }
 
 export interface Scope {
-    craftsmanship_range: [number, number] | null,
+    craftsmanship_range: [number?, number?],
     control_range: number | null,
     craft_points: number,
 }
