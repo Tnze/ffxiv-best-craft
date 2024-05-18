@@ -35,7 +35,7 @@ const jobPage = ref('default')
         <el-main>
             <el-tabs v-model="jobPage" tab-position="left">
                 <el-tab-pane name="default" :label="$t('default')">
-                    <el-form label-position="right" label-width="130px" :model="store.default" style="max-width: 500px">
+                    <el-form label-position="right" label-width="auto" :model="store.default">
                         <el-form-item :label="$t('level')">
                             <el-input-number v-model="store.default.level" :min="1" :max="90"
                                 :step-strictly="true"></el-input-number>
@@ -69,6 +69,11 @@ const jobPage = ref('default')
 
 .el-main {
     background-color: transparent !important;
+}
+
+.el-form {
+    max-width: 500px;
+    margin-left: 20px;
 }
 </style>
 

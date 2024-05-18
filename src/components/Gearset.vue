@@ -17,24 +17,39 @@
 -->
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { mapWritableState } from 'pinia'
 import { ElForm, ElFormItem, ElSwitch, ElInputNumber } from 'element-plus';
 import useGearsets from '@/stores/gearsets'
 import { Jobs } from '@/libs/Craft';
+import { computed } from 'vue';
 
 const store = useGearsets()
 const props = defineProps<{
     job: Jobs
 }>()
-const v = computed(() => store.special.find(v => v.name == props.job))
+
+const v = store.special.find(v => v.name == props.job)!
+
+function setInheritFromDefault(val: string | number | boolean) {
+    // const v = store.special.find(v => v.name == props.job)!;
+    if (val) {
+        v.value = null
+    } else {
+        v.value = { ...store.default }
+    }
+}
+
+store.$subscribe((mutation, store) => {
+    console.log(store)
+})
 
 </script>
 
 <template>
-    <el-form v-if="v != undefined" label-position="right" label-width="auto" :model="v" style="max-width: 500px">
+    <el-form v-if="v != undefined" label-position="right" label-width="auto">
         <el-form-item :label="$t('attributes')">
             <el-switch :model-value="v.value == null" :active-text="$t('inherit-from-default')"
-                @change="v.value = v.value == null ? { ...store.default } : null" />
+                @change="setInheritFromDefault" />
         </el-form-item>
         <el-form-item :label="$t('level')">
             <el-input-number v-model="(v.value || store.default).level" :disabled="v.value == null" :min="0" :max="90"
