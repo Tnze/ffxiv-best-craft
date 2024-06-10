@@ -15,7 +15,7 @@ version = "0.15.2"
 tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
-crossbeam-channel = "0.5.12"
+crossbeam-channel = "0.5.13"
 futures = "0.3"
 micro_ndarray = "0.6"
 msgbox = "0.7.0"
@@ -38,7 +38,7 @@ tauri = { version = "1.6", features = [
   "devtools",
   "updater",
 ] }
-tokio = "1.37"
+tokio = "1.38"
 window-vibrancy = "0.4"
 
 # internal deps

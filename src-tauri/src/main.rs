@@ -39,7 +39,6 @@ use tauri::Manager;
 use tokio::sync::{Mutex, OnceCell};
 
 mod db;
-mod hard_recipe;
 mod memoization_solver;
 mod muscle_memory_solver;
 mod reflect_solver;

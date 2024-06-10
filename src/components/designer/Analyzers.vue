@@ -195,4 +195,8 @@ unfinished = Unfinished
 fails = Fails
 normal = Normal
 highqual = High-quality
+
+calc-scope = Calculate the range of adaptive gearsets
+craftsmanship-range = { craftsmanship } range
+control-range = { control } range
 </fluent>
