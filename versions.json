@@ -1,19 +1,19 @@
 {
-  "version": "0.15.2",
-  "notes": "v0.15.0\n- 新增分析器功能，可用于测试宏的防黑球效果等\n- 修复特殊情况下模拟不准确的问题\n\nv0.15.1\n- 新增分析器功能，可用于计算装备属性范围\n\nv0.15.2\n- 宏分析器UI添加动画效果\n- 修复进展范围计算的显示问题",
-  "pub_date": "2024-05-16T18:03:19.890Z",
+  "version": "0.15.3",
+  "notes": "v0.15.3\n- 优化网页版中求解器界面下载桌面版的文本提示\n- 修复广度优先Tnze impv求解器在初始品质不为0时出现的错误",
+  "pub_date": "2024-06-18T16:15:49.813Z",
   "platforms": {
     "darwin-aarch64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnQvYko2ZUVtMFNxd0srUmlyMjVFM200NkdTbWl6UUVvMysrL2NtTUp0R1JXdzVWZmwrdUNNTUtGbHFxMEk4RUtCSmJXVlZvQU8rT1lGLyswUnhIZ3dzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE1ODgyMjIyCWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKakhHT3E1MEo3eUdCV2pqRnl2RjU4L2JuOWc3VHF1QmpLYTczQWRkdWxzKzE4V2xCYSt0STJDdk95WnF5dFFTZWczZ3hUNmtQWFhFTlFoSHB2dndGQlE9PQo=",
-      "url": "https://tnze.yyyy.games/releases/v0.15.2/BestCraft_aarch64.app.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnVCcTdLUlNIbnEyVkJYRXNEVHFWN04zTjJ1WmxQUmJzdWZmeXpjRkU1SkN0UjRyNU43N1FTQ29iN21wQzRicEgzbERlZkYrd0YvZVVPK0wyS3lqT0FnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE4NzI2ODU1CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKTStVNktKQ2M4S3pjY0lKL2VGUlRUOUVaT3R4VmN2Tzg1RzlFL1hlZ3pEMzRlOTJIMTh0OTZMSUwwY2MxcTFaWlZrWGhpZHE2YnBSMCtpaElRamlmQ2c9PQo=",
+      "url": "https://tnze.yyyy.games/releases/v0.15.3/BestCraft_aarch64.app.tar.gz"
     },
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm53ZmlKeHFKQm5pdGN3Z1RTNW1yVk1DdDVKQWVmV0pGbENPcmhqYWQzWURZMGRyUVMwVDlKbnhKdGFDQms3U01kbWJ4UzcrMEpsK3V6TnIrdWswbGdBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE1ODgyNDAwCWZpbGU6YmVzdC1jcmFmdF8wLjE1LjJfYW1kNjQuQXBwSW1hZ2UudGFyLmd6CnBTZTArNEhZUDFFajRJTndnelB0TkYwT3BTODJWV1p1SjM3dnhRYVpncGJGejRLRnM2K0ZrRG1PV2IxVVlCZjZQZHcxUUdJNi9vQlFjc3lPUThRVURnPT0K",
-      "url": "https://tnze.yyyy.games/releases/v0.15.2/best-craft_0.15.2_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnBwblZielZBRUhnQ3Y5SHhUSzFaWFFaYms3NnBNR1JzSXl1Y1lKN094RFFGYTNodys5aytFS3VlUWM3RlBMRmRHQ21XbHVwb1BZeHQvZXpqZGEvV0E0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE4NzI3MDAxCWZpbGU6YmVzdC1jcmFmdF8wLjE1LjNfYW1kNjQuQXBwSW1hZ2UudGFyLmd6CnIzODI1UDFFdWVJYThET0Q0cUtySXk5cklDL3plL2xJOTVIYzA0NnVXRG5XL05JYUZ3aTgyMFRsNHpLL21uZEF5QlRDTmxXSXNCR3NuNEY0SWNaK0JBPT0K",
+      "url": "https://tnze.yyyy.games/releases/v0.15.3/best-craft_0.15.3_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9ZUk1CR3JHSHQwR3hDUkdlZFUreFpuTVF4dUQyTjB4M0lQZENyaGZKSlFmQ09RR0VFRHdQSmFNcXNlRWJ4NzhLR1hHTldqYXMzekdKOW5MVnplSUFJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE1ODgyNTk0CWZpbGU6QmVzdENyYWZ0XzAuMTUuMl94NjRfemgtQ04ubXNpLnppcAo1WlUvTHIwK1NHZGhIdDl0SFRQTktiR1hmNk04bzJob2MvMFVaRlVUa2tSMzVLdjVwYjJSYTB4RXdlTVNWOHpPNTA0bDRpRDhGVXlWaHE0eFhWczVEQT09Cg==",
-      "url": "https://tnze.yyyy.games/releases/v0.15.2/BestCraft_0.15.2_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmlLWE1qMHdLWDV2M01OR3JJbk02VkdjQ0pNUEtQcW51a2kzT3ZUK2R3TXcxbUMybEx3ckM0blhQVFJrR3NYTTlrSGpha3dESkxRdlBoUU9DdUdML3dvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE4NzI3MzQ0CWZpbGU6QmVzdENyYWZ0XzAuMTUuM194NjRfemgtQ04ubXNpLnppcApqa1hNa0k0WHhsSVNnK01RN1BBWUc4VHk4TE5WczBqMzBDcUJHaWRSb20xcUdBYkp4aUdtRHl4L1NpZFBkbGNoU0FBWW1IdG52Qm0weU9VZWI4RElCQT09Cg==",
+      "url": "https://tnze.yyyy.games/releases/v0.15.3/BestCraft_0.15.3_x64_zh-CN.msi.zip"
     }
   }
 }
