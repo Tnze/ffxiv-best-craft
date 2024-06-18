@@ -138,10 +138,12 @@ async function runTnzeVerRikaSolver() {
         <el-tabs v-model="activeNames">
             <el-tab-pane :label="$t('dp-solver')" name="dp">
                 <el-space v-if="platform != 'tauri'" direction="vertical" alignment="flex-start">
-                    <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false" />
-                    <DesktopEditionDownload />
+                    <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false">
+                        <DesktopEditionDownload />
+                    </el-alert>
                 </el-space>
-                <DpSolver v-else :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
+                <DpSolver v-else :init-status="initStatus" :recipe-name="recipeName"
+                    @run-simple-solver="runSimpleSolver" />
             </el-tab-pane>
             <el-tab-pane :label="$t('dfs-solver')" name="dfs" style="flex: auto;">
                 <DfsSolver :can-hq="canHq" @run-simple-solver="runSimpleSolver" />
@@ -149,7 +151,8 @@ async function runTnzeVerRikaSolver() {
             <el-tab-pane :label="$t('bfs-solver')" name="bfs">
                 <i18n path="rika-solver-info" tag="span" class="solver-info">
                     <template #rikaRepoLink="{ designByRika }">
-                        <el-link type="primary" href="https://github.com/RikaKagurasaka/xiv_craft_solver" target="_blank">
+                        <el-link type="primary" href="https://github.com/RikaKagurasaka/xiv_craft_solver"
+                            target="_blank">
                             {{ designByRika }}
                         </el-link>
                     </template>
@@ -165,8 +168,9 @@ async function runTnzeVerRikaSolver() {
             </el-tab-pane>
             <el-tab-pane :label="$t('tnzever-rika-solver')" name="bfs-dp">
                 <el-space v-if="platform != 'tauri'" direction="vertical" alignment="flex-start">
-                    <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false" />
-                    <DesktopEditionDownload />
+                    <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false">
+                        <DesktopEditionDownload />
+                    </el-alert>
                 </el-space>
                 <i18n v-else path="tnzever-rika-solver-info" tag="span" class="solver-info">
                     <template #startButton>
@@ -215,7 +219,7 @@ span {
 <fluent locale="zh-CN">
 please-use-desktop-solvers = 网页版求解器性能较差，请考虑使用桌面版。
     网页版求解器依赖于浏览器对 Wasm、ESM WebWorker 的支持，如遇无法使用的情况，请尝试升级您的浏览器。
-solver-not-avaliable = 该求解器尚未适配网页版 BestCraft，如需使用请下载桌面版。
+solver-not-avaliable = 该求解器尚未适配网页版 BestCraft。如需使用，请点击下方链接下载客户端。
 web-worker-not-avaliable = 您正在使用的浏览器不支持 Web Worker 功能，无法运行求解器。
 
 dp-solver = 动态规划求解 v2.2

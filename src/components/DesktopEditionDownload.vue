@@ -70,7 +70,7 @@ requestVersions()
 <fluent locale="zh-CN">
 version = 版本号
 date = 发布日期
-download = 下载
+download = 下载链接
 loading = 加载中
 </fluent>
 <fluent locale="en-US">

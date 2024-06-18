@@ -28,9 +28,9 @@ pub(crate) struct Slot {
 
 pub struct Solver {
     init_status: Status,
-    mn: bool,
-    wn: usize,
-    obz: bool,
+    allow_mn: bool,
+    allow_wn: usize,
+    allow_obz: bool,
     touch_caches: Array<Cell<Slot>, 9>,
 }
 
@@ -83,9 +83,9 @@ impl Solver {
             Array::from_flat(data, size).unwrap()
         };
         Self {
-            mn,
-            wn,
-            obz,
+            allow_mn: mn,
+            allow_wn: wn,
+            allow_obz: obz,
             touch_caches,
             init_status,
         }
@@ -117,25 +117,30 @@ impl Solver {
             action: None,
             is_some: true,
         };
-        let mut init_status = self.init_status.clone();
-        init_status.craft_points = craft_points;
-        init_status.durability = durability;
-        init_status.buffs = buffs;
-        for (action, consumed_du) in Self::TOUCH_SKILLS {
-            if init_status.is_action_allowed(action).is_err()
-                || durability < init_status.calc_durability(consumed_du)
-                || init_status.success_rate(action) < 100
-                || (matches!(action, Actions::Manipulation) && !self.mn)
-                || (matches!(action, Actions::WasteNotII) && self.wn < 8)
-                || (matches!(action, Actions::WasteNot) && self.wn < 4)
-                || (matches!(action, Actions::Observe) && !self.obz)
-                || (matches!(action, Actions::FocusedTouch) && init_status.buffs.observed == 0)
-            {
-                continue;
+        let mut curr_status = self.init_status.clone();
+        curr_status.craft_points = craft_points;
+        curr_status.durability = durability;
+        curr_status.buffs = buffs;
+
+        let filter = |(action, consumed_du)| {
+            if durability < curr_status.calc_durability(consumed_du) {
+                return None;
             }
-            let mut s = init_status.clone();
+            match action {
+                x if curr_status.is_action_allowed(x).is_err() => None,
+                x if curr_status.success_rate(x) < 100 => None,
+                Actions::Manipulation if !self.allow_mn => None,
+                Actions::WasteNotII if self.allow_wn < 8 || curr_status.buffs.wast_not >= 8 => None,
+                Actions::WasteNot if self.allow_wn < 4 || curr_status.buffs.wast_not >= 4 => None,
+                Actions::Observe if !self.allow_obz => None,
+                x => Some(x),
+            }
+        };
+        for action in Self::TOUCH_SKILLS.into_iter().filter_map(filter) {
+            let mut s = curr_status.clone();
+            let quality_before = s.quality;
             s.cast_action(action);
-            let mut score = s.quality;
+            let mut score = s.quality - quality_before;
             let mut steps = 1;
             if let Slot {
                 score: next_score,
