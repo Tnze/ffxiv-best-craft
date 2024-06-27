@@ -110,7 +110,7 @@ pub fn generate_routes_phase1(mut craft: Status) -> Vec<(Status, Vec<Actions>)> 
                 new_actions.push(action);
                 new_actions
             };
-            if remaining_prog <= prog_200 {
+            if remaining_prog <= prog_180 {
                 craft.craft_points -= match remaining_prog {
                     0 => 0,
                     x if x <= prog_120 => 0,

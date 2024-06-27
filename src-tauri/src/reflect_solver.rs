@@ -52,7 +52,7 @@ const TOUCH_SKILLS: [Actions; 17] = [
     Actions::StandardTouch,
     Actions::GreatStrides,
     Actions::Innovation,
-    Actions::QuickInnovation,
+    // Actions::QuickInnovation,
     Actions::WasteNotII,
     Actions::ByregotsBlessing,
     Actions::PrudentTouch,
@@ -70,8 +70,8 @@ pub struct QualitySolver {
     mn: bool,
     wn: usize,
     obz: bool,
-    // results [obz][iq][iv][gs][mn][wn][touch][d][cp]
-    results: Array<Cell<SolverSlot<u32>>, 9>,
+    // results [obz][iq][iv][gs][mn][wn][touch][tp][qi][d][cp]
+    results: Array<Cell<SolverSlot<u32>>, 10>,
 }
 
 impl QualitySolver {
@@ -87,6 +87,7 @@ impl QualitySolver {
             4,
             mn as usize * 8 + 1,
             wn + 1,
+            3,
             3,
             du / 5 + 1,
             cp + 1,
@@ -119,6 +120,7 @@ impl QualitySolver {
             s.buffs.manipulation as usize,
             s.buffs.wast_not as usize,
             s.buffs.touch_combo_stage as usize,
+            s.buffs.trained_perfection as usize,
             s.durability as usize / 5,
             s.craft_points as usize,
         ];
@@ -211,6 +213,7 @@ impl Solver for QualitySolver {
             wast_not: s.buffs.wast_not,
             touch_combo_stage: s.buffs.touch_combo_stage,
             observed: s.buffs.observed,
+            trained_perfection: s.buffs.trained_perfection,
             ..Buffs::default()
         };
         let max_addon = max_quality - s.quality;
@@ -250,8 +253,8 @@ pub struct ProgressSolver {
     mn: bool,
     wn: usize,
     obz: bool,
-    // [obz][ve][mn][wn][d][cp]
-    results: Array<Cell<SolverSlot<u16>>, 6>,
+    // [obz][ve][mn][wn][tp][d][cp]
+    results: Array<Cell<SolverSlot<u16>>, 7>,
 }
 
 impl ProgressSolver {
@@ -263,6 +266,7 @@ impl ProgressSolver {
             5,
             mn as usize * 8 + 1,
             wn + 1,
+            3,
             du / 5 + 1,
             cp + 1,
         ];
@@ -289,6 +293,7 @@ impl ProgressSolver {
             s.buffs.veneration as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not as usize,
+            s.buffs.trained_perfection as usize,
             (s.durability as usize).div_ceil(5),
             s.craft_points as usize,
         ];
@@ -387,6 +392,7 @@ impl Solver for ProgressSolver {
             manipulation: s.buffs.manipulation,
             wast_not: s.buffs.wast_not,
             observed: s.buffs.observed,
+            trained_perfection: s.buffs.trained_perfection,
             ..Buffs::default()
         };
         for cp in 0..=s.craft_points {

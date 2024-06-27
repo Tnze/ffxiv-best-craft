@@ -33,16 +33,16 @@ const buffsDisplay = computed<{
     return Object.entries(props.buffs)
         .filter(v => !fakeBuffs.includes(v[0]))
         .filter(v => typeof v[1] === 'number' ? v[1] > 0 : v[1] === LimitedActionState.Active)
-        .map(([buffName, duration]) => {
+        .map(([buffName, value]) => {
             if (buffName == 'inner_quiet') {
                 return {
-                    url: new URL(`../../assets/buffs/${buffName}_${duration as number}.png`, import.meta.url),
+                    url: new URL(`../../assets/buffs/${buffName}_${value as number}.png`, import.meta.url),
                     duration: undefined
                 }
             } else {
                 return {
                     url: new URL(`../../assets/buffs/${buffName}.png`, import.meta.url),
-                    duration: buffName == 'heart_and_soul' || buffName == 'trained_perfection' ? undefined : duration as number,
+                    duration: typeof value !== 'number' ? undefined : value as number,
                 }
             }
         })

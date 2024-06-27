@@ -40,7 +40,6 @@ const actions: Actions[][] = [
         Actions.Reflect,
         Actions.MuscleMemory,
         Actions.TrainedEye,
-        Actions.CarefulObservation,
     ],
     [
         Actions.MastersMend,
@@ -83,8 +82,7 @@ const actions: Actions[][] = [
     ],
     [
         Actions.RapidSynthesis,
-        Actions.HastyTouch,
-        Actions.DaringTouch,
+        Actions.HastyTouch, // Actions.DaringTouch,
     ]
 ]
 
@@ -93,6 +91,7 @@ const actionsForSimulator: Actions[][] = [
         Actions.Reflect,
         Actions.MuscleMemory,
         Actions.TrainedEye,
+        Actions.CarefulObservation,
     ],
     [
         Actions.Veneration,
@@ -104,8 +103,7 @@ const actionsForSimulator: Actions[][] = [
     ],
     [
         Actions.Innovation,
-        Actions.HastyTouch,
-        Actions.DaringTouch,
+        Actions.HastyTouch, // Actions.DaringTouch,
         Actions.PrudentTouch,
         Actions.PreparatoryTouch,
         Actions.BasicTouch,
@@ -118,7 +116,6 @@ const actionsForSimulator: Actions[][] = [
     ],
     [
         Actions.FinalAppraisal,
-        Actions.CarefulObservation,
         Actions.HeartAndSoul,
         Actions.TricksOfTheTrade,
         Actions.IntensiveSynthesis,
@@ -138,7 +135,18 @@ const actionsForSimulator: Actions[][] = [
     ]
 ]
 
-const usedActions = computed(() => props.simulatorMode ? actionsForSimulator : actions)
+const usedActions = computed(() =>
+    (props.simulatorMode ? actionsForSimulator : actions).map(actions =>
+        actions.map(action => {
+            if (action === Actions.HastyTouch &&
+                props.status != undefined &&
+                props.status.buffs.hasty_touched > 0) {
+                return Actions.DaringTouch;
+            }
+            return action;
+        })
+    )
+)
 
 const isActived = (action: Actions) => {
     if (props.status == undefined)
