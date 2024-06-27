@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 // Copyright (C) 2023 Rika
 //
 // BestCraft is free software: you can redistribute it and/or modify
@@ -95,10 +95,7 @@ pub fn next_action_picker_1(craft: &Status) -> Vec<Actions> {
 pub fn generate_routes_phase1(mut craft: Status) -> Vec<(Status, Vec<Actions>)> {
     let (prog_120, prog_180) = {
         craft.buffs = Buffs::default();
-        (
-            craft.calc_synthesis(1.2),
-            craft.calc_synthesis(1.8),
-        )
+        (craft.calc_synthesis(1.2), craft.calc_synthesis(1.8))
     };
     let mut queue = vec![(craft, vec![])];
     let mut routes = Vec::new();

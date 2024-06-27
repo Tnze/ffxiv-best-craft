@@ -66,6 +66,11 @@ prudent-synthesis = Prudent Synthesis
 trained-finesse = Trained Finesse
 careful-observation = Careful Observation
 heart-and-soul = Heart and Soul
+refined_touch = Refined Touch
+daring_touch = Daring Touch
+immaculate_mend = Immaculate Mend
+quick_innovation = Quick Innovation
+trained_perfection = Traied Perfection
 
 # Conditions
 normal = Normal
