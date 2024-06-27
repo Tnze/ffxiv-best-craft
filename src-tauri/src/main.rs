@@ -27,7 +27,7 @@ use app_libs::{
     analyzer::rand_simulations::Statistics,
     ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status},
     solver::{
-        depth_first_search_solver, normal_quality_solver, rika_solver, Score, Solver, SolverHash,
+        depth_first_search_solver, normal_progress_solver, rika_solver, Score, Solver, SolverHash,
     },
     SimulateOneStepResult, SimulateResult,
 };
@@ -331,7 +331,7 @@ fn dfs_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
 
 #[tauri::command(async)]
 fn nq_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
-    normal_quality_solver::solve(status, depth, specialist)
+    normal_progress_solver::solve(status, depth, specialist)
 }
 
 #[tauri::command(async)]

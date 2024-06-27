@@ -171,9 +171,10 @@ pub fn solve(status: Status, maximum_depth: usize, specialist: bool) -> Vec<Acti
 }
 
 /// 搜索的技能列表
-const ACTION_LIST: [Actions; 28] = [
+const ACTION_LIST: [Actions; 32] = [
     Actions::BasicSynthesis,
     Actions::BasicTouch,
+    Actions::RefinedTouch,
     Actions::MastersMend,
     Actions::Observe,
     Actions::TricksOfTheTrade,
@@ -200,4 +201,7 @@ const ACTION_LIST: [Actions; 28] = [
     Actions::PrudentSynthesis,
     Actions::TrainedFinesse,
     Actions::HeartAndSoul,
+    Actions::ImmaculateMend,
+    Actions::TrainedPerfection,
+    Actions::QuickInnovation,
 ];

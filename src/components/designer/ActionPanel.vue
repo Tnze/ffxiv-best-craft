@@ -129,6 +129,8 @@ const actionsForSimulator: Actions[][] = [
         Actions.WasteNot,
         Actions.WasteNotII,
         Actions.Manipulation,
+        Actions.ImmaculateMend,
+        Actions.TrainedPerfection,
     ],
     [
         Actions.DelicateSynthesis,
@@ -137,12 +139,6 @@ const actionsForSimulator: Actions[][] = [
 ]
 
 const usedActions = computed(() => props.simulatorMode ? actionsForSimulator : actions)
-
-const fail_actions: Actions[] = [
-    Actions.RapidSynthesisFail,
-    Actions.HastyTouchFail,
-    Actions.DaringTouchFail,
-]
 
 const isActived = (action: Actions) => {
     if (props.status == undefined)

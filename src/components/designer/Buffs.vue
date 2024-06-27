@@ -42,7 +42,7 @@ const buffsDisplay = computed<{
             } else {
                 return {
                     url: new URL(`../../assets/buffs/${buffName}.png`, import.meta.url),
-                    duration: buffName == 'heart_and_soul' ? undefined : duration as number,
+                    duration: buffName == 'heart_and_soul' || buffName == 'trained_perfection' ? undefined : duration as number,
                 }
             }
         })

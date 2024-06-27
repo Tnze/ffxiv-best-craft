@@ -100,7 +100,7 @@ pub fn dfs_solve(status: JsValue, depth: usize, specialist: bool) -> Result<JsVa
 
 #[wasm_bindgen]
 pub fn nq_solve(status: JsValue, depth: usize, specialist: bool) -> Result<JsValue, JsValue> {
-    use app_libs::solver::normal_quality_solver::solve;
+    use app_libs::solver::normal_progress_solver::solve;
     let status: Status = from_value(status)?;
     let result: Vec<Actions> = solve(status, depth, specialist);
     Ok(to_value(&result)?)

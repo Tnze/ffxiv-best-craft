@@ -42,8 +42,9 @@ impl Solver {
     const MAX_TOUCH_COMBO: usize = 2;
     // const MAX_VENERATION: usize = 4;
     const MAX_OBSERVE: usize = 1;
-    const TOUCH_SKILLS: [(Actions, u16); 14] = [
+    const TOUCH_SKILLS: [(Actions, u16); 17] = [
         (Actions::BasicTouch, 10),
+        (Actions::RefinedTouch, 10)
         (Actions::StandardTouch, 10),
         (Actions::AdvancedTouch, 10),
         (Actions::PrudentTouch, 5),
@@ -54,9 +55,12 @@ impl Solver {
         (Actions::Observe, 0),
         (Actions::Manipulation, 0),
         (Actions::Innovation, 0),
+        (Actions::QuickInnovation, 0)
         (Actions::WasteNot, 0),
         (Actions::WasteNotII, 0),
         (Actions::MastersMend, 0),
+        (Actions::TrainedPerfection, 0),
+        (Actions::ImmaculateMend, 0)
     ];
 
     pub(crate) fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {

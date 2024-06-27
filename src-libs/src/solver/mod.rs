@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 pub mod depth_first_search_solver;
-pub mod normal_quality_solver;
+pub mod normal_progress_solver;
 pub mod rika_solver;
 
 use std::cmp::Ordering;

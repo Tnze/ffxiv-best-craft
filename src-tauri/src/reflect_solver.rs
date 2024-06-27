@@ -29,7 +29,7 @@ struct SolverSlot<T> {
     is_some: bool,
 }
 
-const SYNTH_SKILLS: [Actions; 10] = [
+const SYNTH_SKILLS: [Actions; 12] = [
     Actions::BasicSynthesis,
     Actions::WasteNot,
     Actions::Veneration,
@@ -40,15 +40,19 @@ const SYNTH_SKILLS: [Actions; 10] = [
     Actions::IntensiveSynthesis,
     Actions::PrudentSynthesis,
     Actions::Observe,
+    Actions::TrainedPerfection,
+    Actions::ImmaculateMend,
 ];
 
-const TOUCH_SKILLS: [Actions; 14] = [
+const TOUCH_SKILLS: [Actions; 17] = [
     Actions::BasicTouch,
+    Actions::RefinedTouch,
     Actions::MastersMend,
     Actions::WasteNot,
     Actions::StandardTouch,
     Actions::GreatStrides,
     Actions::Innovation,
+    Actions::QuickInnovation,
     Actions::WasteNotII,
     Actions::ByregotsBlessing,
     Actions::PrudentTouch,
@@ -57,6 +61,8 @@ const TOUCH_SKILLS: [Actions; 14] = [
     Actions::TrainedFinesse,
     Actions::Manipulation,
     Actions::Observe,
+    Actions::TrainedPerfection,
+    Actions::ImmaculateMend,
 ];
 
 pub struct QualitySolver {

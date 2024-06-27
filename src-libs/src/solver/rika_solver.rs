@@ -39,11 +39,9 @@ pub fn solve(craft: Status) -> Vec<Actions> {
     let mut content = content.clone();
     let prog_120 = craft.calc_synthesis(1.2);
     let prog_180 = craft.calc_synthesis(1.8);
-    let prog_200 = craft.calc_synthesis(2.0);
     content.append(&mut match craft.recipe.difficulty - craft.progress {
         x if x <= prog_120 => vec![Actions::BasicSynthesis],
         x if x <= prog_180 => vec![Actions::CarefulSynthesis],
-        x if x <= prog_200 => vec![Actions::Observe, Actions::AdvancedTouch],
         _ => vec![],
     });
     content
@@ -95,12 +93,11 @@ pub fn next_action_picker_1(craft: &Status) -> Vec<Actions> {
 }
 
 pub fn generate_routes_phase1(mut craft: Status) -> Vec<(Status, Vec<Actions>)> {
-    let (prog_120, prog_180, prog_200) = {
+    let (prog_120, prog_180) = {
         craft.buffs = Buffs::default();
         (
             craft.calc_synthesis(1.2),
             craft.calc_synthesis(1.8),
-            craft.calc_synthesis(2.0),
         )
     };
     let mut queue = vec![(craft, vec![])];
@@ -121,7 +118,6 @@ pub fn generate_routes_phase1(mut craft: Status) -> Vec<(Status, Vec<Actions>)> 
                     0 => 0,
                     x if x <= prog_120 => 0,
                     x if x <= prog_180 => 7,
-                    x if x <= prog_200 => 12,
                     _ => 0,
                 };
                 craft.durability -= 10;
@@ -150,6 +146,7 @@ pub fn next_action_phase_2(craft: &Status) -> Vec<Actions> {
         if craft.buffs.inner_quiet >= 2 {
             forbidden_actions.append(&mut vec![
                 Actions::BasicTouch,
+                Actions::RefinedTouch,
                 Actions::StandardTouch,
                 Actions::AdvancedTouch,
                 Actions::TrainedFinesse,
