@@ -47,6 +47,7 @@ const actions: Actions[][] = [
         Actions.WasteNot,
         Actions.WasteNotII,
         Actions.Manipulation,
+        Actions.ImmaculateMend,
         Actions.TrainedPerfection,
     ],
     [
@@ -163,6 +164,8 @@ const isActived = (action: Actions) => {
             return props.status.buffs.touch_combo_stage == 1
         case Actions.AdvancedTouch:
             return props.status.buffs.touch_combo_stage == 2
+        case Actions.DaringTouch:
+            return props.status.buffs.hasty_touched > 0
     }
     return false;
 }
