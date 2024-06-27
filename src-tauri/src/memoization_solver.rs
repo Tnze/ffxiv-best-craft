@@ -42,7 +42,7 @@ impl Solver {
     const MAX_TOUCH_COMBO: usize = 2;
     // const MAX_VENERATION: usize = 4;
     const MAX_OBSERVE: usize = 1;
-    const TOUCH_SKILLS: [(Actions, u16); 15] = [
+    const TOUCH_SKILLS: [(Actions, u16); 14] = [
         (Actions::BasicTouch, 10),
         (Actions::StandardTouch, 10),
         (Actions::AdvancedTouch, 10),
@@ -52,7 +52,6 @@ impl Solver {
         (Actions::GreatStrides, 0),
         (Actions::ByregotsBlessing, 10),
         (Actions::Observe, 0),
-        (Actions::FocusedTouch, 10),
         (Actions::Manipulation, 0),
         (Actions::Innovation, 0),
         (Actions::WasteNot, 0),

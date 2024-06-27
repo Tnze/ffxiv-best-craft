@@ -29,7 +29,7 @@ struct SolverSlot<T> {
     is_some: bool,
 }
 
-const SYNTH_SKILLS: [Actions; 11] = [
+const SYNTH_SKILLS: [Actions; 10] = [
     Actions::BasicSynthesis,
     Actions::WasteNot,
     Actions::Veneration,
@@ -40,10 +40,9 @@ const SYNTH_SKILLS: [Actions; 11] = [
     Actions::IntensiveSynthesis,
     Actions::PrudentSynthesis,
     Actions::Observe,
-    Actions::FocusedSynthesis,
 ];
 
-const TOUCH_SKILLS: [Actions; 15] = [
+const TOUCH_SKILLS: [Actions; 14] = [
     Actions::BasicTouch,
     Actions::MastersMend,
     Actions::WasteNot,
@@ -58,7 +57,6 @@ const TOUCH_SKILLS: [Actions; 15] = [
     Actions::TrainedFinesse,
     Actions::Manipulation,
     Actions::Observe,
-    Actions::FocusedTouch,
 ];
 
 pub struct QualitySolver {
@@ -155,7 +153,9 @@ impl QualitySolver {
                 || (matches!(sk, Actions::WasteNotII) && self.wn < 8)
                 || (matches!(sk, Actions::WasteNot) && self.wn < 4)
                 || (matches!(sk, Actions::Observe) && !self.obz)
-                || (matches!(sk, Actions::FocusedTouch) && s.buffs.observed == 0)
+                || (matches!(sk, Actions::AdvancedTouch)
+                    && s.buffs.observed == 0
+                    && s.buffs.touch_combo_stage != 2)
             {
                 continue;
             }
@@ -323,7 +323,6 @@ impl ProgressSolver {
                 || (matches!(sk, Actions::WasteNotII) && self.wn < 8)
                 || (matches!(sk, Actions::WasteNot) && self.wn < 4)
                 || (matches!(sk, Actions::Observe) && !self.obz)
-                || (matches!(sk, Actions::FocusedSynthesis) && s.buffs.observed == 0)
             {
                 continue;
             }

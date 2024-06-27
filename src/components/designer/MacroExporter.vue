@@ -99,8 +99,6 @@ const waitTimes = new Map([
     [Actions.CarefulSynthesis, 3],
     [Actions.Manipulation, 2],
     [Actions.PrudentTouch, 3],
-    [Actions.FocusedSynthesis, 3],
-    [Actions.FocusedTouch, 3],
     [Actions.Reflect, 3],
     [Actions.PreparatoryTouch, 3],
     [Actions.Groundwork, 3],

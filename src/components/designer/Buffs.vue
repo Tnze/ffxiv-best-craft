@@ -18,13 +18,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Buffs } from '@/libs/Craft';
+import { Buffs, LimitedActionState } from '@/libs/Craft';
 
 const props = defineProps<{
     buffs: Buffs
 }>()
 
-const fakeBuffs = ['careful_observation_used', 'heart_and_soul_used', 'touch_combo_stage', 'observed']
+const fakeBuffs = ['careful_observation_used', 'quick_innovation_used', 'touch_combo_stage', 'observed', "hasty_touched"]
 
 const buffsDisplay = computed<{
     url: URL,
@@ -32,7 +32,7 @@ const buffsDisplay = computed<{
 }[]>(() => {
     return Object.entries(props.buffs)
         .filter(v => !fakeBuffs.includes(v[0]))
-        .filter(v => v[1] > 0)
+        .filter(v => typeof v[1] === 'number' ? v[1] > 0 : v[1] === LimitedActionState.Active)
         .map(([buffName, duration]) => {
             if (buffName == 'inner_quiet') {
                 return {

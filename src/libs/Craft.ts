@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -68,11 +68,13 @@ export interface Buffs {
     final_appraisal: number;
     manipulation: number;
     wast_not: number;
-    heart_and_soul: number;
+    heart_and_soul: LimitedActionState;
+    trained_perfection: LimitedActionState;
     careful_observation_used: number;
-    heart_and_soul_used: number;
+    quick_innovation_used: number;
     touch_combo_stage: number;
     observed: number;
+    hasty_touched: number;
 }
 
 export interface Status {
@@ -86,6 +88,12 @@ export interface Status {
     quality: number;
     step: number;
     condition: Conditions;
+}
+
+export enum LimitedActionState {
+    Unused = "Unused",
+    Active = "Active",
+    Used = "Used",
 }
 
 export const compareStatus = (s1: Status, s2: Status): number => {
@@ -154,8 +162,6 @@ export enum Actions {
     CarefulSynthesis = "careful_synthesis",
     Manipulation = "manipulation",
     PrudentTouch = "prudent_touch",
-    FocusedSynthesis = "focused_synthesis",
-    FocusedTouch = "focused_touch",
     Reflect = "reflect",
     PreparatoryTouch = "preparatory_touch",
     Groundwork = "groundwork",
@@ -167,11 +173,16 @@ export enum Actions {
     TrainedFinesse = "trained_finesse",
     CarefulObservation = "careful_observation",
     HeartAndSoul = "heart_and_soul",
+    // 7.0
+    RefinedTouch = "refined_touch",
+    DaringTouch = "daring_touch",
+    ImmaculateMend = "immaculate_mend",
+    QuickInnovation = "quick_innovation",
+    TrainedPerfection = "trained_perfection",
     // fake skills
     RapidSynthesisFail = "rapid_synthesis_fail",
     HastyTouchFail = "hasty_touch_fail",
-    FocusedSynthesisFail = "focused_synthesis_fail",
-    FocusedTouchFail = "focused_touch_fail",
+    DaringTouchFail = "daring_touch_fail",
 }
 
 export const newRecipe = async (

@@ -52,7 +52,7 @@ store.$subscribe((mutation, store) => {
                 @change="setInheritFromDefault" />
         </el-form-item>
         <el-form-item :label="$t('level')">
-            <el-input-number v-model="(v.value || store.default).level" :disabled="v.value == null" :min="0" :max="90"
+            <el-input-number v-model="(v.value || store.default).level" :disabled="v.value == null" :min="0" :max="100"
                 :step-strictly="true"></el-input-number>
         </el-form-item>
         <el-form-item :label="$t('craftsmanship')">

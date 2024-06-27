@@ -231,7 +231,7 @@ dp-solver-info =
        该求解器对象会分配内存，用以储存所有状态的下一步最优动作。
 
     2. 用户在工作区输入坚信起手，并且需要将进展推动至“差最后一步制作即可完成”的状态。
-       具体定义为可以通过“{basic-synthesis}（效率100）”、“{careful-synthesis}（效率180）”或“{observe}-{focused-synthesis}（效率200）”之一完成的状态。
+       具体定义为可以通过“{basic-synthesis}（效率100）”、“{careful-synthesis}（效率180）”或之一完成的状态。
 
     3. 当算法识别到可以处理的情况后，计算需要留给最后一步的资源，并基于当前的Buff状态运行推动品质的动态规划。
        这时可以看到工作区出现一个正在转圈的Loading标志。几分钟后，求解结果会显示在用户输入的技能后面。
@@ -314,7 +314,7 @@ dp-solver-info =
     1. The user sets all the parameters of the recipe and then clicks the {start-solver} button. Create a solver object for the current recipe and equipment attributes.
        The solver object will allocate memory to store the next optimal action for all states.
     2. The user enters a {muscle-memory} and some other actions in the workspace pushs the progress to a state which left only one step away from completing the crafting,
-       which is specifically defined as a state that can be completed through one of "{basic-synthesis} (efficiency 1.0)", "{delicate-synthesis} (efficiency 1.8)", or "{observe} - {focused-synthesis} (efficiency 2.0)".
+       which is specifically defined as a state that can be completed through one of "{basic-synthesis} (efficiency 1.0)" or "{delicate-synthesis} (efficiency 1.8)".
     3. After the algorithm recognizes the situation that can be processed, it needs to allocate resources for the final step and run the DP to drive quality based on the current Buffs state.
        At this point, you can see a rotating Loading icon in the workspace. After a few minutes, the solving results will be displayed after the actions inputed by the user.
     4. The user can adjust the inputs, try different starting actions, and preview the solving results in real-time. The adjustment results can generally be completed in less than 1 second.

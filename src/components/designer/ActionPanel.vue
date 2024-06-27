@@ -20,7 +20,7 @@
 import { ElPopover } from 'element-plus';
 import { computed, reactive, watchEffect } from 'vue'
 import Action from './Action.vue'
-import { Jobs, Actions, Status, allowedList, craftPointsList, Conditions } from '@/libs/Craft'
+import { Jobs, Actions, Status, allowedList, craftPointsList, Conditions, LimitedActionState } from '@/libs/Craft'
 
 const props = defineProps<{
     job: Jobs,
@@ -40,14 +40,17 @@ const actions: Actions[][] = [
         Actions.Reflect,
         Actions.MuscleMemory,
         Actions.TrainedEye,
+        Actions.CarefulObservation,
     ],
     [
         Actions.MastersMend,
         Actions.WasteNot,
         Actions.WasteNotII,
         Actions.Manipulation,
+        Actions.TrainedPerfection,
     ],
     [
+        Actions.FinalAppraisal,
         Actions.Veneration,
         Actions.PrudentSynthesis,
         Actions.Groundwork,
@@ -58,14 +61,17 @@ const actions: Actions[][] = [
         Actions.Innovation,
         Actions.PrudentTouch,
         Actions.PreparatoryTouch,
+        Actions.RefinedTouch,
         Actions.BasicTouch,
         Actions.StandardTouch,
         Actions.AdvancedTouch,
         Actions.TrainedFinesse,
         Actions.GreatStrides,
+        Actions.QuickInnovation,
         Actions.ByregotsBlessing,
     ],
     [
+        Actions.HeartAndSoul,
         Actions.TricksOfTheTrade,
         Actions.IntensiveSynthesis,
         Actions.PreciseTouch,
@@ -73,17 +79,11 @@ const actions: Actions[][] = [
     [
         Actions.DelicateSynthesis,
         Actions.Observe,
-        Actions.FocusedSynthesis,
-        Actions.FocusedTouch,
-    ],
-    [
-        Actions.FinalAppraisal,
-        Actions.CarefulObservation,
-        Actions.HeartAndSoul,
     ],
     [
         Actions.RapidSynthesis,
         Actions.HastyTouch,
+        Actions.DaringTouch,
     ]
 ]
 
@@ -104,6 +104,7 @@ const actionsForSimulator: Actions[][] = [
     [
         Actions.Innovation,
         Actions.HastyTouch,
+        Actions.DaringTouch,
         Actions.PrudentTouch,
         Actions.PreparatoryTouch,
         Actions.BasicTouch,
@@ -111,6 +112,7 @@ const actionsForSimulator: Actions[][] = [
         Actions.AdvancedTouch,
         Actions.TrainedFinesse,
         Actions.GreatStrides,
+        Actions.QuickInnovation,
         Actions.ByregotsBlessing,
     ],
     [
@@ -130,8 +132,6 @@ const actionsForSimulator: Actions[][] = [
     [
         Actions.DelicateSynthesis,
         Actions.Observe,
-        Actions.FocusedSynthesis,
-        Actions.FocusedTouch,
     ]
 ]
 
@@ -140,8 +140,7 @@ const usedActions = computed(() => props.simulatorMode ? actionsForSimulator : a
 const fail_actions: Actions[] = [
     Actions.RapidSynthesisFail,
     Actions.HastyTouchFail,
-    Actions.FocusedSynthesisFail,
-    Actions.FocusedTouchFail,
+    Actions.DaringTouchFail,
 ]
 
 const isActived = (action: Actions) => {
@@ -157,16 +156,13 @@ const isActived = (action: Actions) => {
         case Actions.PreciseTouch:
             return props.status.condition == Conditions.Good ||
                 props.status.condition == Conditions.Excellent ||
-                props.status.buffs.heart_and_soul > 0
+                props.status.buffs.heart_and_soul == LimitedActionState.Active
         case Actions.ByregotsBlessing:
             return props.status.buffs.inner_quiet > 0
         case Actions.StandardTouch:
             return props.status.buffs.touch_combo_stage == 1
         case Actions.AdvancedTouch:
             return props.status.buffs.touch_combo_stage == 2
-        case Actions.FocusedSynthesis:
-        case Actions.FocusedTouch:
-            return props.status.buffs.observed > 0
     }
     return false;
 }
@@ -207,13 +203,6 @@ watchEffect(() => {
                         :cp="cachedCraftPointsList.get(action) || undefined" />
                 </template>
             </el-popover>
-        </div>
-        <div class="group" v-if="!simulatorMode">
-            <Action :job="job" class="item" v-for="action in fail_actions" @click="emit('clickedAction', action)"
-                @mouseover="emit('mousehoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
-                :action="action" :active="isActived(action)"
-                :effect="!disable && cachedAllowedList.get(action) == 'ok' ? 'red-cross' : 'black'"
-                :cp="cachedCraftPointsList.get(action) || undefined" />
         </div>
     </div>
 </template>

@@ -31,7 +31,7 @@ fn search(status: Status, maximum_depth: usize, specialist: bool) -> (i32, Vec<A
     SKILL_LIST
         .into_iter()
         .filter(|&next_action| {
-            !matches!(next_action, Actions::FocusedSynthesis if status.buffs.observed == 0)
+            !matches!(next_action, Actions::AdvancedTouch if status.buffs.observed == 0 && status.buffs.touch_combo_stage != 2)
                 && (!matches!(next_action, Actions::HeartAndSoul) || specialist)
                 && status.is_action_allowed(next_action).is_ok()
         })
@@ -51,7 +51,7 @@ fn search(status: Status, maximum_depth: usize, specialist: bool) -> (i32, Vec<A
 }
 
 /// 搜索的技能列表
-const SKILL_LIST: [Actions; 17] = [
+const SKILL_LIST: [Actions; 16] = [
     Actions::BasicSynthesis,
     Actions::MastersMend,
     Actions::Observe,
@@ -61,7 +61,6 @@ const SKILL_LIST: [Actions; 17] = [
     Actions::MuscleMemory,
     Actions::CarefulSynthesis,
     Actions::Manipulation,
-    Actions::FocusedSynthesis,
     Actions::Groundwork,
     Actions::DelicateSynthesis,
     Actions::IntensiveSynthesis,

@@ -43,7 +43,7 @@ pub fn solve(craft: Status) -> Vec<Actions> {
     content.append(&mut match craft.recipe.difficulty - craft.progress {
         x if x <= prog_120 => vec![Actions::BasicSynthesis],
         x if x <= prog_180 => vec![Actions::CarefulSynthesis],
-        x if x <= prog_200 => vec![Actions::Observe, Actions::FocusedSynthesis],
+        x if x <= prog_200 => vec![Actions::Observe, Actions::AdvancedTouch],
         _ => vec![],
     });
     content

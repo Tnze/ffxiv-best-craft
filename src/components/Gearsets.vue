@@ -37,7 +37,7 @@ const jobPage = ref('default')
                 <el-tab-pane name="default" :label="$t('default')">
                     <el-form label-position="right" label-width="auto" :model="store.default">
                         <el-form-item :label="$t('level')">
-                            <el-input-number v-model="store.default.level" :min="1" :max="90"
+                            <el-input-number v-model="store.default.level" :min="1" :max="100"
                                 :step-strictly="true"></el-input-number>
                         </el-form-item>
                         <el-form-item :label="$t('craftsmanship')">
