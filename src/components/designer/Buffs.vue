@@ -24,7 +24,7 @@ const props = defineProps<{
     buffs: Buffs
 }>()
 
-const fakeBuffs = ['careful_observation_used', 'quick_innovation_used', 'touch_combo_stage', 'observed', "hasty_touched"]
+const fakeBuffs = ['careful_observation_used', 'quick_innovation_used', 'touch_combo_stage', 'observed']
 
 const buffsDisplay = computed<{
     url: URL,

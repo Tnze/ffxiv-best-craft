@@ -140,7 +140,7 @@ const usedActions = computed(() =>
         actions.map(action => {
             if (action === Actions.HastyTouch &&
                 props.status != undefined &&
-                props.status.buffs.hasty_touched > 0) {
+                props.status.buffs.daring_touch_prepared > 0) {
                 return Actions.DaringTouch;
             }
             return action;
@@ -164,12 +164,14 @@ const isActived = (action: Actions) => {
                 props.status.buffs.heart_and_soul == LimitedActionState.Active
         case Actions.ByregotsBlessing:
             return props.status.buffs.inner_quiet > 0
+        case Actions.RefinedTouch:
         case Actions.StandardTouch:
             return props.status.buffs.touch_combo_stage == 1
         case Actions.AdvancedTouch:
-            return props.status.buffs.touch_combo_stage == 2
+            return props.status.buffs.touch_combo_stage == 2 ||
+                props.status.buffs.observed > 0
         case Actions.DaringTouch:
-            return props.status.buffs.hasty_touched > 0
+            return props.status.buffs.daring_touch_prepared > 0
     }
     return false;
 }
