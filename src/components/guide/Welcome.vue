@@ -17,9 +17,10 @@
 -->
 
 <script setup lang="ts">
-import { ElText, ElButton } from 'element-plus';
-import { computed } from 'vue';
-import useGuideStore  from '@/stores/guide';
+import { ElText, ElButton, ElNotification } from 'element-plus';
+import { computed, onMounted } from 'vue';
+import useGuideStore from '@/stores/guide';
+import { useFluent } from 'fluent-vue';
 // import { Recipe, RecipeInfo } from '../../Craft';
 // import { useRouter } from 'vue-router';
 // import { DataSource } from '../recipe-manager/source';
@@ -27,8 +28,17 @@ import useGuideStore  from '@/stores/guide';
 // const router = useRouter()
 const store = useGuideStore()
 // const settingStore = useSettingsStore()
+const { $t } = useFluent()
 
 store.setCurrentPage('welcome')
+
+onMounted(() => {
+    ElNotification({
+        title: $t('try-dawntrain'),
+        message: $t('try-dawntrain-desc'),
+        duration: 0,
+    })
+})
 
 // async function recipes(ids: number[], ds: DataSource): Promise<CascaderOption[]> {
 //     return await Promise.all(ids.map(async id => {
@@ -92,7 +102,8 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
         </div> -->
         <div class="confirm-button">
             <!-- <el-button type="primary" :disabled="!readyToConfirm">{{ $t('confirm') }}</el-button> -->
-            <el-button type="primary" size="large" @click="$router.push('/recipe')">{{ $t('select-recipe') }}</el-button>
+            <el-button type="primary" size="large" @click="$router.push('/recipe')">{{ $t('select-recipe')
+                }}</el-button>
         </div>
         <el-text class="info-text" type="info">{{ $t('copyright-notices') }}</el-text>
     </div>
@@ -154,6 +165,10 @@ no-data = 无配方
 
 confirm = 确认
 select-recipe = 选择配方
+
+try-dawntrain = FFXIV 7.0 黄金的遗产
+try-dawntrain-desc = BestCraft 现已适配 7.0 新技能、新配方。欢迎前往体验！
+    https://tnze.yyyy.games/dawntrail/
 
 guide-mode-info =
     注意：实验性向导模式已删除。如有疑问欢迎反馈。
