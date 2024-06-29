@@ -335,8 +335,8 @@ fn nq_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
 }
 
 #[tauri::command(async)]
-fn reflect_solve(status: Status, use_manipulation: bool) -> Vec<Actions> {
-    let solver = reflect_solver::QualitySolver::new(status.clone(), use_manipulation, 8 + 1, true);
+fn reflect_solve(status: Status, use_manipulation: bool, use_waste_not: usize) -> Vec<Actions> {
+    let solver = reflect_solver::QualitySolver::new(status.clone(), use_manipulation, use_waste_not + 1, true);
     let result1 = solver.read_all(&status);
     let SimulateResult { status: s1, .. } = simulate(status.clone(), result1.clone());
     // Try reflect

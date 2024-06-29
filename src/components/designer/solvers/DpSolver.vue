@@ -44,13 +44,14 @@ const emits = defineEmits<{
 
 const dialogVisible = ref(false)
 const useManipulation = ref(false)
+const useWasteNot = ref(false)
 const useMuscleMemory = ref(false)
 const useObserve = ref(true)
 const solvers = ref<Solver[]>([])
 
 const reflectSolveIsSolving = ref(false)
 function runReflectSolver() {
-    emits('runSimpleSolver', "dp", reflectSolveIsSolving, initStatus => reflect_solve(initStatus, useManipulation.value))
+    emits('runSimpleSolver', "dp", reflectSolveIsSolving, initStatus => reflect_solve(initStatus, useManipulation.value, useWasteNot.value ? 8 : 0))
 }
 
 const createSolver = async () => {
@@ -129,6 +130,7 @@ const destroySolver = async (s: Solver) => {
     <el-space direction="vertical">
         <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" />
         <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
+        <el-checkbox v-model="useWasteNot" :label="$t('waste-not')" />
         <el-checkbox v-model="useObserve" :label="$t('observe')" />
     </el-space>
     <el-alert v-if="useMuscleMemory" type="warning" :title="$t('muscle-memory-msg')" show-icon :closable="false" />
