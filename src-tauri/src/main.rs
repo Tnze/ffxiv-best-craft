@@ -335,8 +335,13 @@ fn nq_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
 }
 
 #[tauri::command(async)]
-fn reflect_solve(status: Status, use_manipulation: bool, use_waste_not: usize) -> Vec<Actions> {
-    reflect_solver::solve(status.clone(), use_manipulation, use_waste_not, true)
+fn reflect_solve(
+    status: Status,
+    use_manipulation: bool,
+    use_waste_not: usize,
+    use_observe: bool,
+) -> Vec<Actions> {
+    reflect_solver::solve(status.clone(), use_manipulation, use_waste_not, use_observe)
 }
 
 /// 释放求解器

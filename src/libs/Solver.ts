@@ -109,7 +109,7 @@ export async function nq_solve(status: Status, depth: number, specialist: boolea
 export async function reflect_solve(status: Status, useManipulation: boolean, useWasteNot: number, useObserve: boolean): Promise<Actions[]> {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri
-        return invoke("reflect_solve", { status, useManipulation, useWasteNot })
+        return invoke("reflect_solve", { status, useManipulation, useWasteNot, useObserve })
     } else {
         return invokeWasmSolver("reflect_solve", { status, useObserve })
     }
