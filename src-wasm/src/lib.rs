@@ -107,6 +107,14 @@ pub fn nq_solve(status: JsValue, depth: usize, specialist: bool) -> Result<JsVal
 }
 
 #[wasm_bindgen]
+pub fn reflect_solve(status: JsValue, use_observe: bool) -> Result<JsValue, JsValue> {
+    use app_libs::solver::reflect_solver::solve;
+    let status: Status = from_value(status)?;
+    let result: Vec<Actions> = solve(status.clone(), false, 0, use_observe);
+    Ok(to_value(&result)?)
+}
+
+#[wasm_bindgen]
 pub fn rand_simulation(
     status: JsValue,
     actions: JsValue,

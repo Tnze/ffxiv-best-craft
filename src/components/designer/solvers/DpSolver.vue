@@ -42,6 +42,8 @@ const emits = defineEmits<{
     (event: 'runSimpleSolver', solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
 }>()
 
+const platform = import.meta.env.VITE_BESTCRAFT_TARGET
+
 const dialogVisible = ref(false)
 const useManipulation = ref(false)
 const useWasteNot = ref(false)
@@ -51,7 +53,7 @@ const solvers = ref<Solver[]>([])
 
 const reflectSolveIsSolving = ref(false)
 function runReflectSolver() {
-    emits('runSimpleSolver', "dp", reflectSolveIsSolving, initStatus => reflect_solve(initStatus, useManipulation.value, useWasteNot.value ? 8 : 0))
+    emits('runSimpleSolver', "dp", reflectSolveIsSolving, initStatus => reflect_solve(initStatus, useManipulation.value, useWasteNot.value ? 8 : 0, useObserve.value))
 }
 
 const createSolver = async () => {
@@ -128,9 +130,11 @@ const destroySolver = async (s: Solver) => {
         </i18n>
     </el-dialog>
     <el-space direction="vertical">
-        <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" />
-        <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
-        <el-checkbox v-model="useWasteNot" :label="$t('waste-not')" />
+        <template v-if="platform == 'tauri'">
+            <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" />
+            <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
+            <el-checkbox v-model="useWasteNot" :label="$t('waste-not')" />
+        </template>
         <el-checkbox v-model="useObserve" :label="$t('observe')" />
     </el-space>
     <el-alert v-if="useMuscleMemory" type="warning" :title="$t('muscle-memory-msg')" show-icon :closable="false" />

@@ -27,7 +27,8 @@ use app_libs::{
     analyzer::rand_simulations::Statistics,
     ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status},
     solver::{
-        depth_first_search_solver, normal_progress_solver, rika_solver, Score, Solver, SolverHash,
+        depth_first_search_solver, normal_progress_solver, reflect_solver, rika_solver, Score,
+        Solver, SolverHash,
     },
     SimulateOneStepResult, SimulateResult,
 };
@@ -41,7 +42,6 @@ use tokio::sync::{Mutex, OnceCell};
 mod db;
 mod memoization_solver;
 mod muscle_memory_solver;
-mod reflect_solver;
 mod rika_tnze_solver;
 
 use db::{craft_types, item_with_amount, items, prelude::*, recipes};
@@ -336,22 +336,7 @@ fn nq_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
 
 #[tauri::command(async)]
 fn reflect_solve(status: Status, use_manipulation: bool, use_waste_not: usize) -> Vec<Actions> {
-    let solver = reflect_solver::QualitySolver::new(status.clone(), use_manipulation, use_waste_not + 1, true);
-    let result1 = solver.read_all(&status);
-    let SimulateResult { status: s1, .. } = simulate(status.clone(), result1.clone());
-    // Try reflect
-    let mut s = status.clone();
-    s.cast_action(Actions::Reflect);
-    let mut result2 = solver.read_all(&s);
-    if result2.len() != 0 {
-        result2.insert(0, Actions::Reflect);
-    }
-    let SimulateResult { status: s2, .. } = simulate(s, result2.clone());
-    if Score::from((&s1, result1.len())) > Score::from((&s2, result2.len())) {
-        result1
-    } else {
-        result2
-    }
+    reflect_solver::solve(status.clone(), use_manipulation, use_waste_not, true)
 }
 
 /// 释放求解器

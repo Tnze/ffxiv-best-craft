@@ -14,12 +14,43 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use app_libs::{
-    ffxiv_crafting::{Actions, Buffs, Status},
-    solver::Solver,
+use crate::{
+    simulate,
+    solver::{Score, Solver},
+    SimulateResult,
 };
+use ffxiv_crafting::{Actions, Buffs, Status};
 use micro_ndarray::Array;
 use std::cell::Cell;
+
+pub fn solve(
+    status: Status,
+    use_manipulation: bool,
+    use_waste_not: usize,
+    use_observe: bool,
+) -> Vec<Actions> {
+    let solver = QualitySolver::new(
+        status.clone(),
+        use_manipulation,
+        use_waste_not + 1,
+        use_observe,
+    );
+    let result1 = solver.read_all(&status);
+    let SimulateResult { status: s1, .. } = simulate(status.clone(), result1.clone());
+    // Try reflect
+    let mut s = status.clone();
+    s.cast_action(Actions::Reflect);
+    let mut result2 = solver.read_all(&s);
+    if result2.len() != 0 {
+        result2.insert(0, Actions::Reflect);
+    }
+    let SimulateResult { status: s2, .. } = simulate(s, result2.clone());
+    if Score::from((&s1, result1.len())) > Score::from((&s2, result2.len())) {
+        result1
+    } else {
+        result2
+    }
+}
 
 #[derive(Clone, Copy, Default)]
 struct SolverSlot<T> {

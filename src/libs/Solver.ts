@@ -106,12 +106,12 @@ export async function nq_solve(status: Status, depth: number, specialist: boolea
 /// 基于DP的闲静手法求解
 /// useManipulation: 是否使用掌握
 /// useWastNot: 是否使用俭约（0：不使用，4：使用俭约，8：使用俭约和长期俭约）
-export async function reflect_solve(status: Status, useManipulation: boolean, useWasteNot: number): Promise<Actions[]> {
+export async function reflect_solve(status: Status, useManipulation: boolean, useWasteNot: number, useObserve: boolean): Promise<Actions[]> {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri
         return invoke("reflect_solve", { status, useManipulation, useWasteNot })
     } else {
-        throw "solver-doesn-t-exist"
+        return invokeWasmSolver("reflect_solve", { status, useObserve })
     }
 }
 

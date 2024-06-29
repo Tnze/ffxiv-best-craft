@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { Actions, Status } from '@/libs/Craft';
-import { ElAlert, ElButton, ElCheckbox, ElLink, ElSlider, ElDialog, ElSpace } from 'element-plus'
+import { ElAlert, ElButton, ElCheckbox, ElLink, ElSlider, ElDialog } from 'element-plus'
 import { useFluent } from 'fluent-vue';
 import { Ref, ref, watch } from 'vue';
 import { nq_solve, dfs_solve } from '@/libs/Solver';

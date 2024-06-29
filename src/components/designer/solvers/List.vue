@@ -43,7 +43,6 @@ const emits = defineEmits<{
 const activeNames = ref<string>("dp")
 const platform = import.meta.env.VITE_BESTCRAFT_TARGET
 
-
 async function runSimpleSolver(solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>) {
     const msg1 = ElMessage({
         showClose: true,
@@ -137,13 +136,7 @@ async function runTnzeVerRikaSolver() {
         </template>
         <el-tabs v-model="activeNames">
             <el-tab-pane :label="$t('dp-solver')" name="dp">
-                <el-space v-if="platform != 'tauri'" direction="vertical" alignment="flex-start">
-                    <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false">
-                        <DesktopEditionDownload />
-                    </el-alert>
-                </el-space>
-                <DpSolver v-else :init-status="initStatus" :recipe-name="recipeName"
-                    @run-simple-solver="runSimpleSolver" />
+                <DpSolver :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
             </el-tab-pane>
             <el-tab-pane :label="$t('dfs-solver')" name="dfs" style="flex: auto;">
                 <DfsSolver :can-hq="canHq" @run-simple-solver="runSimpleSolver" />
