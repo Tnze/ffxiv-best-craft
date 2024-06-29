@@ -6,50 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-web:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: setup node
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - run: corepack enable
-    - name: install Rust nightly
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        toolchain: nightly
-    - name: install wasm-pack
-      run:
-        npm install -g wasm-pack
-    - name: install app dependencies and build it
-      run: yarn && yarn build-web
-    # Run type check after the wasm package is built
-    - name: run tsc
-      run: yarn tsc --noEmit
-    - name: upload files
-      uses: actions/upload-artifact@v3
-      with:
-        name: bestcraft-dist
-        path: dist/
-
-  deploy-web:
-    needs: publish-web
-    runs-on: ubuntu-latest
-    environment: FTP Deployer
-    steps:
-    - name: download files
-      uses: actions/download-artifact@v3
-      with:
-        name: bestcraft-dist
-    - name: sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        server: ${{ vars.FTP_SERVER }}
-        username: ${{ vars.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /
-
   publish-tauri:
     strategy:
       fail-fast: false
@@ -85,11 +41,8 @@ jobs:
         tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
         releaseName: "BestCraft v__VERSION__"
         releaseBody: |
-          v0.15.0
-          - 新增分析器功能，可用于测试宏的防黑球效果等
-          - 修复特殊情况下模拟不准确的问题
-
-          v0.15.1
-          - 新增分析器功能，可用于计算装备属性范围
+          v0.15.4
+          - 修复亮色模式下“安定”球色看不清的问题
+          - 添加7.0版本通知提示
         releaseDraft: false
         prerelease: false
