@@ -47,8 +47,8 @@ export interface Recipe {
 export interface RecipeLevel {
     class_job_level: number,
     stars: number,
-    suggested_craftsmanship: number,
-    suggested_control: number,
+    suggested_craftsmanship: number | null,
+    suggested_control: number | null,
     difficulty: number,
     quality: number,
     progress_divider: number,
@@ -207,6 +207,7 @@ export async function newStatus(
     recipe: Recipe,
     recipeLevel: RecipeLevel,
 ): Promise<Status> {
+    console.table(recipeLevel)
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri
         return invoke("new_status", { attrs, recipe, recipeLevel })

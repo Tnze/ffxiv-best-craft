@@ -6,7 +6,7 @@ authors = ["Tnze"]
 license = "AGPL"
 
 [dependencies]
-ffxiv-crafting = { version = "7.0.2", features = ["serde-support"] }
+ffxiv-crafting = { version = '7.0.3', features = ["serde-support"] }
 serde = { version = "1.0", features = ["derive"] }
 rand = "0.8.5"
 

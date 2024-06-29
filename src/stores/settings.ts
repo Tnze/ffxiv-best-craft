@@ -23,7 +23,7 @@ import { YYYYGamesApiBase, WebSource } from '@/components/recipe-manager/web-sou
 export default defineStore('settings', {
     state: () => ({
         language: 'system',
-        dataSource: <'local' | "yyyy.games" | 'xivapi' | 'cafe'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'local' : 'yyyy.games'),
+        dataSource: <'local' | "yyyy.games" | 'xivapi' | 'cafe'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'ds-xivapi' : 'ds-xivapi'),
         dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined
     }),
     getters: {

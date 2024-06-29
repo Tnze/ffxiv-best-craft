@@ -117,7 +117,7 @@ pub fn next_action_picker_1(
 
 pub fn generate_routes_phase1(s: &Status, use_manipulation: bool) -> Vec<(Status, Vec<Actions>)> {
     let max_prog = match s.attributes.level {
-        x if x >= 67 => s.calc_synthesis(2.0),
+        x if x >= 82 => s.calc_synthesis(1.8),
         x if x >= 62 => s.calc_synthesis(1.5),
         x if x >= 31 => s.calc_synthesis(1.2),
         _ => s.calc_synthesis(1.0),
