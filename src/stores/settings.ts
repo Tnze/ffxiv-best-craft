@@ -38,7 +38,7 @@ export default defineStore('settings', {
                 'xivapi': () => new XivApiRecipeSource(XivapiBase, this.dataSourceLang),
                 'cafe': () => new XivApiRecipeSource(CafeMakerApiBase),
             }
-            let defaultSource: () => DataSource = dataSources['yyyy.games']
+            let defaultSource: () => DataSource = dataSources['xivapi']
             if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
                 var { LocalRecipeSource } = await import('../components/recipe-manager/local-source')
                 let localSource = () => new LocalRecipeSource()
