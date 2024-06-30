@@ -215,6 +215,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
 
 <style scoped >
 .container {
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;

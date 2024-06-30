@@ -17,8 +17,8 @@
 -->
 
 <script setup lang="ts">
-import { ElText, ElButton, ElNotification } from 'element-plus';
-import { computed, onMounted } from 'vue';
+import { ElText, ElButton } from 'element-plus';
+import { computed } from 'vue';
 import useGuideStore from '@/stores/guide';
 import { useFluent } from 'fluent-vue';
 // import { Recipe, RecipeInfo } from '../../Craft';
@@ -31,14 +31,6 @@ const store = useGuideStore()
 const { $t } = useFluent()
 
 store.setCurrentPage('welcome')
-
-onMounted(() => {
-    ElNotification({
-        title: $t('try-dawntrain'),
-        message: $t('try-dawntrain-desc'),
-        duration: 0,
-    })
-})
 
 // async function recipes(ids: number[], ds: DataSource): Promise<CascaderOption[]> {
 //     return await Promise.all(ids.map(async id => {
@@ -165,10 +157,6 @@ no-data = 无配方
 
 confirm = 确认
 select-recipe = 选择配方
-
-try-dawntrain = FFXIV 7.0 黄金的遗产
-try-dawntrain-desc = BestCraft 现已适配 7.0 新技能、新配方。欢迎前往体验！
-    https://tnze.yyyy.games/dawntrail/
 
 guide-mode-info =
     注意：实验性向导模式已删除。如有疑问欢迎反馈。
