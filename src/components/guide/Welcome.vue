@@ -17,8 +17,8 @@
 -->
 
 <script setup lang="ts">
-import { ElText, ElButton, ElNotification, NotificationHandle } from 'element-plus';
-import { computed, onActivated, onDeactivated } from 'vue';
+import { ElText, ElButton } from 'element-plus';
+import { computed, onActivated } from 'vue';
 import useGuideStore from '@/stores/guide';
 import { useFluent } from 'fluent-vue';
 
@@ -47,25 +47,6 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
     else
         return 'night'
 })
-
-let dawntrainNotifyHandle: NotificationHandle | null = null;
-onActivated(() => {
-    if (dawntrainNotifyHandle != null) {
-        dawntrainNotifyHandle.close()
-    }
-    dawntrainNotifyHandle = ElNotification({
-        title: $t('try-dawntrain'),
-        dangerouslyUseHTMLString: true,
-        message: $t('try-dawntrain-desc') + '<br/><a href="https://tnze.yyyy.games/dawntrail/" target="_blank">https://tnze.yyyy.games/dawntrail/</a>',
-        duration: 0,
-    })
-})
-onDeactivated(() => {
-    if (dawntrainNotifyHandle != null) {
-        dawntrainNotifyHandle.close()
-    }
-})
-
 
 </script>
 
