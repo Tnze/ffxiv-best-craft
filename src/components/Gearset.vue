@@ -28,14 +28,14 @@ const props = defineProps<{
     job: Jobs
 }>()
 
-const v = store.special.find(v => v.name == props.job)!
+const v = computed(() => store.special.find(v => v.name == props.job)!)
 
 function setInheritFromDefault(val: string | number | boolean) {
     // const v = store.special.find(v => v.name == props.job)!;
     if (val) {
-        v.value = null
+        v.value.value = null
     } else {
-        v.value = { ...store.default }
+        v.value.value = { ...store.default }
     }
 }
 
