@@ -1,19 +1,19 @@
 {
-  "version": "0.15.5",
-  "notes": "v0.15.4\n- 修复亮色模式下“安定”球色看不清的问题\n- 添加7.0版本通知提示\n\nv0.15.5\n- 窗口宽度不足时自动折叠侧边菜单栏\n- 离开启动页新版本通知自动关闭",
-  "pub_date": "2024-06-30T11:16:17.585Z",
+  "version": "0.15.7",
+  "notes": "v0.15.4\n- 修复亮色模式下“安定”球色看不清的问题\n- 添加7.0版本通知提示\n\nv0.15.5\n- 窗口宽度不足时自动折叠侧边菜单栏\n- 离开启动页新版本通知自动关闭\n\nv0.15.6\n- 修复切换配方后模拟器界面食药配装UI依然操作旧职业的问题\n- 修复分析器“计算装备属性适配范围”当属性刚好满足要求时计算不出结果的问题",
+  "pub_date": "2024-06-30T16:43:49.418Z",
   "platforms": {
     "darwin-aarch64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm95Y29CK0NON3kxeWtwREYxTWJxbUFhbVB0bElpT2FxNUpqQVRRc2VlRGFvZDhoYVFEd04zNWxIdWtWS0wyVXlwbmJ6cnhhNVJyQ0Z5UFJFVXBVY3dBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE5NzQ1ODQ2CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKaFZFdW10N21EQ3l4T1JrdVhzS0phTXp0Wnd4b2VCSFBhcWVaOE1zS2dUYzk4WS8ra29NbG1ad05kWWE3aHFJVCtlaVRORG92N0dGVXdjcWhSd2pmQXc9PQo=",
-      "url": "https://tnze.yyyy.games/releases/v0.15.5/BestCraft_aarch64.app.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smg3Y2U5WlNVcVdJdWUwV3ZrVUFHSjdXVVlYRERtcTZ2L0pWTHZBbm5qMURtUWJ6eElhQ1RQdVNhOFVLbXUrOHNUS0dRaldLMWlacGVtajlWcHdrZFE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE5NzY1NTY4CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKbmZZbWRkbzVaWkxYR2JHN2xUZWFLNGZLdElLNmdKUlNkbGliZ1dRQ0IzUjRLbnBKTlMzUUFvQVRoSWpXcHZkY2UwUDBmTCtsenFmcHlDOHhOdnBpQnc9PQo=",
+      "url": "https://tnze.yyyy.games/releases/v0.15.7/BestCraft_aarch64.app.tar.gz"
     },
     "linux-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm82QnlhVzc0ZjJxd0JGUUpNQ3lmalBDd3krajhQcENuLzU0NXFMbnF3YUI5THowZXFtTmlIRjhRSGxvQUswU0NCejRsaHJ5QzR2aFdKYUxoVkJld3dZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE5NzQ1OTgyCWZpbGU6YmVzdC1jcmFmdF8wLjE1LjVfYW1kNjQuQXBwSW1hZ2UudGFyLmd6CkRDSDNaeFI2K2Z6dUtGREVTYmMzL0s3amUxUGRCTHpSNWlvRGxYWGR3b21JaEFiakc3WUY4Z2dOM1BLUnFXTFJRQlJReU8vZXBvalRTQ2Q5MEZVQ0FnPT0K",
-      "url": "https://tnze.yyyy.games/releases/v0.15.5/best-craft_0.15.5_amd64.AppImage.tar.gz"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9aVDdCTXhtc3ZQT2k3TGVOUjM1RTZNM01SY1g4Tlh5NThBalBTMDc2VHA3ekQ1aVJZZU5KeXVtdDNuaS9XWGdKblNEUWpMS0lqK1QxN1pUd1BUOGdjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE5NzY1NzAxCWZpbGU6YmVzdC1jcmFmdF8wLjE1LjdfYW1kNjQuQXBwSW1hZ2UudGFyLmd6Ck1uZVh4QWc4dHE5QmNkYkFhRU8rMGdacnZlTUtUWmJxU1Z0Z09nVTdYSlRWN2VkbHhvek0xdWU2Y3YxOWxnbDRXUUJRbzJFMTUra0tGSEo1UUJ5SURnPT0K",
+      "url": "https://tnze.yyyy.games/releases/v0.15.7/best-craft_0.15.7_amd64.AppImage.tar.gz"
     },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm13R1c4TzZZakl6QmpHVTNrYWtRZHg2UnJ0K245akZCUjRuYmtyaHpFdEYwYXdHT3E4cklqSENzVmxBQzFmRVFuODdEblNVUE0wUUNmSlhGa0o4OGdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE5NzQ2MTcxCWZpbGU6QmVzdENyYWZ0XzAuMTUuNV94NjRfemgtQ04ubXNpLnppcApHSWI3TGNkMVJERG1IVnVzc290c2dQa2JOMko2bmoyYkw5Z3g1SnhWZFdhNXB2QU10QmtXTDYwN3ZkRzVYL1NIYmk5aUtPSTU1WGJSZUk0T29wOUpBQT09Cg==",
-      "url": "https://tnze.yyyy.games/releases/v0.15.5/BestCraft_0.15.5_x64_zh-CN.msi.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm80QkxnTTVsYklMT0Z1d2VKdng4NlhkK2JCT2xRUzJYcGhUZGxRTUJ2VE1lb0tacEh3Qm5VMUVXNFdubVJNMTE1MU9PYWtGdGoxbGI5cExna1ZNTGdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzE5NzY1ODIzCWZpbGU6QmVzdENyYWZ0XzAuMTUuN194NjRfemgtQ04ubXNpLnppcApqQnF1OG44V0RCNUpLb1FucFZzbFI0Z2lBaEtibHJtTWY5Z1liOHpYRXF3NEJwYnpBQzNSR0FVa3djci9hY3ppN2MvQ3JGNVdOTzliRWVDZmJ0Um9Cdz09Cg==",
+      "url": "https://tnze.yyyy.games/releases/v0.15.7/BestCraft_0.15.7_x64_zh-CN.msi.zip"
     }
   }
 }
