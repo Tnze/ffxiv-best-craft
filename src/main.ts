@@ -26,8 +26,6 @@ import 'element-plus/es/components/message-box/style/css'
 
 import App from './App.vue'
 
-document.body.addEventListener('touchmove', event => event.preventDefault(), { passive: false })
-
 const pinia = createPinia()
 
 createApp(App)
