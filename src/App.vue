@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, watchEffect } from 'vue';
 import { useColorMode, usePreferredLanguages, useCssVar, useMediaQuery } from '@vueuse/core';
-import { ElConfigProvider, ElNotification, ElIcon } from 'element-plus';
+import { ElConfigProvider, ElIcon } from 'element-plus';
 import { Operation } from '@element-plus/icons-vue'
 import { useFluent } from 'fluent-vue';
 if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
@@ -108,15 +108,6 @@ watchEffect(async () => {
     }
     bgColor.value = shouldBeTransparent ? 'transparent' : 'var(--el-bg-color)'
     bgMainColor.value = shouldBeTransparent ? '#2e2e2e80' : '#242424'
-})
-
-
-onMounted(() => {
-    ElNotification({
-        title: $t('try-dawntrain'),
-        message: $t('try-dawntrain-desc'),
-        duration: 0,
-    })
 })
 
 </script>
@@ -315,9 +306,3 @@ onMounted(() => {
     }
 }
 </style>
-
-<fluent locale="zh-CN">
-try-dawntrain = FFXIV 7.0 黄金的遗产
-try-dawntrain-desc = BestCraft 现已适配 7.0 新技能、新配方。欢迎前往体验！
-    https://tnze.yyyy.games/dawntrail/
-</fluent>
