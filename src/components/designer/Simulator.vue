@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ElContainer, ElHeader, ElMain, ElScrollbar, ElDialog, ElButton, ElTable, ElTableColumn, ElCard, ElSwitch } from 'element-plus';
+import { ElScrollbar, ElDialog, ElButton, ElTable, ElTableColumn, ElCard, ElSwitch } from 'element-plus';
 import { Ref, computed, inject, ref, watch } from 'vue';
 import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep, RecipeLevel } from '@/libs/Craft';
 import { Enhancer } from "../attr-enhancer/Enhancer";
@@ -131,42 +131,34 @@ function leaveAction() {
 </script>
 
 <template>
-    <el-container>
+    <div class="main-page">
         <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
-        <el-header>
-            <h1>{{ $t('title', { recipe: item.name }) }}</h1>
-        </el-header>
-        <el-main>
-            <div class="main-page">
-                <StatusBarVue class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
-                    :status="preview ?? currentStatus" :show-condition="true"
-                    @click-attributes="openAttrEnhSelector = true" />
-                <el-scrollbar class="action-queue">
-                    <ActionQueueVue :job="displayJob" :list="seq" disabled no-hover />
+        <StatusBarVue class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
+            :status="preview ?? currentStatus" :show-condition="true" @click-attributes="openAttrEnhSelector = true" />
+        <el-scrollbar class="action-queue">
+            <ActionQueueVue :job="displayJob" :list="seq" disabled no-hover />
+        </el-scrollbar>
+        <div class="actionpanel">
+            <el-scrollbar class="action-panel">
+                <ActionPanelVue @clicked-action="pushAction" :disable="waiting" :job="displayJob"
+                    :status="currentStatus" simulator-mode #lower @mousehover-action="hoverAction"
+                    @mouseleave-action="leaveAction" />
+                <el-button class="drop" @click="restart" type="danger">{{ $t('restart') }}</el-button>
+                <el-switch v-model="rapidMode" inline-prompt active-text="高速模式" inactive-text="真实体验" />
+            </el-scrollbar>
+            <el-card class="results">
+                <el-scrollbar>
+                    <el-table :data="results">
+                        <el-table-column prop="step" :label="$t('steps')" />
+                        <el-table-column prop="progress" :label="$t('progress')" />
+                        <el-table-column prop="quality" :label="$t('quality')" />
+                    </el-table>
                 </el-scrollbar>
-                <div class="actionpanel">
-                    <el-scrollbar class="action-panel">
-                        <ActionPanelVue @clicked-action="pushAction" :disable="waiting" :job="displayJob"
-                            :status="currentStatus" simulator-mode #lower @mousehover-action="hoverAction"
-                            @mouseleave-action="leaveAction" />
-                        <el-button class="drop" @click="restart" type="danger">{{ $t('restart') }}</el-button>
-                        <el-switch v-model="rapidMode" inline-prompt active-text="高速模式" inactive-text="真实体验" />
-                    </el-scrollbar>
-                    <el-card class="results">
-                        <el-scrollbar>
-                            <el-table :data="results">
-                                <el-table-column prop="step" :label="$t('steps')" />
-                                <el-table-column prop="progress" :label="$t('progress')" />
-                                <el-table-column prop="quality" :label="$t('quality')" />
-                            </el-table>
-                        </el-scrollbar>
-                    </el-card>
-                </div>
-            </div>
-        </el-main>
-    </el-container>
+            </el-card>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -215,13 +207,11 @@ function leaveAction() {
 </style>
 
 <fluent locale="zh-CN">
-title = { $recipe } （模拟器模式）
 meal-and-potion = 食物 & 药水
 restart = 倒
 </fluent>
 
 <fluent locale="en-US">
-title = { $recipe } (Simulator Mode)
 meal-and-potion = Meal & Potions
 restart = Restart
 </fluent>

@@ -83,3 +83,8 @@ update-pending = 更新中
 update-error = 更新に失敗しました: { $error }
 update-done = 更新完了
 update-uptodate = すでに最新バージョン
+
+# Titles
+attributes = 属性
+settings = 設定
+title = { $recipe } （模拟器模式）

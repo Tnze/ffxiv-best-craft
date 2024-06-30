@@ -18,51 +18,19 @@
 
 <script setup lang="ts">
 import { ElText, ElButton } from 'element-plus';
-import { computed } from 'vue';
+import { computed, onActivated } from 'vue';
 import useGuideStore from '@/stores/guide';
 import { useFluent } from 'fluent-vue';
-// import { Recipe, RecipeInfo } from '../../Craft';
-// import { useRouter } from 'vue-router';
-// import { DataSource } from '../recipe-manager/source';
 
-// const router = useRouter()
-const store = useGuideStore()
-// const settingStore = useSettingsStore()
+const emit = defineEmits<{
+    (e: 'setTitle', title: string): void
+}>()
+onActivated(() => emit('setTitle', ''))
+
 const { $t } = useFluent()
 
+const store = useGuideStore()
 store.setCurrentPage('welcome')
-
-// async function recipes(ids: number[], ds: DataSource): Promise<CascaderOption[]> {
-//     return await Promise.all(ids.map(async id => {
-//         let info = await ds.recipeInfo(id)
-//         return { value: id, label: info.item_name }
-//     }))
-// }
-
-// const recipeSelectorProps: CascaderProps = {
-//     lazy: true,
-//     lazyLoad(node, resolve) {
-//         const { level } = node
-//         switch (level) {
-//             case 0:
-//                 resolve([
-//                     { label: "640HQ", value: "640HQ" }
-//                 ])
-//                 break;
-//             case 1:
-//                 break;
-//             default:
-//                 resolve([])
-//         }
-//     },
-// }
-
-// async function selectedRecipe(value: CascaderValue) {
-//     while (Array.isArray(value)) // 取数组最后一项
-//         value = value.at(-1) ?? 0;
-//     readyToConfirm.value = true
-//     console.log("selected recipe " + value)
-// }
 
 const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'beforedawn'>(() => {
     const hour = new Date().getHours();
@@ -89,11 +57,7 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
                 {{ $t('welcome', { time }) }}
             </el-text>
         </div>
-        <!-- <div class="select-box">
-            <el-cascader-panel :props="recipeSelectorProps" @change="selectedRecipe" />
-        </div> -->
         <div class="confirm-button">
-            <!-- <el-button type="primary" :disabled="!readyToConfirm">{{ $t('confirm') }}</el-button> -->
             <el-button type="primary" size="large" @click="$router.push('/recipe')">{{ $t('select-recipe')
                 }}</el-button>
         </div>

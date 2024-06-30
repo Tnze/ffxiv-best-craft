@@ -135,3 +135,9 @@ solver-already-exist = 求解器已存在
 solver-is-creating = 求解器已正在创建中
 solver-doesn-t-exist = 求解器不存在
 solver-isn-t-prepared = 求解器未准备完成
+
+# Titles
+attributes = 装备属性
+select-recipe = 选择配方
+custom-recipe = 自定义配方
+settings = 设置

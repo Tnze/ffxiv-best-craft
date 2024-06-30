@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch, watchEffect } from 'vue';
-import { useColorMode, usePreferredLanguages, useCssVar } from '@vueuse/core';
+import { useColorMode, usePreferredLanguages, useCssVar, useMediaQuery } from '@vueuse/core';
 import { ElConfigProvider, ElNotification, ElIcon } from 'element-plus';
 import { Operation } from '@element-plus/icons-vue'
 import { useFluent } from 'fluent-vue';
@@ -44,6 +44,8 @@ const bgMainColor = useCssVar('--tnze-main-bg-color', ref(null))
 
 const router = useRouter()
 const showMenu = ref(false)
+const topTitle = ref('')
+const enableInnerTitle = useMediaQuery('screen and (min-width: 960px)')
 watch(router.currentRoute, () => showMenu.value = false)
 
 const lang = ref('zh-CN')
@@ -129,11 +131,12 @@ onMounted(() => {
             <el-icon :size="30" @click="showMenu = !showMenu">
                 <Operation />
             </el-icon>
+            <h3>{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
         </div>
         <div class="main">
             <router-view v-slot="{ Component }" style="height: 100%;">
                 <keep-alive>
-                    <component :is="Component" />
+                    <component :is="Component" @setTitle="(s: string) => topTitle = s" :innerTitle="enableInnerTitle" />
                 </keep-alive>
             </router-view>
         </div>
@@ -210,11 +213,6 @@ onMounted(() => {
     height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: rgba(246, 246, 246, 0.5);
-}
-
-:root.dark .container {
-    background-color: var(--tnze-main-bg-color);
 }
 
 .overlay {
@@ -236,6 +234,7 @@ onMounted(() => {
 .v-leave-to {
     opacity: 0;
 }
+
 .v-leave-to {
     pointer-events: none;
 }
@@ -246,7 +245,7 @@ onMounted(() => {
     left: 0;
     bottom: 0;
     z-index: 10;
-    background-color: var(--app-bg-color);
+    background-color: var(--el-bg-color-overlay);
 
     transform: translateX(-100%);
     transition: transform .5s;
@@ -259,15 +258,18 @@ onMounted(() => {
 .topbar {
     height: var(--tnze-topbar-height);
     width: 100%;
-    border-bottom: solid 2px var(--el-border-color);
+    border-bottom: solid 1px var(--el-border-color);
     box-sizing: border-box;
     flex: none;
-    color: var(--el-color-info);
     transition: height .5s;
     display: flex;
     align-items: center;
-    padding-left: 10px;
     overflow: hidden;
+}
+
+.topbar>.el-icon {
+    padding: 0 10px;
+    color: var(--el-color-info);
 }
 
 .main {
@@ -286,6 +288,7 @@ onMounted(() => {
 @media screen and (min-width: 960px) {
     .sidebar {
         transform: translateX(0);
+        background-color: var(--app-bg-color);
     }
 
     .topbar {

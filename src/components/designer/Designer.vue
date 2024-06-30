@@ -48,6 +48,7 @@ const props = defineProps<{
     materialQualityFactor: number,
     attributes: Attributes,
 }>()
+
 const { $t } = useFluent()
 const displayJob = inject(displayJobKey) as Ref<Jobs>
 
@@ -340,93 +341,79 @@ async function openListFromJSON() {
 </script>
 
 <template>
-    <el-container>
-        <el-header>
-            <h1>{{ item.name }}</h1>
-        </el-header>
-        <el-main>
-            <div class="main-page">
-                <div class="crafting-alerts">
-                    <el-alert v-if="attributionAlert != undefined" :title="attributionAlert.title"
-                        :description="attributionAlert.descryption" type="warning" show-icon center :closable="false" />
+    <div class="main-page">
+        <div class="crafting-alerts">
+            <el-alert v-if="attributionAlert != undefined" :title="attributionAlert.title"
+                :description="attributionAlert.descryption" type="warning" show-icon center :closable="false" />
+        </div>
+        <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
+            :status="displayedStatus" :disabled-init-quality="recipeId == undefined"
+            @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
+            :show-condition="false" />
+        <el-tabs v-model="activeTab" tab-position="top" style="height: auto; padding: 0 15px 0 15px;"
+            class="above-panel">
+            <el-tab-pane :label="$t('action-editor')" name="staged" class="staged-panel">
+                <el-scrollbar class="staged-left-panel">
+                    <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
+                </el-scrollbar>
+                <div class="staged-right-panel">
+                    <div class="action-queue">
+                        <ActionQueue :job="displayJob" v-model:list="activeSeq.slots"
+                            :solver-result="solverResult.slots" :preview-solver="previewSolver"
+                            :err-list="activeSeq.errors" :loading-solver-result="isReadingSolverDisplay" />
+                    </div>
+                    <el-button-group>
+                        <el-button @click="saveSequence" :icon="Bottom">
+                            {{ $t('save-workspace') }}
+                        </el-button>
+                        <el-button @click="clearSeq" :icon="Close">
+                            {{ $t('clear-workspace') }}
+                        </el-button>
+                        <el-checkbox-button v-model:model-value="previewSolver" v-if="solverResult.slots.length > 0">
+                            {{ $t('apply-solver') }}
+                        </el-checkbox-button>
+                    </el-button-group>
+                    <el-scrollbar class="savedqueue-list">
+                        <TransitionGroup name="savedqueues" tag="div">
+                            <StagedActionQueueItem v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" :seq="seq"
+                                :display-job="displayJob" @load="loadSeq(seq)" @delete="savedSeqs.ary.splice(i, 1)" />
+                        </TransitionGroup>
+                    </el-scrollbar>
                 </div>
-                <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
-                    :status="displayedStatus" :disabled-init-quality="recipeId == undefined"
-                    @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
-                    :show-condition="false" />
-                <el-tabs v-model="activeTab" tab-position="top" style="height: auto; padding: 0 15px 0 15px;"
-                    class="above-panel">
-                    <el-tab-pane :label="$t('action-editor')" name="staged" class="staged-panel">
-                        <el-scrollbar class="staged-left-panel">
-                            <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status"
-                                #lower />
-                        </el-scrollbar>
-                        <div class="staged-right-panel">
-                            <div class="action-queue">
-                                <ActionQueue :job="displayJob" v-model:list="activeSeq.slots"
-                                    :solver-result="solverResult.slots" :preview-solver="previewSolver"
-                                    :err-list="activeSeq.errors" :loading-solver-result="isReadingSolverDisplay" />
-                            </div>
-                            <el-button-group>
-                                <el-button @click="saveSequence" :icon="Bottom">
-                                    {{ $t('save-workspace') }}
-                                </el-button>
-                                <el-button @click="clearSeq" :icon="Close">
-                                    {{ $t('clear-workspace') }}
-                                </el-button>
-                                <el-checkbox-button v-model:model-value="previewSolver"
-                                    v-if="solverResult.slots.length > 0">
-                                    {{ $t('apply-solver') }}
-                                </el-checkbox-button>
-                            </el-button-group>
-                            <el-scrollbar class="savedqueue-list">
-                                <TransitionGroup name="savedqueues" tag="div">
-                                    <StagedActionQueueItem v-for="({ key, seq }, i) in savedSeqs.ary" :key="key"
-                                        :seq="seq" :display-job="displayJob" @load="loadSeq(seq)"
-                                        @delete="savedSeqs.ary.splice(i, 1)" />
-                                </TransitionGroup>
-                            </el-scrollbar>
-                        </div>
-                    </el-tab-pane>
-                    <el-tab-pane :label="$t('init-quality')" name="init-quality" class="above-panel">
-                        <el-scrollbar style="flex: auto; padding-left: 30px;">
-                            <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
-                                v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :recipe-id="recipeId"
-                                :material-quality-factor="materialQualityFactor" />
-                        </el-scrollbar>
-                    </el-tab-pane>
-                    <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance" class="above-panel">
-                        <el-scrollbar style="flex: auto; padding-left: 30px;">
-                            <AttrEnhSelector v-model="attributesEnhancers" :job="displayJob" />
-                        </el-scrollbar>
-                    </el-tab-pane>
-                    <el-tab-pane :label="$t('export-macro')" name="export-macro" class="above-panel">
-                        <el-scrollbar style="flex: auto; padding-left: 10px;">
-                            <MacroExporter :actions="displayActions" />
-                        </el-scrollbar>
-                    </el-tab-pane>
-                    <el-tab-pane :label="$t('solvers')" name="solver-list" class="above-panel">
-                        <el-scrollbar style="flex: auto;">
-                            <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
-                                @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
-                        </el-scrollbar>
-                    </el-tab-pane>
-                    <el-tab-pane :label="$t('analyzers')" name="analyzers" class="above-panel">
-                        <el-scrollbar style="flex: auto;">
-                            <Analyzers :init-status="initStatus" :actions="displayActions" />
-                        </el-scrollbar>
-                    </el-tab-pane>
-                </el-tabs>
-            </div>
-        </el-main>
-    </el-container>
+            </el-tab-pane>
+            <el-tab-pane :label="$t('init-quality')" name="init-quality" class="above-panel">
+                <el-scrollbar style="flex: auto; padding-left: 30px;">
+                    <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
+                        v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :recipe-id="recipeId"
+                        :material-quality-factor="materialQualityFactor" />
+                </el-scrollbar>
+            </el-tab-pane>
+            <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance" class="above-panel">
+                <el-scrollbar style="flex: auto; padding-left: 30px;">
+                    <AttrEnhSelector v-model="attributesEnhancers" :job="displayJob" />
+                </el-scrollbar>
+            </el-tab-pane>
+            <el-tab-pane :label="$t('export-macro')" name="export-macro" class="above-panel">
+                <el-scrollbar style="flex: auto; padding-left: 10px;">
+                    <MacroExporter :actions="displayActions" />
+                </el-scrollbar>
+            </el-tab-pane>
+            <el-tab-pane :label="$t('solvers')" name="solver-list" class="above-panel">
+                <el-scrollbar style="flex: auto;">
+                    <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
+                        @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
+                </el-scrollbar>
+            </el-tab-pane>
+            <el-tab-pane :label="$t('analyzers')" name="analyzers" class="above-panel">
+                <el-scrollbar style="flex: auto;">
+                    <Analyzers :init-status="initStatus" :actions="displayActions" />
+                </el-scrollbar>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
 </template>
 
 <style scoped>
-.el-main {
-    background-color: transparent !important;
-}
-
 .el-card {
     --el-card-padding: 4px 5px;
     --el-card-border-radius: 15px;

@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted, onActivated } from 'vue'
 import { ElContainer, ElHeader, ElMain, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
 import { newRecipe, RecipeInfo } from '@/libs/Craft'
@@ -27,6 +27,10 @@ import { selectRecipe } from './common';
 import { DataSource, DataSourceType } from './source';
 import useSettingsStore from '@/stores/settings'
 
+const emit = defineEmits<{
+    (e: 'setTitle', title: string): void
+}>()
+onActivated(() => emit('setTitle', 'select-recipe'))
 
 // let jsonData = JSON.stringify(data.map(elem => ({
 //     cm: elem.craftsmanship_percent,
@@ -160,62 +164,56 @@ const selectRecipeRow = async (row: RecipeInfo) => {
 </script>
 
 <template>
-    <el-container>
-        <el-header>
-            <h1>{{ $t('select-recipe') }}</h1>
-        </el-header>
-        <el-main class="container">
-            <el-dialog v-model="confirmDialogVisible" :title="$t('please-confirm')" :align-center="true">
+    <div class="container">
+        <el-dialog v-model="confirmDialogVisible" :title="$t('please-confirm')" :align-center="true">
+            <span>
+                {{ $t('confirm-select2') }}
+            </span>
+            <template #footer>
                 <span>
-                    {{ $t('confirm-select2') }}
+                    <el-button @click="confirmDialogVisible = false">
+                        {{ $t('cancel') }}
+                    </el-button>
+                    <el-button type="primary" @click=" confirmDialogCallback!('simulator')">
+                        {{ $t('simulator-mode') }}
+                    </el-button>
+                    <el-button type="primary" @click=" confirmDialogCallback!('designer')">
+                        {{ $t('designer-mode') }}
+                    </el-button>
                 </span>
-                <template #footer>
-                    <span>
-                        <el-button @click="confirmDialogVisible = false">
-                            {{ $t('cancel') }}
-                        </el-button>
-                        <el-button type="primary" @click=" confirmDialogCallback!('simulator')">
-                            {{ $t('simulator-mode') }}
-                        </el-button>
-                        <el-button type="primary" @click=" confirmDialogCallback!('designer')">
-                            {{ $t('designer-mode') }}
-                        </el-button>
-                    </span>
-                </template>
-            </el-dialog>
-            <el-input v-model="searchText" @keydown.enter="triggerSearch" class="search-input" :placeholder="$t('search')"
-                clearable>
-                <template #append>
-                    <el-button :icon="EditPen" @click="router.push('/recipe/customize')">{{ $t('custom-recipe')
+            </template>
+        </el-dialog>
+        <el-input v-model="searchText" @keydown.enter="triggerSearch" class="search-input" :placeholder="$t('search')"
+            clearable>
+            <template #append>
+                <el-button :icon="EditPen" @click="router.push('/recipe/customize')">{{ $t('custom-recipe')
                     }}</el-button>
-                </template>
-            </el-input>
-            <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row
-                @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
-                <el-table-column prop="id" label="ID" width="100" />
-                <el-table-column prop="rlv" :label="$t('recipe-level')" width="100" />
-                <!-- <el-table-column prop="Icon" la\bel="图标" width="55">
+            </template>
+        </el-input>
+        <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row
+            @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
+            <el-table-column prop="id" label="ID" width="100" />
+            <el-table-column prop="rlv" :label="$t('recipe-level')" width="100" />
+            <!-- <el-table-column prop="Icon" la\bel="图标" width="55">
                     <template #default="scope">
                         <div style="display: flex; align-items: center">
                             <el-image :src="'https://garlandtools.cn/files/icons/item/' + scope.row.number +'.png'" />
                         </div>
                     </template>
                 </el-table-column> -->
-                <el-table-column prop="job" :label="$t('type')" width="200" />
-                <el-table-column prop="item_name" :label="$t('name')" />
-                <!-- <el-table-column prop="difficulty_factor" label="难度因子" /> -->
-                <!-- <el-table-column prop="quality_factor" label="品质因子" /> -->
-                <!-- <el-table-column prop="durability_factor" label="耐久因子" /> -->
-            </el-table>
-            <el-pagination layout="prev, pager, next" v-model:current-page="pagination.Page"
-                :page-count="pagination.PageTotal" />
-        </el-main>
-    </el-container>
+            <el-table-column prop="job" :label="$t('type')" width="200" />
+            <el-table-column prop="item_name" :label="$t('name')" />
+            <!-- <el-table-column prop="difficulty_factor" label="难度因子" /> -->
+            <!-- <el-table-column prop="quality_factor" label="品质因子" /> -->
+            <!-- <el-table-column prop="durability_factor" label="耐久因子" /> -->
+        </el-table>
+        <el-pagination layout="prev, pager, next" v-model:current-page="pagination.Page"
+            :page-count="pagination.PageTotal" />
+    </div>
 </template>
 
-<style scoped >
+<style scoped>
 .container {
-    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -223,6 +221,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
 }
 
 .search-input {
+    margin-top: 10px;
     width: 80%;
 }
 
@@ -240,9 +239,6 @@ const selectRecipeRow = async (row: RecipeInfo) => {
 </style>
 
 <fluent locale="zh-CN">
-select-recipe = 选择配方
-custom-recipe = 自定义配方
-
 confirm-select = 开始制作“{ $itemName }”吗？
 confirm-select2 = 这是一个高难度配方，请选择模式。
 please-confirm = 请确认
@@ -260,9 +256,6 @@ name = 名称
 </fluent>
 
 <fluent locale="en-US">
-select-recipe = Select Recipe
-custom-recipe = Custom Recipe
-
 confirm-select = Start crafting "{ $itemName }"?
 confirm-select2 = This is a 高难度配方. Please make a choice.
 please-confirm = Please confirm

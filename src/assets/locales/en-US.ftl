@@ -100,3 +100,10 @@ solver-already-exist = Solver is already exist
 solver-is-creating = Solver is already creating
 solver-doesn-t-exist = Solver doesn't exist
 solver-isn-t-prepared = Solver isn't prepared
+
+# Titles
+attributes = Crafter Attributes
+select-recipe = Select Recipe
+custom-recipe = Custom Recipe
+settings = Settings
+title = { $recipe } (Simulator Mode)

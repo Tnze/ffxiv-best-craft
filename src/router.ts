@@ -37,11 +37,11 @@ const router = createRouter({
                 { path: 'see-recipe', name: 'see-recipe', component: SeeRecipe },
             ]
         },
-        { path: '/gearsets', component: GearsetsVue },
-        { path: '/recipe', component: RecipePanelVue },
-        { path: '/recipe/customize', component: CustomizeRecipe },
+        { path: '/gearsets', name: 'gearsets', component: GearsetsVue },
+        { path: '/recipe', name: 'recipe', component: RecipePanelVue },
+        { path: '/recipe/customize', name: 'customize-recipe', component: CustomizeRecipe },
         { path: '/designer', name: 'designer', component: DesignerVue },
-        { path: '/settings', component: SettingsVue },
+        { path: '/settings', name: 'settings', component: SettingsVue },
     ]
 })
 
