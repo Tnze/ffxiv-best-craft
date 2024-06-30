@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -17,9 +17,10 @@
 -->
 
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from 'vue';
-import { useColorMode, usePreferredLanguages, useCssVar } from '@vueuse/core';
-import { ElContainer, ElAside, ElMain, ElConfigProvider } from 'element-plus';
+import { onMounted, ref, watch, watchEffect } from 'vue';
+import { useColorMode, usePreferredLanguages, useCssVar, useMediaQuery } from '@vueuse/core';
+import { ElConfigProvider, ElIcon } from 'element-plus';
+import { Operation } from '@element-plus/icons-vue'
 import { useFluent } from 'fluent-vue';
 if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
     var pkgTauriFs = import('@tauri-apps/api/fs')
@@ -31,14 +32,21 @@ import useSettingsStore from '@/stores/settings';
 import useGearsetsStore from '@/stores/gearsets';
 import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
+import { useRouter } from 'vue-router';
 
-const colorMode = useColorMode()
 const { $t } = useFluent()
+const colorMode = useColorMode()
 const settingStore = useSettingsStore()
 const gearsetsStore = useGearsetsStore()
 const preferredLang = usePreferredLanguages()
 const bgColor = useCssVar('--app-bg-color', ref(null))
 const bgMainColor = useCssVar('--tnze-main-bg-color', ref(null))
+
+const router = useRouter()
+const showMenu = ref(false)
+const topTitle = ref('')
+const unfoldSidebar = useMediaQuery('screen and (min-width: 760px)')
+watch(router.currentRoute, () => showMenu.value = false)
 
 const lang = ref('zh-CN')
 watchEffect(() => {
@@ -105,19 +113,30 @@ watchEffect(async () => {
 </script>
 
 <template>
-    <el-container>
-        <el-aside width="150px">
-            <Menu></Menu>
-        </el-aside>
-        <el-main>
-            <router-view v-slot="{ Component }">
-                <keep-alive>
-                    <component :is="Component" />
-                </keep-alive>
-            </router-view>
-        </el-main>
+    <div class="container">
+        <Transition>
+            <div class="overlay" v-if="showMenu" @click="showMenu = false"></div>
+        </Transition>
+        <Menu class="sidebar" v-bind:class="{ 'show-menu': showMenu }"></Menu>
+        <div class="main">
+            <div class="topbar">
+                <Transition name="menuicon">
+                    <el-icon v-if="!unfoldSidebar" :size="25" @click="showMenu = !showMenu">
+                        <Operation />
+                    </el-icon>
+                </Transition>
+                <h3>{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
+            </div>
+            <div style="height: calc(100% - var(--tnze-topbar-height));">
+                <router-view v-slot="{ Component }">
+                    <keep-alive>
+                        <component :is="Component" @setTitle="(s: string) => topTitle = s" />
+                    </keep-alive>
+                </router-view>
+            </div>
+        </div>
         <el-config-provider :locale="elementPlusLang.get(lang)" />
-    </el-container>
+    </div>
 </template>
 
 <style>
@@ -131,22 +150,8 @@ watchEffect(async () => {
     background: var(--app-bg-color);
 }
 
-.el-container {
-    height: 100%;
-}
-
-.el-main {
-    padding: 0;
-    background-color: rgba(246, 246, 246, 0.5);
-    border-top-left-radius: var(--tnze-content-raduis);
-}
-
-:root.dark .el-main {
-    background-color: var(--tnze-main-bg-color);
-}
-
 .el-menu:not(.el-menu--collapse) {
-    width: 150px;
+    width: var(--tnze-sidebar-width);
 }
 
 .el-form-item__label {
@@ -182,6 +187,8 @@ watchEffect(async () => {
     --el-border-radius-round: 20px;
 
     --tnze-content-raduis: var(--el-border-radius-round);
+    --tnze-sidebar-width: 150px;
+    --tnze-topbar-height: 40px;
 }
 
 :root.dark {
@@ -193,5 +200,109 @@ watchEffect(async () => {
     --el-color-primary-light-9: #18222c;
     --el-color-primary-dark-2: #5cc952;
     /* --el-bg-color: var(--tnze-main-bg-color) !important; */
+}
+</style>
+
+<style scoped>
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .6);
+    z-index: 9;
+}
+
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+
+.v-leave-to {
+    pointer-events: none;
+}
+
+.menuicon-enter-active {
+    transition: transform .5s ease;
+}
+
+.menuicon-enter-from {
+    position: fixed;
+    transform: translateX(100%);
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--el-bg-color-overlay);
+
+    transform: translateX(-100%);
+    transition: transform .5s;
+}
+
+.sidebar.show-menu {
+    transform: translateX(0);
+}
+
+.topbar {
+    height: var(--tnze-topbar-height);
+    width: 100%;
+    box-sizing: border-box;
+    flex: none;
+    transition: height .5s;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.topbar>.el-icon {
+    margin: 0 10px;
+    color: var(--el-color-info);
+    overflow: hidden;
+}
+
+.main {
+    height: 100%;
+    padding: 0;
+    background-color: rgba(246, 246, 246, 0.5);
+    flex: auto;
+
+    transition: margin-left .5s;
+}
+
+:root.dark .main {
+    background-color: var(--tnze-main-bg-color);
+}
+
+@media screen and (min-width: 760px) {
+    .sidebar {
+        transform: translateX(0);
+        background-color: var(--app-bg-color);
+    }
+
+    .topbar {
+        border-bottom: initial;
+        padding-left: 20px;
+    }
+
+    .main {
+        margin-left: var(--tnze-sidebar-width);
+        border-top-left-radius: var(--tnze-content-raduis);
+    }
 }
 </style>

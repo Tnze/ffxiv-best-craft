@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -17,50 +17,20 @@
 -->
 
 <script setup lang="ts">
-import { ElText, ElButton } from 'element-plus';
-import { computed } from 'vue';
-import useGuideStore  from '@/stores/guide';
-// import { Recipe, RecipeInfo } from '../../Craft';
-// import { useRouter } from 'vue-router';
-// import { DataSource } from '../recipe-manager/source';
+import { ElText, ElButton, ElNotification, NotificationHandle } from 'element-plus';
+import { computed, onActivated, onDeactivated } from 'vue';
+import useGuideStore from '@/stores/guide';
+import { useFluent } from 'fluent-vue';
 
-// const router = useRouter()
+const emit = defineEmits<{
+    (e: 'setTitle', title: string): void
+}>()
+onActivated(() => emit('setTitle', ''))
+
+const { $t } = useFluent()
+
 const store = useGuideStore()
-// const settingStore = useSettingsStore()
-
 store.setCurrentPage('welcome')
-
-// async function recipes(ids: number[], ds: DataSource): Promise<CascaderOption[]> {
-//     return await Promise.all(ids.map(async id => {
-//         let info = await ds.recipeInfo(id)
-//         return { value: id, label: info.item_name }
-//     }))
-// }
-
-// const recipeSelectorProps: CascaderProps = {
-//     lazy: true,
-//     lazyLoad(node, resolve) {
-//         const { level } = node
-//         switch (level) {
-//             case 0:
-//                 resolve([
-//                     { label: "640HQ", value: "640HQ" }
-//                 ])
-//                 break;
-//             case 1:
-//                 break;
-//             default:
-//                 resolve([])
-//         }
-//     },
-// }
-
-// async function selectedRecipe(value: CascaderValue) {
-//     while (Array.isArray(value)) // 取数组最后一项
-//         value = value.at(-1) ?? 0;
-//     readyToConfirm.value = true
-//     console.log("selected recipe " + value)
-// }
 
 const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'beforedawn'>(() => {
     const hour = new Date().getHours();
@@ -78,6 +48,25 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
         return 'night'
 })
 
+let dawntrainNotifyHandle: NotificationHandle | null = null;
+onActivated(() => {
+    if (dawntrainNotifyHandle != null) {
+        dawntrainNotifyHandle.close()
+    }
+    dawntrainNotifyHandle = ElNotification({
+        title: $t('try-dawntrain'),
+        dangerouslyUseHTMLString: true,
+        message: $t('try-dawntrain-desc') + '<br/><a href="https://tnze.yyyy.games/dawntrail/" target="_blank">https://tnze.yyyy.games/dawntrail/</a>',
+        duration: 0,
+    })
+})
+onDeactivated(() => {
+    if (dawntrainNotifyHandle != null) {
+        dawntrainNotifyHandle.close()
+    }
+})
+
+
 </script>
 
 <template>
@@ -87,12 +76,10 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
                 {{ $t('welcome', { time }) }}
             </el-text>
         </div>
-        <!-- <div class="select-box">
-            <el-cascader-panel :props="recipeSelectorProps" @change="selectedRecipe" />
-        </div> -->
         <div class="confirm-button">
-            <!-- <el-button type="primary" :disabled="!readyToConfirm">{{ $t('confirm') }}</el-button> -->
-            <el-button type="primary" size="large" @click="$router.push('/recipe')">{{ $t('select-recipe') }}</el-button>
+            <el-button type="primary" size="large" @click="$router.push('/recipe')">
+                {{ $t('select-recipe') }}
+            </el-button>
         </div>
         <el-text class="info-text" type="info">{{ $t('copyright-notices') }}</el-text>
     </div>
@@ -155,6 +142,9 @@ no-data = 无配方
 confirm = 确认
 select-recipe = 选择配方
 
+try-dawntrain = FFXIV 7.0 黄金的遗产
+try-dawntrain-desc = BestCraft 现已适配 7.0 新技能、新配方。欢迎前往体验！
+
 guide-mode-info =
     注意：实验性向导模式已删除。如有疑问欢迎反馈。
 </fluent>
@@ -178,6 +168,9 @@ no-data = No recipe
 
 confirm = Confirm
 select-recipe = Select recipe
+
+try-dawntrain = FFXIV 7.0 DAWNTRAIL
+try-dawntrain-desc = BestCraft support 7.0 new actions, new recipes now. Welcome to experience!
 
 guide-mode-info =
     Note: The wizard mode as an experimental feature is removed.

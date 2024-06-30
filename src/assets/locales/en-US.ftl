@@ -3,7 +3,7 @@ licenses-notices-2 = BestCraft is distributed in the hope that it will be useful
 licenses-notices-3 = You should have received a copy of the GNU Affero General Public License along with BestCraft. If not, see https://www.gnu.org/licenses/.
 copyright-notices = 
     Copyright 2024 Tnze. All Rights Reserved.
-    Referenced FFXIV related resources: Copyright (C) 2010 - 2024 SQUARE ENIX CO., LTD.
+    Referenced FFXIV related resources: Copyright © 2010 - 2024 SQUARE ENIX CO., LTD.
 
 level = Lv.
 recipe-level = Recipe Lv.
@@ -103,3 +103,10 @@ solver-already-exist = Solver is already exist
 solver-is-creating = Solver is already creating
 solver-doesn-t-exist = Solver doesn't exist
 solver-isn-t-prepared = Solver isn't prepared
+
+# Titles
+attributes = Crafter Attributes
+select-recipe = Select Recipe
+custom-recipe = Custom Recipe
+settings = Settings
+title = { $recipe } (Simulator Mode)

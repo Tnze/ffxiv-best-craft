@@ -3,7 +3,7 @@ licenses-notices-2 = BestCraft is distributed in the hope that it will be useful
 licenses-notices-3 = You should have received a copy of the GNU Affero General Public License along with BestCraft. If not, see https://www.gnu.org/licenses/.
 copyright-notices = 
     Copyright 2024 Tnze. All Rights Reserved.
-    Referenced FFXIV related resources: Copyright (C) 2010 - 2024 SQUARE ENIX CO., LTD.
+    Referenced FFXIV related resources: Copyright © 2010 - 2024 SQUARE ENIX CO., LTD.
 
 level = Lv
 recipe-level = Recipe Lv
@@ -81,3 +81,8 @@ update-pending = 更新中
 update-error = 更新に失敗しました: { $error }
 update-done = 更新完了
 update-uptodate = すでに最新バージョン
+
+# Titles
+attributes = 属性
+settings = 設定
+title = { $recipe } （模拟器模式）

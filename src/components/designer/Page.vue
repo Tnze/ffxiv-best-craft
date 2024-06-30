@@ -18,15 +18,21 @@
 
 <script setup lang="ts">
 import { ElEmpty, ElResult, ElButton } from 'element-plus';
-import { computed, defineAsyncComponent, onErrorCaptured, ref, provide } from 'vue';
+import { computed, defineAsyncComponent, onErrorCaptured, ref, provide, onActivated } from 'vue';
 import useGearsetsStore from '@/stores/gearsets';
 import useDesignerStore from '@/stores/designer';
 import { useFluent } from 'fluent-vue';
 import { displayJobKey } from "./injectionkeys"
 
+const emit = defineEmits<{
+    (e: 'setTitle', title: string): void
+}>()
+
 const gearsetsStore = useGearsetsStore()
 const designerStore = useDesignerStore()
 const { $t } = useFluent()
+
+onActivated(() => emit('setTitle', designerStore.content?.item.name ?? ''))
 
 const Designer = defineAsyncComponent(() => import('./Designer.vue'))
 const Simulator = defineAsyncComponent(() => import('./Simulator.vue'))

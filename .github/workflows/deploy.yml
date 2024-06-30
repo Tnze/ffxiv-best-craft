@@ -1,0 +1,51 @@
+name: "publish"
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  publish-web:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - run: corepack enable
+    - name: install Rust nightly
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: nightly
+    - name: install wasm-pack
+      run:
+        npm install -g wasm-pack
+    - name: install app dependencies and build it
+      run: yarn && yarn build-web
+    # Run type check after the wasm package is built
+    - name: run tsc
+      run: yarn tsc --noEmit
+    - name: upload files
+      uses: actions/upload-artifact@v3
+      with:
+        name: bestcraft-dist
+        path: dist/
+
+  deploy-web:
+    needs: publish-web
+    runs-on: ubuntu-latest
+    environment: FTP Deployer
+    steps:
+    - name: download files
+      uses: actions/download-artifact@v3
+      with:
+        name: bestcraft-dist
+    - name: sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ vars.FTP_SERVER }}
+        username: ${{ vars.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: /

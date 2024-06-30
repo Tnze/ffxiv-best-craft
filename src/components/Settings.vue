@@ -17,12 +17,17 @@
 -->
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ElContainer, ElHeader, ElMain, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton, ElDialog } from 'element-plus'
+import { ref, onActivated } from 'vue'
+import { ElScrollbar, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton, ElDialog } from 'element-plus'
 import { useFluent } from 'fluent-vue'
 import useSettingsStore from '@/stores/settings'
 import { languages } from '../lang'
 import { useColorMode } from '@vueuse/core'
+
+const emit = defineEmits<{
+    (e: 'setTitle', title: string): void
+}>()
+onActivated(() => emit('setTitle', 'settings'))
 
 const { $t } = useFluent()
 const store = useSettingsStore()
@@ -53,81 +58,76 @@ if (isOnTauri) {
 </script>
 
 <template>
-    <el-container>
-        <el-header>
-            <h1>{{ $t('settings') }}</h1>
-        </el-header>
-        <el-main>
-            <el-form class="setting-page" :model="store" label-width="120px">
-                <el-form-item :label="$t('language')">
-                    <el-select v-model="store.language">
-                        <el-option :label="$t('system-lang')" value="system" />
-                        <el-option v-for="[v, name] in languages" :label="name" :value="v" />
-                    </el-select>
+    <el-scrollbar>
+        <el-form class="setting-page" :model="store" label-width="120px">
+            <el-form-item :label="$t('language')">
+                <el-select v-model="store.language">
+                    <el-option :label="$t('system-lang')" value="system" />
+                    <el-option v-for="[v, name] in languages" :label="name" :value="v" />
+                </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('theme')">
+                <el-radio-group v-model="colorMode">
+                    <el-radio-button value="light">{{ $t('light') }}</el-radio-button>
+                    <el-radio-button value="dark">{{ $t('dark') }}</el-radio-button>
+                    <el-radio-button value="auto">{{ $t('auto') }}</el-radio-button>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item :label="$t('data-source')">
+                <el-select v-model="store.dataSource">
+                    <!-- <el-option v-if="isOnTauri" :label="$t('ds-local')" value="local" /> -->
+                    <!-- <el-option :label="$t('ds-yyyygames')" value="yyyy.games" /> -->
+                    <el-option :label="$t('ds-xivapi')" value="xivapi" />
+                    <!-- <el-option :label="$t('ds-cafe')" value="cafe" /> -->
+                </el-select>
+            </el-form-item>
+            <el-form-item v-if="store.dataSource == 'xivapi'">
+                <el-select v-model="store.dataSourceLang">
+                    <el-option :label="$t('dslang-en')" value="en" />
+                    <el-option :label="$t('dslang-ja')" value="ja" />
+                    <el-option :label="$t('dslang-de')" value="de" />
+                    <el-option :label="$t('dslang-fr')" value="fr" />
+                </el-select>
+            </el-form-item>
+            <template v-if="isOnTauri">
+                <el-form-item :label="$t('version-number')">
+                    {{ version }}
                 </el-form-item>
-                <el-form-item :label="$t('theme')">
-                    <el-radio-group v-model="colorMode">
-                        <el-radio-button value="light">{{ $t('light') }}</el-radio-button>
-                        <el-radio-button value="dark">{{ $t('dark') }}</el-radio-button>
-                        <el-radio-button value="auto">{{ $t('auto') }}</el-radio-button>
-                    </el-radio-group>
+                <el-form-item :label="$t('tauri')">
+                    {{ tauriVersion }}
                 </el-form-item>
-                <el-form-item :label="$t('data-source')">
-                    <el-select v-model="store.dataSource">
-                        <!-- <el-option v-if="isOnTauri" :label="$t('ds-local')" value="local" /> -->
-                        <!-- <el-option :label="$t('ds-yyyygames')" value="yyyy.games" /> -->
-                        <el-option :label="$t('ds-xivapi')" value="xivapi" />
-                        <!-- <el-option :label="$t('ds-cafe')" value="cafe" /> -->
-                    </el-select>
+                <el-form-item>
+                    <el-button type="primary" @click="onCheckUpdateClick" :loading="checkingUpdate">
+                        {{ checkingUpdate ? $t('checking-update') : $t('check-update') }}
+                    </el-button>
                 </el-form-item>
-                <el-form-item v-if="store.dataSource == 'xivapi'">
-                    <el-select v-model="store.dataSourceLang">
-                        <el-option :label="$t('dslang-en')" value="en" />
-                        <el-option :label="$t('dslang-ja')" value="ja" />
-                        <el-option :label="$t('dslang-de')" value="de" />
-                        <el-option :label="$t('dslang-fr')" value="fr" />
-                    </el-select>
-                </el-form-item>
-                <template v-if="isOnTauri">
-                    <el-form-item :label="$t('version-number')">
-                        {{ version }}
-                    </el-form-item>
-                    <el-form-item :label="$t('tauri')">
-                        {{ tauriVersion }}
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="onCheckUpdateClick" :loading="checkingUpdate">{{
-                            checkingUpdate ? $t('checking-update') : $t('check-update')
-                        }}</el-button>
-                    </el-form-item>
-                </template>
-                <el-form-item :label="$t('developer')">
-                    Tnze
-                </el-form-item>
-                <el-form-item :label="$t('feedback')">
-                    <el-link href="https://pd.qq.com/s/al6b5xo69" target="_blank">QQ频道</el-link>
-                </el-form-item>
-                <el-form-item :label="$t('source')">
-                    <el-link href="https://gitee.com/Tnze/ffxiv-best-craft" target="_blank">Gitee</el-link>
-                    <el-link href="https://github.com/Tnze/ffxiv-best-craft" target="_blank">Github</el-link>
-                </el-form-item>
-                <el-form-item :label="$t('license')">
-                    <el-button @click="licenseDialogVisible = true">AGPL</el-button>
-                    <el-dialog class="licenses-dialog" v-model="licenseDialogVisible" :title="$t('license')"
-                        width="50%">
-                        <p>{{ $t('licenses-notices-1') }}</p>
-                        <p>{{ $t('licenses-notices-2') }}</p>
-                        <p>{{ $t('licenses-notices-3') }}</p>
-                    </el-dialog>
-                </el-form-item>
-            </el-form>
-        </el-main>
-    </el-container>
+            </template>
+            <el-form-item :label="$t('developer')">
+                Tnze
+            </el-form-item>
+            <el-form-item :label="$t('feedback')">
+                <el-link href="https://pd.qq.com/s/al6b5xo69" target="_blank">QQ频道</el-link>
+            </el-form-item>
+            <el-form-item :label="$t('source')">
+                <el-link href="https://gitee.com/Tnze/ffxiv-best-craft" target="_blank">Gitee</el-link>
+                <el-link href="https://github.com/Tnze/ffxiv-best-craft" target="_blank">Github</el-link>
+            </el-form-item>
+            <el-form-item :label="$t('license')">
+                <el-button @click="licenseDialogVisible = true">AGPL</el-button>
+                <el-dialog class="licenses-dialog" v-model="licenseDialogVisible" :title="$t('license')" width="50%">
+                    <p>{{ $t('licenses-notices-1') }}</p>
+                    <p>{{ $t('licenses-notices-2') }}</p>
+                    <p>{{ $t('licenses-notices-3') }}</p>
+                </el-dialog>
+            </el-form-item>
+        </el-form>
+    </el-scrollbar>
 </template>
 
 <style scoped>
 .setting-page {
-    padding-top: 10px;
+    margin-top: 20px;
+    background-color: transparent !important;
 }
 
 .el-link {
@@ -137,14 +137,9 @@ if (isOnTauri) {
 .el-select {
     width: 210px;
 }
-
-.el-main {
-    background-color: transparent !important;
-}
 </style>
 
 <fluent locale="zh-CN">
-settings = 设置
 # language =
 theme = 主题
 light = 亮
@@ -171,7 +166,6 @@ checking-update = 正在检查更新
 </fluent>
 
 <fluent locale="en-US">
-settings = Settings
 language = Language
 theme = Theme
 light = Light
@@ -199,7 +193,6 @@ checking-update = Checking Update
 </fluent>
 
 <fluent locale="ja-JP">
-settings = 設定
 # language =
 data-source = データソース
 ds-local = ローカル
