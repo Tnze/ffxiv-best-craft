@@ -14,7 +14,7 @@ onmessage = async (e) => {
             postMessage(rika_solve(args.status))
             break;
         case "reflect_solve":
-            postMessage(reflect_solve(args.status, args.use_observe))
+            postMessage(reflect_solve(args.status, args.useObserve))
             break;
         case "rika_solve_tnzever":
             throw "unsupported";

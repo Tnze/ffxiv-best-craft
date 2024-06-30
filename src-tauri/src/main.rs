@@ -27,8 +27,8 @@ use app_libs::{
     analyzer::rand_simulations::Statistics,
     ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status},
     solver::{
-        depth_first_search_solver, normal_progress_solver, reflect_solver, rika_solver, Score,
-        Solver, SolverHash,
+        depth_first_search_solver, normal_progress_solver, reflect_solver, rika_solver, Solver,
+        SolverHash,
     },
     SimulateOneStepResult, SimulateResult,
 };

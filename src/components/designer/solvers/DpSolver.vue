@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -130,11 +130,9 @@ const destroySolver = async (s: Solver) => {
         </i18n>
     </el-dialog>
     <el-space direction="vertical">
-        <template v-if="platform == 'tauri'">
-            <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" />
-            <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
-            <el-checkbox v-model="useWasteNot" :label="$t('waste-not')" />
-        </template>
+        <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" :disabled="platform != 'tauri'" />
+        <el-checkbox v-model="useManipulation" :label="$t('manipulation')" :disabled="platform != 'tauri'" />
+        <el-checkbox v-model="useWasteNot" :label="$t('waste-not')" :disabled="platform != 'tauri'" />
         <el-checkbox v-model="useObserve" :label="$t('observe')" />
     </el-space>
     <el-alert v-if="useMuscleMemory" type="warning" :title="$t('muscle-memory-msg')" show-icon :closable="false" />
