@@ -84,7 +84,7 @@ function reload() {
 
 <style scoped>
 .el-result {
-    margin-top: 20%;
+    vertical-align: middle;
 }
 </style>
 
