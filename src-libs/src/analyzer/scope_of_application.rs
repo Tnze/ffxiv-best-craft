@@ -52,7 +52,7 @@ fn find_craftsmanship_range(
 ) -> (Option<i32>, Option<i32>) {
     let init_craftsmanship = init_status.attributes.craftsmanship;
     let mut low = None;
-    for cm in (0..init_craftsmanship).rev() {
+    for cm in (0..=init_craftsmanship).rev() {
         let mut status = init_status.clone();
         status.attributes.craftsmanship = cm;
         refrash_caches(&mut status);
@@ -86,7 +86,7 @@ fn find_control_range(
     }
     let init_control = init_status.attributes.control;
     let mut low = None;
-    for ct in (0..init_control).rev() {
+    for ct in (0..=init_control).rev() {
         let mut status = init_status.clone();
         status.attributes.control = ct;
         refrash_caches(&mut status);

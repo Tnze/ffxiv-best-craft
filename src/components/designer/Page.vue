@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -47,8 +47,8 @@ const errorMessage = ref<string>()
 
 provide(displayJobKey, computed(() => designerStore.content!.job))
 
-onErrorCaptured((err: unknown) => {
-    console.error(err)
+onErrorCaptured((err: unknown, instance, info) => {
+    console.error(err, instance, info)
     try {
         errorMessage.value = $t(String(err))
     } catch {
@@ -84,7 +84,7 @@ function reload() {
 
 <style scoped>
 .el-result {
-    margin-top: 20%;
+    vertical-align: middle;
 }
 </style>
 

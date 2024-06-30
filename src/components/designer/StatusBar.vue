@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -27,13 +27,7 @@ import Condition from './Condition.vue'
 const props = defineProps<{
     status: Status;
     attributes: Attributes;
-    enhancers: Enhancer[];
     showCondition: boolean;
-}>()
-
-const emits = defineEmits<{
-    (event: 'click-attributes'): void
-    (event: 'click-quality'): void
 }>()
 
 const durability = computed<number>(() => props.status === undefined ? 100 : props.status.durability / props.status.recipe.durability * 100)
@@ -57,28 +51,6 @@ const durabilityColor = [
 ]
 
 const craftPointPercentage = computed(() => props.status?.craft_points / props.status?.attributes.craft_points * 100)
-
-const attrCraftsmanship = computed(() =>
-    props.attributes.craftsmanship +
-    props.enhancers
-        .filter(v => v.cm && v.cm_max)
-        .map(v => Math.min(props.status?.attributes.craftsmanship * v.cm!, v.cm_max!))
-        .map(cm => ` + ${cm}`).join('')
-)
-const attrControl = computed(() =>
-    props.attributes.control +
-    props.enhancers
-        .filter(v => v.ct && v.ct_max)
-        .map(v => Math.min(props.status?.attributes.control * v.ct!, v.ct_max!))
-        .map(ct => ` + ${ct}`).join('')
-)
-const attrCraftPoint = computed(() =>
-    props.attributes.craft_points +
-    props.enhancers
-        .filter(v => v.cp && v.cp_max)
-        .map(v => Math.min(props.status?.attributes.craft_points * v.cp!, v.cp_max!))
-        .map(cp => ` + ${cp}`).join('')
-)
 
 </script>
 
@@ -122,17 +94,15 @@ const attrCraftPoint = computed(() =>
             </div>
             <div class="attr-block">
                 <span class="attr-label">{{ $t('display-attrs-label', { label: $t('craftsmanship') }) }}</span>
-                <span class="attr-value">{{ attrCraftsmanship }}</span>
+                <span class="attr-value">{{ status?.attributes.craftsmanship }}</span>
             </div>
             <div class="attr-block">
                 <span class="attr-label">{{ $t('display-attrs-label', { label: $t('control') }) }}</span>
-                <span class="attr-value">{{ attrControl }}</span>
+                <span class="attr-value">{{ status?.attributes.control }}</span>
             </div>
             <div class="attr-block">
                 <span class="attr-label">{{ $t('display-attrs-label', { label: $t('craft-point') }) }}</span>
-                <span class="attr-value">
-                    {{ attrCraftPoint }}
-                </span>
+                <span class="attr-value">{{ status?.attributes.craft_points }}</span>
             </div>
         </div>
     </div>
