@@ -20,7 +20,7 @@
 import { save, open } from '@tauri-apps/api/dialog'
 import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { Ref, computed, inject, markRaw, provide, reactive, ref, watch } from "vue";
-import { ElContainer, ElHeader, ElMain, ElScrollbar, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
+import { ElScrollbar, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
 import { Bottom, Close } from "@element-plus/icons-vue";
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
@@ -59,16 +59,17 @@ const enhancedAttributes = computed<Attributes>(() => {
     const sum = (prev: number, curr: number) => prev + curr;
     craftsmanship += attributesEnhancers.value
         .filter((v) => v.cm && v.cm_max)
-        .map((v) => Math.min((craftsmanship * v.cm!) / 100, v.cm_max!))
+        .map((v) => Math.floor(Math.min((craftsmanship * v.cm!) / 100, v.cm_max!)))
         .reduce(sum, 0);
     control += attributesEnhancers.value
         .filter((v) => v.ct && v.ct_max)
-        .map((v) => Math.min((control * v.ct!) / 100, v.ct_max!))
+        .map((v) => Math.floor(Math.min((control * v.ct!) / 100, v.ct_max!)))
         .reduce(sum, 0);
     craft_points += attributesEnhancers.value
         .filter((v) => v.cp && v.cp_max)
-        .map((v) => Math.min((craft_points * v.cp!) / 100, v.cp_max!))
+        .map((v) => Math.floor(Math.min((craft_points * v.cp!) / 100, v.cp_max!)))
         .reduce(sum, 0);
+    console.log(craftsmanship, control, craft_points)
     return { level, craftsmanship, control, craft_points };
 });
 
@@ -346,9 +347,7 @@ async function openListFromJSON() {
             <el-alert v-if="attributionAlert != undefined" :title="attributionAlert.title"
                 :description="attributionAlert.descryption" type="warning" show-icon center :closable="false" />
         </div>
-        <StatusBar class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
-            :status="displayedStatus" :disabled-init-quality="recipeId == undefined"
-            @click-attributes="openAttrEnhSelector = true" @click-quality="openInitQualitySet = true"
+        <StatusBar class="status-bar" :attributes="enhancedAttributes" :status="displayedStatus"
             :show-condition="false" />
         <el-tabs v-model="activeTab" tab-position="top" style="height: auto; padding: 0 15px 0 15px;"
             class="above-panel">
