@@ -45,7 +45,7 @@ const bgMainColor = useCssVar('--tnze-main-bg-color', ref(null))
 const router = useRouter()
 const showMenu = ref(false)
 const topTitle = ref('')
-const enableInnerTitle = useMediaQuery('screen and (min-width: 960px)')
+const unfoldSidebar = useMediaQuery('screen and (min-width: 760px)')
 watch(router.currentRoute, () => showMenu.value = false)
 
 const lang = ref('zh-CN')
@@ -127,18 +127,22 @@ onMounted(() => {
             <div class="overlay" v-if="showMenu" @click="showMenu = false"></div>
         </Transition>
         <Menu class="sidebar" v-bind:class="{ 'show-menu': showMenu }"></Menu>
-        <div class="topbar">
-            <el-icon :size="30" @click="showMenu = !showMenu">
-                <Operation />
-            </el-icon>
-            <h3>{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
-        </div>
         <div class="main">
-            <router-view v-slot="{ Component }" style="height: 100%;">
-                <keep-alive>
-                    <component :is="Component" @setTitle="(s: string) => topTitle = s" :innerTitle="enableInnerTitle" />
-                </keep-alive>
-            </router-view>
+            <div class="topbar">
+                <Transition name="menuicon">
+                    <el-icon v-if="!unfoldSidebar" :size="25" @click="showMenu = !showMenu">
+                        <Operation />
+                    </el-icon>
+                </Transition>
+                <h3>{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
+            </div>
+            <div style="height: calc(100% - var(--tnze-topbar-height));">
+                <router-view v-slot="{ Component }">
+                    <keep-alive>
+                        <component :is="Component" @setTitle="(s: string) => topTitle = s" />
+                    </keep-alive>
+                </router-view>
+            </div>
         </div>
         <el-config-provider :locale="elementPlusLang.get(lang)" />
     </div>
@@ -193,7 +197,7 @@ onMounted(() => {
 
     --tnze-content-raduis: var(--el-border-radius-round);
     --tnze-sidebar-width: 150px;
-    --tnze-topbar-height: 50px;
+    --tnze-topbar-height: 40px;
 }
 
 :root.dark {
@@ -239,6 +243,15 @@ onMounted(() => {
     pointer-events: none;
 }
 
+.menuicon-enter-active {
+    transition: transform .5s ease;
+}
+
+.menuicon-enter-from {
+    position: fixed;
+    transform: translateX(100%);
+}
+
 .sidebar {
     position: fixed;
     top: 0;
@@ -258,7 +271,6 @@ onMounted(() => {
 .topbar {
     height: var(--tnze-topbar-height);
     width: 100%;
-    border-bottom: solid 1px var(--el-border-color);
     box-sizing: border-box;
     flex: none;
     transition: height .5s;
@@ -268,15 +280,16 @@ onMounted(() => {
 }
 
 .topbar>.el-icon {
-    padding: 0 10px;
+    margin: 0 10px;
     color: var(--el-color-info);
+    overflow: hidden;
 }
 
 .main {
+    height: 100%;
     padding: 0;
     background-color: rgba(246, 246, 246, 0.5);
     flex: auto;
-    height: calc(100% - var(--tnze-topbar-height));
 
     transition: margin-left .5s;
 }
@@ -285,15 +298,15 @@ onMounted(() => {
     background-color: var(--tnze-main-bg-color);
 }
 
-@media screen and (min-width: 960px) {
+@media screen and (min-width: 760px) {
     .sidebar {
         transform: translateX(0);
         background-color: var(--app-bg-color);
     }
 
     .topbar {
-        height: 0;
         border-bottom: initial;
+        padding-left: 20px;
     }
 
     .main {

@@ -22,9 +22,6 @@ import { onActivated, ref } from 'vue'
 import useGearsetsStore from '@/stores/gearsets'
 import Gearset from '@/components/Gearset.vue'
 
-const props = defineProps<{
-    innerTitle: boolean
-}>()
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void
 }>()
