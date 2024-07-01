@@ -282,7 +282,7 @@ async function handleSolverResult(actions: Actions[]) {
                         :preview-solver="previewSolver" :err-list="activeSeq.errors"
                         :loading-solver-result="isReadingSolverDisplay" />
                 </div>
-                <el-tabs v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top" style="overflow: hidden;">
+                <el-tabs v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top">
                     <el-tab-pane :label="$t('action-editor')" name="staged" class="multi-function-area">
                         <el-scrollbar class="savedqueue-list">
                             <el-button-group>
@@ -388,6 +388,7 @@ async function handleSolverResult(actions: Actions[]) {
     flex-direction: column;
     flex: 1 1 auto;
     margin-left: 5px;
+    height: 100%;
 }
 
 @media screen and (max-width: 480px) {
@@ -401,6 +402,7 @@ async function handleSolverResult(actions: Actions[]) {
     }
 
     .above-right-panel {
+        flex: 0 0 auto;
         height: inherit;
     }
 }
