@@ -349,8 +349,7 @@ async function openListFromJSON() {
         </div>
         <StatusBar class="status-bar" :attributes="enhancedAttributes" :status="displayedStatus"
             :show-condition="false" />
-        <el-tabs v-model="activeTab" tab-position="top" style="height: auto; padding: 0 15px 0 15px;"
-            class="above-panel">
+        <el-tabs v-model="activeTab" tab-position="top" class="above-panel">
             <el-tab-pane :label="$t('action-editor')" name="staged" class="staged-panel">
                 <el-scrollbar class="staged-left-panel">
                     <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
@@ -442,6 +441,8 @@ async function openListFromJSON() {
     flex: auto;
     overflow: hidden;
     flex-direction: column;
+    height: auto;
+    /* padding: 0 15px !important; */
 }
 
 .above-panel :deep(.el-tabs__content) {

@@ -21,7 +21,6 @@ import { ElProgress } from 'element-plus';
 import { computed } from 'vue'
 import { Attributes, Status } from '@/libs/Craft';
 import Buffs from './Buffs.vue';
-import { Enhancer } from '../attr-enhancer/Enhancer';
 import Condition from './Condition.vue'
 
 const props = defineProps<{
@@ -112,17 +111,18 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
 .conatiner {
     width: 100%;
     display: flex;
+    flex-wrap: wrap;
     font-size: 14px;
     color: var(--el-text-color-regular);
 }
 
 #durability-and-condition {
-    padding: 3px 10px 5px 5px;
+    /* padding: 3px 10px 5px 5px; */
     flex: none;
 }
 
 #durability {
-    padding: 10px;
+    padding: 5px;
 }
 
 #craft-point {
@@ -163,6 +163,22 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
 
 .bar-title {
     user-select: none;
+}
+
+@media screen and (max-width: 480px) {
+    #progress-and-buffs {
+        flex: 1 1 100%;
+        padding: 5px;
+    }
+
+    #durability-and-condition {
+        order: -2;
+        flex: auto;
+    }
+
+    #attributes {
+        order: -1;
+    }
 }
 </style>
 

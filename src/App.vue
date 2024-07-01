@@ -125,7 +125,7 @@ watchEffect(async () => {
                         <Operation />
                     </el-icon>
                 </Transition>
-                <h3>{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
+                <h3 class="topbar-title">{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
             </div>
             <div style="height: calc(100% - var(--tnze-topbar-height));">
                 <router-view v-slot="{ Component }">
@@ -271,14 +271,17 @@ watchEffect(async () => {
 }
 
 .topbar>.el-icon {
-    margin: 0 10px;
     color: var(--el-color-info);
     overflow: hidden;
 }
 
+.topbar-title {
+    margin-left: 10px;
+}
+
 .main {
     height: 100%;
-    padding: 0;
+    padding: 0 10px;
     background-color: rgba(246, 246, 246, 0.5);
     flex: auto;
 
@@ -297,7 +300,6 @@ watchEffect(async () => {
 
     .topbar {
         border-bottom: initial;
-        padding-left: 20px;
     }
 
     .main {
