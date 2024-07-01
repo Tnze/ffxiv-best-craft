@@ -207,7 +207,6 @@ export async function newStatus(
     recipe: Recipe,
     recipeLevel: RecipeLevel,
 ): Promise<Status> {
-    console.table(recipeLevel)
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri
         return invoke("new_status", { attrs, recipe, recipeLevel })

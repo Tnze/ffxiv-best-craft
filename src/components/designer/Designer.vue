@@ -17,10 +17,8 @@
 -->
 
 <script setup lang="ts">
-import { save, open } from '@tauri-apps/api/dialog'
-import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { Ref, computed, inject, markRaw, provide, reactive, ref, watch } from "vue";
-import { ElScrollbar, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
+import { ElScrollbar, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
 import { Bottom, Close } from "@element-plus/icons-vue";
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
@@ -38,6 +36,7 @@ import Analyzers from './Analyzers.vue';
 import { activeSeqKey, displayJobKey } from './injectionkeys';
 
 import { Slot, Sequence } from './types';
+import { useMediaQuery } from "@vueuse/core";
 
 const props = defineProps<{
     recipe: Recipe,
@@ -51,6 +50,7 @@ const props = defineProps<{
 
 const { $t } = useFluent()
 const displayJob = inject(displayJobKey) as Ref<Jobs>
+const foldMultiFunctionArea = useMediaQuery('screen and (max-width: 480px)')
 
 // 食物和药水效果
 const attributesEnhancers = ref<Enhancer[]>([]);
@@ -69,7 +69,6 @@ const enhancedAttributes = computed<Attributes>(() => {
         .filter((v) => v.cp && v.cp_max)
         .map((v) => Math.floor(Math.min((craft_points * v.cp!) / 100, v.cp_max!)))
         .reduce(sum, 0);
-    console.log(craftsmanship, control, craft_points)
     return { level, craftsmanship, control, craft_points };
 });
 
@@ -104,8 +103,6 @@ var attributionAlert = computed(() => {
 const isReadingSolver = ref(0);
 const isReadingSolverDisplay = ref(false); // This is basicly (isReadingSolver != 0), with a 500ms delay on rising edge
 const previewSolver = ref(false);
-const openInitQualitySet = ref(false);
-const openAttrEnhSelector = ref(false);
 const activeTab = ref('staged')
 
 let isReadingSolverDisplayStopTimer: NodeJS.Timeout | null = null;
@@ -264,81 +261,6 @@ async function handleSolverResult(actions: Actions[]) {
         errors,
     });
 }
-
-async function saveListToJSON() {
-    try {
-        const queues = savedSeqs.ary.map(v => v.seq.slots.map(s => s.action)).filter(v => v.length > 0)
-        try {
-            if (queues.length == 0) {
-                await ElMessageBox.confirm(
-                    $t('number-of-macros-is-zero'),
-                    $t('waring'),
-                    { type: 'warning' }
-                )
-            }
-        } catch {
-            return
-        }
-        const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
-        const path = await save({
-            defaultPath: `${props.item.name}-${level}-${craftsmanship}-${control}-${craft_points}`,
-            filters: [{ name: $t('macro-file-type-name'), extensions: ['json'] }],
-            title: $t('save-file')
-        })
-        if (!path) {
-            return
-        }
-        await writeFile({ path, contents: JSON.stringify(queues) })
-        ElMessage({
-            type: "success",
-            showClose: true,
-            message: $t('save-success'),
-        });
-    } catch (err) {
-        ElMessage({
-            type: "error",
-            showClose: true,
-            message: $t('save-fail', { reason: err as string }),
-        });
-    }
-}
-
-async function openListFromJSON() {
-    const pathlist = <string[]>await open({
-        filters: [{ name: $t('macro-file-type-name'), extensions: ['json'] }],
-        multiple: true,
-        title: $t('open-file')
-    })
-    if (!pathlist)
-        return
-    for (const filepath of pathlist) {
-        try {
-            const content = await readTextFile(filepath)
-            const sequences = <Actions[][]>JSON.parse(content)
-            for (const actions of sequences) {
-                const slots = actions.map((action, index) => { return { id: index, action } })
-                const { status, errors } = await simulate(initStatus.value, actions)
-                pushSequence({
-                    slots,
-                    maxid: slots.length - 1,
-                    status,
-                    errors,
-                });
-            }
-            ElMessage({
-                type: "success",
-                showClose: true,
-                message: $t('read-n-macros', { n: sequences.length }),
-            });
-        } catch (err) {
-            ElMessage({
-                type: "error",
-                showClose: true,
-                message: $t('read-fail', { reason: err as string }),
-            });
-        }
-    }
-}
 </script>
 
 <template>
@@ -349,65 +271,72 @@ async function openListFromJSON() {
         </div>
         <StatusBar class="status-bar" :attributes="enhancedAttributes" :status="displayedStatus"
             :show-condition="false" />
-        <el-tabs v-model="activeTab" tab-position="top" class="above-panel">
-            <el-tab-pane :label="$t('action-editor')" name="staged" class="staged-panel">
-                <el-scrollbar class="staged-left-panel">
-                    <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
-                </el-scrollbar>
-                <div class="staged-right-panel">
-                    <div class="action-queue">
-                        <ActionQueue :job="displayJob" v-model:list="activeSeq.slots"
-                            :solver-result="solverResult.slots" :preview-solver="previewSolver"
-                            :err-list="activeSeq.errors" :loading-solver-result="isReadingSolverDisplay" />
-                    </div>
-                    <el-button-group>
-                        <el-button @click="saveSequence" :icon="Bottom">
-                            {{ $t('save-workspace') }}
-                        </el-button>
-                        <el-button @click="clearSeq" :icon="Close">
-                            {{ $t('clear-workspace') }}
-                        </el-button>
-                        <el-checkbox-button v-model:model-value="previewSolver" v-if="solverResult.slots.length > 0">
-                            {{ $t('apply-solver') }}
-                        </el-checkbox-button>
-                    </el-button-group>
-                    <el-scrollbar class="savedqueue-list">
-                        <TransitionGroup name="savedqueues" tag="div">
-                            <StagedActionQueueItem v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" :seq="seq"
-                                :display-job="displayJob" @load="loadSeq(seq)" @delete="savedSeqs.ary.splice(i, 1)" />
-                        </TransitionGroup>
-                    </el-scrollbar>
+        <div class="above-panel">
+            <el-scrollbar class="above-left-panel">
+                <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
+            </el-scrollbar>
+
+            <div class="above-right-panel">
+                <div class="action-queue">
+                    <ActionQueue :job="displayJob" v-model:list="activeSeq.slots" :solver-result="solverResult.slots"
+                        :preview-solver="previewSolver" :err-list="activeSeq.errors"
+                        :loading-solver-result="isReadingSolverDisplay" />
                 </div>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('init-quality')" name="init-quality" class="above-panel">
-                <el-scrollbar style="flex: auto; padding-left: 30px;">
-                    <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
-                        v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :recipe-id="recipeId"
-                        :material-quality-factor="materialQualityFactor" />
-                </el-scrollbar>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance" class="above-panel">
-                <el-scrollbar style="flex: auto; padding-left: 30px;">
-                    <AttrEnhSelector v-model="attributesEnhancers" :job="displayJob" />
-                </el-scrollbar>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('export-macro')" name="export-macro" class="above-panel">
-                <el-scrollbar style="flex: auto; padding-left: 10px;">
-                    <MacroExporter :actions="displayActions" />
-                </el-scrollbar>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('solvers')" name="solver-list" class="above-panel">
-                <el-scrollbar style="flex: auto;">
-                    <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
-                        @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
-                </el-scrollbar>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('analyzers')" name="analyzers" class="above-panel">
-                <el-scrollbar style="flex: auto;">
-                    <Analyzers :init-status="initStatus" :actions="displayActions" />
-                </el-scrollbar>
-            </el-tab-pane>
-        </el-tabs>
+                <el-tabs v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top" style="overflow: hidden;">
+                    <el-tab-pane :label="$t('action-editor')" name="staged" class="multi-function-area">
+                        <el-scrollbar class="savedqueue-list">
+                            <el-button-group>
+                                <el-button @click="saveSequence" :icon="Bottom">
+                                    {{ $t('save-workspace') }}
+                                </el-button>
+                                <el-button @click="clearSeq" :icon="Close">
+                                    {{ $t('clear-workspace') }}
+                                </el-button>
+                                <el-checkbox-button v-model:model-value="previewSolver"
+                                    v-if="solverResult.slots.length > 0">
+                                    {{ $t('apply-solver') }}
+                                </el-checkbox-button>
+                            </el-button-group>
+                            <TransitionGroup name="savedqueues" tag="div">
+                                <StagedActionQueueItem v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" :seq="seq"
+                                    :display-job="displayJob" @load="loadSeq(seq)"
+                                    @delete="savedSeqs.ary.splice(i, 1)" />
+                            </TransitionGroup>
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('init-quality')" name="init-quality" class="multi-function-area">
+                        <el-scrollbar style="flex: auto; padding-left: 30px;">
+                            <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" :item="item"
+                                :recipe="recipe" :recipe-id="recipeId"
+                                :material-quality-factor="materialQualityFactor" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance"
+                        class="multi-function-area">
+                        <el-scrollbar style="flex: auto; padding-left: 30px;">
+                            <AttrEnhSelector v-model="attributesEnhancers" :job="displayJob" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('export-macro')" name="export-macro" class="multi-function-area">
+                        <el-scrollbar style="flex: auto; padding-left: 10px;">
+                            <MacroExporter :actions="displayActions" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('solvers')" name="solver-list" class="multi-function-area">
+                        <el-scrollbar style="flex: auto;">
+                            <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
+                                @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('analyzers')" name="analyzers" class="multi-function-area">
+                        <el-scrollbar style="flex: auto;">
+                            <Analyzers :init-status="initStatus" :actions="displayActions" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                </el-tabs>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -440,9 +369,7 @@ async function openListFromJSON() {
     display: flex;
     flex: auto;
     overflow: hidden;
-    flex-direction: column;
-    height: auto;
-    /* padding: 0 15px !important; */
+    flex-direction: row;
 }
 
 .above-panel :deep(.el-tabs__content) {
@@ -450,23 +377,36 @@ async function openListFromJSON() {
     flex: auto;
 }
 
-.staged-panel {
-    display: flex;
-    flex-direction: row;
-    flex: auto;
-}
-
-.staged-left-panel {
-    width: 233px;
+.above-left-panel {
+    flex: 0 0 270px;
+    min-width: 140px;
     height: auto;
 }
 
-.staged-right-panel {
+.above-right-panel {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    height: 100%;
+    flex: 1 1 auto;
     margin-left: 5px;
+}
+
+@media screen and (max-width: 480px) {
+    .above-panel {
+        flex-direction: column;
+    }
+
+    .above-left-panel {
+        order: 1;
+        flex: 1 1 auto;
+    }
+
+    .above-right-panel {
+        height: inherit;
+    }
+}
+
+.multi-function-area {
+    height: 100%;
 }
 
 .action-queue {
