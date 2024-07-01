@@ -70,7 +70,7 @@ refined-touch = Refined Touch
 daring-touch = Daring Touch
 immaculate-mend = Immaculate Mend
 quick-innovation = Quick Innovation
-trained-perfection = Traied Perfection
+trained-perfection = Trained Perfection
 
 # Conditions
 normal = Normal
