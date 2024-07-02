@@ -77,7 +77,7 @@ if (isOnTauri) {
                 <el-select v-model="store.dataSource">
                     <el-option v-if="isOnTauri" :label="$t('ds-local')" value="local" />
                     <el-option :label="$t('ds-yyyygames')" value="yyyy.games" />
-                    <el-option :label="$t('ds-xivapi')" value="xivapi" />
+                    <!-- <el-option :label="$t('ds-xivapi')" value="xivapi" /> -->
                     <el-option :label="$t('ds-cafe')" value="cafe" />
                 </el-select>
             </el-form-item>
