@@ -21,17 +21,13 @@ import { ElDropdown, ElDropdownMenu, ElDropdownItem, ElSwitch, ElForm, ElFormIte
 import { Statistics, rand_simulation, calc_attributes_scope, Scope } from "@/libs/Analyzer"
 import { Actions, Status } from "@/libs/Craft";
 import * as d3 from "d3";
-import { ref, computed, inject } from "vue";
-import ActionQueue from "./ActionQueue.vue";
-import { displayJobKey, activeSeqKey } from "./injectionkeys"
+import { ref, computed, watch } from "vue";
 
 const props = defineProps<{
     initStatus: Status,
     actions: Actions[],
 }>();
-const displayJob = inject(displayJobKey)
-const activeSeq = inject(activeSeqKey)
-
+const defaultSimulationCounts = 1000
 const maximiumSimulatonPow = 5
 
 const simulationResult = ref<Statistics>()
@@ -56,6 +52,27 @@ async function calcScope() {
     } catch {
     }
 }
+
+let autoRunTimeout: any = null;
+watch(
+    () => [props.actions, props.initStatus],
+    () => {
+        if (autoRunTimeout !== null) {
+            clearTimeout(autoRunTimeout)
+        }
+        const thisTimeout = setTimeout(
+            async () => {
+                await runSimulatios(defaultSimulationCounts)
+                await calcScope()
+                if (autoRunTimeout == thisTimeout) {
+                    autoRunTimeout = null
+                }
+            },
+            200,
+        )
+        autoRunTimeout = thisTimeout
+    },
+)
 
 const arc = d3.arc<d3.PieArcDatum<[string, number]>>()
     .innerRadius(50)
@@ -85,16 +102,11 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
 
 <template>
     <el-form>
-        <el-form-item :label="$t('action-queue')">
-            <ActionQueue class="action-queue" v-if="activeSeq && activeSeq.slots.length > 0 && displayJob"
-                :job="displayJob" v-model:list="activeSeq.slots" :err-list="activeSeq.errors" disabled no-hover />
-            <template v-else>{{ $t('empty') }}</template>
-        </el-form-item>
         <el-form-item :label="$t('ignore-errors')">
             <el-switch v-model="ignoreErrors" />
         </el-form-item>
         <el-form-item>
-            <el-dropdown split-button type="default" @click="runSimulatios(1000)"
+            <el-dropdown split-button type="default" @click="runSimulatios(defaultSimulationCounts)"
                 @command="(n: number) => runSimulatios(n)" :disabled="simulationButtonDisabled">
                 {{ $t("run-simulations") }}
                 <template #dropdown>
