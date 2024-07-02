@@ -25,10 +25,10 @@ export interface GearsetsRow {
 export default defineStore('gearsets', {
     state: () => ({
         default: {
-            level: 90,
-            craftsmanship: 2786,
-            control: 2764,
-            craft_points: 533,
+            level: 100,
+            craftsmanship: 4000,
+            control: 4000,
+            craft_points: 700,
         },
         special: [
             { name: Jobs.Carpenter, value: null },
