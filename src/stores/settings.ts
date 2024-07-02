@@ -66,6 +66,9 @@ export default defineStore('settings', {
         },
         fromJson(json: string) {
             this.$patch(JSON.parse(json))
+            if (this.dataSource !== "xivapi") {
+                this.dataSource = "xivapi"
+            }
         },
     }
 })
