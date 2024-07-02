@@ -79,7 +79,6 @@ watch(
         () => customRecipe.value.rlv
     ],
     async ([autoLoad, dataSource, rlv]) => {
-        console.log("dataSource", dataSource)
         if (!autoLoad) return;
         try {
             autoLoadLoading.value = true
