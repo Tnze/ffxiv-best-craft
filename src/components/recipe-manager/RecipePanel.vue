@@ -17,15 +17,16 @@
 -->
 
 <script setup lang="ts">
-import { ref, reactive, watch, onMounted, onActivated } from 'vue'
-import { ElContainer, ElHeader, ElMain, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
+import { ref, reactive, watch, onMounted, onActivated, computed } from 'vue'
+import { ElDescriptions, ElDescriptionsItem, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
-import { newRecipe, RecipeInfo } from '@/libs/Craft'
+import { newRecipe, Recipe, RecipeInfo } from '@/libs/Craft'
 import { useRouter } from 'vue-router';
 import { useFluent } from 'fluent-vue';
 import { selectRecipe } from './common';
 import { DataSource, DataSourceType } from './source';
 import useSettingsStore from '@/stores/settings'
+import { useMediaQuery } from '@vueuse/core';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void
@@ -54,6 +55,7 @@ const pagination = reactive({
 })
 const displayTable = ref<RecipeInfo[]>([])
 const isRecipeTableLoading = ref(false)
+const compactLayout = useMediaQuery('screen and (max-width: 500px)')
 
 let loadRecipeTableResult: Promise<{ recipes: RecipeInfo[], totalPages: number }> | null = null
 
@@ -115,6 +117,10 @@ async function triggerSearch() {
 onMounted(triggerSearch)
 
 const confirmDialogVisible = ref(false)
+const selectedRecipe = ref<[Recipe, RecipeInfo]>()
+const isNormalRecipe = computed(() => {
+    return selectedRecipe.value?.[0].conditions_flag === 15
+})
 let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null = null
 
 const selectRecipeRow = async (row: RecipeInfo) => {
@@ -138,47 +144,58 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         row.durability_factor
     )
 
-    if ((recipe.conditions_flag & ~15) == 0) {
-        try {
-            await ElMessageBox.confirm(
-                $t('confirm-select', { itemName: row.item_name }),
-                $t('please-confirm'),
-                { type: 'warning' }
-            )
-            selectRecipe(recipe, row.id, recipeLevel, row.material_quality_factor, row, info, row.job, false)
-            router.push({ name: "designer" })
-        } catch {
-            // operation canceled by user
-        }
-    } else {
-        confirmDialogCallback = (mode: 'designer' | 'simulator') => {
-            selectRecipe(recipe, row.id, recipeLevel, row.material_quality_factor, row, info, row.job, mode == 'simulator')
-            router.push({ name: "designer" })
-            confirmDialogVisible.value = false
-            confirmDialogCallback = null
-        }
-        confirmDialogVisible.value = true
+    selectedRecipe.value = [recipe, row];
+    confirmDialogCallback = (mode: 'designer' | 'simulator') => {
+        selectRecipe(recipe, row.id, recipeLevel, row.material_quality_factor, row, info, row.job, mode == 'simulator')
+        router.push({ name: "designer" })
+        confirmDialogVisible.value = false
+        confirmDialogCallback = null
     }
+    confirmDialogVisible.value = true
 }
 
 </script>
 
 <template>
     <div class="container">
-        <el-dialog v-model="confirmDialogVisible" :title="$t('please-confirm')" :align-center="true">
+        <el-dialog v-model="confirmDialogVisible" :title="$t('please-confirm')" :align-center="true"
+            :width="compactLayout ? '90%' : '50%'">
+            <el-descriptions>
+                <el-descriptions-item label="ID">{{ selectedRecipe?.[1].item_id }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('name')">{{ selectedRecipe?.[1].item_name }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('recipe-level')">{{ selectedRecipe?.[0].rlv }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('type')">{{ selectedRecipe?.[1].job }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('level')">
+                    {{ selectedRecipe?.[0].job_level }}
+                </el-descriptions-item>
+
+                <el-descriptions-item :label="$t('required-craftsmanship')">
+                    {{ selectedRecipe?.[1].required_craftsmanship }}
+                </el-descriptions-item>
+                <el-descriptions-item :label="$t('required-control')">
+                    {{ selectedRecipe?.[1].required_control }}
+                </el-descriptions-item>
+                <el-descriptions-item :label="$t('can-hq')">
+                    {{ $t(String(selectedRecipe?.[1].can_hq)) }}
+                </el-descriptions-item>
+            </el-descriptions>
+            <br />
             <span>
-                {{ $t('confirm-select2') }}
+                {{ isNormalRecipe
+                    ? $t('confirm-select', { itemName: selectedRecipe?.[1].item_name })
+                    : $t('confirm-select2')
+                }}
             </span>
             <template #footer>
                 <span>
                     <el-button @click="confirmDialogVisible = false">
                         {{ $t('cancel') }}
                     </el-button>
-                    <el-button type="primary" @click=" confirmDialogCallback!('simulator')">
+                    <el-button v-if="!isNormalRecipe" type="primary" @click="confirmDialogCallback!('simulator')">
                         {{ $t('simulator-mode') }}
                     </el-button>
-                    <el-button type="primary" @click=" confirmDialogCallback!('designer')">
-                        {{ $t('designer-mode') }}
+                    <el-button type="primary" @click="confirmDialogCallback!('designer')">
+                        {{ $t(isNormalRecipe ? 'confirm' : 'designer-mode') }}
                     </el-button>
                 </span>
             </template>
@@ -186,26 +203,17 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         <el-input v-model="searchText" @keydown.enter="triggerSearch" class="search-input" :placeholder="$t('search')"
             clearable>
             <template #append>
-                <el-button :icon="EditPen" @click="router.push('/recipe/customize')">{{ $t('custom-recipe')
-                    }}</el-button>
+                <el-button :icon="EditPen" @click="router.push('/recipe/customize')">
+                    {{ $t('custom-recipe') }}
+                </el-button>
             </template>
         </el-input>
         <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row
             @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
-            <el-table-column prop="id" label="ID" width="100" />
-            <el-table-column prop="rlv" :label="$t('recipe-level')" width="100" />
-            <!-- <el-table-column prop="Icon" la\bel="图标" width="55">
-                    <template #default="scope">
-                        <div style="display: flex; align-items: center">
-                            <el-image :src="'https://garlandtools.cn/files/icons/item/' + scope.row.number +'.png'" />
-                        </div>
-                    </template>
-                </el-table-column> -->
-            <el-table-column prop="job" :label="$t('type')" width="200" />
+            <el-table-column prop="id" label="ID" :width="compactLayout ? undefined : 100" />
+            <el-table-column prop="rlv" :label="$t('recipe-level')" :width="compactLayout ? undefined : 100" />
+            <el-table-column prop="job" :label="$t('type')" :width="compactLayout ? undefined : 200" />
             <el-table-column prop="item_name" :label="$t('name')" />
-            <!-- <el-table-column prop="difficulty_factor" label="难度因子" /> -->
-            <!-- <el-table-column prop="quality_factor" label="品质因子" /> -->
-            <!-- <el-table-column prop="durability_factor" label="耐久因子" /> -->
         </el-table>
         <el-pagination layout="prev, pager, next" v-model:current-page="pagination.Page"
             :page-count="pagination.PageTotal" />
@@ -254,6 +262,11 @@ please-wait = 请稍等...
 
 type = 类型
 name = 名称
+true = 是
+false = 否
+can-hq = 存在HQ
+required-craftsmanship = 最低{ craftsmanship }
+required-control = 最低{ control }
 </fluent>
 
 <fluent locale="en-US">
@@ -271,4 +284,9 @@ please-wait = Please wait...
 
 type = Type
 name = Name
+true = True
+false = False
+can-hq = Can be HQ
+required-craftsmanship = Required { craftsmanship }
+required-control = Required { control }
 </fluent>

@@ -471,7 +471,7 @@ attributes-requirements = 制作该配方要求：作业精度 ≥ { $craftsmans
 <fluent locale="en-US">
 solvers = Solvers
 export-macro = Export
-attributes-enhance = Attributes Enhance
+attributes-enhance = Medicines & Meals
 staged = Staged
 analyzers = Analyzers
 
@@ -508,6 +508,7 @@ attributes-requirements = Require: craftsmanship ≥ { $craftsmanship } and cont
 </fluent>
 
 <fluent locale="ja-JP">
+attributes-enhance = 薬品・調理品
 and = { $a }と{ $b }
 attributes-do-not-meet-the-requirements = { $attribute }が足りないため
 attributes-requirements = 製作可能条件：{ craftsmanship }{ $craftsmanship}以上 と { control }{ $control }以上
