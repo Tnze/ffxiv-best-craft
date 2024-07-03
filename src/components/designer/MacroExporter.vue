@@ -114,7 +114,7 @@ const waitTimes = new Map([
     [Actions.DaringTouch, 3],
     [Actions.ImmaculateMend, 3],
     [Actions.QuickInnovation, 2],
-    [Actions.TrainedPerfection, 2],
+    [Actions.TrainedPerfection, 3],
 ])
 
 </script>
