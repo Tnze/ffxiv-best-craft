@@ -161,7 +161,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         <el-dialog v-model="confirmDialogVisible" :title="$t('please-confirm')" :align-center="true"
             :width="compactLayout ? '90%' : '50%'">
             <el-descriptions>
-                <el-descriptions-item :label="$t('name')">{{ selectedRecipe?.[1].item_name }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('name')" :span="3">{{ selectedRecipe?.[1].item_name }}</el-descriptions-item>
                 <el-descriptions-item :label="$t('recipe-level')">{{ selectedRecipe?.[0].rlv }}</el-descriptions-item>
                 <el-descriptions-item :label="$t('type')">{{ selectedRecipe?.[1].job }}</el-descriptions-item>
                 <el-descriptions-item :label="$t('level')">
