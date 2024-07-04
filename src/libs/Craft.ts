@@ -74,7 +74,7 @@ export interface Buffs {
     quick_innovation_used: number;
     touch_combo_stage: number;
     observed: number;
-    daring_touch_prepared: number;
+    expedience: number;
 }
 
 export interface Status {

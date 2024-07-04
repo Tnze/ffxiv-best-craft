@@ -59,6 +59,14 @@ prudent-synthesis = 倹約作業
 trained-finesse = 匠の神業
 careful-observation = 設計変更
 heart-and-soul = 一心不乱
+refined-touch = 洗練加工
+daring-touch = デアリングタッチ
+immaculate-mend = パーフェクトメンド
+quick-innovation = クイックイノベーション
+trained-perfection = 匠の絶技
+
+desc-immaculate-mend = 耐久を全回復する。
+desc-trained-perfection = 一度だけ、アクションによる耐久の消費が0になる。一回の製作/製作練習につき1回まで使用可能
 
 normal = 通常
 good = 高品質
