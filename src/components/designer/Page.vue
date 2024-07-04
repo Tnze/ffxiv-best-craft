@@ -23,6 +23,7 @@ import useGearsetsStore from '@/stores/gearsets';
 import useDesignerStore from '@/stores/designer';
 import { useFluent } from 'fluent-vue';
 import { displayJobKey } from "./injectionkeys"
+import { Jobs } from '@/libs/Craft';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void
@@ -37,15 +38,14 @@ onActivated(() => emit('setTitle', designerStore.content?.item.name ?? ''))
 const Designer = defineAsyncComponent(() => import('./Designer.vue'))
 const Simulator = defineAsyncComponent(() => import('./Simulator.vue'))
 
+const isCustomRecipe = computed(() => designerStore.content?.job === undefined)
 const attributes = computed(() => {
-    if (designerStore.content == null)
-        return gearsetsStore.default
-    const special = gearsetsStore.special.find(v => v.name == designerStore.content!.job)
-    return special?.value ?? gearsetsStore.default
+    const job = designerStore.content?.job;
+    return job ? gearsetsStore.special.find(v => v.name == job)?.value ?? gearsetsStore.default : gearsetsStore.default
 })
 const errorMessage = ref<string>()
 
-provide(displayJobKey, computed(() => designerStore.content!.job))
+provide(displayJobKey, computed(() => designerStore.content?.job ?? Jobs.Culinarian))
 
 onErrorCaptured((err: unknown, instance, info) => {
     console.error(err, instance, info)
@@ -73,10 +73,9 @@ function reload() {
                 :recipe="designerStore.content.recipe" :recipe-id="designerStore.content.recipeId"
                 :material-quality-factor="designerStore.content.materialQualityFactor"
                 :recipe-level="designerStore.content.recipeLevel" :requirements="designerStore.content.requirements"
-                :attributes="attributes" />
+                :attributes="attributes" :is-custom-recipe="isCustomRecipe" />
             <Simulator v-else :item="designerStore.content.item" :recipe="designerStore.content.recipe"
-                :recipe-level="designerStore.content.recipeLevel" :attributes="attributes"
-                :display-job="designerStore.content!.job" />
+                :recipe-level="designerStore.content.recipeLevel" :attributes="attributes" />
         </template>
         <el-empty v-else :description="$t('not-selected')" style="height: 100%;" />
     </Suspense>

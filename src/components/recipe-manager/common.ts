@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -70,13 +70,12 @@ const jobMapsFr: { [key: string]: Jobs } = {
     'Cuisine': Jobs.Culinarian,
 }
 
-export function craftTypeTojobs(craftType: string): Jobs {
+export function craftTypeTojobs(craftType: string): Jobs | undefined {
     return jobMapsZh[craftType]
         ?? jobMapsEn[craftType]
         ?? jobMapsJa[craftType]
         ?? jobMapsDe[craftType]
         ?? jobMapsFr[craftType]
-        ?? Jobs.Culinarian
 }
 
 export const selectRecipe = (recipe: Recipe, recipeId: (number | undefined), recipeLevel: RecipeLevel, materialQualityFactor: number, requirements: RecipeRequirements, item: Item, craftType: string, simulatorMode: boolean) => {

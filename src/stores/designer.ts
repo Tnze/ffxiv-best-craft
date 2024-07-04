@@ -19,20 +19,20 @@ import { defineStore } from "pinia"
 
 export default defineStore('designer', {
     state: () => ({
-        content: null as null | {
+        content: null as {
             item: Item,
-            job: Jobs,
+            job?: Jobs,
             recipe: Recipe,
             recipeId?: number,
             recipeLevel: RecipeLevel,
             materialQualityFactor: number,
             requirements: RecipeRequirements,
             simulatorMode: boolean,
-        }
+        } | null
     }),
     actions: {
         selectRecipe(payload: {
-            job: Jobs,
+            job?: Jobs,
             item: Item,
             recipe: Recipe,
             recipeId?: number,

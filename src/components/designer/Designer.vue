@@ -46,6 +46,7 @@ const props = defineProps<{
     item: Item,
     materialQualityFactor: number,
     attributes: Attributes,
+    isCustomRecipe: boolean,
 }>()
 
 const { $t } = useFluent()
@@ -314,7 +315,7 @@ async function handleSolverResult(actions: Actions[]) {
                     <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance"
                         class="multi-function-area">
                         <el-scrollbar style="flex: auto; padding-left: 30px;">
-                            <AttrEnhSelector v-model="attributesEnhancers" :job="displayJob" />
+                            <AttrEnhSelector v-model="attributesEnhancers" :job="isCustomRecipe ? undefined : displayJob" />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('export-macro')" name="export-macro" class="multi-function-area">

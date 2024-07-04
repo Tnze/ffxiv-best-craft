@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -122,7 +122,6 @@ const isNormalRecipe = computed(() => {
     return selectedRecipe.value?.[0].conditions_flag === 15
 })
 let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null = null
-
 const selectRecipeRow = async (row: RecipeInfo) => {
     try {
         isRecipeTableLoading.value = true
@@ -143,7 +142,6 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         row.quality_factor,
         row.durability_factor
     )
-
     selectedRecipe.value = [recipe, row];
     confirmDialogCallback = (mode: 'designer' | 'simulator') => {
         selectRecipe(recipe, row.id, recipeLevel, row.material_quality_factor, row, info, row.job, mode == 'simulator')

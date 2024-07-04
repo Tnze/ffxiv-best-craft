@@ -17,7 +17,6 @@
 -->
 
 <script setup lang="ts">
-import { mapWritableState } from 'pinia'
 import { ElForm, ElFormItem, ElSwitch, ElInputNumber } from 'element-plus';
 import useGearsets from '@/stores/gearsets'
 import { Jobs } from '@/libs/Craft';
@@ -33,7 +32,7 @@ const v = computed(() => store.special.find(v => v.name == props.job)!)
 function setInheritFromDefault(val: string | number | boolean) {
     // const v = store.special.find(v => v.name == props.job)!;
     if (val) {
-        v.value.value = null
+        v.value.value = undefined
     } else {
         v.value.value = { ...store.default }
     }
@@ -47,6 +46,9 @@ store.$subscribe((mutation, store) => {
 
 <template>
     <el-form v-if="v != undefined" label-position="right" label-width="auto">
+        <el-form-item :label="$t('job')">
+            {{ $t(String(job)) }}
+        </el-form-item>
         <el-form-item :label="$t('attributes')">
             <el-switch :model-value="v.value == null" :active-text="$t('inherit-from-default')"
                 @change="setInheritFromDefault" />
@@ -71,11 +73,13 @@ store.$subscribe((mutation, store) => {
 </template>
 
 <fluent locale="zh-CN">
+job = 职业
 attributes = 装备属性
 inherit-from-default = 继承自默认
 </fluent>
 
 <fluent locale="en-US">
+job = Job
 attributes = Crafter Attributes
 inherit-from-default = Inherit from default
 </fluent>

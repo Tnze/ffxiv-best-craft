@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { ElButton, ElSpace, ElText, ElTag, ElIcon, ElButtonGroup } from "element-plus";
 import { Delete, Upload, SuccessFilled, WarningFilled, CircleCloseFilled } from "@element-plus/icons-vue";
-import { Sequence } from './Designer.vue'
+import { Sequence } from './types';
 import ActionQueue from "./ActionQueue.vue";
 import { Jobs } from "@/libs/Craft";
 import { computed } from "vue";

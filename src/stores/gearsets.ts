@@ -19,7 +19,7 @@ import { defineStore } from "pinia"
 
 export interface GearsetsRow {
     name: Jobs
-    value: Attributes | null
+    value: Attributes | undefined
 }
 
 export default defineStore('gearsets', {
@@ -31,14 +31,14 @@ export default defineStore('gearsets', {
             craft_points: 700,
         },
         special: [
-            { name: Jobs.Carpenter, value: null },
-            { name: Jobs.Blacksmith, value: null },
-            { name: Jobs.Armorer, value: null },
-            { name: Jobs.Goldsmith, value: null },
-            { name: Jobs.Leatherworker, value: null },
-            { name: Jobs.Weaver, value: null },
-            { name: Jobs.Alchemist, value: null },
-            { name: Jobs.Culinarian, value: null },
+            { name: Jobs.Carpenter, value: undefined },
+            { name: Jobs.Blacksmith, value: undefined },
+            { name: Jobs.Armorer, value: undefined },
+            { name: Jobs.Goldsmith, value: undefined },
+            { name: Jobs.Leatherworker, value: undefined },
+            { name: Jobs.Weaver, value: undefined },
+            { name: Jobs.Alchemist, value: undefined },
+            { name: Jobs.Culinarian, value: undefined },
         ] as GearsetsRow[]
     }),
     getters: {
