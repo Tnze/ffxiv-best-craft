@@ -69,9 +69,12 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
                         </el-icon>
                         <el-tag round :type="tagType">{{ $t('quality-tag', { quality: seq.status.quality }) }}</el-tag>
                         <el-tag round type="info">{{ $t('steps-tag', { steps: seq.status.step }) }}</el-tag>
+                        <el-tag round type="info" v-if="seq.source">
+                            {{ $t('source-tag', { source: String(seq.source) }) }}
+                        </el-tag>
                     </el-space>
                 </el-text>
-                <el-button-group>
+                <el-button-group class="operators">
                     <el-button :icon="Upload" size="small" round class="savedqueue-item-button" @click="emit('load')">
                         {{ $t('load') }}
                     </el-button>
@@ -102,6 +105,10 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
     display: flex;
 }
 
+.operators {
+    margin-left: 8px;
+}
+
 .savedqueue-item-button {
     margin-right: 6px;
 }
@@ -116,6 +123,12 @@ load = 加载
 delete = 删除
 quality-tag = { quality }：{ $quality }
 steps-tag = { steps }：{ $steps }
+source-tag = 来源：{ $source ->
+    [solver] 求解器
+    [auto-save] 自动保存
+    [manual] 手动保存
+    *[other] $source
+}
 </fluent>
 
 <fluent locale="en-US">
@@ -123,4 +136,5 @@ load = Load
 delete = Delete
 quality-tag = { quality }: { $quality }
 steps-tag = { steps }: { $steps }
+source-tag = Source: { $source }
 </fluent>

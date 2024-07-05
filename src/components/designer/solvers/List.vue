@@ -210,8 +210,7 @@ span {
 </style>
 
 <fluent locale="zh-CN">
-please-use-desktop-solvers = 网页版求解器性能较差，请考虑使用桌面版。
-    网页版求解器依赖于浏览器对 Wasm、ESM WebWorker 的支持，如遇无法使用的情况，请尝试升级您的浏览器。
+please-use-desktop-solvers = 网页版求解器依赖于浏览器对 Wasm、ESM WebWorker 的支持，如遇无法使用的情况，请尝试升级您的浏览器或考虑使用桌面版。
 solver-not-avaliable = 该求解器尚未适配网页版 BestCraft。如需使用，请点击下方链接下载客户端。
 web-worker-not-avaliable = 您正在使用的浏览器不支持 Web Worker 功能，无法运行求解器。
 
@@ -255,6 +254,8 @@ tnzever-rika-solver-info =
 </fluent>
 
 <fluent locale="en-US">
+please-use-desktop-solvers = The web version of the solver depends on the browser's support for Wasm and ESM WebWorker.
+    If you encounter situations where it cannot be used, please try upgrading your browser or consider using the desktop edition.
 solver-not-avaliable = The Web edition of BestCraft doesn't support this solver. Please download the Desktop edition if needed.
 web-worker-not-avaliable = Your browser doesn't support Web Worker, which is required to running solvers.
     

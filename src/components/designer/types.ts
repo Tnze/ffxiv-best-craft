@@ -29,4 +29,11 @@ export interface Sequence {
     maxid: number;
     status: Status;
     errors: { pos: number; err: string }[];
+    source?: SequenceSource;
+}
+
+export enum SequenceSource {
+    Solver = "solver",
+    AutoSave = "auto-save",
+    Manual = "manual",
 }

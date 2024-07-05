@@ -35,7 +35,7 @@ import StagedActionQueueItem from './StagedActionQueueItem.vue';
 import Analyzers from './Analyzers.vue';
 import { activeSeqKey, displayJobKey } from './injectionkeys';
 
-import { Slot, Sequence } from './types';
+import { Slot, Sequence, SequenceSource } from './types';
 import { useMediaQuery } from "@vueuse/core";
 
 const props = defineProps<{
@@ -104,7 +104,7 @@ var attributionAlert = computed(() => {
 const isReadingSolver = ref(0);
 const isReadingSolverDisplay = ref(false); // This is basicly (isReadingSolver != 0), with a 500ms delay on rising edge
 const previewSolver = ref(false);
-const activeTab = ref('staged')
+const activeTab = ref('attributes-enhance')
 
 let isReadingSolverDisplayStopTimer: NodeJS.Timeout | null = null;
 watch(isReadingSolver, (irs, irsPrev) => {
@@ -190,7 +190,7 @@ watch(actions, async (a) => {
     activeSeq.status = result.status;
     activeSeq.errors = result.errors;
 });
-function saveSequence() {
+function saveSequence(isManual: boolean) {
     const queue = previewSolver.value
         ? solverResult
         : activeSeq
@@ -199,6 +199,7 @@ function saveSequence() {
         maxid: queue.maxid,
         status: queue.status,
         errors: queue.errors,
+        source: isManual ? SequenceSource.Manual : SequenceSource.AutoSave,
     });
 }
 function pushSequence(seq: Sequence) {
@@ -221,7 +222,7 @@ watch(displayedStatus, (status) => {
         return;
     if (savedSeqs.ary.some(v => compareStatus(v.seq.status, status) >= 0))
         return;
-    saveSequence()
+    saveSequence(false)
 })
 
 async function readSolver(s: Status) {
@@ -260,6 +261,7 @@ async function handleSolverResult(actions: Actions[]) {
         maxid: actions.length,
         status,
         errors,
+        source: SequenceSource.Solver,
     });
 }
 </script>
@@ -277,17 +279,42 @@ async function handleSolverResult(actions: Actions[]) {
                 <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
             </el-scrollbar>
 
-            <div class="above-right-panel">
+            <div class="above-right-panel" style="overflow: hidden;">
                 <div class="action-queue">
                     <ActionQueue :job="displayJob" v-model:list="activeSeq.slots" :solver-result="solverResult.slots"
                         :preview-solver="previewSolver" :err-list="activeSeq.errors"
                         :loading-solver-result="isReadingSolverDisplay" />
                 </div>
                 <el-tabs v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top">
-                    <el-tab-pane :label="$t('action-editor')" name="staged" class="multi-function-area">
-                        <el-scrollbar class="savedqueue-list">
+                    <el-tab-pane :label="$t('init-quality')" name="init-quality" class="multi-function-area">
+                        <el-scrollbar style="flex: auto; padding-left: 30px;">
+                            <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" :item="item"
+                                :recipe="recipe" :recipe-id="recipeId"
+                                :material-quality-factor="materialQualityFactor" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance"
+                        class="multi-function-area">
+                        <el-scrollbar style="flex: auto; padding-left: 30px;">
+                            <AttrEnhSelector v-model="attributesEnhancers"
+                                :job="isCustomRecipe ? undefined : displayJob" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('export-macro')" name="export-macro" class="multi-function-area">
+                        <el-scrollbar style="flex: auto; padding-left: 10px;">
+                            <MacroExporter :actions="displayActions" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('solvers')" name="solver-list" class="multi-function-area">
+                        <el-scrollbar style="flex: auto;">
+                            <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
+                                @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('staged')" name="staged">
+                        <el-scrollbar class="savedqueue-list multi-function-area">
                             <el-button-group>
-                                <el-button @click="saveSequence" :icon="Bottom">
+                                <el-button @click="saveSequence(true)" :icon="Bottom">
                                     {{ $t('save-workspace') }}
                                 </el-button>
                                 <el-button @click="clearSeq" :icon="Close">
@@ -303,30 +330,6 @@ async function handleSolverResult(actions: Actions[]) {
                                     :display-job="displayJob" @load="loadSeq(seq)"
                                     @delete="savedSeqs.ary.splice(i, 1)" />
                             </TransitionGroup>
-                        </el-scrollbar>
-                    </el-tab-pane>
-                    <el-tab-pane :label="$t('init-quality')" name="init-quality" class="multi-function-area">
-                        <el-scrollbar style="flex: auto; padding-left: 30px;">
-                            <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" :item="item"
-                                :recipe="recipe" :recipe-id="recipeId"
-                                :material-quality-factor="materialQualityFactor" />
-                        </el-scrollbar>
-                    </el-tab-pane>
-                    <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance"
-                        class="multi-function-area">
-                        <el-scrollbar style="flex: auto; padding-left: 30px;">
-                            <AttrEnhSelector v-model="attributesEnhancers" :job="isCustomRecipe ? undefined : displayJob" />
-                        </el-scrollbar>
-                    </el-tab-pane>
-                    <el-tab-pane :label="$t('export-macro')" name="export-macro" class="multi-function-area">
-                        <el-scrollbar style="flex: auto; padding-left: 10px;">
-                            <MacroExporter :actions="displayActions" />
-                        </el-scrollbar>
-                    </el-tab-pane>
-                    <el-tab-pane :label="$t('solvers')" name="solver-list" class="multi-function-area">
-                        <el-scrollbar style="flex: auto;">
-                            <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
-                                @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('analyzers')" name="analyzers" class="multi-function-area">
@@ -410,6 +413,8 @@ async function handleSolverResult(actions: Actions[]) {
 
 .multi-function-area {
     height: 100%;
+    width: 100%;
+    /* background-color: darkolivegreen; */
 }
 
 .action-queue {
@@ -444,6 +449,7 @@ export-macro = 导出宏
 attributes-enhance = 食药&装备
 init-quality = 初期品质
 action-editor = 编排技能
+staged = 暂存区
 analyzers = 分析器
 
 save-workspace = 暂存
