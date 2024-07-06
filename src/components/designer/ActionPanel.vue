@@ -138,7 +138,7 @@ const usedActions = computed(() =>
         actions.map(action => {
             if (action === Actions.HastyTouch &&
                 props.status != undefined &&
-                props.status.buffs.daring_touch_prepared > 0) {
+                props.status.buffs.expedience > 0) {
                 return Actions.DaringTouch;
             }
             return action;
@@ -169,7 +169,7 @@ const isActived = (action: Actions) => {
             return props.status.buffs.touch_combo_stage == 2 ||
                 props.status.buffs.observed > 0
         case Actions.DaringTouch:
-            return props.status.buffs.daring_touch_prepared > 0
+            return props.status.buffs.expedience > 0
     }
     return false;
 }
