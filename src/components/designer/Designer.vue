@@ -285,7 +285,7 @@ async function handleSolverResult(actions: Actions[]) {
                         :preview-solver="previewSolver" :err-list="activeSeq.errors"
                         :loading-solver-result="isReadingSolverDisplay" />
                 </div>
-                <el-tabs v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top">
+                <el-tabs class="above-tabs" v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top">
                     <el-tab-pane :label="$t('init-quality')" name="init-quality" class="multi-function-area">
                         <el-scrollbar style="flex: auto; padding-left: 30px;">
                             <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" :item="item"
@@ -311,8 +311,8 @@ async function handleSolverResult(actions: Actions[]) {
                                 @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
                         </el-scrollbar>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('staged')" name="staged">
-                        <el-scrollbar class="savedqueue-list multi-function-area">
+                    <el-tab-pane :label="$t('staged')" name="staged" class="multi-function-area">
+                        <el-scrollbar class="savedqueue-list">
                             <el-button-group>
                                 <el-button @click="saveSequence(true)" :icon="Bottom">
                                     {{ $t('save-workspace') }}
@@ -332,7 +332,7 @@ async function handleSolverResult(actions: Actions[]) {
                             </TransitionGroup>
                         </el-scrollbar>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('analyzers')" name="analyzers" class="multi-function-area">
+                    <el-tab-pane :label="$t('analyzer')" name="analyzer" class="multi-function-area">
                         <el-scrollbar style="flex: auto;">
                             <Analyzers :init-status="initStatus" :actions="displayActions" />
                         </el-scrollbar>
@@ -351,8 +351,12 @@ async function handleSolverResult(actions: Actions[]) {
     margin: 15px;
 }
 
-.el-tabs {
+.above-tabs {
+    height: 100%;
     user-select: none;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .main-page {
@@ -414,7 +418,7 @@ async function handleSolverResult(actions: Actions[]) {
 .multi-function-area {
     height: 100%;
     width: 100%;
-    /* background-color: darkolivegreen; */
+    overflow: hidden;
 }
 
 .action-queue {
@@ -424,6 +428,7 @@ async function handleSolverResult(actions: Actions[]) {
 
 .savedqueue-list {
     margin: 5px 0;
+    flex: auto;
 }
 
 .savedqueues-move,
@@ -448,9 +453,8 @@ solvers = 求解器
 export-macro = 导出宏
 attributes-enhance = 食药&装备
 init-quality = 初期品质
-action-editor = 编排技能
 staged = 暂存区
-analyzers = 分析器
+analyzer = 分析器
 
 save-workspace = 暂存
 clear-workspace = 清空
@@ -479,8 +483,9 @@ attributes-requirements = 制作该配方要求：作业精度 ≥ { $craftsmans
 solvers = Solvers
 export-macro = Export
 attributes-enhance = Medicines & Meals
+init-quality = Quality
 staged = Staged
-analyzers = Analyzers
+analyzer = Analyzer
 
 save-workspace = Save
 clear-workspace = Clear
@@ -516,6 +521,7 @@ attributes-requirements = Require: craftsmanship ≥ { $craftsmanship } and cont
 
 <fluent locale="ja-JP">
 attributes-enhance = 薬品・調理品
+init-quality = 初期品質
 and = { $a }と{ $b }
 attributes-do-not-meet-the-requirements = { $attribute }が足りないため
 attributes-requirements = 製作可能条件：{ craftsmanship }{ $craftsmanship}以上 と { control }{ $control }以上

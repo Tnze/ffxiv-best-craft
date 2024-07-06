@@ -61,7 +61,7 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
             </div>
             <div class="savedqueue-item-above">
                 <el-text size="small">
-                    <el-space>
+                    <el-space :wrap="true">
                         <el-icon :color="color" class="savedqueue-status">
                             <success-filled v-if="color == '#67C23A'" />
                             <warning-filled v-else-if="color == '#E6A23C'" />
