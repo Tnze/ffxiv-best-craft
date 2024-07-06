@@ -129,7 +129,7 @@ const destroySolver = async (s: Solver) => {
             </template>
         </i18n>
     </el-dialog>
-    <el-space direction="vertical">
+    <el-space direction="vertical" alignment="normal">
         <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" :disabled="platform != 'tauri'" />
         <el-checkbox v-model="useManipulation" :label="$t('manipulation')" :disabled="platform != 'tauri'" />
         <el-checkbox v-model="useWasteNot" :label="$t('waste-not')" :disabled="platform != 'tauri'" />
