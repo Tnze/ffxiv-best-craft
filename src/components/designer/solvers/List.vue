@@ -159,7 +159,7 @@ async function runTnzeVerRikaSolver() {
                     </template>
                 </i18n>
             </el-tab-pane>
-            <el-tab-pane :label="$t('tnzever-rika-solver')" name="bfs-dp">
+            <!-- <el-tab-pane :label="$t('tnzever-rika-solver')" name="bfs-dp">
                 <el-space v-if="platform != 'tauri'" direction="vertical" alignment="flex-start">
                     <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false">
                         <DesktopEditionDownload />
@@ -175,7 +175,7 @@ async function runTnzeVerRikaSolver() {
                         </el-button>
                     </template>
                 </i18n>
-            </el-tab-pane>
+            </el-tab-pane> -->
         </el-tabs>
     </el-scrollbar>
 </template>
