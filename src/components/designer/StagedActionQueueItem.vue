@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { ElButton, ElSpace, ElText, ElTag, ElIcon, ElButtonGroup } from "element-plus";
 import { Delete, Upload, SuccessFilled, WarningFilled, CircleCloseFilled } from "@element-plus/icons-vue";
-import { Sequence } from './Designer.vue'
+import { Sequence } from './types'
 import ActionQueue from "./ActionQueue.vue";
 import { Jobs } from "@/libs/Craft";
 import { computed } from "vue";
