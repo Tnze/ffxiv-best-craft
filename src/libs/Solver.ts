@@ -35,6 +35,13 @@ if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
     }
 }
 
+declare const window: { clarity: any; } & Window & typeof globalThis;
+function clarityReport(event: string) {
+    if (window.clarity) {
+        window.clarity('event', event)
+    }
+}
+
 export async function create_solver(
     status: Status,
     useMuscleMemory: boolean,
@@ -69,6 +76,7 @@ export async function read_solver(status: Status): Promise<Actions[]> {
 };
 
 export async function rika_solve(status: Status): Promise<Actions[]> {
+    clarityReport('runRikaSolver')
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         return (await pkgTauri).invoke("rika_solve", { status })
     } else {
@@ -77,6 +85,7 @@ export async function rika_solve(status: Status): Promise<Actions[]> {
 }
 
 export async function rika_solve_tnzever(status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean, reduceSteps: boolean): Promise<Actions[]> {
+    clarityReport('runRikaSolverTnzeVer')
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri
         return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve, reduceSteps })
@@ -86,6 +95,7 @@ export async function rika_solve_tnzever(status: Status, useManipulation: boolea
 }
 
 export async function dfs_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
+    clarityReport('runDfsSolver')
     const args = { status, depth, specialist };
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         return (await pkgTauri).invoke("dfs_solve", args)
@@ -95,6 +105,7 @@ export async function dfs_solve(status: Status, depth: number, specialist: boole
 }
 
 export async function nq_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
+    clarityReport('runNqSolver')
     const args = { status, depth, specialist };
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         return (await pkgTauri).invoke("nq_solve", args)
@@ -107,6 +118,7 @@ export async function nq_solve(status: Status, depth: number, specialist: boolea
 /// useManipulation: 是否使用掌握
 /// useWastNot: 是否使用俭约（0：不使用，4：使用俭约，8：使用俭约和长期俭约）
 export async function reflect_solve(status: Status, useManipulation: boolean, useWasteNot: number, useObserve: boolean): Promise<Actions[]> {
+    clarityReport('runReflectSolver')
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri
         return invoke("reflect_solve", { status, useManipulation, useWasteNot, useObserve })
