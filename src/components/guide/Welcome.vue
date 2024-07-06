@@ -48,6 +48,10 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
         return 'night'
 })
 
+function feedback() {
+    window.open('https://pd.qq.com/s/al6b5xo69', '_blank');
+}
+
 </script>
 
 <template>
@@ -60,6 +64,9 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
         <div class="confirm-button">
             <el-button type="primary" size="large" @click="$router.push('/recipe')">
                 {{ $t('select-recipe') }}
+            </el-button>
+            <el-button type="info" size="large" @click="feedback">
+                {{ $t('feedback') }}
             </el-button>
         </div>
         <el-text class="info-text" type="info">{{ $t('copyright-notices') }}</el-text>
@@ -114,7 +121,7 @@ greeting =
         [night] 夜深了
         *[other] 很高兴见到你
     }
-welcome = { greeting }，现在想搓点什么？
+welcome = { greeting }，欢迎使用生产模拟器适配 7.0 版本
 input-recipe-name = 输入配方名称
 loading = 加载中
 no-match = 没有匹配的配方
@@ -122,12 +129,7 @@ no-data = 无配方
 
 confirm = 确认
 select-recipe = 选择配方
-
-try-dawntrain = FFXIV 7.0 黄金的遗产
-try-dawntrain-desc = BestCraft 现已适配 7.0 新技能、新配方。欢迎前往体验！
-
-guide-mode-info =
-    注意：实验性向导模式已删除。如有疑问欢迎反馈。
+feedback = 反馈问题
 </fluent>
 
 <fluent locale="en-US">
@@ -141,7 +143,7 @@ greeting =
         [night] It's getting late at night
         *[other] Nice to see you
     }
-welcome = { greeting }. What do you want to craft?
+welcome = { greeting }. Welcome using BestCraft for FFXIV 7.0 DAWNTRAIL.
 input-recipe-name = Input recipe name
 loading = Loading
 no-match = No match recipe
@@ -149,11 +151,5 @@ no-data = No recipe
 
 confirm = Confirm
 select-recipe = Select recipe
-
-try-dawntrain = FFXIV 7.0 DAWNTRAIL
-try-dawntrain-desc = BestCraft support 7.0 new actions, new recipes now. Welcome to experience!
-
-guide-mode-info =
-    Note: The wizard mode as an experimental feature is removed.
-    If you have any questions, welcome to feedback in Github.
+feedback = Feedback
 </fluent>
