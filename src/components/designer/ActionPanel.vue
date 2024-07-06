@@ -42,12 +42,12 @@ const actions: Actions[][] = [
         Actions.TrainedEye,
     ],
     [
-        Actions.MastersMend,
+        Actions.TrainedPerfection,
+        Actions.Manipulation,
         Actions.WasteNot,
         Actions.WasteNotII,
-        Actions.Manipulation,
         Actions.ImmaculateMend,
-        Actions.TrainedPerfection,
+        Actions.MastersMend,
     ],
     [
         Actions.FinalAppraisal,
@@ -59,12 +59,12 @@ const actions: Actions[][] = [
     ],
     [
         Actions.Innovation,
-        Actions.PrudentTouch,
         Actions.PreparatoryTouch,
-        Actions.RefinedTouch,
+        Actions.PrudentTouch,
         Actions.BasicTouch,
         Actions.StandardTouch,
         Actions.AdvancedTouch,
+        Actions.RefinedTouch,
         Actions.TrainedFinesse,
         Actions.GreatStrides,
         Actions.QuickInnovation,
@@ -79,11 +79,9 @@ const actions: Actions[][] = [
     [
         Actions.DelicateSynthesis,
         Actions.Observe,
-    ],
-    [
         Actions.RapidSynthesis,
         Actions.HastyTouch, // Actions.DaringTouch,
-    ]
+    ],
 ]
 
 const actionsForSimulator: Actions[][] = [
