@@ -18,11 +18,17 @@ import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
 
 export interface DataSource {
     sourceType: DataSourceType
-    recipeTable(page: number, searchName: string): Promise<RecipesSourceResult>
+    recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult>
     recipesIngredients(recipeId: number): Promise<ItemWithAmount[]>
     recipeLevelTable(rlv: number): Promise<RecipeLevel>
-    recipeInfo(recipeId: number): Promise<RecipeInfo>
+    recipeInfo?(recipeId: number): Promise<RecipeInfo>
     itemInfo(id: number): Promise<Item>
+    craftTypeList(): Promise<CraftType[]>
+}
+
+export interface CraftType {
+    id: number,
+    name: string,
 }
 
 export enum DataSourceType {

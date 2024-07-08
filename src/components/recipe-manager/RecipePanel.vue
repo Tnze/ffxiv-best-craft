@@ -18,13 +18,13 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, onActivated, computed } from 'vue'
-import { ElDescriptions, ElDescriptionsItem, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElMessageBox } from 'element-plus'
+import { ElDescriptions, ElDescriptionsItem, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElForm, ElFormItem, ElSelect, ElOption, ElInputNumber } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
-import { newRecipe, Recipe, RecipeInfo } from '@/libs/Craft'
+import { Jobs, newRecipe, Recipe, RecipeInfo } from '@/libs/Craft'
 import { useRouter } from 'vue-router';
 import { useFluent } from 'fluent-vue';
 import { selectRecipe } from './common';
-import { DataSource, DataSourceType } from './source';
+import { CraftType, DataSource, DataSourceType } from './source';
 import useSettingsStore from '@/stores/settings'
 import { useMediaQuery } from '@vueuse/core';
 
@@ -32,16 +32,6 @@ const emit = defineEmits<{
     (e: 'setTitle', title: string): void
 }>()
 onActivated(() => emit('setTitle', 'select-recipe'))
-
-// let jsonData = JSON.stringify(data.map(elem => ({
-//     cm: elem.craftsmanship_percent,
-//     cm_max: elem.craftsmanship_value,
-//     cp: elem.cp_percent,
-//     cp_max: elem.cp_value,
-//     ct: elem.control_percent,
-//     ct_max: elem.control_value,
-//     name: elem.name.cn + (elem.hq ? " HQ" : "")
-// })), null, '    ')
 
 const searchingDelayMs = 200
 const settingStore = useSettingsStore()
@@ -56,14 +46,21 @@ const pagination = reactive({
 const displayTable = ref<RecipeInfo[]>([])
 const isRecipeTableLoading = ref(false)
 const compactLayout = useMediaQuery('screen and (max-width: 500px)')
+const filterCraftType = ref<number>()
+const craftTypeOptions = ref<CraftType[]>([])
+const filterRecipeLevel = ref<number>()
+
+async function craftTypeRemoteMethod() {
+    const source = await settingStore.getDataSource;
+    craftTypeOptions.value = await source.craftTypeList();
+}
 
 let loadRecipeTableResult: Promise<{ recipes: RecipeInfo[], totalPages: number }> | null = null
-
 async function updateRecipePage(dataSource: DataSource, pageNumber: number, searching: string) {
     // 对于已有缓存的加载会很快，只有较慢的情况才需要显示Loading
     let timer = setTimeout(() => isRecipeTableLoading.value = true, 200)
     try {
-        let promise = dataSource.recipeTable(pageNumber, searching)
+        let promise = dataSource.recipeTable(pageNumber, searching, filterRecipeLevel.value, filterCraftType.value)
         loadRecipeTableResult = promise
         let { recipes, totalPages } = await promise
         if (loadRecipeTableResult == promise) {
@@ -114,7 +111,10 @@ async function triggerSearch() {
 }
 
 // 页面载入后更新
-onMounted(triggerSearch)
+onMounted(() => {
+    triggerSearch()
+    craftTypeRemoteMethod()
+})
 
 const confirmDialogVisible = ref(false)
 const selectedRecipe = ref<[Recipe, RecipeInfo]>()
@@ -159,7 +159,9 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         <el-dialog v-model="confirmDialogVisible" :title="$t('please-confirm')" :align-center="true"
             :width="compactLayout ? '90%' : '50%'">
             <el-descriptions>
-                <el-descriptions-item :label="$t('name')" :span="3">{{ selectedRecipe?.[1].item_name }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('name')" :span="3">
+                    {{ selectedRecipe?.[1].item_name }}
+                </el-descriptions-item>
                 <el-descriptions-item :label="$t('recipe-level')">{{ selectedRecipe?.[0].rlv }}</el-descriptions-item>
                 <el-descriptions-item :label="$t('type')">{{ selectedRecipe?.[1].job }}</el-descriptions-item>
                 <el-descriptions-item :label="$t('level')">
@@ -205,6 +207,18 @@ const selectRecipeRow = async (row: RecipeInfo) => {
                 </el-button>
             </template>
         </el-input>
+        <el-form :inline="true">
+            <el-form-item :label="$t('craft-type')">
+                <el-select v-model="filterCraftType" clearable :remote-method="craftTypeRemoteMethod"
+                    style="width: 200px" @change="triggerSearch">
+                    <el-option v-for="{ id, name } in craftTypeOptions" :key="id" :value="id" :label="name" />
+                </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('recipe-level')">
+                <el-input-number v-model="filterRecipeLevel" clearable :min="1" :max="799" :step="1" step-strictly
+                    :controls="false" @change="triggerSearch" />
+            </el-form-item>
+        </el-form>
         <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row
             @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
             <el-table-column prop="id" label="ID" :width="compactLayout ? undefined : 100" />
@@ -227,7 +241,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
 }
 
 .search-input {
-    margin-top: 10px;
+    margin: 10px 0;
     width: 80%;
 }
 
@@ -258,6 +272,7 @@ search = 键入以搜索
 please-wait = 请稍等...
 
 type = 类型
+craft-type = 制作类型
 name = 名称
 true = 是
 false = 否
@@ -280,6 +295,7 @@ search = Search
 please-wait = Please wait...
 
 type = Type
+craft-type = Craft Type
 name = Name
 true = True
 false = False

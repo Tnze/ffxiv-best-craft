@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
-import { DataSourceType, RecipesSourceResult } from './source'
+import { CraftType, DataSourceType, RecipesSourceResult } from './source'
 
 interface XivapiRecipeResult {
     Pagination: {
@@ -65,13 +65,31 @@ export class XivApiRecipeSource {
         this.language = language
     }
 
-    async recipeTable(page: number, searchName: string): Promise<RecipesSourceResult> {
-        const query = new URLSearchParams({
+    async recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult> {
+        const params: Record<string, string> = {
             'indexes': 'Recipe',
             'page': String(page),
-            'string': searchName,
             'columns': 'ID,Icon,ItemResult.Name,ItemResult.ID,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable.ID,RequiredCraftsmanship,RequiredControl,CanHq'
-        })
+        };
+
+        // String?
+        if (searchName !== undefined) {
+            params['string'] = searchName;
+        }
+
+        // Filters?
+        const filters: string[] = []
+        if (rlv != undefined) {
+            filters.push(`RecipeLevelTable.ID=${rlv}`)
+        }
+        if (craftTypeId != undefined) {
+            filters.push(`CraftType.ID=${craftTypeId}`)
+        }
+        if (filters.length > 0) {
+            params['filters'] = filters.join(',')
+        }
+
+        const query = new URLSearchParams(params)
         if (this.language != undefined) query.set('language', this.language)
         const url = new URL('search', this.base).toString() + '?' + query.toString();
         const resp = await fetch(url, {
@@ -158,10 +176,6 @@ export class XivApiRecipeSource {
         }
     }
 
-    async recipeInfo(recipeId: number): Promise<RecipeInfo> {
-        throw "todo"
-    }
-
     async itemInfo(id: number): Promise<Item> {
         const query = new URLSearchParams({
             'columns': 'ID,Name,LevelItem,CanBeHq'
@@ -180,6 +194,21 @@ export class XivApiRecipeSource {
             can_be_hq: data.CanBeHq != 0,
             category_id: undefined
         }
+    }
+
+    async craftTypeList(): Promise<CraftType[]> {
+        const url = new URL(`CraftType`, this.base).toString() + '?' + new URLSearchParams({
+            'columns': 'ID,Name'
+        }).toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        })
+        const data = await resp.json()
+        return data.Results.map((v: any) => <CraftType>{
+            id: v.ID,
+            name: v.Name,
+        })
     }
 }
 

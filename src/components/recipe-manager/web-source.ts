@@ -25,7 +25,10 @@ export class WebSource {
         this.base = base
     }
 
-    async recipeTable(page: number, searchName: string): Promise<RecipesSourceResult> {
+    async recipeTable(page: number, searchName?: string, _rlv?: number, _craftTypeId?: number): Promise<RecipesSourceResult> {
+        if (searchName === undefined) {
+            searchName = ""
+        }
         const query = new URLSearchParams({
             "page_id": String(page - 1),
             "search_name": "%" + searchName + "%"
