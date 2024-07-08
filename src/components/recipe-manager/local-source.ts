@@ -15,7 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "../../libs/Craft";
-import { DataSourceType, RecipesSourceResult } from "./source";
+import { Enhancer } from "../attr-enhancer/Enhancer";
+import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from "./source";
 
 export class LocalRecipeSource {
     public sourceType = DataSourceType.Realtime
@@ -55,5 +56,14 @@ export class LocalRecipeSource {
             category_id?: number,
         };
         return { id, name, level, can_be_hq: can_be_hq != 0, category_id };
+    }
+    async craftTypeList(): Promise<CraftType[]> {
+        throw "todo"
+    }
+    async medicineTable(_page: number): Promise<DataSourceResult<Enhancer>> {
+        throw "todo"
+    }
+    async mealsTable(_page: number): Promise<DataSourceResult<Enhancer>> {
+        throw "todo"
     }
 }

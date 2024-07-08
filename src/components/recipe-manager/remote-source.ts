@@ -218,14 +218,14 @@ export class XivApiRecipeSource {
         })
     }
 
-    async medicineTable?(page: number): Promise<DataSourceResult<Enhancer>> {
+    async medicineTable(page: number): Promise<DataSourceResult<Enhancer>> {
         const data = await this.getItems(page, MedicineID)
         return {
             totalPages: data.Pagination.PageTotal,
             results: data.Results.flatMap(this.bonusesToEnhancer)
         }
     }
-    async mealsTable?(page: number): Promise<DataSourceResult<Enhancer>> {
+    async mealsTable(page: number): Promise<DataSourceResult<Enhancer>> {
         const data = await this.getItems(page, Meals)
         return {
             totalPages: data.Pagination.PageTotal,
