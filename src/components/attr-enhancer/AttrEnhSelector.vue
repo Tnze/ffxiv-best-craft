@@ -24,6 +24,7 @@ import { useFluent } from 'fluent-vue';
 import { Jobs } from '@/libs/Craft';
 import Gearset from '@/components/Gearset.vue';
 import settingStore from '@/stores/settings'
+import { DataSource } from '../recipe-manager/source';
 
 const { $t } = useFluent();
 const setting = settingStore();
@@ -45,33 +46,38 @@ const props = defineProps<{
     job?: Jobs
 }>()
 
-onMounted(async () => {
-    let datasource = await setting.getDataSource
+const emits = defineEmits<{
+    (event: 'update:modelValue', v: Enhancer[]): void
+}>()
+
+onMounted(async () => loadMealsAndMedicine(setting.getDataSource))
+watch(() => setting.getDataSource, loadMealsAndMedicine)
+
+async function loadMealsAndMedicine(ds: Promise<DataSource>) {
+    let datasource = await ds
     if (datasource.mealsTable) {
         (async () => {
             let i = 0, v;
+            meals.value = []
             do {
                 v = await datasource.mealsTable(i += 1)
-                meals.value = (meals.value ?? []).concat(v.results)
+                meals.value = meals.value.concat(v.results)
             } while (i < v.totalPages)
         })()
     }
     if (datasource.medicineTable) {
         (async () => {
             let i = 0, v;
+            medicine.value = []
             do {
                 v = await datasource.medicineTable(i += 1)
-                medicine.value = (medicine.value ?? []).concat(v.results)
+                medicine.value = medicine.value.concat(v.results)
             } while (i < v.totalPages)
         })()
     }
-})
+}
 
-const emits = defineEmits<{
-    (event: 'update:modelValue', v: Enhancer[]): void
-}>()
-
-function processData(enhancers: Enhancer[] | undefined) {
+function enhancerToOptions(enhancers: Enhancer[] | undefined) {
     return enhancers?.map(value => ({
         label: value.name,
         value
@@ -97,11 +103,11 @@ watch(enhancers, e => {
 <template>
     <el-form :model="enhancers" label-width="auto">
         <el-form-item :label="$t('meal')">
-            <el-select-v2 v-model="enhancers.meal" :placeholder="$t('none')" :options="processData(meals)"
+            <el-select-v2 v-model="enhancers.meal" :placeholder="$t('none')" :options="enhancerToOptions(meals)"
                 value-key="name" clearable remote :loading="!meals" />
         </el-form-item>
         <el-form-item :label="$t('medicine')">
-            <el-select-v2 v-model="enhancers.potion" :placeholder="$t('none')" :options="processData(medicine)"
+            <el-select-v2 v-model="enhancers.potion" :placeholder="$t('none')" :options="enhancerToOptions(medicine)"
                 value-key="name" clearable remote :loading="!medicine" />
         </el-form-item>
         <el-form-item :label="$t('soul-of-the-crafter')">

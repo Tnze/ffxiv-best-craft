@@ -123,9 +123,11 @@ export class XivApiRecipeSource {
     async recipesIngredients(recipeId: number): Promise<ItemWithAmount[]> {
         const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         const needs = new Map<number, ItemWithAmount>() // item_id as key
-        const url = new URL(`Recipe/${recipeId}`, this.base).toString() + '?' + new URLSearchParams({
+        const query = new URLSearchParams({
             'columns': nums.map(n => `AmountIngredient${n},ItemIngredient${n}TargetID`).join(',')
-        }).toString();
+        });
+        if (this.language != undefined) query.set('language', this.language)
+        const url = new URL(`Recipe/${recipeId}`, this.base).toString() + '?' + query.toString();
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors'
@@ -149,9 +151,11 @@ export class XivApiRecipeSource {
     }
 
     async recipeLevelTable(rlv: number): Promise<RecipeLevel> {
-        const url = new URL(`RecipeLevelTable/${rlv}`, this.base).toString() + '?' + new URLSearchParams({
+        const query = new URLSearchParams({
             'columns': 'ID,Stars,ClassJobLevel,SuggestedCraftsmanship,SuggestedControl,Difficulty,Quality,Durability,ProgressDivider,QualityDivider,ProgressModifier,QualityModifier,ConditionsFlag'
-        }).toString();
+        });
+        if (this.language != undefined) query.set('language', this.language)
+        const url = new URL(`RecipeLevelTable/${rlv}`, this.base).toString() + '?' + query.toString();
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors'
@@ -198,9 +202,11 @@ export class XivApiRecipeSource {
     }
 
     async craftTypeList(): Promise<CraftType[]> {
-        const url = new URL(`CraftType`, this.base).toString() + '?' + new URLSearchParams({
+        const query = new URLSearchParams({
             'columns': 'ID,Name'
-        }).toString();
+        });
+        if (this.language != undefined) query.set('language', this.language)
+        const url = new URL(`CraftType`, this.base).toString() + '?' + query.toString();
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors'
@@ -228,10 +234,12 @@ export class XivApiRecipeSource {
     }
 
     private async getItems(page: number, categoryID: number): Promise<any> {
-        const url = new URL(`search`, this.base).toString() + '?' + new URLSearchParams({
+        const query = new URLSearchParams({
             'page': String(page),
             'columns': 'ID,Name,Bonuses'
-        }).toString();
+        })
+        if (this.language != undefined) query.set('language', this.language)
+        const url = new URL(`search`, this.base).toString() + '?' + query.toString();
         const resp = await fetch(url, {
             method: 'POST',
             mode: 'cors',
