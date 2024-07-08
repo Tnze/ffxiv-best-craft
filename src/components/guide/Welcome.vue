@@ -19,7 +19,6 @@
 <script setup lang="ts">
 import { ElText, ElButton } from 'element-plus';
 import { computed, onActivated } from 'vue';
-import useGuideStore from '@/stores/guide';
 import { useFluent } from 'fluent-vue';
 
 const emit = defineEmits<{
@@ -28,9 +27,6 @@ const emit = defineEmits<{
 onActivated(() => emit('setTitle', ''))
 
 const { $t } = useFluent()
-
-const store = useGuideStore()
-store.setCurrentPage('welcome')
 
 const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'beforedawn'>(() => {
     const hour = new Date().getHours();

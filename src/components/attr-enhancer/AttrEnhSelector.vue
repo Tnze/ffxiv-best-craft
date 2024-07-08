@@ -18,13 +18,14 @@
 
 <script setup lang="ts">
 import { ElForm, ElFormItem, ElSelectV2, ElSwitch, ElDivider } from 'element-plus';
-import { onMounted, reactive, watch, ref } from 'vue'
+import { onMounted, reactive, watch, ref, defineAsyncComponent } from 'vue'
 import { Enhancer } from './Enhancer';
 import { useFluent } from 'fluent-vue';
 import { Jobs } from '@/libs/Craft';
-import Gearset from '@/components/Gearset.vue';
 import settingStore from '@/stores/settings'
 import { DataSource } from '../recipe-manager/source';
+
+const Gearset = defineAsyncComponent(() => import('@/components/Gearset.vue'))
 
 const { $t } = useFluent();
 const setting = settingStore();
