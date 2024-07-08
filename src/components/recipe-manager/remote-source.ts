@@ -214,7 +214,6 @@ export class XivApiRecipeSource {
 
     async medicineTable?(page: number): Promise<DataSourceResult<Enhancer>> {
         const data = await this.getItems(page, MedicineID)
-        console.log(data)
         return {
             totalPages: data.Pagination.PageTotal,
             results: data.Results.flatMap(this.bonusesToEnhancer)
@@ -287,6 +286,8 @@ const queryBody = (categoryID: number) => JSON.stringify({
                     { "term": { "ItemSearchCategory.ID": categoryID } }
                 ]
             }
-        }
+        },
+        "size": 100,
+        "sort": "LevelItem"
     }
 })

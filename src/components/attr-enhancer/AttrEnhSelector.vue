@@ -48,10 +48,22 @@ const props = defineProps<{
 onMounted(async () => {
     let datasource = await setting.getDataSource
     if (datasource.mealsTable) {
-        datasource.mealsTable(1).then(v => meals.value = v.results)
+        (async () => {
+            let i = 0, v;
+            do {
+                v = await datasource.mealsTable(i += 1)
+                meals.value = (meals.value ?? []).concat(v.results)
+            } while (i < v.totalPages)
+        })()
     }
     if (datasource.medicineTable) {
-        datasource.medicineTable(1).then(v => medicine.value = v.results)
+        (async () => {
+            let i = 0, v;
+            do {
+                v = await datasource.medicineTable(i += 1)
+                medicine.value = (medicine.value ?? []).concat(v.results)
+            } while (i < v.totalPages)
+        })()
     }
 })
 
