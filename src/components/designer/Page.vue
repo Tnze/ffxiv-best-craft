@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ElEmpty, ElResult, ElButton } from 'element-plus';
+import { ElEmpty, ElResult, ElButton, ElText } from 'element-plus';
 import { computed, defineAsyncComponent, onErrorCaptured, ref, provide, onActivated } from 'vue';
 import useGearsetsStore from '@/stores/gearsets';
 import useDesignerStore from '@/stores/designer';
@@ -65,7 +65,9 @@ function reload() {
     <Suspense :timeout="30">
         <el-result v-if="errorMessage" icon="error" :title="$t('error-happens')" :sub-title="errorMessage">
             <template #extra>
-                <el-button @click="reload">{{ $t('reload') }}</el-button>
+                <el-button @click="reload">{{ $t('reload') }}</el-button><br />
+                <el-text type="info">{{ $t('sorry') }}</el-text><br />
+                <el-text type="info">{{ $t('invite') }}</el-text>
             </template>
         </el-result>
         <template v-else-if="designerStore.content != null">
@@ -92,10 +94,23 @@ error-happens = 加载配方时出现了一些错误
 not-selected = 请先选择配方
 loading = 加载中
 reload = 刷新
+sorry = 由于技术原因，出现错误后暂时只能通过刷新页面恢复，对此造成的不便我们深表歉意
+invite = 如果您有兴趣解决这个问题，欢迎向本项目仓库提交PR
 </fluent>
 
 <fluent locale="en-US">
 not-selected = Please select recipe first
 loading = Loading
 reload = Reload
+sorry = Due to technical reasons, the error can only be temporarily restored by refreshing the page.
+    We apologize for any inconvenience caused.
+invite = If you are interested in solving this problem, please submit a Pull Request to the repository
 </fluent>
+
+<fluent locale="ja-JP">
+reload = 再ロード
+sorry = 技術的な理由により、ページを更新することでエラーを一時的に回復するしかありません。
+    ご不便をおかけしますのでご了承ください。
+invite = この問題の解決に興味がある場合は、リポジトリに「Pull Request」を発行してください
+</fluent>
+        
