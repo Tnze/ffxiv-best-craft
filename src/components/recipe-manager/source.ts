@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
+import { Enhancer } from "../attr-enhancer/Enhancer";
 
 export interface DataSource {
     sourceType: DataSourceType
@@ -24,6 +25,9 @@ export interface DataSource {
     recipeInfo?(recipeId: number): Promise<RecipeInfo>
     itemInfo(id: number): Promise<Item>
     craftTypeList(): Promise<CraftType[]>
+
+    medicineTable(page: number): Promise<DataSourceResult<Enhancer>>
+    mealsTable(page: number): Promise<DataSourceResult<Enhancer>>
 }
 
 export interface CraftType {
@@ -35,7 +39,9 @@ export enum DataSourceType {
     Realtime, RemoteRealtime, SingleShot
 }
 
-export interface RecipesSourceResult {
-    recipes: RecipeInfo[],
+export interface DataSourceResult<T> {
+    results: T[],
     totalPages: number
 }
+
+export type RecipesSourceResult = DataSourceResult<RecipeInfo>

@@ -15,7 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
-import { DataSourceType, RecipesSourceResult } from "./source";
+import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from "./source";
+import { Enhancer } from "../attr-enhancer/Enhancer";
 
 export class WebSource {
     public sourceType = DataSourceType.RemoteRealtime
@@ -38,11 +39,11 @@ export class WebSource {
             method: 'GET',
             mode: 'cors'
         })
-        const { data: recipes, p: totalPages } = await resp.json() as {
+        const { data: results, p: totalPages } = await resp.json() as {
             data: RecipeInfo[],
             p: number
         }
-        return { recipes, totalPages }
+        return { results, totalPages }
     }
 
     async recipesIngredients(recipeId: number): Promise<ItemWithAmount[]> {
@@ -89,6 +90,15 @@ export class WebSource {
             category_id?: number,
         }
         return { id, name, level, can_be_hq: can_be_hq != 0, category_id };
+    }
+    async craftTypeList(): Promise<CraftType[]> {
+        throw "todo"
+    }
+    async medicineTable(_page: number): Promise<DataSourceResult<Enhancer>> {
+        throw "todo"
+    }
+    async mealsTable(_page: number): Promise<DataSourceResult<Enhancer>> {
+        throw "todo"
     }
 }
 

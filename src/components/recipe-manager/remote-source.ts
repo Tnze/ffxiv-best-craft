@@ -15,7 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
-import { CraftType, DataSourceType, RecipesSourceResult } from './source'
+import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from './source'
+import { Enhancer } from "../attr-enhancer/Enhancer";
 
 interface XivapiRecipeResult {
     Pagination: {
@@ -98,7 +99,7 @@ export class XivApiRecipeSource {
         })
         let data: XivapiRecipeResult = await resp.json()
         return {
-            recipes: data.Results.map(v => <RecipeInfo>{
+            results: data.Results.map(v => <RecipeInfo>{
                 id: v.ID,
                 rlv: v.RecipeLevelTable.ID,
                 item_id: v.ItemResult.ID,
@@ -210,7 +211,82 @@ export class XivApiRecipeSource {
             name: v.Name,
         })
     }
+
+    async medicineTable?(page: number): Promise<DataSourceResult<Enhancer>> {
+        const data = await this.getItems(page, MedicineID)
+        console.log(data)
+        return {
+            totalPages: data.Pagination.PageTotal,
+            results: data.Results.flatMap(this.bonusesToEnhancer)
+        }
+    }
+    async mealsTable?(page: number): Promise<DataSourceResult<Enhancer>> {
+        const data = await this.getItems(page, Meals)
+        return {
+            totalPages: data.Pagination.PageTotal,
+            results: data.Results.flatMap(this.bonusesToEnhancer)
+        }
+    }
+
+    private async getItems(page: number, categoryID: number): Promise<any> {
+        const url = new URL(`search`, this.base).toString() + '?' + new URLSearchParams({
+            'page': String(page),
+            'columns': 'ID,Name,Bonuses'
+        }).toString();
+        const resp = await fetch(url, {
+            method: 'POST',
+            mode: 'cors',
+            body: queryBody(categoryID)
+        })
+        return resp.json()
+    }
+
+    private bonusesToEnhancer(item: any): Enhancer[] {
+        const { Name, Bonuses } = item
+        return [
+            <Enhancer>{
+                name: Name,
+                cm: Bonuses.Craftsmanship?.Value,
+                cm_max: Bonuses.Craftsmanship?.Max,
+                ct: Bonuses.Control?.Value,
+                ct_max: Bonuses.Control?.Max,
+                cp: Bonuses.CP?.Value,
+                cp_max: Bonuses.CP?.Max,
+            },
+            <Enhancer>{
+                name: Name + " HQ",
+                cm: Bonuses.Craftsmanship?.ValueHQ,
+                cm_max: Bonuses.Craftsmanship?.MaxHQ,
+                ct: Bonuses.Control?.ValueHQ,
+                ct_max: Bonuses.Control?.MaxHQ,
+                cp: Bonuses.CP?.ValueHQ,
+                cp_max: Bonuses.CP?.MaxHQ,
+            }
+        ]
+    }
 }
 
 export const CafeMakerApiBase = "https://cafemaker.wakingsands.com/"
 export const XivapiBase = "https://xivapi.com/"
+
+const MedicineID = 43
+const Meals = 45
+const queryBody = (categoryID: number) => JSON.stringify({
+    "indexes": "Item",
+    "body": {
+        "query": {
+            "bool": {
+                "must": { "exists": { "field": "Bonuses" } },
+                "should": [
+                    { "exists": { "field": "Bonuses.CP" } },
+                    { "exists": { "field": "Bonuses.Control" } },
+                    { "exists": { "field": "Bonuses.Craftsmanship" } }
+                ],
+                "minimum_should_match": 1,
+                "filter": [
+                    { "term": { "ItemSearchCategory.ID": categoryID } }
+                ]
+            }
+        }
+    }
+})

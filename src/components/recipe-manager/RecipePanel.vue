@@ -55,16 +55,16 @@ async function craftTypeRemoteMethod() {
     craftTypeOptions.value = await source.craftTypeList();
 }
 
-let loadRecipeTableResult: Promise<{ recipes: RecipeInfo[], totalPages: number }> | null = null
+let loadRecipeTableResult: Promise<{ results: RecipeInfo[], totalPages: number }> | null = null
 async function updateRecipePage(dataSource: DataSource, pageNumber: number, searching: string) {
     // 对于已有缓存的加载会很快，只有较慢的情况才需要显示Loading
     let timer = setTimeout(() => isRecipeTableLoading.value = true, 200)
     try {
         let promise = dataSource.recipeTable(pageNumber, searching, filterRecipeLevel.value, filterCraftType.value)
         loadRecipeTableResult = promise
-        let { recipes, totalPages } = await promise
+        let { results, totalPages } = await promise
         if (loadRecipeTableResult == promise) {
-            displayTable.value = recipes
+            displayTable.value = results
             pagination.PageTotal = totalPages
             loadRecipeTableResult = null
         }

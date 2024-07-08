@@ -25,8 +25,8 @@ export class LocalRecipeSource {
         if (searchName === undefined) {
             searchName = ""
         }
-        let [recipes, totalPages]: [RecipeInfo[], number] = await (await this.invoke)("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
-        return { recipes, totalPages }
+        let [results, totalPages]: [RecipeInfo[], number] = await (await this.invoke)("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
+        return { results, totalPages }
     }
 
     async recipesIngredients(recipeId: number): Promise<ItemWithAmount[]> {

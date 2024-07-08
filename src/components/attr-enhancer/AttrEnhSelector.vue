@@ -18,17 +18,17 @@
 
 <script setup lang="ts">
 import { ElForm, ElFormItem, ElSelectV2, ElSwitch, ElDivider } from 'element-plus';
-import { reactive, watch } from 'vue'
-import meals from '@/assets/data/meal.json'
-import potions from '@/assets/data/potions.json'
-import useGearsets from '@/stores/gearsets'
+import { onMounted, reactive, watch, ref } from 'vue'
 import { Enhancer } from './Enhancer';
 import { useFluent } from 'fluent-vue';
 import { Jobs } from '@/libs/Craft';
 import Gearset from '@/components/Gearset.vue';
+import settingStore from '@/stores/settings'
 
 const { $t } = useFluent();
-const gearsets = useGearsets()
+const setting = settingStore();
+const meals = ref<Enhancer[]>()
+const medicine = ref<Enhancer[]>()
 
 const 专家之证: Enhancer = {
     cm: 100,
@@ -37,7 +37,7 @@ const 专家之证: Enhancer = {
     ct_max: 20,
     cp: 100,
     cp_max: 15,
-    name: "【ilv.136】" + $t('soul-of-the-crafter')
+    name: $t('soul-of-the-crafter')
 }
 
 const props = defineProps<{
@@ -45,14 +45,25 @@ const props = defineProps<{
     job?: Jobs
 }>()
 
+onMounted(async () => {
+    let datasource = await setting.getDataSource
+    if (datasource.mealsTable) {
+        datasource.mealsTable(1).then(v => meals.value = v.results)
+    }
+    if (datasource.medicineTable) {
+        datasource.medicineTable(1).then(v => medicine.value = v.results)
+    }
+})
+
 const emits = defineEmits<{
     (event: 'update:modelValue', v: Enhancer[]): void
 }>()
 
-function processData(enhancers: Enhancer[]) {
-    return enhancers.map(value => ({
-        label: value.name, value
-    }))
+function processData(enhancers: Enhancer[] | undefined) {
+    return enhancers?.map(value => ({
+        label: value.name,
+        value
+    })) ?? []
 }
 
 const enhancers = reactive<{
@@ -74,12 +85,12 @@ watch(enhancers, e => {
 <template>
     <el-form :model="enhancers" label-width="auto">
         <el-form-item :label="$t('meal')">
-            <el-select-v2 v-model="enhancers.meal" :placeholder="$t('none')" :options="processData(meals)" value-key="name"
-                filterable clearable />
+            <el-select-v2 v-model="enhancers.meal" :placeholder="$t('none')" :options="processData(meals)"
+                value-key="name" filterable clearable remote :loading="!meals" />
         </el-form-item>
         <el-form-item :label="$t('potion')">
-            <el-select-v2 v-model="enhancers.potion" :placeholder="$t('none')" :options="processData(potions)"
-                value-key="name" filterable clearable />
+            <el-select-v2 v-model="enhancers.potion" :placeholder="$t('none')" :options="processData(medicine)"
+                value-key="name" filterable clearable remote :loading="!medicine" />
         </el-form-item>
         <el-form-item :label="$t('soul-of-the-crafter')">
             <el-switch v-model="enhancers.soulOfTheCrafter" />
