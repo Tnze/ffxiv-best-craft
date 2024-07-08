@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -98,11 +98,11 @@ watch(enhancers, e => {
     <el-form :model="enhancers" label-width="auto">
         <el-form-item :label="$t('meal')">
             <el-select-v2 v-model="enhancers.meal" :placeholder="$t('none')" :options="processData(meals)"
-                value-key="name" filterable clearable remote :loading="!meals" />
+                value-key="name" clearable remote :loading="!meals" />
         </el-form-item>
-        <el-form-item :label="$t('potion')">
+        <el-form-item :label="$t('medicine')">
             <el-select-v2 v-model="enhancers.potion" :placeholder="$t('none')" :options="processData(medicine)"
-                value-key="name" filterable clearable remote :loading="!medicine" />
+                value-key="name" clearable remote :loading="!medicine" />
         </el-form-item>
         <el-form-item :label="$t('soul-of-the-crafter')">
             <el-switch v-model="enhancers.soulOfTheCrafter" />
@@ -133,7 +133,7 @@ watch(enhancers, e => {
 name = 名称
 none = 无
 meal = 食物
-potion = 药水
+medicine = 药水
 soul-of-the-crafter = 专家之证
 </fluent>
 
@@ -141,12 +141,12 @@ soul-of-the-crafter = 专家之证
 name = Name
 none = None
 meal = Meal
-potion = Potion
+medicine = Potion
 soul-of-the-crafter = 专家之证
 </fluent>
 
-<fluent locale="en-US">
-name = Name
-none = None
+<fluent locale="ja-JP">
+meal = 調理品
+medicine = 薬品
 soul-of-the-crafter = マイスターの証
 </fluent>
