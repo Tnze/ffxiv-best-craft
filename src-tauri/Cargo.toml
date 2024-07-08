@@ -35,7 +35,6 @@ tauri = { version = "1.7", features = [
   "fs-all",
   "dialog-open",
   "dialog-save",
-  "devtools",
   "updater",
 ] }
 tokio = "1.38"
