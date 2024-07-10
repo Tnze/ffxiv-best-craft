@@ -127,6 +127,17 @@ export async function reflect_solve(status: Status, useManipulation: boolean, us
     }
 }
 
+export async function raphael_solve(status: Status, useManipulation: boolean): Promise<Actions[]> {
+    clarityReport('runRaphaelSolver')
+    const args = { status, useManipulation };
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("raphael_solve", args)
+    } else {
+        return invokeWasmSolver("raphael_solve", args)
+    }
+}
+
 export function formatDuration(u: number): string {
     if (u < 1000) {
         return u + "ms"

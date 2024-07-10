@@ -25,7 +25,7 @@ import { useFluent } from 'fluent-vue';
 import { Solver } from './DpSolver.vue'
 import DpSolver from './DpSolver.vue'
 import DfsSolver from './DfsSolver.vue'
-import DesktopEditionDownload from '@/components/DesktopEditionDownload.vue';
+import RaphaelSolver from './RaphaelSolver.vue'
 
 const { $t } = useFluent()
 
@@ -137,6 +137,9 @@ async function runTnzeVerRikaSolver() {
         <el-tabs v-model="activeNames">
             <el-tab-pane :label="$t('dp-solver')" name="dp">
                 <DpSolver :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
+            </el-tab-pane>
+            <el-tab-pane :label="$t('raphael-solver')" name="raphael">
+                <RaphaelSolver :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
             </el-tab-pane>
             <el-tab-pane :label="$t('dfs-solver')" name="dfs" style="flex: auto;">
                 <DfsSolver :can-hq="canHq" @run-simple-solver="runSimpleSolver" />
@@ -261,6 +264,7 @@ web-worker-not-avaliable = Your browser doesn't support Web Worker, which is req
     
 solver-not-avaliable = Developments of web-based BestCraft haven't done yet. Downloading the Desktop version is required to run these solvers.
 dp-solver = DP
+raphael-solver = Raphael
 bfs-solver = BFS
 tnzever-rika-solver = BFS ~Tnze Impv.~
 dfs-solver = DFS

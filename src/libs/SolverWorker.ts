@@ -1,6 +1,6 @@
 onmessage = async (e) => {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "web") {
-        var { dfs_solve, nq_solve, rika_solve, reflect_solve } = await import("../../pkg-wasm/app_wasm")
+        var { dfs_solve, nq_solve, rika_solve, reflect_solve, raphael_solve } = await import("../../pkg-wasm/app_wasm")
     } else return
     const { name, args: argsJson } = e.data
     const args = JSON.parse(argsJson)
@@ -18,6 +18,8 @@ onmessage = async (e) => {
             break;
         case "rika_solve_tnzever":
             throw "unsupported";
+        case "raphael_solve":
+            postMessage(raphael_solve(args.status, args.useManipulation))
     }
     close()
 };

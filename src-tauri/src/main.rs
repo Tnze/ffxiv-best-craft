@@ -27,8 +27,8 @@ use app_libs::{
     analyzer::rand_simulations::Statistics,
     ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status},
     solver::{
-        depth_first_search_solver, normal_progress_solver, reflect_solver, rika_solver, Solver,
-        SolverHash,
+        depth_first_search_solver, normal_progress_solver, raphael, reflect_solver, rika_solver,
+        Solver, SolverHash,
     },
     SimulateOneStepResult, SimulateResult,
 };
@@ -344,6 +344,11 @@ fn reflect_solve(
     reflect_solver::solve(status.clone(), use_manipulation, use_waste_not, use_observe)
 }
 
+#[tauri::command(async)]
+fn raphael_solve(status: Status, use_manipulation: bool) -> Vec<Actions> {
+    raphael::solve(status.clone(), use_manipulation)
+}
+
 /// 释放求解器
 #[tauri::command(async)]
 async fn destroy_solver(
@@ -423,6 +428,7 @@ fn main() {
             dfs_solve,
             nq_solve,
             reflect_solve,
+            raphael_solve,
             set_theme,
             rand_simulation,
             calc_attributes_scope,

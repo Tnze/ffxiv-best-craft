@@ -115,6 +115,14 @@ pub fn reflect_solve(status: JsValue, use_observe: bool) -> Result<JsValue, JsVa
 }
 
 #[wasm_bindgen]
+pub fn raphael_solve(status: JsValue, use_manipulation: bool) -> Result<JsValue, JsValue> {
+    use app_libs::solver::raphael::solve;
+    let status: Status = from_value(status)?;
+    let result: Vec<Actions> = solve(status.clone(), use_manipulation);
+    Ok(to_value(&result)?)
+}
+
+#[wasm_bindgen]
 pub fn rand_simulation(
     status: JsValue,
     actions: JsValue,
