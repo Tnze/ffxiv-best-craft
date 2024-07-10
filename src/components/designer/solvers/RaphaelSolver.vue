@@ -35,8 +35,6 @@ const emits = defineEmits<{
     (event: 'runSimpleSolver', solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
 }>()
 
-const platform = import.meta.env.VITE_BESTCRAFT_TARGET
-
 const dialogVisible = ref(false)
 const useManipulation = ref(false)
 
