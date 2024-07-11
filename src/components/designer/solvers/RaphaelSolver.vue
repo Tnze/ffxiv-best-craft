@@ -37,10 +37,11 @@ const emits = defineEmits<{
 
 const dialogVisible = ref(false)
 const useManipulation = ref(false)
+const backloadProgress = ref(false)
 
 const raphaelSolveIsSolving = ref(false)
 function runRaphaelSolver() {
-    emits('runSimpleSolver', "raphael", raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value))
+    emits('runSimpleSolver', "raphael", raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value, backloadProgress.value))
 }
 </script>
 
@@ -59,6 +60,7 @@ function runRaphaelSolver() {
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
         <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
+        <el-checkbox v-model="backloadProgress" :label="$t('backload-progress')" />
     </el-space>
     <div style="margin-top: 10px;">
         <el-button @click="runRaphaelSolver" type="primary" :loading="raphaelSolveIsSolving">
@@ -79,6 +81,8 @@ solver-start = 开始求解
 simple-solver-solving = 正在求解中
 error-with = 错误：{ $err }
 
+backload-progress = 后置作业技能
+
 solver-info-title = Raphael 求解器
 solver-info =
     来源：{ $origin }
@@ -97,6 +101,8 @@ solver-info =
 solver-start = Start
 simple-solver-solving = Solving
 error-with = Error: { $err }
+
+backload-progress = Backload Progress Actions
 
 solver-info-title = Raphael FFXIV Crafting Solver
 solver-info =

@@ -7,7 +7,7 @@
         "dev": "VITE_BESTCRAFT_TARGET=tauri vite",
         "build": "VITE_BESTCRAFT_TARGET=tauri vite build",
         "preview": "vite preview",
-        "dev-web": "wasm-pack build --dev ./src-wasm --out-dir=../pkg-wasm --target bundler && VITE_BESTCRAFT_TARGET=web vite dev",
+        "dev-web": "wasm-pack build --release ./src-wasm --out-dir=../pkg-wasm --target bundler && VITE_BESTCRAFT_TARGET=web vite dev",
         "build-web": "wasm-pack build --release ./src-wasm --out-dir=../pkg-wasm --target bundler && VITE_BESTCRAFT_TARGET=web vite build"
     },
     "dependencies": {

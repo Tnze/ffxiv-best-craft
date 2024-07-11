@@ -3,7 +3,7 @@ use ffxiv_crafting::{Actions, Status};
 use raphael_simulator::{state::InProgress, Action, ActionMask, Settings};
 use raphael_solvers::MacroSolver;
 
-pub fn solve(status: Status, use_manipulation: bool) -> Vec<Actions> {
+pub fn solve(status: Status, use_manipulation: bool, backload_progress: bool) -> Vec<Actions> {
     let settings = Settings {
         max_cp: status.attributes.craft_points as i16,
         max_durability: status.recipe.durability as i8,
@@ -18,7 +18,7 @@ pub fn solve(status: Status, use_manipulation: bool) -> Vec<Actions> {
     let state = InProgress::new(&settings);
     let mut solver = MacroSolver::new(settings);
     solver
-        .solve(state, false)
+        .solve(state, backload_progress)
         .into_iter()
         .flatten()
         .map(map_action)
