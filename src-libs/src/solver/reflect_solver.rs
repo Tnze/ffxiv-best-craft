@@ -38,6 +38,9 @@ pub fn solve(
     let result1 = solver.read_all(&status);
     let SimulateResult { status: s1, .. } = simulate(status.clone(), result1.clone());
     // Try reflect
+    let Ok(()) = status.is_action_allowed(Actions::Reflect) else {
+        return result1;
+    };
     let mut s = status.clone();
     s.cast_action(Actions::Reflect);
     let mut result2 = solver.read_all(&s);
