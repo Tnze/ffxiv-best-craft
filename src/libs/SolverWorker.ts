@@ -19,7 +19,8 @@ onmessage = async (e) => {
         case "rika_solve_tnzever":
             throw "unsupported";
         case "raphael_solve":
-            postMessage(raphael_solve(args.status, args.useManipulation, args.backloadProgress))
+            console.table(args)
+            postMessage(raphael_solve(args.status, args.useManipulation, args.useTrainedEye, args.backloadProgress))
     }
     close()
 };

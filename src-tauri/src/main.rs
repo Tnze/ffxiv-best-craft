@@ -345,8 +345,18 @@ fn reflect_solve(
 }
 
 #[tauri::command(async)]
-fn raphael_solve(status: Status, use_manipulation: bool, backload_progress: bool) -> Vec<Actions> {
-    raphael::solve(status.clone(), use_manipulation, backload_progress)
+fn raphael_solve(
+    status: Status,
+    use_manipulation: bool,
+    use_trained_eye: bool,
+    backload_progress: bool,
+) -> Vec<Actions> {
+    raphael::solve(
+        status.clone(),
+        use_manipulation,
+        use_trained_eye,
+        backload_progress,
+    )
 }
 
 /// 释放求解器

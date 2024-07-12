@@ -35,13 +35,17 @@ const emits = defineEmits<{
     (event: 'runSimpleSolver', solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
 }>()
 
+// UI states
 const dialogVisible = ref(false)
-const useManipulation = ref(false)
+const raphaelSolveIsSolving = ref(false)
+
+// Solver options
+const useManipulation = ref(true)
+const useTrainedEye = ref(false)
 const backloadProgress = ref(false)
 
-const raphaelSolveIsSolving = ref(false)
 function runRaphaelSolver() {
-    emits('runSimpleSolver', "raphael", raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value, backloadProgress.value))
+    emits('runSimpleSolver', "raphael", raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value, useTrainedEye.value, backloadProgress.value))
 }
 </script>
 
@@ -60,6 +64,7 @@ function runRaphaelSolver() {
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
         <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
+        <el-checkbox v-model="useTrainedEye" :label="$t('trained-eye')" />
         <el-checkbox v-model="backloadProgress" :label="$t('backload-progress')" />
     </el-space>
     <div style="margin-top: 10px;">
