@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { Ref, ref } from 'vue'
-import { ElAlert, ElScrollbar, ElButton, ElCheckbox, ElLink, ElMessage, ElMessageBox, ElTabs, ElTabPane, ElCard, ElSpace } from 'element-plus'
+import { ElAlert, ElScrollbar, ElButton, ElLink, ElMessage, ElMessageBox, ElTabs, ElTabPane } from 'element-plus'
 import { Actions, Status } from "@/libs/Craft"
 import { supported as solverSupported, formatDuration, rika_solve, rika_solve_tnzever } from '@/libs/Solver'
 import { useFluent } from 'fluent-vue';
@@ -41,7 +41,6 @@ const emits = defineEmits<{
 }>()
 
 const activeNames = ref<string>("dp")
-const platform = import.meta.env.VITE_BESTCRAFT_TARGET
 
 async function runSimpleSolver(solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>) {
     const msg1 = ElMessage({
@@ -126,10 +125,6 @@ async function runTnzeVerRikaSolver() {
 
 <template>
     <el-scrollbar class="container">
-        <template v-if="platform != 'tauri'">
-            <el-alert type="warning" :title="$t('please-use-desktop-solvers')" show-icon :closable="false" />
-            <br />
-        </template>
         <template v-if="!solverSupported">
             <el-alert type="error" :title="$t('web-worker-not-avaliable')" show-icon :closable="false" />
             <br />
@@ -139,7 +134,8 @@ async function runTnzeVerRikaSolver() {
                 <DpSolver :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
             </el-tab-pane>
             <el-tab-pane :label="$t('raphael-solver')" name="raphael">
-                <RaphaelSolver :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
+                <RaphaelSolver :init-status="initStatus" :recipe-name="recipeName"
+                    @run-simple-solver="runSimpleSolver" />
             </el-tab-pane>
             <el-tab-pane :label="$t('dfs-solver')" name="dfs" style="flex: auto;">
                 <DfsSolver :can-hq="canHq" @run-simple-solver="runSimpleSolver" />
@@ -213,7 +209,6 @@ span {
 </style>
 
 <fluent locale="zh-CN">
-please-use-desktop-solvers = 网页版求解器依赖于浏览器对 Wasm、ESM WebWorker 的支持，如遇无法使用的情况，请尝试升级您的浏览器或考虑使用桌面版。
 solver-not-avaliable = 该求解器尚未适配网页版 BestCraft。如需使用，请点击下方链接下载客户端。
 web-worker-not-avaliable = 您正在使用的浏览器不支持 Web Worker 功能，无法运行求解器。
 
@@ -257,8 +252,6 @@ tnzever-rika-solver-info =
 </fluent>
 
 <fluent locale="en-US">
-please-use-desktop-solvers = The web version of the solver depends on the browser's support for Wasm and ESM WebWorker.
-    If you encounter situations where it cannot be used, please try upgrading your browser or consider using the desktop edition.
 solver-not-avaliable = The Web edition of BestCraft doesn't support this solver. Please download the Desktop edition if needed.
 web-worker-not-avaliable = Your browser doesn't support Web Worker, which is required to running solvers.
     
