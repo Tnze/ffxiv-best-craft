@@ -13,7 +13,7 @@ pub fn solve(status: Status, use_manipulation: bool, backload_progress: bool) ->
         base_quality: status.caches.base_touch as u16,
         initial_quality: status.quality as u16,
         job_level: status.attributes.level,
-        allowed_actions: ActionMask::from_level(status.attributes.level as u32, use_manipulation),
+        allowed_actions: ActionMask::from_level(status.attributes.level as u32, use_manipulation, false),
     };
     let state = InProgress::new(&settings);
     let mut solver = MacroSolver::new(settings);
@@ -54,6 +54,7 @@ fn map_action(action: Action) -> Actions {
         Action::TrainedFinesse => Actions::TrainedFinesse,
         Action::ImmaculateMend => Actions::ImmaculateMend,
         Action::TrainedPerfection => Actions::TrainedPerfection,
+        Action::TrainedEye => Actions::TrainedEye,
 
         Action::ComboAdvancedTouch => Actions::AdvancedTouch,
         Action::ComboRefinedTouch => Actions::RefinedTouch,
