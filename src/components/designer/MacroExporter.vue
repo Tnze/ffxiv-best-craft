@@ -43,7 +43,13 @@ const chunkedActions = computed(() => {
     const minChunks = Math.ceil(props.actions.length / maxLinesPerChunk);
     const size = props.actions.length / minChunks || 14;
     for (let sec = 0; sec < minChunks; sec++) {
-        const section = props.actions.slice(sec * size, Math.min(props.actions.length, (sec + 1) * size))
+        let section;
+        if (genOptions.avgSize) {
+            section = props.actions.slice(sec * size, Math.min(props.actions.length, (sec + 1) * size))
+        } else {
+            const start = sec * maxLinesPerChunk;
+            section = props.actions.slice(start, Math.min(props.actions.length, start + maxLinesPerChunk))
+        }
         let lines = [];
         if (genOptions.hasLock)
             lines.push(`/mlock`)
@@ -123,7 +129,7 @@ const waitTimes = new Map([
     <div>
         <el-checkbox v-model="genOptions.hasNotify" :label="$t('has-notify')" />
         <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
-        <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" disabled />
+        <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
     </div>
     <el-space wrap alignment="flex-start">
         <el-card v-for="(marco, i) in chunkedActions" class="box-card" shadow="hover" @click="copyChunk(i, marco)">
