@@ -23,6 +23,7 @@ import { create_solver, destroy_solver, formatDuration, reflect_solve } from '@/
 import { ChatSquare } from '@element-plus/icons-vue'
 import { Actions, Status } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
+import { SequenceSource } from '../types';
 
 const { $t } = useFluent()
 
@@ -39,7 +40,7 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     (event: 'solverLoad', solver: Solver): void
-    (event: 'runSimpleSolver', solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
+    (event: 'runSimpleSolver', solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
 }>()
 
 const platform = import.meta.env.VITE_BESTCRAFT_TARGET
@@ -53,7 +54,7 @@ const solvers = ref<Solver[]>([])
 
 const reflectSolveIsSolving = ref(false)
 function runReflectSolver() {
-    emits('runSimpleSolver', "dp", reflectSolveIsSolving, initStatus => reflect_solve(initStatus, useManipulation.value, useWasteNot.value ? 8 : 0, useObserve.value))
+    emits('runSimpleSolver', SequenceSource.DPSolver, reflectSolveIsSolving, initStatus => reflect_solve(initStatus, useManipulation.value, useWasteNot.value ? 8 : 0, useObserve.value))
 }
 
 const createSolver = async () => {

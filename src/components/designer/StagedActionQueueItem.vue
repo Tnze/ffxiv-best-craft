@@ -70,7 +70,7 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
                         <el-tag round :type="tagType">{{ $t('quality-tag', { quality: seq.status.quality }) }}</el-tag>
                         <el-tag round type="info">{{ $t('steps-tag', { steps: seq.status.step }) }}</el-tag>
                         <el-tag round type="info" v-if="seq.source">
-                            {{ $t('source-tag', { source: String(seq.source) }) }}
+                            {{ $t('source-tag', { typ: String(seq.source), source: $t(String(seq.source)) }) }}
                         </el-tag>
                     </el-space>
                 </el-text>
@@ -123,11 +123,14 @@ load = 加载
 delete = 删除
 quality-tag = { quality }：{ $quality }
 steps-tag = { steps }：{ $steps }
-source-tag = 来源：{ $source ->
-    [solver] 求解器
-    [auto-save] 自动保存
-    [manual] 手动保存
-    *[other] $source
+
+# Sources
+manual = 手动保存
+auto-save = 自动保存
+source-tag = 来源：{ $typ ->
+    [auto-save] { auto-save }
+    [manual] { manual }
+    *[other] 「{ $source }」求解器
 }
 </fluent>
 
@@ -136,5 +139,13 @@ load = Load
 delete = Delete
 quality-tag = { quality }: { $quality }
 steps-tag = { steps }: { $steps }
-source-tag = Source: { $source }
+
+# Sources
+manual = Manual
+auto-save = Auto Save
+source-tag = Source: { $typ ->
+    [auto-save] { auto-save }
+    [manual] { manual }
+    *[other] { $source } Solver
+}
 </fluent>

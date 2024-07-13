@@ -26,6 +26,7 @@ import { Solver } from './DpSolver.vue'
 import DpSolver from './DpSolver.vue'
 import DfsSolver from './DfsSolver.vue'
 import RaphaelSolver from './RaphaelSolver.vue'
+import { SequenceSource } from '../types';
 
 const { $t } = useFluent()
 
@@ -37,17 +38,17 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     (event: 'solverLoad', solver: Solver): void
-    (event: 'solverResult', result: Actions[]): void
+    (event: 'solverResult', result: Actions[], solverName: SequenceSource): void
 }>()
 
 const activeNames = ref<string>("dp")
 
-async function runSimpleSolver(solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>) {
+async function runSimpleSolver(solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>) {
     const msg1 = ElMessage({
         showClose: true,
         duration: 0,
         type: 'info',
-        message: $t('solving-info', { solverName: $t(solverId + '-solver') }),
+        message: $t('solving-info', { solverName: $t(solverId) }),
     })
     try {
         solvingRunningState.value = true
@@ -57,14 +58,14 @@ async function runSimpleSolver(solverId: string, solvingRunningState: Ref<Boolea
 
         const msgArgs = {
             solveTime: formatDuration(stopTime - startTime),
-            solverName: $t(solverId + '-solver'),
+            solverName: $t(solverId),
         }
         if (result.length > 0) {
             ElMessage({
                 type: 'success',
                 message: $t('simple-solver-finished', msgArgs),
             })
-            emits('solverResult', result)
+            emits('solverResult', result, solverId)
         } else {
             ElMessage({
                 type: 'error',
@@ -100,7 +101,7 @@ async function runRikaSolver() {
             return
         }
     }
-    await runSimpleSolver("bfs", rikaIsSolving, rika_solve)
+    await runSimpleSolver(SequenceSource.BFSSolver, rikaIsSolving, rika_solve)
 }
 
 const tnzeVerRikaIsSolving = ref(false)
@@ -109,7 +110,7 @@ const tnzeVerRikaUseObserve = ref(true)
 const tnzeVerRikaReduceSteps = ref(true)
 
 async function runTnzeVerRikaSolver() {
-    await runSimpleSolver("tnzever-rika", tnzeVerRikaIsSolving,
+    await runSimpleSolver(SequenceSource.TnzeVerRikaSolver, tnzeVerRikaIsSolving,
         initStatus => rika_solve_tnzever(
             initStatus,
             tnzeVerRikaUseManipulation.value,
@@ -256,11 +257,6 @@ solver-not-avaliable = The Web edition of BestCraft doesn't support this solver.
 web-worker-not-avaliable = Your browser doesn't support Web Worker, which is required to running solvers.
     
 solver-not-avaliable = Developments of web-based BestCraft haven't done yet. Downloading the Desktop version is required to run these solvers.
-dp-solver = DP
-raphael-solver = Raphael
-bfs-solver = BFS
-tnzever-rika-solver = BFS ~Tnze Impv.~
-dfs-solver = DFS
 
 do-not-touch = Do not "touching"
 reduce-steps-info = Minimum resource

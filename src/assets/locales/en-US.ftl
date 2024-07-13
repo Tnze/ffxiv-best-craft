@@ -110,3 +110,10 @@ select-recipe = Select Recipe
 custom-recipe = Custom Recipe
 settings = Settings
 title = { $recipe } (Simulator Mode)
+
+# Solvers
+dp-solver = DP
+raphael-solver = Raphael
+bfs-solver = BFS
+tnzever-rika-solver = BFS ~Tnze Impv.~
+dfs-solver = DFS

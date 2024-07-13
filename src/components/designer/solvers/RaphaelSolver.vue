@@ -23,6 +23,7 @@ import { raphael_solve } from '@/libs/Solver'
 import { ChatSquare } from '@element-plus/icons-vue'
 import { Actions, Status } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
+import { SequenceSource } from '../types';
 
 const { $t } = useFluent()
 
@@ -32,7 +33,7 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-    (event: 'runSimpleSolver', solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
+    (event: 'runSimpleSolver', solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
 }>()
 
 // UI states
@@ -45,7 +46,7 @@ const useTrainedEye = ref(false)
 const backloadProgress = ref(false)
 
 function runRaphaelSolver() {
-    emits('runSimpleSolver', "raphael", raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value, useTrainedEye.value, backloadProgress.value))
+    emits('runSimpleSolver', SequenceSource.RaphaelSolver, raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value, useTrainedEye.value, backloadProgress.value))
 }
 </script>
 

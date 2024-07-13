@@ -251,7 +251,7 @@ async function readSolver(s: Status) {
     }
 }
 
-async function handleSolverResult(actions: Actions[]) {
+async function handleSolverResult(actions: Actions[], solverName: SequenceSource) {
     let slots: Slot[] = [];
     for (const i in actions)
         slots.push({ action: actions[i], id: Number.parseInt(i) })
@@ -261,7 +261,7 @@ async function handleSolverResult(actions: Actions[]) {
         maxid: actions.length,
         status,
         errors,
-        source: SequenceSource.Solver,
+        source: solverName,
     });
 }
 </script>

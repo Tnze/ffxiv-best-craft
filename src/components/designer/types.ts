@@ -33,7 +33,12 @@ export interface Sequence {
 }
 
 export enum SequenceSource {
-    Solver = "solver",
     AutoSave = "auto-save",
     Manual = "manual",
+    Solver = "solver",
+    DPSolver = "dp-solver",
+    RaphaelSolver = "raphael-solver",
+    DFSSolver = "dfs-solver",
+    BFSSolver = "bfs-solver",
+    TnzeVerRikaSolver = "tnzever-rika-solver",
 }
