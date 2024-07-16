@@ -20,8 +20,12 @@
 import { Ref, computed, inject, markRaw, provide, reactive, ref, watch } from "vue";
 import { ElScrollbar, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
 import { Bottom, Close } from "@element-plus/icons-vue";
+import { useMediaQuery } from "@vueuse/core";
+
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
+import useDesignerStore from '@/stores/designer';
+
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
 import StatusBar from "./StatusBar.vue";
@@ -34,9 +38,8 @@ import { useFluent } from 'fluent-vue';
 import StagedActionQueueItem from './StagedActionQueueItem.vue';
 import Analyzers from './Analyzers.vue';
 import { activeSeqKey, displayJobKey } from './injectionkeys';
-
 import { Slot, Sequence, SequenceSource } from './types';
-import { useMediaQuery } from "@vueuse/core";
+
 
 const props = defineProps<{
     recipe: Recipe,
@@ -49,6 +52,7 @@ const props = defineProps<{
     isCustomRecipe: boolean,
 }>()
 
+const store = useDesignerStore()
 const { $t } = useFluent()
 const displayJob = inject(displayJobKey) as Ref<Jobs>
 const foldMultiFunctionArea = useMediaQuery('screen and (max-width: 480px)')
@@ -162,20 +166,19 @@ const solverResult = reactive<Sequence>({
 watch(() => activeSeq.status, readSolver);
 
 // Saved Sequence
-const savedSeqs = reactive<{ maxid: number, ary: { key: number, seq: Sequence }[] }>({ maxid: 0, ary: [] });
 watch(initStatus, async (newInitStatus) => {
     // re-simulate all savedQueues
     const results = await Promise.all(
-        savedSeqs.ary.map(({ seq }) => simulate(
+        store.rotations.staged.map(({ seq }) => simulate(
             newInitStatus,
             seq.slots.map((x) => x.action)
         ))
     )
-    savedSeqs.ary.forEach(({ seq }, i) => {
+    store.rotations.staged.forEach(({ seq }, i) => {
         seq.status = results[i].status;
         seq.errors = results[i].errors;
     })
-    savedSeqs.ary.sort((a, b) => {
+    store.rotations.staged.sort((a, b) => {
         const ord = compareStatus(b.seq.status, a.seq.status)
         return ord != 0 ? ord : a.key - b.key
     });
@@ -194,22 +197,14 @@ function saveSequence(isManual: boolean) {
     const queue = previewSolver.value
         ? solverResult
         : activeSeq
-    pushSequence({
+    store.pushRotation({
         slots: queue.slots.slice(),
         maxid: queue.maxid,
         status: queue.status,
         errors: queue.errors,
         source: isManual ? SequenceSource.Manual : SequenceSource.AutoSave,
     });
-}
-function pushSequence(seq: Sequence) {
-    const key = savedSeqs.maxid++;
-    savedSeqs.ary.push({ key, seq });
-    savedSeqs.ary.sort((a, b) => {
-        const ord = compareStatus(b.seq.status, a.seq.status)
-        return ord != 0 ? ord : a.key - b.key
-    });
-    activeTab.value = 'staged'
+    activeTab.value = 'staged';
 }
 
 const displayedStatus = computed(() => {
@@ -220,7 +215,7 @@ const displayedStatus = computed(() => {
 watch(displayedStatus, (status) => {
     if (status.progress < status.recipe.difficulty)
         return;
-    if (savedSeqs.ary.some(v => compareStatus(v.seq.status, status) >= 0))
+    if (store.rotations.staged.some(v => compareStatus(v.seq.status, status) >= 0))
         return;
     saveSequence(false)
 })
@@ -256,13 +251,14 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
     for (const i in actions)
         slots.push({ action: actions[i], id: Number.parseInt(i) })
     const { status, errors } = await simulate(initStatus.value, actions)
-    pushSequence({
+    store.pushRotation({
         slots,
         maxid: actions.length,
         status,
         errors,
         source: solverName,
     });
+    activeTab.value = 'staged';
 }
 </script>
 
@@ -326,9 +322,9 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                                 </el-checkbox-button>
                             </el-button-group>
                             <TransitionGroup name="savedqueues" tag="div">
-                                <StagedActionQueueItem v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" :seq="seq"
-                                    :display-job="displayJob" @load="loadSeq(seq)"
-                                    @delete="savedSeqs.ary.splice(i, 1)" />
+                                <StagedActionQueueItem v-for="({ key, seq }, i) in store.rotations.staged" :key="key"
+                                    :seq="seq" :display-job="displayJob" @load="loadSeq(seq)"
+                                    @delete="store.deleteRotation(i)" />
                             </TransitionGroup>
                         </el-scrollbar>
                     </el-tab-pane>
