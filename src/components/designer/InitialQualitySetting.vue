@@ -40,7 +40,7 @@ const emits = defineEmits<{
 
 const initQuality = computed({
     get() { return props.modelValue },
-    set(v: number) { emits('update:modelValue', v) }
+    set(v: number) { emits('update:modelValue', v ?? 0) }
 })
 
 const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
@@ -51,6 +51,7 @@ const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
     })
 ))
 const inputType = ref<'manully' | 'ingredient'>(props.item.id == -1 ? 'manully' : 'ingredient')
+const manullyInput = computed(() => props.item.id != -1 && inputType.value != 'manully')
 const items = ref<{ item: Item, amount: number, hqAmount: number }[]>([])
 
 watchEffect(async () => {
@@ -86,13 +87,14 @@ watchEffect(() => {
                 </el-radio-group>
             </el-form-item>
             <el-form-item :label="$t('initial-quality')">
-                <el-input-number :disabled="props.item.id != -1 && inputType != 'manully'" v-model="initQuality" :min="0"
-                    :max="recipe.quality" :step-strictly="true" />
+                <el-input-number v-model="initQuality" :readonly="manullyInput" :controls="!manullyInput" :min="0" :max="recipe.quality"
+                    value-on-clear="min" :step-strictly="true" />
             </el-form-item>
             <template v-if="props.item.id != -1 && inputType == 'ingredient'">
                 <el-form-item v-for="row in items" :label="row.item.name">
                     <el-button-group v-if="row.item.can_be_hq" class="ml-4">
-                        <el-button :icon="ArrowUp" size="small" :disabled="row.hqAmount <= 0" @click="row.hqAmount -= 1">
+                        <el-button :icon="ArrowUp" size="small" :disabled="row.hqAmount <= 0"
+                            @click="row.hqAmount -= 1">
                             {{ $t('nq') }} {{ row.amount - row.hqAmount }}
                         </el-button>
                         <el-button size="small" :disabled="row.hqAmount >= row.amount" @click="row.hqAmount += 1">
