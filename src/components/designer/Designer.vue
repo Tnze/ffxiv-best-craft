@@ -279,7 +279,7 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                 <div class="action-queue">
                     <ActionQueue :job="displayJob" v-model:list="activeSeq.slots" :solver-result="solverResult.slots"
                         :preview-solver="previewSolver" :err-list="activeSeq.errors"
-                        :loading-solver-result="isReadingSolverDisplay" />
+                        :loading-solver-result="isReadingSolverDisplay" clearable />
                 </div>
                 <el-tabs class="above-tabs" v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top">
                     <el-tab-pane :label="$t('init-quality')" name="init-quality" class="multi-function-area">
