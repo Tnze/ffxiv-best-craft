@@ -61,5 +61,9 @@ export default defineStore('designer', {
         deleteRotation(i: number) {
             this.rotations.staged.splice(i, 1)
         },
+
+        clearRotations() {
+            this.rotations.staged.length = 0
+        },
     }
 })

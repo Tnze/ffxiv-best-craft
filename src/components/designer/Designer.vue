@@ -151,10 +151,6 @@ function loadSeq(seq: Sequence) {
     activeSeq.slots.splice(0, length, ...seq.slots);
     activeSeq.maxid = seq.maxid;
 }
-function clearSeq() {
-    activeSeq.slots.splice(0);
-    activeSeq.maxid = 0;
-}
 
 // Solver result
 const solverResult = reactive<Sequence>({
@@ -313,8 +309,8 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                                 <el-button @click="saveSequence(true)" :icon="Bottom">
                                     {{ $t('save-workspace') }}
                                 </el-button>
-                                <el-button @click="clearSeq" :icon="Close">
-                                    {{ $t('clear-workspace') }}
+                                <el-button @click="store.clearRotations" :icon="Close">
+                                    {{ $t('clear-staged') }}
                                 </el-button>
                                 <el-checkbox-button v-model:model-value="previewSolver"
                                     v-if="solverResult.slots.length > 0">
@@ -453,7 +449,7 @@ staged = 暂存区
 analyzer = 分析器
 
 save-workspace = 暂存
-clear-workspace = 清空
+clear-staged = 清空
 apply-solver = 应用求解结果
 
 number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
@@ -484,7 +480,7 @@ staged = Staged
 analyzer = Analyzer
 
 save-workspace = Save
-clear-workspace = Clear
+clear-staged = Clear
 apply-solver = Apply solver result
 
 number-of-macros-is-zero = Number of macros is 0. Continue?
