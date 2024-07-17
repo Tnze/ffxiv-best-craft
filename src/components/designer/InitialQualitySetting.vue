@@ -35,7 +35,6 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     (e: 'update:modelValue', value: number): void
-    (e: 'update:open', value: boolean): void
 }>()
 
 const initQuality = computed({
