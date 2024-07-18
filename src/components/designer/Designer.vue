@@ -200,7 +200,7 @@ function saveSequence(isManual: boolean) {
         errors: queue.errors,
         source: isManual ? SequenceSource.Manual : SequenceSource.AutoSave,
     });
-    activeTab.value = 'staged';
+    activeTab.value = 'store';
 }
 
 const displayedStatus = computed(() => {
@@ -303,14 +303,14 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                                 @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
                         </el-scrollbar>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('staged')" name="staged" class="multi-function-area">
+                    <el-tab-pane :label="$t('store')" name="store" class="multi-function-area">
                         <el-scrollbar class="savedqueue-list">
                             <el-button-group>
                                 <el-button @click="saveSequence(true)" :icon="Bottom">
                                     {{ $t('save-workspace') }}
                                 </el-button>
                                 <el-button @click="store.clearRotations" :icon="Close">
-                                    {{ $t('clear-staged') }}
+                                    {{ $t('clear-store') }}
                                 </el-button>
                                 <el-checkbox-button v-model:model-value="previewSolver"
                                     v-if="solverResult.slots.length > 0">
@@ -441,15 +441,15 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
 </style>
 
 <fluent locale="zh-CN">
-solvers = 求解器
-export-macro = 导出宏
+solvers = 求解
+export-macro = 导出
 attributes-enhance = 食药&装备
 init-quality = 初期品质
-staged = 暂存区
-analyzer = 分析器
+store = 储存
+analyzer = 分析
 
 save-workspace = 暂存
-clear-staged = 清空
+clear-store = 清空
 apply-solver = 应用求解结果
 
 number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
@@ -476,11 +476,11 @@ solvers = Solvers
 export-macro = Export
 attributes-enhance = Medicines & Meals
 init-quality = Quality
-staged = Staged
+store = Store
 analyzer = Analyzer
 
 save-workspace = Save
-clear-staged = Clear
+clear-store = Clear
 apply-solver = Apply solver result
 
 number-of-macros-is-zero = Number of macros is 0. Continue?
