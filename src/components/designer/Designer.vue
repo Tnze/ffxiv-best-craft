@@ -254,7 +254,7 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
         errors,
         source: solverName,
     });
-    activeTab.value = 'staged';
+    activeTab.value = 'store';
 }
 </script>
 
