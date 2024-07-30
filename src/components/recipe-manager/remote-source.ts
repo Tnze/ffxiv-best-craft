@@ -98,6 +98,7 @@ export class XivApiRecipeSource {
             mode: 'cors'
         })
         let data: XivapiRecipeResult = await resp.json()
+        this.checkRespError(data)
         return {
             results: data.Results.map(v => <RecipeInfo>{
                 id: v.ID,
@@ -133,6 +134,7 @@ export class XivApiRecipeSource {
             mode: 'cors'
         })
         const data = await resp.json()
+        this.checkRespError(data)
         for (const n of nums) {
             const obj = {
                 ingredient_id: data[`ItemIngredient${n}TargetID`] as number,
@@ -160,7 +162,8 @@ export class XivApiRecipeSource {
             method: 'GET',
             mode: 'cors'
         })
-        const data = await resp.json()
+        const data = await resp.json();
+        this.checkRespError(data)
         return {
             stars: data.Stars,
             class_job_level: data.ClassJobLevel,
@@ -192,6 +195,7 @@ export class XivApiRecipeSource {
             mode: 'cors'
         })
         let data: XivapiItemResult = await resp.json()
+        this.checkRespError(data)
         return {
             id: data.ID,
             name: data.Name,
@@ -212,6 +216,7 @@ export class XivApiRecipeSource {
             mode: 'cors'
         })
         const data = await resp.json()
+        this.checkRespError(data)
         return data.Results.map((v: any) => <CraftType>{
             id: v.ID,
             name: v.Name,
@@ -227,6 +232,7 @@ export class XivApiRecipeSource {
     }
     async mealsTable(page: number): Promise<DataSourceResult<Enhancer>> {
         const data = await this.getItems(page, Meals)
+        this.checkRespError(data)
         return {
             totalPages: data.Pagination.PageTotal,
             results: data.Results.flatMap(this.bonusesToEnhancer)
@@ -245,7 +251,9 @@ export class XivApiRecipeSource {
             mode: 'cors',
             body: queryBody(categoryID)
         })
-        return resp.json()
+        const data = resp.json()
+        this.checkRespError(data)
+        return data
     }
 
     private bonusesToEnhancer(item: any): Enhancer[] {
@@ -270,6 +278,13 @@ export class XivApiRecipeSource {
                 cp_max: Bonuses.CP?.MaxHQ,
             }
         ]
+    }
+
+    private checkRespError(data: any) {
+        if (data.Error === true) {
+            console.error(data);
+            throw data.Message ?? data.Subject ?? "Remote Error" 
+        }
     }
 }
 
