@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -68,31 +68,36 @@ export class XivApiRecipeSource {
 
     async recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult> {
         const params: Record<string, string> = {
-            'indexes': 'Recipe',
             'page': String(page),
-            'columns': 'ID,Icon,ItemResult.Name,ItemResult.ID,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable.ID,RequiredCraftsmanship,RequiredControl,CanHq'
+            'columns': 'ID,Icon,ItemResult.Name,ItemResult.ID,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable.ID,RequiredCraftsmanship,RequiredControl,CanHq',
         };
-
-        // String?
-        if (searchName !== undefined) {
-            params['string'] = searchName;
-        }
-
-        // Filters?
-        const filters: string[] = []
-        if (rlv != undefined) {
-            filters.push(`RecipeLevelTable.ID=${rlv}`)
-        }
-        if (craftTypeId != undefined) {
-            filters.push(`CraftType.ID=${craftTypeId}`)
-        }
-        if (filters.length > 0) {
-            params['filters'] = filters.join(',')
-        }
-
         const query = new URLSearchParams(params)
-        if (this.language != undefined) query.set('language', this.language)
-        const url = new URL('search', this.base).toString() + '?' + query.toString();
+        let url: string;
+        if (searchName || rlv || craftTypeId) {
+            query.set('indexes', 'Recipe')
+            // String?
+            if (searchName !== undefined) {
+                query.set('string', searchName);
+            }
+            // Filters?
+            const filters: string[] = []
+            if (rlv != undefined) {
+                filters.push(`RecipeLevelTable.ID=${rlv}`)
+            }
+            if (craftTypeId != undefined) {
+                filters.push(`CraftType.ID=${craftTypeId}`)
+            }
+            if (filters.length > 0) {
+                query.set('filters', filters.join(','))
+            }
+            // Language?
+            if (this.language != undefined) {
+                query.set('language', this.language)
+            }
+            url = new URL('search', this.base).toString() + '?' + query.toString();
+        } else {
+            url = new URL('Recipe', this.base).toString() + '?' + query.toString();
+        }
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors'
@@ -100,7 +105,7 @@ export class XivApiRecipeSource {
         let data: XivapiRecipeResult = await resp.json()
         this.checkRespError(data)
         return {
-            results: data.Results.map(v => <RecipeInfo>{
+            results: data.Results.filter(v => v.ID != null).map(v => <RecipeInfo>{
                 id: v.ID,
                 rlv: v.RecipeLevelTable.ID,
                 item_id: v.ItemResult.ID,
@@ -283,7 +288,7 @@ export class XivApiRecipeSource {
     private checkRespError(data: any) {
         if (data.Error === true) {
             console.error(data);
-            throw data.Message ?? data.Subject ?? "Remote Error" 
+            throw data.Message ?? data.Subject ?? "Remote Error"
         }
     }
 }
