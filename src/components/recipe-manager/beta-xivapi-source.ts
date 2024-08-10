@@ -293,7 +293,7 @@ export class BetaXivApiRecipeSource {
         const enh = <Enhancer>{ name };
         const enhHq = <Enhancer>{ name: name + ' HQ' };
         for (let i = 0; i < 3; i++) {
-            switch (itemFood.BaseParam[i].row_id) {
+            switch (itemFood['BaseParam@as(raw)'][i].row_id) {
                 case 11: // CP
                     enh.cp = itemFood.Value[i]
                     enh.cp_max = itemFood.Max[i]

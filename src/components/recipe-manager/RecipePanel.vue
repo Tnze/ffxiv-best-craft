@@ -43,7 +43,7 @@ const pagination = reactive({
     Page: 1,
     PageTotal: 1
 })
-let infiniteRecipeNext: (() => Promise<RecipesSourceResult>) | undefined
+const infiniteRecipeNext = ref<() => Promise<RecipesSourceResult>>()
 const displayTable = ref<RecipeInfo[]>([])
 const isRecipeTableLoading = ref(false)
 const compactLayout = useMediaQuery('screen and (max-width: 500px)')
@@ -68,7 +68,7 @@ async function updateRecipePage(dataSource: DataSource, pageNumber: number, sear
             displayTable.value = results
             pagination.PageTotal = totalPages
             loadRecipeTableResult = null
-            infiniteRecipeNext = next;
+            infiniteRecipeNext.value = next;
         }
     } catch (e: any) {
         ElMessage.error(String(e))
@@ -79,19 +79,19 @@ async function updateRecipePage(dataSource: DataSource, pageNumber: number, sear
 }
 
 async function infiniteRecipeLoad() {
-    if (infiniteRecipeNext == undefined) {
+    if (infiniteRecipeNext.value == undefined) {
         return;
     }
     let timer = setTimeout(() => isRecipeTableLoading.value = true, 20)
     try {
-        const promise = infiniteRecipeNext();
+        const promise = infiniteRecipeNext.value();
         loadRecipeTableResult = promise;
         let { results, totalPages, next } = await promise
         if (loadRecipeTableResult == promise) {
-            displayTable.value.push(...results)
+            displayTable.value = displayTable.value.concat(results)
             pagination.PageTotal = totalPages
             loadRecipeTableResult = null
-            infiniteRecipeNext = next;
+            infiniteRecipeNext.value = next;
         }
     } catch (e: any) {
         ElMessage.error(String(e))
@@ -246,7 +246,8 @@ const selectRecipeRow = async (row: RecipeInfo) => {
         </el-form>
         <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row
             @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%"
-            v-el-table-infinite-scroll="infiniteRecipeLoad">
+            v-el-table-infinite-scroll="infiniteRecipeLoad" :infinite-scroll-disabled="infiniteRecipeNext == undefined"
+            :infinite-scroll-immediate="false" :infinite-scroll-distance="100">
             <el-table-column prop="id" label="ID" :width="compactLayout ? undefined : 100" />
             <el-table-column prop="rlv" :label="$t('recipe-level')" :width="compactLayout ? undefined : 100" />
             <el-table-column prop="job" :label="$t('type')" :width="compactLayout ? undefined : 200" />
