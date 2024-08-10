@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -18,12 +18,13 @@ import { defineStore } from 'pinia'
 import { CafeMakerApiBase, XivApiRecipeSource, XivapiBase } from '@/components/recipe-manager/remote-source'
 import { DataSource } from '@/components/recipe-manager/source'
 import { YYYYGamesApiBase, WebSource } from '@/components/recipe-manager/web-source'
+import { BetaXivApiRecipeSource, BetaXivapiBase } from '@/components/recipe-manager/beta-xivapi-source'
 
 
 export default defineStore('settings', {
     state: () => ({
         language: 'system',
-        dataSource: <'local' | "yyyy.games" | 'xivapi' | 'cafe'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'xivapi' : 'xivapi'),
+        dataSource: <'local' | "yyyy.games" | 'xivapi' | 'cafe' | 'beta-xivapi'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'xivapi' : 'xivapi'),
         dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined
     }),
     getters: {
@@ -35,8 +36,9 @@ export default defineStore('settings', {
         async getDataSource(): Promise<DataSource> {
             let dataSources: Record<string, () => DataSource> = {
                 'yyyy.games': () => new WebSource(YYYYGamesApiBase),
-                'xivapi': () => new XivApiRecipeSource(XivapiBase, this.dataSourceLang),
+                'xivapi-old': () => new XivApiRecipeSource(XivapiBase, this.dataSourceLang),
                 'cafe': () => new XivApiRecipeSource(CafeMakerApiBase),
+                'xivapi': () => new BetaXivApiRecipeSource(BetaXivapiBase)
             }
             let defaultSource: () => DataSource = dataSources['xivapi']
             if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
@@ -53,7 +55,7 @@ export default defineStore('settings', {
         loadSettings(localSettings: any) {
             this.$patch(localSettings)
             this.language = localSettings.language
-            this.dataSource = 'xivapi' // localSettings.dataSource
+            this.dataSource = localSettings.dataSource
             if (localSettings.dataSourceLang)
                 this.dataSourceLang = localSettings.dataSourceLang
             else {
@@ -66,9 +68,6 @@ export default defineStore('settings', {
         },
         fromJson(json: string) {
             this.$patch(JSON.parse(json))
-            if (this.dataSource !== "xivapi") {
-                this.dataSource = "xivapi"
-            }
         },
     }
 })

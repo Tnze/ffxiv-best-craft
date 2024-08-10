@@ -20,7 +20,7 @@
 import { Ref, computed, inject, markRaw, provide, reactive, ref, watch } from "vue";
 import { ElScrollbar, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
 import { Bottom, Close } from "@element-plus/icons-vue";
-import { useMediaQuery } from "@vueuse/core";
+import { useMediaQuery, useElementSize, useCssVar } from "@vueuse/core";
 
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
@@ -56,6 +56,9 @@ const store = useDesignerStore()
 const { $t } = useFluent()
 const displayJob = inject(displayJobKey) as Ref<Jobs>
 const foldMultiFunctionArea = useMediaQuery('screen and (max-width: 480px)')
+
+const actionQueueElem = ref()
+const { height: actionQueueHeight } = useElementSize(actionQueueElem)
 
 // 食物和药水效果
 const attributesEnhancers = ref<Enhancer[]>([]);
@@ -272,12 +275,13 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
             </el-scrollbar>
 
             <div class="above-right-panel" style="overflow: hidden;">
-                <div class="action-queue">
+                <div ref="actionQueueElem" class="action-queue">
                     <ActionQueue :job="displayJob" v-model:list="activeSeq.slots" :solver-result="solverResult.slots"
                         :preview-solver="previewSolver" :err-list="activeSeq.errors"
                         :loading-solver-result="isReadingSolverDisplay" clearable />
                 </div>
-                <el-tabs class="above-tabs" v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top">
+                <el-tabs class="above-tabs" v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top"
+                    :style="`height: calc(100% - ${actionQueueHeight + 10}px)`">
                     <el-tab-pane :label="$t('init-quality')" name="init-quality" class="multi-function-area">
                         <el-scrollbar style="flex: auto; padding-left: 30px;">
                             <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" :item="item"
@@ -344,11 +348,8 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
 }
 
 .above-tabs {
-    height: 100%;
+    /* height: 100%; */
     user-select: none;
-
-    display: flex;
-    flex-direction: column;
 }
 
 .main-page {
@@ -419,7 +420,7 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
 }
 
 .savedqueue-list {
-    margin: 5px 0;
+    margin: 0;
     flex: auto;
 }
 

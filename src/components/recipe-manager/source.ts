@@ -41,7 +41,8 @@ export enum DataSourceType {
 
 export interface DataSourceResult<T> {
     results: T[],
-    totalPages: number
+    totalPages: number,
+    next?(): Promise<DataSourceResult<T>>
 }
 
 export type RecipesSourceResult = DataSourceResult<RecipeInfo>

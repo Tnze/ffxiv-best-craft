@@ -20,11 +20,11 @@
 import { ref, reactive, watch, onMounted, onActivated, computed } from 'vue'
 import { ElDescriptions, ElDescriptionsItem, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElForm, ElFormItem, ElSelect, ElOption, ElInputNumber } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
-import { Jobs, newRecipe, Recipe, RecipeInfo } from '@/libs/Craft'
+import { newRecipe, Recipe, RecipeInfo } from '@/libs/Craft'
 import { useRouter } from 'vue-router';
 import { useFluent } from 'fluent-vue';
 import { selectRecipe } from './common';
-import { CraftType, DataSource, DataSourceType } from './source';
+import { CraftType, DataSource, DataSourceType, RecipesSourceResult } from './source';
 import useSettingsStore from '@/stores/settings'
 import { useMediaQuery } from '@vueuse/core';
 
@@ -43,6 +43,7 @@ const pagination = reactive({
     Page: 1,
     PageTotal: 1
 })
+let infiniteRecipeNext: (() => Promise<RecipesSourceResult>) | undefined
 const displayTable = ref<RecipeInfo[]>([])
 const isRecipeTableLoading = ref(false)
 const compactLayout = useMediaQuery('screen and (max-width: 500px)')
@@ -62,11 +63,35 @@ async function updateRecipePage(dataSource: DataSource, pageNumber: number, sear
     try {
         let promise = dataSource.recipeTable(pageNumber, searching, filterRecipeLevel.value, filterCraftType.value)
         loadRecipeTableResult = promise
-        let { results, totalPages } = await promise
+        let { results, totalPages, next } = await promise
         if (loadRecipeTableResult == promise) {
             displayTable.value = results
             pagination.PageTotal = totalPages
             loadRecipeTableResult = null
+            infiniteRecipeNext = next;
+        }
+    } catch (e: any) {
+        ElMessage.error(String(e))
+    } finally {
+        clearTimeout(timer)
+        isRecipeTableLoading.value = false
+    }
+}
+
+async function infiniteRecipeLoad() {
+    if (infiniteRecipeNext == undefined) {
+        return;
+    }
+    let timer = setTimeout(() => isRecipeTableLoading.value = true, 20)
+    try {
+        const promise = infiniteRecipeNext();
+        loadRecipeTableResult = promise;
+        let { results, totalPages, next } = await promise
+        if (loadRecipeTableResult == promise) {
+            displayTable.value.push(...results)
+            pagination.PageTotal = totalPages
+            loadRecipeTableResult = null
+            infiniteRecipeNext = next;
         }
     } catch (e: any) {
         ElMessage.error(String(e))
@@ -181,7 +206,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
             <br />
             <span>
                 {{ isNormalRecipe
-                    ? $t('confirm-select', { itemName: selectedRecipe?.[1].item_name })
+                    ? $t('confirm-select', { itemName: selectedRecipe?.[1].item_name || '' })
                     : $t('confirm-select2')
                 }}
             </span>
@@ -220,13 +245,14 @@ const selectRecipeRow = async (row: RecipeInfo) => {
             </el-form-item>
         </el-form>
         <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row
-            @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%">
+            @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%"
+            v-el-table-infinite-scroll="infiniteRecipeLoad">
             <el-table-column prop="id" label="ID" :width="compactLayout ? undefined : 100" />
             <el-table-column prop="rlv" :label="$t('recipe-level')" :width="compactLayout ? undefined : 100" />
             <el-table-column prop="job" :label="$t('type')" :width="compactLayout ? undefined : 200" />
             <el-table-column prop="item_name" :label="$t('name')" />
         </el-table>
-        <el-pagination layout="prev, pager, next" v-model:current-page="pagination.Page"
+        <el-pagination v-if="pagination.PageTotal > 1" layout="prev, pager, next" v-model:current-page="pagination.Page"
             :page-count="pagination.PageTotal" />
     </div>
 </template>

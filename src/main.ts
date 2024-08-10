@@ -19,6 +19,7 @@ import { createPinia } from 'pinia'
 import { fluent } from './fluent'
 import { ElLoading } from "element-plus";
 import { router } from './router'
+import ElTableInfiniteScroll from "el-table-infinite-scroll";
 
 import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'element-plus/es/components/message/style/css'
@@ -33,4 +34,5 @@ createApp(App)
     .use(pinia)
     .use(router)
     .use(fluent)
+    .use(ElTableInfiniteScroll)
     .mount('#app')
