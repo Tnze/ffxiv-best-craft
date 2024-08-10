@@ -36,7 +36,7 @@ export class BetaXivApiRecipeSource {
 
     async recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult> {
         const params: Record<string, string> = {
-            'fields': 'Icon,ItemResult.Name,ItemResult@as(raw),CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq',
+            'fields': 'Icon,ItemResult.Name,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq',
             // 'limit': "100",
         };
         const query = new URLSearchParams(params)
@@ -99,8 +99,8 @@ export class BetaXivApiRecipeSource {
     private static recipeRowsToRecipe(v: any): RecipeInfo {
         return {
             id: assert(v?.row_id, "recipe_id"),
-            rlv: assert(v?.fields?.RecipeLevelTable, "rlv"),
-            item_id: assert(v?.fields?.ItemResult, "item_id"),
+            rlv: assert(v?.fields['RecipeLevelTable@as(raw)'], "rlv"),
+            item_id: assert(v?.fields?.ItemResult.row_id, "item_id"),
             item_name: assert(v?.fields?.ItemResult?.fields.Name, "item_name"),
             job: assert(v?.fields?.CraftType?.fields?.Name, "job"),
 
@@ -131,12 +131,13 @@ export class BetaXivApiRecipeSource {
         if (!resp.ok) {
             this.checkRespError(data)
         }
-
-        const arrayLen = Math.min(data.fields.Ingredient.length, data.fields.AmountIngredient.length)
+        const Ingredient = data.fields['Ingredient@as(raw)']
+        const AmountIngredient = data.fields.AmountIngredient
+        const arrayLen = Math.min(Ingredient.length, AmountIngredient.length)
         for (let i = 0; i < arrayLen; i++) {
             const obj = <ItemWithAmount>{
-                ingredient_id: data.fields.Ingredient[i],
-                amount: data.fields.AmountIngredient[i],
+                ingredient_id: Ingredient[i],
+                amount: AmountIngredient[i],
             }
             if (obj.amount > 0) {
                 let record = needs.get(obj.ingredient_id)

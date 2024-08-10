@@ -20,7 +20,7 @@
 import { Ref, computed, inject, markRaw, provide, reactive, ref, watch } from "vue";
 import { ElScrollbar, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
 import { Bottom, Close } from "@element-plus/icons-vue";
-import { useMediaQuery, useElementSize, useCssVar } from "@vueuse/core";
+import { useMediaQuery, useElementSize } from "@vueuse/core";
 
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
