@@ -176,8 +176,8 @@ const arcLabel = d3.arc<d3.PieArcDatum<[string, number]>>()
 </style>
 
 <fluent locale="zh-CN">
-run-simulations = 运行模拟
-run-n-times = 运行 { $n } 次模拟
+run-simulations = 运行仿真
+run-n-times = 运行 { $n } 次仿真
 action-queue = 技能队列
 ignore-errors = 忽略错误
 

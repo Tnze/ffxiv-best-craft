@@ -69,11 +69,11 @@ fn find_craftsmanship_range(
         status.attributes.craftsmanship = cm;
         status = simulate(status, actions);
         if status.step != final_status.step {
-            break;
+            return (low, high);
         }
         high = Some(cm);
     }
-    (low, high)
+    (low, None)
 }
 
 fn find_control_range(
