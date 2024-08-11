@@ -93,8 +93,8 @@ pub fn simulate_one_step(
     }
     if !matches!(action, Actions::FinalAppraisal | Actions::HeartAndSoul) {
         status.condition = match status.condition {
-            Condition::Good if force_success => Condition::Normal,
-            Condition::Poor if force_success => Condition::Excellent,
+            Condition::Good if !force_success => Condition::Normal,
+            Condition::Excellent if !force_success => Condition::Poor,
             Condition::GoodOmen => Condition::Good,
             _ => {
                 ConditionIterator::new(
