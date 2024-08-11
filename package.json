@@ -11,6 +11,7 @@
         "build-web": "wasm-pack build --release ./src-wasm --out-dir=../pkg-wasm --target bundler && VITE_BESTCRAFT_TARGET=web vite build"
     },
     "dependencies": {
+        "@element-plus/icons-vue": "^2.3.1",
         "@fluent/bundle": "0.18.0",
         "@tauri-apps/api": "1.6.0",
         "@vueuse/core": "10.11.1",
@@ -37,6 +38,5 @@
         "vite-plugin-top-level-await": "^1.4.4",
         "vite-plugin-wasm": "^3.3.0",
         "vue-tsc": "2.0.29"
-    },
-    "packageManager": "yarn@4.3.1"
+    }
 }
