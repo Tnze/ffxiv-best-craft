@@ -41,12 +41,11 @@ const dialogVisible = ref(false)
 const raphaelSolveIsSolving = ref(false)
 
 // Solver options
-const useManipulation = ref(true)
-const useTrainedEye = ref(false)
 const backloadProgress = ref(false)
+const minimizeSteps = ref(false)
 
 function runRaphaelSolver() {
-    emits('runSimpleSolver', SequenceSource.RaphaelSolver, raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value, useTrainedEye.value, backloadProgress.value))
+    emits('runSimpleSolver', SequenceSource.RaphaelSolver, raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, backloadProgress.value, minimizeSteps.value))
 }
 </script>
 
@@ -64,9 +63,8 @@ function runRaphaelSolver() {
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
-        <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
-        <el-checkbox v-model="useTrainedEye" :label="$t('trained-eye')" />
         <el-checkbox v-model="backloadProgress" :label="$t('backload-progress')" />
+        <el-checkbox v-model="minimizeSteps" :label="$t('minimize-steps')" />
     </el-space>
     <div style="margin-top: 10px;">
         <el-button @click="runRaphaelSolver" type="primary" :loading="raphaelSolveIsSolving">
@@ -88,6 +86,7 @@ simple-solver-solving = 正在求解中
 error-with = 错误：{ $err }
 
 backload-progress = 后置作业技能
+minimize-steps = 最小化步数
 
 solver-info-title = Raphael 求解器
 solver-info =
@@ -109,6 +108,7 @@ simple-solver-solving = Solving
 error-with = Error: { $err }
 
 backload-progress = Backload Progress Actions
+minimize-steps = Minimize Steps
 
 solver-info-title = Raphael FFXIV Crafting Solver
 solver-info =

@@ -7,8 +7,10 @@
         "dev": "VITE_BESTCRAFT_TARGET=tauri vite",
         "build": "VITE_BESTCRAFT_TARGET=tauri vite build",
         "preview": "vite preview",
-        "dev-web": "wasm-pack build --release ./src-wasm --out-dir=../pkg-wasm --target bundler && VITE_BESTCRAFT_TARGET=web vite dev",
-        "build-web": "wasm-pack build --release ./src-wasm --out-dir=../pkg-wasm --target bundler && VITE_BESTCRAFT_TARGET=web vite build"
+        "predev-web": "wasm-pack build --release ./src-wasm --out-dir=../pkg-wasm --target bundler --no-opt",
+        "dev-web": "VITE_BESTCRAFT_TARGET=web vite dev",
+        "prebuild-web": "wasm-pack build --release ./src-wasm --out-dir=../pkg-wasm --target bundler",
+        "build-web": "VITE_BESTCRAFT_TARGET=web vite build"
     },
     "dependencies": {
         "@element-plus/icons-vue": "^2.3.1",
