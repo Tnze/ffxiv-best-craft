@@ -16,14 +16,16 @@
 
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-const Simulator = () => import('./pages/Simulator.vue')
+const Simulator = () => import('./pages/Simulator.vue');
+const CrafterAttributes = () => import('./pages/CrafterAttributes.vue');
 
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         { path: '/', redirect: '/simulator' },
-        { path: '/simulator', component: Simulator },
+        { path: '/simulator', name: 'simulator', component: Simulator },
+        { path: '/crafter-attributes', name: 'attributes', component: CrafterAttributes },
     ]
-})
+});
 
 export { router }

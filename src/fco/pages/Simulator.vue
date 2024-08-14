@@ -17,13 +17,12 @@
 -->
 
 <script setup lang="ts">
-import { Actions, Jobs } from '@/libs/Craft';
 
 import { NGrid, NGi, NCheckbox, NSelect, NCard, NTabs, NTabPane } from 'naive-ui';
 import CraftingState from '../components/CraftingState.vue';
 import Attributes from '../components/Attributes.vue';
-
 import ActionQueue from '@/components/designer/ActionQueue.vue';
+import { Actions, Jobs } from '@/libs/Craft';
 
 const slots = [
     { id: 0, action: Actions.TrainedEye },

@@ -18,27 +18,39 @@
 
 <script setup lang="ts">
 import { NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter, NConfigProvider, darkTheme } from 'naive-ui';
+import Navicator from './components/Navicator.vue';
 </script>
 
 <template>
     <n-config-provider :theme="darkTheme" abstract>
         <n-layout class="page" style="height: 100%;">
-            <n-layout-header style="padding: 20px;">
-                Work in Progress
+            <n-layout-header style="padding: 5px;">
+                <Navicator />
             </n-layout-header>
-            <n-layout-content style="margin: 30px 20px;">
+            <n-layout-content class="content">
                 <router-view v-slot="{ Component }">
-                    <keep-alive>
-                        <component :is="Component" />
-                    </keep-alive>
+                    <component :is="Component" />
                 </router-view>
             </n-layout-content>
-            <n-layout-footer style="padding: 20px;">
+            <n-layout-footer class="info-text">
                 {{ $t('copyright-notices') }}
             </n-layout-footer>
         </n-layout>
     </n-config-provider>
 </template>
+
+<style scoped>
+.content {
+    margin: 30px 20px;
+}
+
+.info-text {
+    padding: 20px;
+    align-self: center;
+    margin-bottom: 5px;
+    white-space: pre-line;
+}
+</style>
 
 <style>
 #app {
@@ -46,5 +58,3 @@ import { NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter, NConfigProvider,
     margin: 0;
 }
 </style>
-
-<style scoped></style>

@@ -17,25 +17,12 @@
 -->
 
 <script setup lang="ts">
-import { NCard, NProgress, NDivider, NFlex } from 'naive-ui';
+import { NTabs, NTabPane } from 'naive-ui';
+import { Jobs } from '@/libs/Craft';
 </script>
 
 <template>
-    <n-card>
-        <template #header>
-            Lv.100 铸甲匠
-        </template>
-        <span>{{ $t('progress') }}</span>
-        <n-progress type="line" :height="24" :percentage="100">6600 / 6600</n-progress>
-        <span>{{ $t('quality') }}</span>
-        <n-progress type="line" :height="24" :percentage="70">7000 / 12000</n-progress>
-        <span>{{ $t('craft-point') }}</span>
-        <n-progress type="line" :height="24" :percentage="70">563 / 563</n-progress>
-        <n-divider />
-        <n-flex justify="space-between">
-            <span>耐久度 70/70</span>
-            <span>优质率 0%</span>
-            <span>成功率 0%</span>
-        </n-flex>
-    </n-card>
+    <n-tabs>
+        <n-tab-pane v-for="job in Jobs" :name="job" :label="$t(job)"></n-tab-pane>
+    </n-tabs>
 </template>

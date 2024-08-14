@@ -17,25 +17,39 @@
 -->
 
 <script setup lang="ts">
-import { NCard, NProgress, NDivider, NFlex } from 'naive-ui';
+import { h } from 'vue';
+import { RouterLink } from 'vue-router';
+import { NGradientText, NMenu } from 'naive-ui';
+import type { MenuOption } from 'naive-ui';
+
+
+const menuOptions: MenuOption[] = [
+    {
+        key: 'simulator',
+        label: () => h(
+            RouterLink,
+            { to: { name: 'simulator' } },
+            { default: () => '模拟器' }
+        ),
+    },
+    {
+        key: 'attributes',
+        label: () => h(
+            RouterLink,
+            { to: { name: 'attributes' } },
+            { default: () => '状态参数' }
+        ),
+    },
+];
+
 </script>
 
 <template>
-    <n-card>
-        <template #header>
-            Lv.100 铸甲匠
-        </template>
-        <span>{{ $t('progress') }}</span>
-        <n-progress type="line" :height="24" :percentage="100">6600 / 6600</n-progress>
-        <span>{{ $t('quality') }}</span>
-        <n-progress type="line" :height="24" :percentage="70">7000 / 12000</n-progress>
-        <span>{{ $t('craft-point') }}</span>
-        <n-progress type="line" :height="24" :percentage="70">563 / 563</n-progress>
-        <n-divider />
-        <n-flex justify="space-between">
-            <span>耐久度 70/70</span>
-            <span>优质率 0%</span>
-            <span>成功率 0%</span>
-        </n-flex>
-    </n-card>
+    <n-menu mode="horizontal" :options="menuOptions" />
 </template>
+
+<style scoped>
+/* .nav {
+    display: grid;
+} */
+</style>
