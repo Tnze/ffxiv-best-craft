@@ -1,4 +1,4 @@
-name: "publish"
+name: "deploy"
 on:
   push:
     branches:
@@ -36,16 +36,18 @@ jobs:
   deploy-web:
     needs: publish-web
     runs-on: ubuntu-latest
-    environment: FTP Deployer
+    environment: SSH Deployer
     steps:
     - name: download files
       uses: actions/download-artifact@v3
       with:
         name: bestcraft-dist
-    - name: sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+    - name: ssh deploy
+      uses: easingthemes/ssh-deploy@v5.1.0
       with:
-        server: ${{ vars.FTP_SERVER }}
-        username: ${{ vars.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        ARGS: "-rlzvc -i"
+        SOURCE: "./"
+        REMOTE_HOST: ${{ vars.REMOTE_HOST }}
+        REMOTE_USER: ${{ vars.REMOTE_USER }}
+        TARGET: ${{ vars.TARGET }}
