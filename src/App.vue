@@ -57,7 +57,6 @@ watchEffect(() => {
     const systemLang = preferredLang.value.find(v => languages.has(v))
     lang.value = settingLang ?? systemLang ?? 'zh-CN'
     selectLanguage(lang.value)
-    console.log("language switched to", lang.value)
 })
 
 // Check update
