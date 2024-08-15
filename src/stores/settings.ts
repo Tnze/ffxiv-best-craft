@@ -31,6 +31,8 @@ export default defineStore('settings', {
         toJson(): string {
             return JSON.stringify({
                 language: this.language,
+                dataSource: this.dataSource,
+                dataSourceLang: this.dataSourceLang,
             })
         },
         async getDataSource(): Promise<DataSource> {
