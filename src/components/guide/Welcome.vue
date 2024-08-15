@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ElText, ElButton } from 'element-plus';
+import { ElText, ElButton, ElLink } from 'element-plus';
 import { computed, onActivated } from 'vue';
 import { useFluent } from 'fluent-vue';
 
@@ -67,11 +67,11 @@ const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == "web"
                 {{ $t('feedback') }}
             </el-button>
         </div>
+        <el-link v-if="isWebsite" target="_blank" href="https://beian.miit.gov.cn/" type="info">
+            粤ICP备2021156196号-1
+        </el-link>
         <el-text class="info-text" type="info">
             {{ $t('copyright-notices') }}
-            <template v-if="isWebsite">
-                粤ICP备2021156196号-1
-            </template>
         </el-text>
     </div>
 </template>
