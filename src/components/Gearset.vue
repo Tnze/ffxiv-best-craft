@@ -37,11 +37,6 @@ function setInheritFromDefault(val: string | number | boolean) {
         v.value.value = { ...store.default }
     }
 }
-
-store.$subscribe((mutation, store) => {
-    console.log(store)
-})
-
 </script>
 
 <template>
