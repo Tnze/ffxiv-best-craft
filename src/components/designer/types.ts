@@ -27,8 +27,6 @@ export interface Slot {
 export interface Sequence {
     slots: Slot[];
     maxid: number;
-    status: Status;
-    errors: { pos: number; err: string }[];
     source?: SequenceSource;
 }
 
