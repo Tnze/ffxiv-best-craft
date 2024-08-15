@@ -82,7 +82,7 @@ if (isOnTauri) {
                     <el-option :label="$t('ds-beta-xivapi')" value="xivapi" />
                 </el-select>
             </el-form-item>
-            <el-form-item v-if="store.dataSource == 'xivapi'">
+            <el-form-item v-if="store.dataSource == 'xivapi' || store.dataSource == 'xivapi-old'">
                 <el-select v-model="store.dataSourceLang">
                     <el-option :label="$t('dslang-en')" value="en" />
                     <el-option :label="$t('dslang-ja')" value="ja" />
