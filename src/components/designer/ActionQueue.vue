@@ -23,7 +23,7 @@ import { ElIcon } from 'element-plus';
 import { Loading, CircleClose } from "@element-plus/icons-vue";
 
 import { Actions, Jobs } from '@/libs/Craft';
-import { formatDuration } from "@/libs/Solver";
+import { formatDuration } from "@/libs/Utils";
 import Action from './Action.vue'
 
 interface Slot {
@@ -109,8 +109,8 @@ function calcEffect(index: number): 'normal' | 'red-cross' | 'black' {
             <TransitionGroup class="sort-target" type="transition" tag="div"
                 :name="!isDragging ? 'flip-list' : undefined">
                 <div v-for="(element, index) in listBinded" class="list-group-item" :key="element.id">
-                    <Action class="action-icon" :job="job" :action="element.action" :effect="calcEffect(index)"
-                        disabled @click.stop.prevent.right="removeAction(element.id)" @click="removeAction(element.id)"
+                    <Action class="action-icon" :job="job" :action="element.action" :effect="calcEffect(index)" disabled
+                        @click.stop.prevent.right="removeAction(element.id)" @click="removeAction(element.id)"
                         :no-hover="noHover" />
                 </div>
                 <div v-if="!hideSolverResult" v-for="elem in solverAdds" class="list-group-item" :key="elem.id">
@@ -122,7 +122,8 @@ function calcEffect(index: number): 'normal' | 'red-cross' | 'black' {
                         <Loading />
                     </el-icon>
                 </div>
-                <div v-if="clearable && listBinded.length > 0" class="list-group-item following-icon" key="clear-icon" @click="clear">
+                <div v-if="clearable && listBinded.length > 0" class="list-group-item following-icon" key="clear-icon"
+                    @click="clear">
                     <el-icon class="following-icon-inner" :size="19.2">
                         <CircleClose />
                     </el-icon>
