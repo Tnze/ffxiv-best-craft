@@ -21,13 +21,22 @@ import { ElButton, ElSpace, ElText, ElTag, ElIcon, ElButtonGroup } from "element
 import { Delete, Upload, SuccessFilled, WarningFilled, CircleCloseFilled } from "@element-plus/icons-vue";
 import { Sequence } from './types';
 import ActionQueue from "./ActionQueue.vue";
-import { Jobs } from "@/libs/Craft";
-import { computed } from "vue";
+import { Jobs, simulate, SimulateResult, Status } from "@/libs/Craft";
+import { ref, computed, watch, watchEffect } from "vue";
 
 const props = defineProps<{
     seq: Sequence,
+    status?: Status,
     displayJob: Jobs,
 }>()
+
+const simulateResult = ref<SimulateResult>();
+watchEffect(() => {
+    if (props.status) {
+        simulate(props.status, props.seq.slots.map(v => v.action))
+            .then(rst => simulateResult.value = rst);
+    }
+})
 
 const emit = defineEmits<{
     (event: 'load'): void
@@ -35,18 +44,24 @@ const emit = defineEmits<{
 }>()
 
 const color = computed(() => {
-    if (props.seq.status.progress < props.seq.status.recipe.difficulty)
+    const status = simulateResult.value?.status;
+    if (!status)
+        return
+    else if (status.progress < status.recipe.difficulty)
         return '#F56C6C'
-    else if (props.seq.status.quality < props.seq.status.recipe.quality)
+    else if (status.quality < status.recipe.quality)
         return '#E6A23C'
     else
         return '#67C23A'
 })
 
-const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
-    if (props.seq.status.progress < props.seq.status.recipe.difficulty)
+const tagType = computed<"success" | "warning" | "info" | "danger" | undefined>(() => {
+    const status = simulateResult.value?.status;
+    if (!status)
+        return
+    if (status.progress < status.recipe.difficulty)
         return 'danger'
-    else if (props.seq.status.quality < props.seq.status.recipe.quality)
+    else if (status.quality < status.recipe.quality)
         return 'warning'
     else
         return 'success'
@@ -57,7 +72,7 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
     <div class="savedqueue-item">
         <div class="savedqueue-item-right">
             <div class="savedqueue-item-actions">
-                <ActionQueue :job="displayJob" :list="seq.slots" :err-list="seq.errors" disabled />
+                <ActionQueue :job="displayJob" :list="seq.slots" :err-list="simulateResult?.errors" disabled  no-hover />
             </div>
             <div class="savedqueue-item-above">
                 <el-text size="small">
@@ -67,8 +82,12 @@ const tagType = computed<"success" | "warning" | "info" | "danger">(() => {
                             <warning-filled v-else-if="color == '#E6A23C'" />
                             <circle-close-filled v-else />
                         </el-icon>
-                        <el-tag round :type="tagType">{{ $t('quality-tag', { quality: seq.status.quality }) }}</el-tag>
-                        <el-tag round type="info">{{ $t('steps-tag', { steps: seq.status.step }) }}</el-tag>
+                        <el-tag round v-if="simulateResult" :type="tagType">
+                            {{ $t('quality-tag', { quality: simulateResult?.status.quality }) }}
+                        </el-tag>
+                        <el-tag round v-if="simulateResult" type="info">
+                            {{ $t('steps-tag', { steps: simulateResult.status.step ?? seq.slots.length }) }}
+                        </el-tag>
                         <el-tag round type="info" v-if="seq.source">
                             {{ $t('source-tag', { typ: String(seq.source), source: $t(String(seq.source)) }) }}
                         </el-tag>

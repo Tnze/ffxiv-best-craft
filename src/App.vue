@@ -30,6 +30,7 @@ if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
 import Menu from '@/components/Menu.vue';
 import useSettingsStore from '@/stores/settings';
 import useGearsetsStore from '@/stores/gearsets';
+import useDesignerStore from '@/stores/designer';
 import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
 import { useRouter } from 'vue-router';
@@ -38,6 +39,7 @@ const { $t } = useFluent()
 const colorMode = useColorMode()
 const settingStore = useSettingsStore()
 const gearsetsStore = useGearsetsStore()
+const designerStore = useDesignerStore()
 const preferredLang = usePreferredLanguages()
 const bgColor = useCssVar('--app-bg-color', ref(null))
 const bgMainColor = useCssVar('--tnze-main-bg-color', ref(null))
@@ -68,16 +70,17 @@ async function loadStorages() {
         const { Dir, readTextFile } = await pkgTauriFs
         readTextFile("settings.json", { dir: Dir.App }).then(settingStore.fromJson).catch(e => console.error(e))
         readTextFile("gearsets.json", { dir: Dir.App }).then(gearsetsStore.fromJson).catch(e => console.error(e))
+        readTextFile("designer.json", { dir: Dir.App }).then(designerStore.fromJson).catch(e => console.error(e))
     } else {
         const ifNotNullThen = (v: string | null, f: (v: string) => void) => { if (v != null) f(v) }
         ifNotNullThen(window.localStorage.getItem("settings.json"), settingStore.fromJson)
         ifNotNullThen(window.localStorage.getItem("gearsets.json"), gearsetsStore.fromJson)
+        ifNotNullThen(window.localStorage.getItem("designer.json"), designerStore.fromJson)
     }
 }
 loadStorages()
 
-async function writeJson(name: string, val: any) {
-    let jsonStr = JSON.stringify(val)
+async function writeJson(name: string, jsonStr: string) {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         const { Dir, exists, createDir, writeTextFile } = await pkgTauriFs
         try {
@@ -91,8 +94,9 @@ async function writeJson(name: string, val: any) {
         window.localStorage.setItem(name, jsonStr)
     }
 }
-settingStore.$subscribe((_mutation, state) => writeJson('settings.json', state))
-gearsetsStore.$subscribe((_mutation, state) => writeJson('gearsets.json', state))
+settingStore.$subscribe(() => writeJson('settings.json', settingStore.toJson))
+gearsetsStore.$subscribe(() => writeJson('gearsets.json', gearsetsStore.toJson))
+designerStore.$subscribe(() => writeJson('designer.json', designerStore.toJson))
 
 watchEffect(async () => {
     let isDark: boolean | null;

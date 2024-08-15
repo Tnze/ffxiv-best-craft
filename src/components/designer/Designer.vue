@@ -22,7 +22,7 @@ import { ElScrollbar, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, El
 import { Bottom, Close } from "@element-plus/icons-vue";
 import { useMediaQuery, useElementSize } from "@vueuse/core";
 
-import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
+import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements, SimulateResult } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
 import useDesignerStore from '@/stores/designer';
 
@@ -136,9 +136,10 @@ watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => { initSta
 const activeSeq = reactive<Sequence>({
     slots: [],
     maxid: 0,
-    status: initStatus.value,
-    errors: [],
 });
+const activeRst = ref<SimulateResult>()
+simulate(initStatus.value, []).then(v => activeRst.value = v)
+
 provide(activeSeqKey, ref(activeSeq))
 const actions = computed(() => activeSeq.slots.map(slot => slot.action));
 const displayActions = computed(() => {
@@ -159,38 +160,18 @@ function loadSeq(seq: Sequence) {
 const solverResult = reactive<Sequence>({
     slots: [],
     maxid: 0,
-    status: initStatus.value,
-    errors: [],
 });
-watch(() => activeSeq.status, readSolver);
+const solverResultRst = ref<SimulateResult>()
+watch(initStatus, readSolver);
 
 // Saved Sequence
 watch(initStatus, async (newInitStatus) => {
-    // re-simulate all savedQueues
-    const results = await Promise.all(
-        store.rotations.staged.map(({ seq }) => simulate(
-            newInitStatus,
-            seq.slots.map((x) => x.action)
-        ))
-    )
-    store.rotations.staged.forEach(({ seq }, i) => {
-        seq.status = results[i].status;
-        seq.errors = results[i].errors;
-    })
-    store.rotations.staged.sort((a, b) => {
-        const ord = compareStatus(b.seq.status, a.seq.status)
-        return ord != 0 ? ord : a.key - b.key
-    });
-
     // re-simulate activeSeq
-    let result = await simulate(newInitStatus, actions.value);
-    activeSeq.status = result.status;
-    activeSeq.errors = result.errors;
+    activeRst.value = await simulate(newInitStatus, actions.value);
+    store.sortRotations(newInitStatus);
 });
 watch(actions, async (a) => {
-    let result = await simulate(initStatus.value, a);
-    activeSeq.status = result.status;
-    activeSeq.errors = result.errors;
+    activeRst.value = await simulate(initStatus.value, a);
 });
 function saveSequence(isManual: boolean) {
     const queue = previewSolver.value
@@ -199,28 +180,33 @@ function saveSequence(isManual: boolean) {
     store.pushRotation({
         slots: queue.slots.slice(),
         maxid: queue.maxid,
-        status: queue.status,
-        errors: queue.errors,
         source: isManual ? SequenceSource.Manual : SequenceSource.AutoSave,
     });
+    store.sortRotations(initStatus.value);
     activeTab.value = 'store';
 }
 
 const displayedStatus = computed(() => {
     return previewSolver.value && !isReadingSolverDisplay.value && solverResult.slots.length > 0
-        ? solverResult.status
-        : activeSeq.status
+        ? (solverResultRst.value?.status) ?? (activeRst.value?.status) ?? initStatus.value
+        : activeRst.value?.status ?? initStatus.value
 })
-watch(displayedStatus, (status) => {
+watch(displayedStatus, async (status) => {
     if (status.progress < status.recipe.difficulty)
         return;
-    if (store.rotations.staged.some(v => compareStatus(v.seq.status, status) >= 0))
+    const staged = await Promise.all(store.rotations.staged
+        .map(v => v.seq.slots.map(v => v.action))
+        .map(v => simulate(initStatus.value, v))
+    );
+    if (staged.some(v => compareStatus(v.status, status) >= 0))
         return;
     saveSequence(false)
 })
 
-async function readSolver(s: Status) {
+async function readSolver() {
     try {
+        const s = activeRst.value?.status;
+        if (!s) return;
         isReadingSolver.value++;
         const newSolverResult = actions.value.concat(await read_solver(s));
         let display = [];
@@ -235,9 +221,7 @@ async function readSolver(s: Status) {
         }
         solverResult.slots = display;
 
-        const result = await simulate(initStatus.value, newSolverResult);
-        solverResult.status = result.status;
-        solverResult.errors = result.errors;
+        solverResultRst.value = await simulate(initStatus.value, newSolverResult);
     } catch (err) {
         solverResult.slots = [];
     } finally {
@@ -249,14 +233,12 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
     let slots: Slot[] = [];
     for (const i in actions)
         slots.push({ action: actions[i], id: Number.parseInt(i) })
-    const { status, errors } = await simulate(initStatus.value, actions)
     store.pushRotation({
         slots,
         maxid: actions.length,
-        status,
-        errors,
         source: solverName,
     });
+    store.sortRotations(initStatus.value);
     activeTab.value = 'store';
 }
 </script>
@@ -271,13 +253,13 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
             :show-condition="false" />
         <div class="above-panel">
             <el-scrollbar class="above-left-panel">
-                <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
+                <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeRst?.status" #lower />
             </el-scrollbar>
 
             <div class="above-right-panel" style="overflow: hidden;">
                 <div ref="actionQueueElem" class="action-queue">
                     <ActionQueue :job="displayJob" v-model:list="activeSeq.slots" :solver-result="solverResult.slots"
-                        :preview-solver="previewSolver" :err-list="activeSeq.errors"
+                        :preview-solver="previewSolver" :err-list="activeRst?.errors"
                         :loading-solver-result="isReadingSolverDisplay" clearable />
                 </div>
                 <el-tabs class="above-tabs" v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top"
@@ -304,7 +286,7 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                     <el-tab-pane :label="$t('solvers')" name="solver-list" class="multi-function-area">
                         <el-scrollbar style="flex: auto;">
                             <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
-                                @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
+                                @solver-load="readSolver()" @solver-result="handleSolverResult" />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('store')" name="store" class="multi-function-area">
@@ -323,7 +305,7 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                             </el-button-group>
                             <TransitionGroup name="savedqueues" tag="div">
                                 <StagedActionQueueItem v-for="({ key, seq }, i) in store.rotations.staged" :key="key"
-                                    :seq="seq" :display-job="displayJob" @load="loadSeq(seq)"
+                                    :seq="seq" :status="initStatus" :display-job="displayJob" @load="loadSeq(seq)"
                                     @delete="store.deleteRotation(i)" />
                             </TransitionGroup>
                         </el-scrollbar>
@@ -449,7 +431,7 @@ init-quality = 初期品质
 store = 储存
 analyzer = 分析
 
-save-workspace = 暂存
+save-workspace = 储存
 clear-store = 清空
 apply-solver = 应用求解结果
 
