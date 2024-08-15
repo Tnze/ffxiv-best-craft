@@ -19,11 +19,12 @@
 <script setup lang="ts">
 import { Ref, reactive, ref } from 'vue'
 import { ElAlert, ElSpace, ElDialog, ElCard, ElButton, ElCheckbox, ElTable, ElTableColumn, ElMessage } from 'element-plus'
-import { create_solver, destroy_solver, formatDuration, reflect_solve } from '@/libs/Solver'
+import { create_solver, destroy_solver, reflect_solve } from '@/libs/Solver'
 import { ChatSquare } from '@element-plus/icons-vue'
 import { Actions, Status } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { SequenceSource } from '../types';
+import { formatDuration } from '@/libs/Utils';
 
 const { $t } = useFluent()
 

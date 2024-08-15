@@ -185,6 +185,45 @@ export enum Actions {
     DaringTouchFail = "daring_touch_fail",
 }
 
+const waitTimes = new Map([
+    [Actions.BasicSynthesis, 3],
+    [Actions.BasicTouch, 3],
+    [Actions.MastersMend, 3],
+    [Actions.HastyTouch, 3],
+    [Actions.RapidSynthesis, 3],
+    [Actions.Observe, 3],
+    [Actions.TricksOfTheTrade, 2],
+    [Actions.WasteNot, 2],
+    [Actions.Veneration, 2],
+    [Actions.StandardTouch, 3],
+    [Actions.GreatStrides, 2],
+    [Actions.Innovation, 2],
+    [Actions.FinalAppraisal, 2],
+    [Actions.WasteNotII, 2],
+    [Actions.ByregotsBlessing, 3],
+    [Actions.PreciseTouch, 3],
+    [Actions.MuscleMemory, 3],
+    [Actions.CarefulSynthesis, 3],
+    [Actions.Manipulation, 2],
+    [Actions.PrudentTouch, 3],
+    [Actions.Reflect, 3],
+    [Actions.PreparatoryTouch, 3],
+    [Actions.Groundwork, 3],
+    [Actions.DelicateSynthesis, 3],
+    [Actions.IntensiveSynthesis, 3],
+    [Actions.TrainedEye, 3],
+    [Actions.AdvancedTouch, 3],
+    [Actions.PrudentSynthesis, 3],
+    [Actions.TrainedFinesse, 3],
+    [Actions.CarefulObservation, 3],
+    [Actions.HeartAndSoul, 3],
+    [Actions.RefinedTouch, 3],
+    [Actions.DaringTouch, 3],
+    [Actions.ImmaculateMend, 3],
+    [Actions.QuickInnovation, 2],
+    [Actions.TrainedPerfection, 3],
+])
+
 export const newRecipe = async (
     rlv: number,
     rt: RecipeLevel,
@@ -278,6 +317,10 @@ export async function craftPointsList(status: Status, actions: Actions[]): Promi
         return craftpoints_list(status, actions)
     }
 };
+
+export function calcWaitTime(...actions: Actions[]) {
+    return actions.map(v => waitTimes.get(v) ?? 0).reduce((acc, v) => acc + v)
+}
 
 export interface RecipeInfo {
     id: number;

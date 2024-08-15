@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -135,16 +135,5 @@ export async function raphael_solve(status: Status, backloadProgress: boolean, m
         return invoke("raphael_solve", args)
     } else {
         return invokeWasmSolver("raphael_solve", args)
-    }
-}
-
-export function formatDuration(u: number): string {
-    if (u < 1000) {
-        return u + "ms"
-    } else {
-        const h = Math.floor(u / 1000 / 3600)
-        const m = Math.floor(u / 1000 / 60) - h * 60
-        const s = (u / 1000 - h * 3600 - m * 60).toFixed(3)
-        return (h > 0 ? h + 'h' : '') + (m > 0 ? m + 'm' : '') + (s + 's')
     }
 }

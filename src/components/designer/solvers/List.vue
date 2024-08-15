@@ -20,7 +20,8 @@
 import { Ref, ref } from 'vue'
 import { ElAlert, ElScrollbar, ElButton, ElLink, ElMessage, ElMessageBox, ElTabs, ElTabPane } from 'element-plus'
 import { Actions, Status } from "@/libs/Craft"
-import { supported as solverSupported, formatDuration, rika_solve, rika_solve_tnzever } from '@/libs/Solver'
+import { supported as solverSupported, rika_solve, rika_solve_tnzever } from '@/libs/Solver'
+import { formatDuration } from '@/libs/Utils'
 import { useFluent } from 'fluent-vue';
 import { Solver } from './DpSolver.vue'
 import DpSolver from './DpSolver.vue'

@@ -21,14 +21,20 @@ import { ElButton, ElSpace, ElText, ElTag, ElIcon, ElButtonGroup } from "element
 import { Delete, Upload, SuccessFilled, WarningFilled, CircleCloseFilled } from "@element-plus/icons-vue";
 import { Sequence } from './types';
 import ActionQueue from "./ActionQueue.vue";
-import { Jobs, simulate, SimulateResult, Status } from "@/libs/Craft";
-import { ref, computed, watch, watchEffect } from "vue";
+import { calcWaitTime, Jobs, simulate, SimulateResult, Status } from "@/libs/Craft";
+import { formatDuration } from "@/libs/Utils";
+import { ref, computed, watchEffect } from "vue";
 
 const props = defineProps<{
     seq: Sequence,
     status?: Status,
     displayJob: Jobs,
-}>()
+}>();
+
+const emit = defineEmits<{
+    (event: 'load'): void
+    (event: 'delete'): void
+}>();
 
 const simulateResult = ref<SimulateResult>();
 watchEffect(() => {
@@ -37,12 +43,6 @@ watchEffect(() => {
             .then(rst => simulateResult.value = rst);
     }
 })
-
-const emit = defineEmits<{
-    (event: 'load'): void
-    (event: 'delete'): void
-}>()
-
 const color = computed(() => {
     const status = simulateResult.value?.status;
     if (!status)
@@ -66,13 +66,18 @@ const tagType = computed<"success" | "warning" | "info" | "danger" | undefined>(
     else
         return 'success'
 })
+
+const waitTime = computed(() => {
+    return calcWaitTime(...props.seq.slots.map(v => v.action))
+})
+
 </script>
 
 <template>
     <div class="savedqueue-item">
         <div class="savedqueue-item-right">
             <div class="savedqueue-item-actions">
-                <ActionQueue :job="displayJob" :list="seq.slots" :err-list="simulateResult?.errors" disabled  no-hover />
+                <ActionQueue :job="displayJob" :list="seq.slots" :err-list="simulateResult?.errors" disabled no-hover />
             </div>
             <div class="savedqueue-item-above">
                 <el-text size="small">
@@ -87,6 +92,9 @@ const tagType = computed<"success" | "warning" | "info" | "danger" | undefined>(
                         </el-tag>
                         <el-tag round v-if="simulateResult" type="info">
                             {{ $t('steps-tag', { steps: simulateResult.status.step ?? seq.slots.length }) }}
+                        </el-tag>
+                        <el-tag round type="info">
+                            {{ $t('duration-tag', { duration: formatDuration(waitTime * 1e3, 0) }) }}
                         </el-tag>
                         <el-tag round type="info" v-if="seq.source">
                             {{ $t('source-tag', { typ: String(seq.source), source: $t(String(seq.source)) }) }}
@@ -142,6 +150,7 @@ load = 加载
 delete = 删除
 quality-tag = { quality }：{ $quality }
 steps-tag = { steps }：{ $steps }
+duration-tag = 宏耗时：{ $duration }
 
 # Sources
 manual = 手动保存
@@ -158,6 +167,7 @@ load = Load
 delete = Delete
 quality-tag = { quality }: { $quality }
 steps-tag = { steps }: { $steps }
+duration-tag = Macro Duration: { $duration }
 
 # Sources
 manual = Manual
