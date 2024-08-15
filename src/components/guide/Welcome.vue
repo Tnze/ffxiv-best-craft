@@ -48,6 +48,8 @@ function feedback() {
     window.open('https://pd.qq.com/s/al6b5xo69', '_blank');
 }
 
+const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == "web"
+
 </script>
 
 <template>
@@ -65,7 +67,12 @@ function feedback() {
                 {{ $t('feedback') }}
             </el-button>
         </div>
-        <el-text class="info-text" type="info">{{ $t('copyright-notices') }}</el-text>
+        <el-text class="info-text" type="info">
+            {{ $t('copyright-notices') }}
+            <template v-if="isWebsite">
+                粤ICP备2021156196号-1
+            </template>
+        </el-text>
     </div>
 </template>
 
