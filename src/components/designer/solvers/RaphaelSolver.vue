@@ -41,11 +41,12 @@ const dialogVisible = ref(false)
 const raphaelSolveIsSolving = ref(false)
 
 // Solver options
+const useManipulation = ref(false)
 const backloadProgress = ref(false)
 const minimizeSteps = ref(false)
 
 function runRaphaelSolver() {
-    emits('runSimpleSolver', SequenceSource.RaphaelSolver, raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, backloadProgress.value, minimizeSteps.value))
+    emits('runSimpleSolver', SequenceSource.RaphaelSolver, raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value, backloadProgress.value, minimizeSteps.value))
 }
 </script>
 
@@ -63,6 +64,7 @@ function runRaphaelSolver() {
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
+        <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
         <el-checkbox v-model="backloadProgress" :label="$t('backload-progress')" />
         <el-checkbox v-model="minimizeSteps" :label="$t('minimize-steps')" />
     </el-space>

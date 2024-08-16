@@ -3,12 +3,20 @@ use ffxiv_crafting::{Actions, Status};
 use raphael_simulator::{Action, ActionMask, Settings, SimulationState};
 use raphael_solvers::MacroSolver;
 
-pub fn solve(status: Status, backload_progress: bool, minimize_steps: bool) -> Vec<Actions> {
+pub fn solve(
+    status: Status,
+    use_manipultaion: bool,
+    backload_progress: bool,
+    minimize_steps: bool,
+) -> Vec<Actions> {
     let mut allowed_actions = ActionMask::from_level(status.attributes.level)
         .remove(Action::HeartAndSoul)
         .remove(Action::QuickInnovation);
+    if !use_manipultaion {
+        allowed_actions = allowed_actions.remove(Action::Manipulation);
+    }
     if status.is_action_allowed(Actions::TrainedEye).is_err() {
-        allowed_actions = allowed_actions.remove(Action::TrainedEye)
+        allowed_actions = allowed_actions.remove(Action::TrainedEye);
     }
     let settings = Settings {
         max_cp: status.attributes.craft_points as i16,
