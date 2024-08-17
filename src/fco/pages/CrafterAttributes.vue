@@ -17,12 +17,29 @@
 -->
 
 <script setup lang="ts">
-import { NTabs, NTabPane } from 'naive-ui';
-import { Jobs } from '@/libs/Craft';
+import { NTabs, NTabPane, NForm, NFormItem, NInputNumber } from 'naive-ui';
+import useGearsetsStore from '@/stores/gearsets'
+
+const store = useGearsetsStore()
 </script>
 
 <template>
     <n-tabs>
-        <n-tab-pane v-for="job in Jobs" :name="job" :label="$t(job)"></n-tab-pane>
+        <n-tab-pane v-for="v in store.special" :name="v.name" :label="$t(v.name)">
+            <n-form :model="v" label-placement="left" label-width="auto">
+                <n-form-item :label="$t('level')">
+                    <n-input-number v-model:value="(v.value || store.default).level" :disable="!v.value" />
+                </n-form-item>
+                <n-form-item :label="$t('craftsmanship')">
+                    <n-input-number v-model:value="(v.value || store.default).craftsmanship" :disable="!v.value" />
+                </n-form-item>
+                <n-form-item :label="$t('control')">
+                    <n-input-number v-model:value="(v.value || store.default).control" :disable="!v.value" />
+                </n-form-item>
+                <n-form-item :label="$t('craft-point')">
+                    <n-input-number v-model:value="(v.value || store.default).craft_points" :disable="!v.value" />
+                </n-form-item>
+            </n-form>
+        </n-tab-pane>
     </n-tabs>
 </template>
