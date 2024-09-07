@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { NCard, NSelect, NGrid, NGi } from 'naive-ui';
+import { NCard, NSelect, NGrid, NGi, NFlex } from 'naive-ui';
 import useFcoSimulatorStore from '../stores/simulator';
 import useGearsetsStore from '@/stores/gearsets';
 
@@ -36,28 +36,39 @@ const attributes = computed(() => gearsetsStore.attributes(store.job))
 <template>
     <n-card>
         <template #header>状态参数</template>
-        <n-grid x-gap="12" :cols="2">
-            <n-gi>
+        <n-grid x-gap="12" y-gap="16" :cols="6">
+            <n-gi :span="3">
                 <span>{{ $t('meals') }}</span>
                 <n-select :placeholder="$t('select-meals')"></n-select>
             </n-gi>
-            <n-gi>
+            <n-gi :span="3">
                 <span>{{ $t('medicines') }}</span>
                 <n-select :placeholder="$t('select-medicines')"></n-select>
             </n-gi>
 
-            <n-gi :span="2">
-                <span>{{ $t('craftsmanship') }} {{ attributes?.craftsmanship }}</span>
-            </n-gi>
-            <n-gi :span="2">
-                <span>{{ $t('control') }} {{ attributes?.control }}</span>
-            </n-gi>
-            <n-gi :span="2">
-                <span>{{ $t('craft-point') }} {{ attributes?.craft_points }}</span>
-            </n-gi>
-            <n-gi :span="2">
-                <span>{{ $t('initial-quality') }} {{ initialQuality }}</span>
-            </n-gi>
+            <n-gi :span="2">{{ $t('craftsmanship') }}</n-gi>
+            <n-gi>{{ attributes?.craftsmanship }}</n-gi>
+            <n-gi>+ 0</n-gi>
+            <n-gi>+ 0</n-gi>
+            <n-gi>= {{ attributes?.craftsmanship }}</n-gi>
+
+            <n-gi :span="2">{{ $t('control') }}</n-gi>
+            <n-gi>{{ attributes?.control }}</n-gi>
+            <n-gi>+ 0</n-gi>
+            <n-gi>+ 0</n-gi>
+            <n-gi>= {{ attributes?.control }}</n-gi>
+
+            <n-gi :span="2">{{ $t('craft-point') }}</n-gi>
+            <n-gi>{{ attributes?.craft_points }}</n-gi>
+            <n-gi>+ 0</n-gi>
+            <n-gi>+ 0</n-gi>
+            <n-gi>= {{ attributes?.craft_points }}</n-gi>
+
+            <n-gi :span="2">{{ $t('initial-quality') }}</n-gi>
+            <n-gi>{{ initialQuality }}</n-gi>
+            <n-gi>+ 0</n-gi>
+            <n-gi>+ 0</n-gi>
+            <n-gi>= {{ initialQuality }}</n-gi>
         </n-grid>
     </n-card>
 </template>

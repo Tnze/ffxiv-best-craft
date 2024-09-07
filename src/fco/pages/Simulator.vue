@@ -87,7 +87,7 @@ function pushAction(action: Actions) {
     <n-message-provider>
         <n-grid x-gap="20px" y-gap="20px" :cols="12" item-responsive responsive="screen">
             <n-gi :span="2">
-                <n-checkbox>自定义配方</n-checkbox>
+                <!-- <n-checkbox>自定义配方</n-checkbox> -->
             </n-gi>
             <n-gi :span="2">
                 <JobSelect />
