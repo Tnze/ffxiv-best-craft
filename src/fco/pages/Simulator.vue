@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, markRaw, watchEffect } from 'vue';
-import { NGrid, NGi, NCheckbox, NMessageProvider, NCard, NTabs, NTabPane, NButton, NFlex } from 'naive-ui';
+import { NGrid, NGi, NCheckbox, NMessageProvider, NCard, NTabs, NTabPane, NButton, NFlex, NModalProvider } from 'naive-ui';
 import ActionQueue from '@/components/designer/ActionQueue.vue';
 import Buffs from '@/components/designer/Buffs.vue';
 import { Actions, newStatus, simulate, SimulateResult, Status } from '@/libs/Craft';
@@ -33,6 +33,7 @@ import CraftingState from '../components/CraftingState.vue';
 import JobSelect from '../components/JobSelect.vue';
 import RecipeSelect from '../components/RecipeSelect.vue';
 import Analyzer from '../components/Analyzer.vue';
+import SolveModal from '../components/SolveModal.vue';
 
 const gearsetsStore = useGearsetsStore()
 const store = useFcoSimulatorStore();
@@ -47,6 +48,7 @@ const rotation = reactive<Sequence>({
 const initStatus = ref<Status>();
 const simulateResult = ref<SimulateResult>();
 const editMode = ref(false);
+const solverModalShow = ref(false)
 
 // 计算初始状态
 watchEffect(async () => {
@@ -113,12 +115,19 @@ function pushAction(action: Actions) {
                 </n-card>
             </n-gi>
             <n-gi :span="12">
-                <n-flex v-if="editMode">
-                    <!-- <n-button @click="editMode = false">{{ $t('cancel') }}</n-button> -->
-                    <n-button type="primary" @click="editMode = false">{{ $t('save') }}</n-button>
-                    <n-button type="warning" @click="rotation.slots.splice(0)">{{ $t('clear') }}</n-button>
+                <n-flex>
+                    <template v-if="!editMode">
+                        <n-button type="primary" @click="editMode = true">{{ $t('edit') }}</n-button>
+                        <n-button type="primary" @click="solverModalShow = true">{{ $t('solve') }}</n-button>
+                    </template>
+                    <template v-else>
+                        <n-button type="primary" @click="editMode = false">{{ $t('save') }}</n-button>
+                        <n-button type="warning" @click="rotation.slots.splice(0)">{{ $t('clear') }}</n-button>
+                    </template>
                 </n-flex>
-                <n-button v-else type="primary" @click="editMode = true">{{ $t('edit') }}</n-button>
+                <n-modal-provider>
+                    <SolveModal v-model:show="solverModalShow" />
+                </n-modal-provider>
             </n-gi>
             <n-gi v-if="editMode" :span="12">
                 <ActionPanel :job="store.job" :status="simulateResult?.status ?? initStatus"
@@ -140,6 +149,8 @@ function pushAction(action: Actions) {
 
 <fluent locale="zh-CN">
 edit = 编辑
+solve = 求解
+
 cancel = 取消
 save = 保存
 clear = 清空
@@ -150,6 +161,8 @@ macro = 宏指令
 
 <fluent locale="en-US">
 edit = Edit
+solve = Solve
+
 cancel = Cancel
 save = Save
 clear = Clear
