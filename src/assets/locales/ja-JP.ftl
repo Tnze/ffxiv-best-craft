@@ -19,6 +19,9 @@ condition = 状態
 difficulty = 必要工数
 initial-quality = 初期品質
 
+meals = 調理品
+medicines = 薬品
+
 carpenter = 木工師
 blacksmith = 鍛冶師
 armorer = 甲冑師

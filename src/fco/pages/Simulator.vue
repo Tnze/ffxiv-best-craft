@@ -27,6 +27,7 @@ import { Sequence } from '@/components/designer/types';
 import ActionPanel from '../components/ActionPanel.vue';
 import Attributes from '../components/Attributes.vue';
 import CraftingState from '../components/CraftingState.vue';
+import JobSelect from '../components/JobSelect.vue';
 
 const rotation = reactive<Sequence>({
     slots: [
@@ -48,7 +49,7 @@ function pushAction(action: Actions) {
             <n-checkbox>自定义配方</n-checkbox>
         </n-gi>
         <n-gi :span="2">
-            <n-select></n-select>
+            <JobSelect />
         </n-gi>
         <n-gi :span="4">
             <n-select></n-select>
@@ -65,7 +66,7 @@ function pushAction(action: Actions) {
             </n-card>
         </n-gi>
         <n-gi :span="12">
-            <ActionPanel :job="Jobs.Carpenter"  @clicked-action="pushAction" />
+            <ActionPanel :job="Jobs.Carpenter" @clicked-action="pushAction" />
         </n-gi>
         <n-gi :span="6">
             <n-tabs>

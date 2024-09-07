@@ -17,10 +17,34 @@
 -->
 
 <script setup lang="ts">
-import { NCard } from 'naive-ui';
+import { NCard, NSelect, NGrid, NGi } from 'naive-ui';
 </script>
+
 <template>
-    <n-card style="height: 100px;">
+    <n-card>
         <template #header>状态参数</template>
+        <n-grid x-gap="12" :cols="2">
+            <n-gi>
+                <span>{{ $t('meals') }}</span>
+                <n-select></n-select>
+            </n-gi>
+            <n-gi>
+                <span>{{ $t('medicines') }}</span>
+                <n-select></n-select>
+            </n-gi>
+
+            <n-gi :span="2">
+                <span>{{ $t('craftsmanship') }}</span>
+            </n-gi>
+            <n-gi :span="2">
+                <span>{{ $t('control') }}</span>
+            </n-gi>
+            <n-gi :span="2">
+                <span>{{ $t('craft-point') }}</span>
+            </n-gi>
+            <n-gi :span="2">
+                <span>{{ $t('initial-quality') }}</span>
+            </n-gi>
+        </n-grid>
     </n-card>
 </template>

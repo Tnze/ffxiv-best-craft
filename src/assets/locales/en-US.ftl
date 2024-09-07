@@ -19,6 +19,9 @@ condition = Condition
 difficulty = Difficulty
 initial-quality = Quality
 
+meals = Meals
+medicines = Medicines
+
 name = Name
 amount = Amount
 

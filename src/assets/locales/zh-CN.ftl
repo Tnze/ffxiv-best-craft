@@ -19,6 +19,9 @@ condition = 状态
 difficulty = 难度
 initial-quality = 初期品质
 
+meals = 食品
+medicines = 药品
+
 name = 名称
 amount = 数量
 
