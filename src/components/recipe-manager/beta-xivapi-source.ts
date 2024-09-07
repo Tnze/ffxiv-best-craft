@@ -16,7 +16,7 @@
 
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
 import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from './source'
-import { Enhancer } from "../attr-enhancer/Enhancer";
+import { Enhancer } from "@/libs/Enhancer";
 
 function assert<T>(v: T, name: string): T {
     if (v === undefined)
@@ -293,7 +293,7 @@ export class BetaXivApiRecipeSource {
         const enh = <Enhancer>{ name };
         const enhHq = <Enhancer>{ name: name + ' HQ' };
         for (let i = 0; i < 3; i++) {
-            switch (itemFood['BaseParam@as(raw)'][i].row_id) {
+            switch (itemFood['BaseParam@as(raw)'][i]) {
                 case 11: // CP
                     enh.cp = itemFood.Value[i]
                     enh.cp_max = itemFood.Max[i]
