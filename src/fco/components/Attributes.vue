@@ -26,11 +26,11 @@ import { NCard, NSelect, NGrid, NGi } from 'naive-ui';
         <n-grid x-gap="12" :cols="2">
             <n-gi>
                 <span>{{ $t('meals') }}</span>
-                <n-select></n-select>
+                <n-select :placeholder="$t('select-meals')"></n-select>
             </n-gi>
             <n-gi>
                 <span>{{ $t('medicines') }}</span>
-                <n-select></n-select>
+                <n-select :placeholder="$t('select-medicines')"></n-select>
             </n-gi>
 
             <n-gi :span="2">
@@ -48,3 +48,16 @@ import { NCard, NSelect, NGrid, NGi } from 'naive-ui';
         </n-grid>
     </n-card>
 </template>
+
+<fluent locale="zh-CN">
+select-meals = 选择{ meals }
+select-medicines = 选择{ medicines }
+</fluent>
+
+<fluent locale="en-US">
+select-meals = Select { meals }
+select-medicines = Select { medicines }
+</fluent>
+
+<fluent locale="ja-JP">
+</fluent>

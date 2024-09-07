@@ -26,7 +26,7 @@ const { $t } = useFluent()
 const store = useFcoSimulatorStore();
 
 const options: SelectOption[] = Object.values(Jobs).map(j => ({
-    label: j as string,
+    label: String(j),
     value: j,
 }))
 

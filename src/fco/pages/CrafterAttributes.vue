@@ -25,7 +25,7 @@ const store = useGearsetsStore()
 
 <template>
     <n-tabs>
-        <n-tab-pane v-for="v in store.special" :name="v.name" :label="$t(v.name)">
+        <n-tab-pane v-for="v in store.special" :name="v.name" :tab="$t(v.name)">
             <n-form :model="v" label-placement="left" label-width="auto">
                 <n-form-item :label="$t('level')">
                     <n-input-number v-model:value="(v.value || store.default).level" :disable="!v.value" />

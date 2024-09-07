@@ -47,6 +47,9 @@ export default defineStore('gearsets', {
                 default: this.default,
                 special: this.special
             })
+        },
+        attributes() {
+            return (job: Jobs) => this.special.find(v => v.name == job)?.value ?? this.default
         }
     },
     actions: {

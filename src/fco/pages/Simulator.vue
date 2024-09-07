@@ -17,17 +17,23 @@
 -->
 
 <script setup lang="ts">
-
-import { NGrid, NGi, NCheckbox, NSelect, NCard, NTabs, NTabPane } from 'naive-ui';
+import { ref, reactive, markRaw, watchEffect } from 'vue';
+import { NGrid, NGi, NCheckbox, NMessageProvider, NCard, NTabs, NTabPane } from 'naive-ui';
 import ActionQueue from '@/components/designer/ActionQueue.vue';
-import { Actions, Jobs } from '@/libs/Craft';
-import { reactive, markRaw } from 'vue';
+import { Actions, newStatus, Status } from '@/libs/Craft';
 import { Sequence } from '@/components/designer/types';
+
+import useFcoSimulatorStore from '../stores/simulator';
+import useGearsetsStore from '@/stores/gearsets'
 
 import ActionPanel from '../components/ActionPanel.vue';
 import Attributes from '../components/Attributes.vue';
 import CraftingState from '../components/CraftingState.vue';
 import JobSelect from '../components/JobSelect.vue';
+import RecipeSelect from '../components/RecipeSelect.vue';
+
+const gearsetsStore = useGearsetsStore()
+const store = useFcoSimulatorStore();
 
 const rotation = reactive<Sequence>({
     slots: [
@@ -37,6 +43,23 @@ const rotation = reactive<Sequence>({
     maxid: 2,
 });
 
+const initStatus = ref<Status>();
+watchEffect(async () => {
+    if (!store.recipe) {
+        initStatus.value = undefined;
+        return;
+    }
+    try {
+        initStatus.value = await newStatus(
+            gearsetsStore.attributes(store.job),
+            store.recipe.recipe,
+            store.recipe.recipeLevel
+        );
+    } catch (e: any) {
+        console.log(e)
+    }
+})
+
 function pushAction(action: Actions) {
     rotation.slots.push(markRaw({ id: rotation.maxid++, action }));
 }
@@ -44,37 +67,38 @@ function pushAction(action: Actions) {
 </script>
 
 <template>
-    <n-grid x-gap="20px" y-gap="20px" :cols="12" item-responsive responsive="screen">
-        <n-gi :span="2">
-            <n-checkbox>自定义配方</n-checkbox>
-        </n-gi>
-        <n-gi :span="2">
-            <JobSelect />
-        </n-gi>
-        <n-gi :span="4">
-            <n-select></n-select>
-        </n-gi>
-        <n-gi span="12 m:6">
-            <CraftingState />
-        </n-gi>
-        <n-gi span="12 m:6">
-            <Attributes />
-        </n-gi>
-        <n-gi :span="12">
-            <n-card>
-                <ActionQueue v-model:list="rotation.slots" :job="Jobs.Carpenter" />
-            </n-card>
-        </n-gi>
-        <n-gi :span="12">
-            <ActionPanel :job="Jobs.Carpenter" @clicked-action="pushAction" />
-        </n-gi>
-        <n-gi :span="6">
-            <n-tabs>
-                <n-tab-pane name="Random"> </n-tab-pane>
-                <n-tab-pane name="Macro"> </n-tab-pane>
-            </n-tabs>
-        </n-gi>
-    </n-grid>
+    <n-message-provider>
+        <n-grid x-gap="20px" y-gap="20px" :cols="12" item-responsive responsive="screen">
+            <n-gi :span="2">
+                <n-checkbox>自定义配方</n-checkbox>
+            </n-gi>
+            <n-gi :span="2">
+                <JobSelect />
+            </n-gi>
+            <n-gi :span="4">
+                <RecipeSelect />
+            </n-gi>
+            <n-gi span="12 m:6">
+                <CraftingState :job="store.job" :status="initStatus" />
+            </n-gi>
+            <n-gi span="12 m:6">
+                <Attributes />
+            </n-gi>
+            <n-gi :span="12">
+                <n-card>
+                    <ActionQueue v-model:list="rotation.slots" :job="store.job" />
+                </n-card>
+            </n-gi>
+            <n-gi :span="12">
+                <ActionPanel :job="store.job" @clicked-action="pushAction" />
+            </n-gi>
+            <n-gi :span="6">
+                <n-tabs>
+                    <n-tab-pane name="Random"> </n-tab-pane>
+                    <n-tab-pane name="Macro"> </n-tab-pane>
+                </n-tabs>
+            </n-gi>
+        </n-grid></n-message-provider>
 </template>
 
 <style scoped></style>

@@ -43,16 +43,17 @@ watchEffect(async () => {
             Lv.{{ status?.attributes.level ?? 0 }} {{ job ? $t(job) : "未知职业" }}
         </template>
         <span>{{ $t('progress') }}</span>
-        <n-progress type="line" :height="24" :percentage="status ? status.progress / status.recipe.difficulty : 0">
+        <n-progress type="line" :height="24"
+            :percentage="status ? status.progress / status.recipe.difficulty * 100 : 0">
             {{ status?.progress ?? 0 }} / {{ status?.recipe.difficulty ?? 0 }}
         </n-progress>
         <span>{{ $t('quality') }}</span>
-        <n-progress type="line" :height="24" :percentage="status ? status.quality / status.recipe.quality : 0">
+        <n-progress type="line" :height="24" :percentage="status ? status.quality / status.recipe.quality * 100 : 0">
             {{ status?.quality ?? 0 }} / {{ status?.recipe.quality ?? 0 }}
         </n-progress>
         <span>{{ $t('craft-point') }}</span>
         <n-progress type="line" :height="24"
-            :percentage="status ? status.craft_points / status.attributes.craft_points : 0">
+            :percentage="status ? status.craft_points / status.attributes.craft_points * 100 : 0">
             {{ status?.craft_points ?? 0 }} / {{ status?.attributes.craft_points ?? 0 }}
         </n-progress>
         <n-divider />

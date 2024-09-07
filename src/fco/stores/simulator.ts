@@ -14,11 +14,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Jobs } from "@/libs/Craft"
+import { Jobs, Recipe, RecipeInfo, RecipeLevel } from "@/libs/Craft"
 import { defineStore } from "pinia"
 
 export default defineStore('fco-simulator', {
     state: () => ({
-        job: Jobs.Alchemist
+        job: Jobs.Alchemist,
+        recipe: <{
+            recipe: Recipe,
+            recipeLevel: RecipeLevel,
+            recipeInfo: RecipeInfo,
+        } | undefined>undefined
     }),
 })
