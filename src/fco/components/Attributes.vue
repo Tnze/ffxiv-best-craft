@@ -38,13 +38,12 @@ const attributes = computed(() => gearsetsStore.attributes(store.job))
 const craftsmanshipAddons = ref(0);
 const controlAddons = ref(0);
 const craftPointAddons = ref(0);
-watch([meal, medicine], ([meal, medecine]) => {
+watch([attributes, meal, medicine], ([{ level, craftsmanship, control, craft_points }, meal, medecine]) => {
     console.log(meal, medecine);
     const enhancers = [];
     if (meal) enhancers.push(meal);
     if (medecine) enhancers.push(medecine);
 
-    const { level, craftsmanship, control, craft_points } = attributes.value;
     const sum = (prev: number, curr: number) => prev + curr;
     craftsmanshipAddons.value = enhancers
         .filter((v) => v.cm && v.cm_max)

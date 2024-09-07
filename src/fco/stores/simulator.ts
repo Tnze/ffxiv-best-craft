@@ -16,6 +16,7 @@
 
 import { Attributes, Jobs, Recipe, RecipeInfo, RecipeLevel } from "@/libs/Craft"
 import { defineStore } from "pinia"
+import useGearsetsStore from '@/stores/gearsets';
 
 export default defineStore('fco-simulator', {
     state: () => ({
@@ -25,6 +26,6 @@ export default defineStore('fco-simulator', {
             recipeLevel: RecipeLevel,
             recipeInfo: RecipeInfo,
         } | undefined>undefined,
-        attributes: <Attributes | undefined>undefined,
+        attributes: <Attributes | undefined>useGearsetsStore().attributes(Jobs.Alchemist),
     }),
 })
