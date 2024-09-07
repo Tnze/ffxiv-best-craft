@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, markRaw, watchEffect } from 'vue';
-import { NGrid, NGi, NCheckbox, NMessageProvider, NCard, NTabs, NTabPane } from 'naive-ui';
+import { NGrid, NGi, NCheckbox, NMessageProvider, NCard, NTabs, NTabPane, NButton, NFlex } from 'naive-ui';
 import ActionQueue from '@/components/designer/ActionQueue.vue';
 import Buffs from '@/components/designer/Buffs.vue';
 import { Actions, newStatus, simulate, SimulateResult, Status } from '@/libs/Craft';
@@ -32,6 +32,7 @@ import Attributes from '../components/Attributes.vue';
 import CraftingState from '../components/CraftingState.vue';
 import JobSelect from '../components/JobSelect.vue';
 import RecipeSelect from '../components/RecipeSelect.vue';
+import Analyzer from '../components/Analyzer.vue';
 
 const gearsetsStore = useGearsetsStore()
 const store = useFcoSimulatorStore();
@@ -45,6 +46,7 @@ const rotation = reactive<Sequence>({
 });
 const initStatus = ref<Status>();
 const simulateResult = ref<SimulateResult>();
+const editMode = ref(false);
 
 // 计算初始状态
 watchEffect(async () => {
@@ -64,6 +66,7 @@ watchEffect(async () => {
     }
 })
 
+// 计算模拟结果
 watchEffect(async () => {
     if (!initStatus.value) {
         simulateResult.value = undefined
@@ -90,30 +93,43 @@ function pushAction(action: Actions) {
             <n-gi :span="4">
                 <RecipeSelect />
             </n-gi>
+
             <n-gi span="12 m:6">
                 <CraftingState :job="store.job" :status="simulateResult?.status" />
             </n-gi>
             <n-gi span="12 m:6">
                 <Attributes />
             </n-gi>
-            <n-gi :span="12">
+
+            <n-gi v-if="editMode" :span="12">
                 <n-card>
                     <Buffs v-if="simulateResult" :buffs="simulateResult.status.buffs" />
                 </n-card>
             </n-gi>
             <n-gi :span="12">
                 <n-card>
-                    <ActionQueue v-model:list="rotation.slots" :job="store.job" :err-list="simulateResult?.errors" />
+                    <ActionQueue v-model:list="rotation.slots" :job="store.job" :err-list="simulateResult?.errors"
+                        :disabled="!editMode" />
                 </n-card>
             </n-gi>
             <n-gi :span="12">
+                <n-flex v-if="editMode">
+                    <!-- <n-button @click="editMode = false">{{ $t('cancel') }}</n-button> -->
+                    <n-button type="primary" @click="editMode = false">{{ $t('save') }}</n-button>
+                    <n-button type="warning" @click="rotation.slots.splice(0)">{{ $t('clear') }}</n-button>
+                </n-flex>
+                <n-button v-else type="primary" @click="editMode = true">{{ $t('edit') }}</n-button>
+            </n-gi>
+            <n-gi v-if="editMode" :span="12">
                 <ActionPanel :job="store.job" :status="simulateResult?.status ?? initStatus"
                     @clicked-action="pushAction" />
             </n-gi>
-            <n-gi :span="6">
+            <n-gi v-if="initStatus" :span="6">
                 <n-tabs>
-                    <n-tab-pane name="Random"> </n-tab-pane>
-                    <n-tab-pane name="Macro"> </n-tab-pane>
+                    <n-tab-pane name="random" :tab="$t('random')">
+                        <Analyzer :init-status="initStatus" :actions="rotation.slots.map(s => s.action)" />
+                    </n-tab-pane>
+                    <n-tab-pane name="macro" :tab="$t('macro')"></n-tab-pane>
                 </n-tabs>
             </n-gi>
         </n-grid>
@@ -121,3 +137,23 @@ function pushAction(action: Actions) {
 </template>
 
 <style scoped></style>
+
+<fluent locale="zh-CN">
+edit = 编辑
+cancel = 取消
+save = 保存
+clear = 清空
+
+random = 随机模拟
+macro = 宏指令
+</fluent>
+
+<fluent locale="en-US">
+edit = Edit
+cancel = Cancel
+save = Save
+clear = Clear
+
+random = Random
+macro = Macro
+</fluent>

@@ -17,7 +17,20 @@
 -->
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { NCard, NSelect, NGrid, NGi } from 'naive-ui';
+import useFcoSimulatorStore from '../stores/simulator';
+import useGearsetsStore from '@/stores/gearsets';
+
+const gearsetsStore = useGearsetsStore()
+const store = useFcoSimulatorStore();
+
+defineProps<{
+    initialQuality?: number
+}>()
+
+const attributes = computed(() => gearsetsStore.attributes(store.job))
+
 </script>
 
 <template>
@@ -34,16 +47,16 @@ import { NCard, NSelect, NGrid, NGi } from 'naive-ui';
             </n-gi>
 
             <n-gi :span="2">
-                <span>{{ $t('craftsmanship') }}</span>
+                <span>{{ $t('craftsmanship') }} {{ attributes?.craftsmanship }}</span>
             </n-gi>
             <n-gi :span="2">
-                <span>{{ $t('control') }}</span>
+                <span>{{ $t('control') }} {{ attributes?.control }}</span>
             </n-gi>
             <n-gi :span="2">
-                <span>{{ $t('craft-point') }}</span>
+                <span>{{ $t('craft-point') }} {{ attributes?.craft_points }}</span>
             </n-gi>
             <n-gi :span="2">
-                <span>{{ $t('initial-quality') }}</span>
+                <span>{{ $t('initial-quality') }} {{ initialQuality }}</span>
             </n-gi>
         </n-grid>
     </n-card>

@@ -157,7 +157,7 @@ watchEffect(() => {
                     <Action :job="job" class="item" @click="emit('clickedAction', action)"
                         @mouseover="emit('mousehoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
                         :action="action" :active="isActived(action)"
-                        :effect="!disable && cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
+                        :effect="!status || !disable && cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
                         :cp="cachedCraftPointsList.get(action) || undefined" />
                 </template>
                 {{ $t('desc-' + action.replaceAll('_', '-')) }}

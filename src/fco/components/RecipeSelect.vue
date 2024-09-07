@@ -17,7 +17,7 @@
 -->
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NSelect, SelectOption, useMessage } from 'naive-ui';
+import { NSelect, SelectOption, useMessage, useLoadingBar } from 'naive-ui';
 
 import useFcoSimulatorStore from '../stores/simulator';
 import { BetaXivApiRecipeSource, BetaXivapiBase } from '@/components/recipe-manager/beta-xivapi-source';
@@ -25,10 +25,10 @@ import { RecipesSourceResult } from '@/components/recipe-manager/source';
 import { newRecipe, RecipeInfo } from '@/libs/Craft';
 
 const loadingRecipeList = ref(false);
-const loadingRecipeInfo = ref(false);
 const options = ref<SelectOption[]>([]);
 const store = useFcoSimulatorStore();
 const message = useMessage();
+const loadingBar = useLoadingBar();
 
 const dataSource = new BetaXivApiRecipeSource(BetaXivapiBase);
 var lastResult: RecipesSourceResult | undefined;
@@ -103,7 +103,7 @@ async function updateValue(value: number) {
         return;
     }
     try {
-        loadingRecipeInfo.value = true;
+        loadingBar.start();
         var [recipeLevel, _info] = await Promise.all([
             dataSource.recipeLevelTable(recipeInfo.rlv),
             dataSource.itemInfo(recipeInfo.item_id)
@@ -116,18 +116,17 @@ async function updateValue(value: number) {
             recipeInfo.durability_factor
         )
         store.recipe = { recipe, recipeLevel, recipeInfo }
+        loadingBar.finish();
     } catch (e: any) {
         message.error(String(e))
-        return
-    } finally {
-        loadingRecipeInfo.value = false;
+        loadingBar.error();
     }
 }
 
 </script>
 <template>
-    <n-select :options="options" :loading="loadingRecipeList || loadingRecipeInfo" :reset-menu-on-options-change="false"
-        @scroll="handleScroll" @search="setQuery" filterable remote clearable :placeholder="$t('select-recipe')"
+    <n-select :options="options" :loading="loadingRecipeList" :reset-menu-on-options-change="false"
+        @scroll="handleScroll" @search="setQuery" filterable remote :placeholder="$t('select-recipe')"
         @update-value="updateValue"></n-select>
 </template>
 
