@@ -21,7 +21,7 @@ import { computed, ref, watch } from 'vue';
 import { NCard, NSelect, NGrid, NGi } from 'naive-ui';
 import useFcoSimulatorStore from '../stores/simulator';
 import useGearsetsStore from '@/stores/gearsets';
-import MealSelect from './MealSelect.vue';
+import MealAndMedicinesSelect from './MealAndMedicinesSelect.vue';
 import { Enhancer } from '@/libs/Enhancer';
 
 const gearsetsStore = useGearsetsStore()
@@ -75,30 +75,30 @@ watch([meal, medicine], ([meal, medecine]) => {
         <n-grid x-gap="12" y-gap="16" :cols="6">
             <n-gi :span="3">
                 <span>{{ $t('meals') }}</span>
-                <MealSelect @select="v => meal = v" />
+                <MealAndMedicinesSelect type="meals" @select="v => meal = v" />
             </n-gi>
             <n-gi :span="3">
                 <span>{{ $t('medicines') }}</span>
-                <n-select :placeholder="$t('select-medicines')" />
+                <MealAndMedicinesSelect type="medicines" @select="v => medicine = v" />
             </n-gi>
 
             <n-gi :span="2">{{ $t('craftsmanship') }}</n-gi>
             <n-gi>{{ attributes?.craftsmanship }}</n-gi>
             <n-gi>+ {{ craftsmanshipAddons }}</n-gi>
             <n-gi>+ 0</n-gi>
-            <n-gi>= {{ attributes?.craftsmanship }}</n-gi>
+            <n-gi>= {{ store.attributes?.craftsmanship }}</n-gi>
 
             <n-gi :span="2">{{ $t('control') }}</n-gi>
             <n-gi>{{ attributes?.control }}</n-gi>
             <n-gi>+ {{ controlAddons }}</n-gi>
             <n-gi>+ 0</n-gi>
-            <n-gi>= {{ attributes?.control }}</n-gi>
+            <n-gi>= {{ store.attributes?.control }}</n-gi>
 
             <n-gi :span="2">{{ $t('craft-point') }}</n-gi>
             <n-gi>{{ attributes?.craft_points }}</n-gi>
             <n-gi>+ {{ craftPointAddons }}</n-gi>
             <n-gi>+ 0</n-gi>
-            <n-gi>= {{ attributes?.craft_points }}</n-gi>
+            <n-gi>= {{ store.attributes?.craft_points }}</n-gi>
 
             <n-gi :span="2">{{ $t('initial-quality') }}</n-gi>
             <n-gi>{{ initialQuality }}</n-gi>
@@ -108,16 +108,3 @@ watch([meal, medicine], ([meal, medecine]) => {
         </n-grid>
     </n-card>
 </template>
-
-<fluent locale="zh-CN">
-select-meals = 选择{ meals }
-select-medicines = 选择{ medicines }
-</fluent>
-
-<fluent locale="en-US">
-select-meals = Select { meals }
-select-medicines = Select { medicines }
-</fluent>
-
-<fluent locale="ja-JP">
-</fluent>

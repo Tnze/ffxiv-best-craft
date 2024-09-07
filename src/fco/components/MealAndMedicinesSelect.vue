@@ -24,51 +24,53 @@ import { BetaXivapiBase, BetaXivApiRecipeSource } from '@/components/recipe-mana
 import { Enhancer } from '@/libs/Enhancer';
 
 const dataSource = new BetaXivApiRecipeSource(BetaXivapiBase);
-const meals = ref<Enhancer[]>()
+const enhancers = ref<Enhancer[]>()
 const loading = ref(false)
+
+const props = defineProps<{ type: 'meals' | 'medicines' }>()
 
 const emits = defineEmits<{
     (event: 'select', v: Enhancer | undefined): void
 }>()
 
 async function loadMeals() {
-    if (!dataSource.mealsTable) {
-        return;
-    }
     let i = 0, v;
-    meals.value = []
+    enhancers.value = []
 
     loading.value = true;
     do {
         if (v?.next) {
-            v = await v.next()
+            v = await v.next();
         } else {
-            v = await dataSource.mealsTable(i += 1)
+            v = await (props.type == 'meals'
+                ? dataSource.mealsTable(i += 1)
+                : dataSource.medicineTable(i += 1));
         }
-        console.log(v.results);
-        meals.value = meals.value.concat(v.results)
+        enhancers.value = enhancers.value.concat(v.results)
     } while (i < v.totalPages || v.next)
     loading.value = false;
 }
 loadMeals()
 
 function handleUpdateValue(i: number) {
-    emits('select', meals.value ? meals.value[i] : undefined)
+    emits('select', enhancers.value ? enhancers.value[i] : undefined)
 }
 
 </script>
 
 <template>
-    <n-select :placeholder="$t('select-meals')" :options="meals?.map((v, i) => ({ label: v.name, value: i }))"
-        @update-value="handleUpdateValue" :loading="loading" />
+    <n-select :placeholder="$t('select-meals')" :options="enhancers?.map((v, i) => ({ label: v.name, value: i }))"
+        @update-value="handleUpdateValue" :loading="loading" clearable remote :reset-menu-on-options-change="false" />
 </template>
 
 <fluent locale="zh-CN">
 select-meals = 选择{ meals }
+select-medicines = 选择{ medicines }
 </fluent>
 
 <fluent locale="en-US">
 select-meals = Select { meals }
+select-medicines = Select { medicines }
 </fluent>
 
 <fluent locale="ja-JP">
