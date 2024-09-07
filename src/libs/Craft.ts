@@ -319,7 +319,8 @@ export async function craftPointsList(status: Status, actions: Actions[]): Promi
 };
 
 export function calcWaitTime(...actions: Actions[]) {
-    return actions.map(v => waitTimes.get(v) ?? 0).reduce((acc, v) => acc + v)
+    return actions.map(v => waitTimes.get(v) ?? 0)
+        .reduce((acc, v) => acc + v, 0)
 }
 
 export interface RecipeInfo {
