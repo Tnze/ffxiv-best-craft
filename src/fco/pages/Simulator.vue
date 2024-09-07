@@ -20,7 +20,8 @@
 import { ref, reactive, markRaw, watchEffect } from 'vue';
 import { NGrid, NGi, NCheckbox, NMessageProvider, NCard, NTabs, NTabPane } from 'naive-ui';
 import ActionQueue from '@/components/designer/ActionQueue.vue';
-import { Actions, newStatus, Status } from '@/libs/Craft';
+import Buffs from '@/components/designer/Buffs.vue';
+import { Actions, newStatus, simulate, SimulateResult, Status } from '@/libs/Craft';
 import { Sequence } from '@/components/designer/types';
 
 import useFcoSimulatorStore from '../stores/simulator';
@@ -42,8 +43,10 @@ const rotation = reactive<Sequence>({
     ],
     maxid: 2,
 });
-
 const initStatus = ref<Status>();
+const simulateResult = ref<SimulateResult>();
+
+// 计算初始状态
 watchEffect(async () => {
     if (!store.recipe) {
         initStatus.value = undefined;
@@ -56,8 +59,17 @@ watchEffect(async () => {
             store.recipe.recipeLevel
         );
     } catch (e: any) {
-        console.log(e)
+        console.error(e)
+        initStatus.value = undefined;
     }
+})
+
+watchEffect(async () => {
+    if (!initStatus.value) {
+        simulateResult.value = undefined
+        return;
+    }
+    simulateResult.value = await simulate(initStatus.value, rotation.slots.map(slot => slot.action));
 })
 
 function pushAction(action: Actions) {
@@ -79,18 +91,24 @@ function pushAction(action: Actions) {
                 <RecipeSelect />
             </n-gi>
             <n-gi span="12 m:6">
-                <CraftingState :job="store.job" :status="initStatus" />
+                <CraftingState :job="store.job" :status="simulateResult?.status" />
             </n-gi>
             <n-gi span="12 m:6">
                 <Attributes />
             </n-gi>
             <n-gi :span="12">
                 <n-card>
-                    <ActionQueue v-model:list="rotation.slots" :job="store.job" />
+                    <Buffs v-if="simulateResult" :buffs="simulateResult.status.buffs" />
                 </n-card>
             </n-gi>
             <n-gi :span="12">
-                <ActionPanel :job="store.job" @clicked-action="pushAction" />
+                <n-card>
+                    <ActionQueue v-model:list="rotation.slots" :job="store.job" :err-list="simulateResult?.errors" />
+                </n-card>
+            </n-gi>
+            <n-gi :span="12">
+                <ActionPanel :job="store.job" :status="simulateResult?.status ?? initStatus"
+                    @clicked-action="pushAction" />
             </n-gi>
             <n-gi :span="6">
                 <n-tabs>
@@ -98,7 +116,8 @@ function pushAction(action: Actions) {
                     <n-tab-pane name="Macro"> </n-tab-pane>
                 </n-tabs>
             </n-gi>
-        </n-grid></n-message-provider>
+        </n-grid>
+    </n-message-provider>
 </template>
 
 <style scoped></style>
