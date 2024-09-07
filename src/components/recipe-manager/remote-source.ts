@@ -16,7 +16,7 @@
 
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
 import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from './source'
-import { Enhancer } from "../attr-enhancer/Enhancer";
+import { Enhancer } from "@/libs/Enhancer";
 
 interface XivapiRecipeResult {
     Pagination: {

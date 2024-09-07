@@ -14,17 +14,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Attributes, Jobs, Recipe, RecipeInfo, RecipeLevel } from "@/libs/Craft"
-import { defineStore } from "pinia"
+interface Enhancer {
+  name: string;
+  cm?: number;
+  cm_max?: number;
+  ct?: number;
+  ct_max?: number;
+  cp?: number;
+  cp_max?: number;
+}
 
-export default defineStore('fco-simulator', {
-    state: () => ({
-        job: Jobs.Alchemist,
-        recipe: <{
-            recipe: Recipe,
-            recipeLevel: RecipeLevel,
-            recipeInfo: RecipeInfo,
-        } | undefined>undefined,
-        attributes: <Attributes | undefined>undefined,
-    }),
-})
+export { Enhancer };

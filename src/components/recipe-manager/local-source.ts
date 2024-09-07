@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "../../libs/Craft";
-import { Enhancer } from "../attr-enhancer/Enhancer";
+import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
+import { Enhancer } from "@/libs/Enhancer";
 import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from "./source";
 
 export class LocalRecipeSource {

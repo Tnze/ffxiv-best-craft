@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -16,7 +16,7 @@
 
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
 import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from "./source";
-import { Enhancer } from "../attr-enhancer/Enhancer";
+import { Enhancer } from "@/libs/Enhancer";
 
 export class WebSource {
     public sourceType = DataSourceType.RemoteRealtime

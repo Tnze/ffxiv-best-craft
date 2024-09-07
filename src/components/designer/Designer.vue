@@ -24,6 +24,7 @@ import { useMediaQuery, useElementSize } from "@vueuse/core";
 
 import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements, SimulateResult } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
+import { Enhancer } from "@/libs/Enhancer";
 import useDesignerStore from '@/stores/designer';
 
 import ActionPanel from "./ActionPanel.vue";
@@ -33,7 +34,6 @@ import SolverList from "./solvers/List.vue";
 import MacroExporter from "./MacroExporter.vue";
 import InitialQualitySetting from './InitialQualitySetting.vue'
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
-import { Enhancer } from "../attr-enhancer/Enhancer";
 import { useFluent } from 'fluent-vue';
 import StagedActionQueueItem from './StagedActionQueueItem.vue';
 import Analyzers from './Analyzers.vue';
