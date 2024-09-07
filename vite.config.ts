@@ -75,5 +75,13 @@ export default defineConfig({
       topLevelAwait(),
     ],
   },
-  base: '/dawntrail/'
+  base: '/dawntrail/',
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        fco: resolve(__dirname, 'fco.html'),
+      }
+    }
+  }
 })
