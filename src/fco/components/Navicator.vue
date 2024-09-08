@@ -45,11 +45,20 @@ const menuOptions: MenuOption[] = [
 </script>
 
 <template>
-    <n-menu mode="horizontal" :options="menuOptions" />
+    <div class="nav">
+        <n-gradient-text class="title" :font-size="20" type="info">
+            《最终幻想14》生产模拟器
+        </n-gradient-text>
+        <n-menu mode="horizontal" :options="menuOptions" />
+    </div>
 </template>
 
 <style scoped>
-/* .nav {
-    display: grid;
-} */
+.title {
+    margin: 0 15px;
+}
+.nav {
+    display: flex;
+    align-items: center;
+}
 </style>
