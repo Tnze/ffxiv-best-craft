@@ -93,9 +93,9 @@ const copyChunk = async (i: number, macro: string[]) => {
 <template>
     <n-flex vertical>
         <n-flex>
-            <n-checkbox v-model="genOptions.hasNotify" :label="$t('has-notify')" />
-            <n-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
-            <n-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
+            <n-checkbox v-model:checked="genOptions.hasNotify" :label="$t('has-notify')" />
+            <n-checkbox v-model:checked="genOptions.hasLock" :label="$t('has-lock')" />
+            <n-checkbox v-model:checked="genOptions.avgSize" :label="$t('avg-size')" />
         </n-flex>
         <template v-for="({ lines, totalWaitTime }, i) in chunkedActions">
             <span>{{ $t('macro') }} #{{ i + 1 }} ({{ formatDuration(totalWaitTime * 1e3, 0) }})</span>
