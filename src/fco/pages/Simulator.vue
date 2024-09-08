@@ -34,6 +34,7 @@ import JobSelect from '../components/JobSelect.vue';
 import RecipeSelect from '../components/RecipeSelect.vue';
 import Analyzer from '../components/Analyzer.vue';
 import SolveModal from '../components/SolveModal.vue';
+import Macros from '../components/Macros.vue';
 
 const gearsetsStore = useGearsetsStore()
 const store = useFcoSimulatorStore();
@@ -138,7 +139,9 @@ function pushAction(action: Actions) {
                     <n-tab-pane name="random" :tab="$t('random')">
                         <Analyzer :init-status="initStatus" :actions="rotation.slots.map(s => s.action)" />
                     </n-tab-pane>
-                    <n-tab-pane name="macro" :tab="$t('macro')"></n-tab-pane>
+                    <n-tab-pane name="macro" :tab="$t('macro')">
+                        <Macros :actions="rotation.slots.map(s => s.action)" />
+                    </n-tab-pane>
                 </n-tabs>
             </n-gi>
         </n-grid>
