@@ -39,6 +39,11 @@ import Macros from '../components/Macros.vue';
 const gearsetsStore = useGearsetsStore()
 const store = useFcoSimulatorStore();
 
+// 持久化 Store
+store.$subscribe((_mutation, state) => {
+    localStorage.setItem('fco-simulator', JSON.stringify(state))
+})
+
 const rotation = reactive<Sequence>({
     slots: store.rotation.map((action, id) => ({ id, action })),
     maxid: store.rotation.length,
@@ -83,6 +88,7 @@ function save() {
     editMode.value = false;
     store.rotation = rotation.slots.map(v => v.action);
 }
+
 
 </script>
 
