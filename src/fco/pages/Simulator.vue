@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ref, reactive, markRaw, watchEffect } from 'vue';
+import { ref, reactive, markRaw, watchEffect, watch } from 'vue';
 import { NGrid, NGi, NCheckbox, NMessageProvider, NCard, NTabs, NTabPane, NButton, NFlex, NModalProvider } from 'naive-ui';
 import ActionQueue from '@/components/designer/ActionQueue.vue';
 import Buffs from '@/components/designer/Buffs.vue';
@@ -40,11 +40,8 @@ const gearsetsStore = useGearsetsStore()
 const store = useFcoSimulatorStore();
 
 const rotation = reactive<Sequence>({
-    slots: [
-        { id: 0, action: Actions.TrainedEye },
-        { id: 1, action: Actions.Groundwork },
-    ],
-    maxid: 2,
+    slots: store.rotation.map((action, id) => ({ id, action })),
+    maxid: store.rotation.length,
 });
 const initStatus = ref<Status>();
 const simulateResult = ref<SimulateResult>();
@@ -80,6 +77,11 @@ watchEffect(async () => {
 
 function pushAction(action: Actions) {
     rotation.slots.push(markRaw({ id: rotation.maxid++, action }));
+}
+
+function save() {
+    editMode.value = false;
+    store.rotation = rotation.slots.map(v => v.action);
 }
 
 </script>
@@ -122,7 +124,7 @@ function pushAction(action: Actions) {
                         <n-button type="primary" @click="solverModalShow = true">{{ $t('solve') }}</n-button>
                     </template>
                     <template v-else>
-                        <n-button type="primary" @click="editMode = false">{{ $t('save') }}</n-button>
+                        <n-button type="primary" @click="save">{{ $t('save') }}</n-button>
                         <n-button type="warning" @click="rotation.slots.splice(0)">{{ $t('clear') }}</n-button>
                     </template>
                 </n-flex>

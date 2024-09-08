@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Attributes, Jobs, Recipe, RecipeInfo, RecipeLevel } from "@/libs/Craft"
+import { Actions, Attributes, Jobs, Recipe, RecipeInfo, RecipeLevel } from "@/libs/Craft"
 import { defineStore } from "pinia"
 import useGearsetsStore from '@/stores/gearsets';
 
@@ -27,5 +27,6 @@ export default defineStore('fco-simulator', {
             recipeInfo: RecipeInfo,
         } | undefined>undefined,
         attributes: <Attributes | undefined>useGearsetsStore().attributes(Jobs.Alchemist),
+        rotation: <Actions[]>[],
     }),
 })
