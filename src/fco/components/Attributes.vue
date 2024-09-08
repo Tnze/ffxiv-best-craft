@@ -18,17 +18,23 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { NCard, NSelect, NGrid, NGi } from 'naive-ui';
+import { NCard, NGrid, NGi } from 'naive-ui';
 import useFcoSimulatorStore from '../stores/simulator';
 import useGearsetsStore from '@/stores/gearsets';
 import MealAndMedicinesSelect from './MealAndMedicinesSelect.vue';
 import { Enhancer } from '@/libs/Enhancer';
+import { Attributes } from '@/libs/Craft';
 
 const gearsetsStore = useGearsetsStore()
 const store = useFcoSimulatorStore();
 
 defineProps<{
     initialQuality?: number,
+    attributs: Attributes,
+}>()
+
+const emits = defineEmits<{
+    'update:attributs': [Attributes]
 }>()
 
 const meal = ref<Enhancer>();
@@ -58,12 +64,12 @@ watch([attributes, meal, medicine], ([{ level, craftsmanship, control, craft_poi
         .map((v) => Math.min((craft_points * v.cp!) / 100, v.cp_max!))
         .reduce(sum, 0);
     // Store
-    store.attributes = {
+    emits('update:attributs', {
         level,
         craftsmanship: craftsmanship + craftsmanshipAddons.value,
         control: control + controlAddons.value,
         craft_points: craft_points + craftPointAddons.value,
-    };
+    });
 });
 
 </script>
@@ -85,19 +91,19 @@ watch([attributes, meal, medicine], ([{ level, craftsmanship, control, craft_poi
             <n-gi>{{ attributes?.craftsmanship }}</n-gi>
             <n-gi>+ {{ craftsmanshipAddons }}</n-gi>
             <n-gi>+ 0</n-gi>
-            <n-gi>= {{ store.attributes?.craftsmanship }}</n-gi>
+            <n-gi>= {{ attributs.craftsmanship }}</n-gi>
 
             <n-gi :span="2">{{ $t('control') }}</n-gi>
             <n-gi>{{ attributes?.control }}</n-gi>
             <n-gi>+ {{ controlAddons }}</n-gi>
             <n-gi>+ 0</n-gi>
-            <n-gi>= {{ store.attributes?.control }}</n-gi>
+            <n-gi>= {{ attributs.control }}</n-gi>
 
             <n-gi :span="2">{{ $t('craft-point') }}</n-gi>
             <n-gi>{{ attributes?.craft_points }}</n-gi>
             <n-gi>+ {{ craftPointAddons }}</n-gi>
             <n-gi>+ 0</n-gi>
-            <n-gi>= {{ store.attributes?.craft_points }}</n-gi>
+            <n-gi>= {{ attributs.craft_points }}</n-gi>
 
             <n-gi :span="2">{{ $t('initial-quality') }}</n-gi>
             <n-gi>{{ initialQuality }}</n-gi>

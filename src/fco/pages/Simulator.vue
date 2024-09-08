@@ -17,18 +17,18 @@
 -->
 
 <script setup lang="ts">
-import { ref, reactive, markRaw, watchEffect, watch } from 'vue';
-import { NGrid, NGi, NCheckbox, NMessageProvider, NCard, NTabs, NTabPane, NButton, NFlex, NModalProvider } from 'naive-ui';
+import { ref, reactive, markRaw, watchEffect } from 'vue';
+import { NGrid, NGi, NMessageProvider, NCard, NTabs, NTabPane, NButton, NFlex, NModalProvider } from 'naive-ui';
 import ActionQueue from '@/components/designer/ActionQueue.vue';
 import Buffs from '@/components/designer/Buffs.vue';
-import { Actions, newStatus, simulate, SimulateResult, Status } from '@/libs/Craft';
+import { Actions, Attributes, newStatus, simulate, SimulateResult, Status } from '@/libs/Craft';
 import { Sequence } from '@/components/designer/types';
 
 import useFcoSimulatorStore from '../stores/simulator';
 import useGearsetsStore from '@/stores/gearsets'
 
 import ActionPanel from '../components/ActionPanel.vue';
-import Attributes from '../components/Attributes.vue';
+import AttributesVue from '../components/Attributes.vue';
 import CraftingState from '../components/CraftingState.vue';
 import JobSelect from '../components/JobSelect.vue';
 import RecipeSelect from '../components/RecipeSelect.vue';
@@ -48,6 +48,7 @@ const rotation = reactive<Sequence>({
     slots: store.rotation.map((action, id) => ({ id, action })),
     maxid: store.rotation.length,
 });
+const attributs = ref<Attributes>(gearsetsStore.attributes(store.job))
 const initStatus = ref<Status>();
 const simulateResult = ref<SimulateResult>();
 const editMode = ref(false);
@@ -61,7 +62,7 @@ watchEffect(async () => {
     }
     try {
         initStatus.value = await newStatus(
-            gearsetsStore.attributes(store.job),
+            attributs.value,
             store.recipe.recipe,
             store.recipe.recipeLevel
         );
@@ -109,7 +110,7 @@ function save() {
                 <CraftingState :job="store.job" :status="simulateResult?.status" />
             </n-gi>
             <n-gi span="12 m:6">
-                <Attributes />
+                <AttributesVue v-model:attributs="attributs" />
             </n-gi>
 
             <n-gi v-if="editMode" :span="12">
