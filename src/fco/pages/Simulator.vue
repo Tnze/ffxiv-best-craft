@@ -134,7 +134,7 @@ function pushAction(action: Actions) {
                 <ActionPanel :job="store.job" :status="simulateResult?.status ?? initStatus"
                     @clicked-action="pushAction" />
             </n-gi>
-            <n-gi v-if="initStatus" :span="6">
+            <n-gi v-if="initStatus" :span="12">
                 <n-tabs>
                     <n-tab-pane name="random" :tab="$t('random')">
                         <Analyzer :init-status="initStatus" :actions="rotation.slots.map(s => s.action)" />

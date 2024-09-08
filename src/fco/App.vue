@@ -19,6 +19,9 @@
 <script setup lang="ts">
 import { NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter, NConfigProvider, NLoadingBarProvider, darkTheme, zhCN } from 'naive-ui';
 import Navicator from './components/Navicator.vue';
+import { useDark } from '@vueuse/core'
+
+const dark = useDark()
 
 const themeOverrides = {
     common: {
@@ -28,7 +31,7 @@ const themeOverrides = {
 </script>
 
 <template>
-    <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides" :locale="zhCN" abstract>
+    <n-config-provider :theme="dark ? darkTheme : undefined" :theme-overrides="themeOverrides" :locale="zhCN" abstract>
         <n-layout class="page" style="height: 100%;">
             <n-layout-header style="padding: 5px;">
                 <Navicator />
@@ -55,7 +58,7 @@ const themeOverrides = {
 .info-text {
     padding: 20px;
     align-self: center;
-    margin-bottom: 5px;
+    /* margin-bottom: 5px; */
     white-space: pre-line;
 }
 </style>

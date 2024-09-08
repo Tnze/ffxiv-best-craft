@@ -21,6 +21,7 @@ import { computed, reactive } from 'vue';
 import { NFlex, NCard, NCheckbox, useMessage } from 'naive-ui';
 import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
+import { formatDuration } from '@/libs/Utils';
 
 const props = defineProps<{
     actions: Actions[]
@@ -44,26 +45,29 @@ const chunkedActions = computed(() => {
     const minChunks = Math.ceil(props.actions.length / maxLinesPerChunk);
     const size = props.actions.length / minChunks || 14;
     for (let sec = 0; sec < minChunks; sec++) {
-        let section;
+        let section: Actions[];
         if (genOptions.avgSize) {
             section = props.actions.slice(sec * size, Math.min(props.actions.length, (sec + 1) * size))
         } else {
             const start = sec * maxLinesPerChunk;
             section = props.actions.slice(start, Math.min(props.actions.length, start + maxLinesPerChunk))
         }
-        let lines = [];
+        const lines = [];
+        let totalWaitTime = 0;
         if (genOptions.hasLock)
             lines.push(`/mlock`)
         for (let action of section) {
+            const waitTime = calcWaitTime(action);
             let actionName = $t(action.replaceAll('_', '-'))
             if (actionName.includes(' ')) {
                 actionName = `"${actionName}"`
             }
-            lines.push(`/ac ${actionName} <wait.${calcWaitTime(action)}>`)
+            lines.push(`/ac ${actionName} <wait.${waitTime}>`);
+            totalWaitTime += waitTime;
         }
         if (genOptions.hasNotify)
-            lines.push(`/echo ${$t('marco-finished', { id: sec + 1 })}<se.1>`)
-        macros.push(lines)
+            lines.push(`/echo ${$t('macro-finished', { id: sec + 1 })}<se.1>`)
+        macros.push({ lines, totalWaitTime })
     }
     return macros
 })
@@ -78,16 +82,10 @@ const copyChunk = async (i: number, macro: string[]) => {
         useClipboard().copy(macroText)
     }
     message.success(
-        $t('copied-marco', { id: i + 1 }), {
+        $t('copied-macro', { id: i + 1 }), {
         duration: 2000,
         closable: true,
     })
-    // ElMessage({
-    //     type: 'success',
-    //     duration: 2000,
-    //     showClose: true,
-    //     message: $t('copied-marco', { id: i + 1 })
-    // })
 }
 
 </script>
@@ -99,12 +97,15 @@ const copyChunk = async (i: number, macro: string[]) => {
             <n-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
             <n-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
         </n-flex>
-        <n-card v-for="(marco, i) in chunkedActions" class="box-card" @click="copyChunk(i, marco)">
-            <span v-for="line in marco">
-                {{ line }}
-                <br />
-            </span>
-        </n-card>
+        <template v-for="({ lines, totalWaitTime }, i) in chunkedActions">
+            <span>{{ $t('macro') }} #{{ i + 1 }} ({{ formatDuration(totalWaitTime * 1e3, 0) }})</span>
+            <n-card class="box-card" @click="copyChunk(i, lines)" hoverable>
+                <span v-for="line in lines">
+                    {{ line }}
+                    <br />
+                </span>
+            </n-card>
+        </template>
     </n-flex>
 </template>
 
@@ -118,20 +119,22 @@ const copyChunk = async (i: number, macro: string[]) => {
 }
 
 .box-card {
-    width: 200px;
     cursor: pointer;
+    width: auto;
 }
 </style>
 
 <fluent locale="zh-CN">
+macro = 宏指令
 has-notify = 添加完成提示
 has-lock = 锁定宏指令
 avg-size = 长度平均化
-copied-marco = 已复制 宏#{ $id } 到系统剪切板
-marco-finished = 宏#{ $id } 已完成！
+copied-macro = 已复制 宏#{ $id } 到系统剪切板
+macro-finished = 宏#{ $id } 已完成！
 </fluent>
 
 <fluent locale="en-US">
-copied-marco = Copied M#{ $id } to system clipboard!
-marco-finished = M#{ $id } is finished!
+macro = Macro
+copied-macro = Copied M#{ $id } to system clipboard!
+macro-finished = M#{ $id } is finished!
 </fluent>
