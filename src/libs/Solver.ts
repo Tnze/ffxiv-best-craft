@@ -127,9 +127,9 @@ export async function reflect_solve(status: Status, useManipulation: boolean, us
     }
 }
 
-export async function raphael_solve(status: Status, useManipultaion: boolean, backloadProgress: boolean, minimizeSteps: boolean): Promise<Actions[]> {
+export async function raphael_solve(status: Status, useManipulation: boolean, backloadProgress: boolean, minimizeSteps: boolean): Promise<Actions[]> {
     clarityReport('runRaphaelSolver')
-    const args = { status, useManipultaion, backloadProgress, minimizeSteps };
+    const args = { status, useManipulation, backloadProgress, minimizeSteps };
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri
         return invoke("raphael_solve", args)
