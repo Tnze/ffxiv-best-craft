@@ -22,12 +22,17 @@ use raphael_solvers::MacroSolver;
 pub fn solve(
     status: Status,
     use_manipultaion: bool,
+    use_heart_and_soul: bool,
+    use_quick_innovation: bool,
     backload_progress: bool,
-    minimize_steps: bool,
 ) -> Vec<Actions> {
-    let mut allowed_actions = ActionMask::from_level(status.attributes.level)
-        .remove(Action::HeartAndSoul)
-        .remove(Action::QuickInnovation);
+    let mut allowed_actions = ActionMask::from_level(status.attributes.level);
+    if !use_heart_and_soul {
+        allowed_actions = allowed_actions.remove(Action::HeartAndSoul)
+    }
+    if !use_quick_innovation {
+        allowed_actions = allowed_actions.remove(Action::QuickInnovation)
+    }
     if !use_manipultaion {
         allowed_actions = allowed_actions.remove(Action::Manipulation);
     }
@@ -46,9 +51,15 @@ pub fn solve(
         adversarial: false,
     };
     let state = SimulationState::new(&settings);
-    let mut solver = MacroSolver::new(settings, Box::new(|_| {}), Box::new(|_| {}));
+    let mut solver = MacroSolver::new(
+        settings,
+        backload_progress,
+        false,
+        Box::new(|_| {}),
+        Box::new(|_| {}),
+    );
     solver
-        .solve(state, backload_progress, minimize_steps)
+        .solve(state)
         .into_iter()
         .flatten()
         .map(map_action)

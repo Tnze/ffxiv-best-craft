@@ -69,6 +69,11 @@ prudent-synthesis = 俭约制作
 trained-finesse = 工匠的神技
 careful-observation = 设计变动
 heart-and-soul = 专心致志
+refined-touch = 精炼加工
+daring-touch = 冒进
+immaculate-mend = 巧夺天工
+quick-innovation = 快速改革
+trained-perfection = 工匠的绝技
 
 # 技能描述
 desc-basic-synthesis = 推动进展，效率：100，31级后效率：120。
