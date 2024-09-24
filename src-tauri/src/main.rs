@@ -348,14 +348,16 @@ fn reflect_solve(
 fn raphael_solve(
     status: Status,
     use_manipultaion: bool,
+    use_heart_and_soul: bool,
+    use_quick_innovation: bool,
     backload_progress: bool,
-    minimize_steps: bool,
 ) -> Vec<Actions> {
     raphael::solve(
         status.clone(),
         use_manipultaion,
+        use_heart_and_soul,
+        use_quick_innovation,
         backload_progress,
-        minimize_steps,
     )
 }
 

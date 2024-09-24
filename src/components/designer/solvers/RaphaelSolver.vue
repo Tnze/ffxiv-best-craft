@@ -42,11 +42,13 @@ const raphaelSolveIsSolving = ref(false)
 
 // Solver options
 const useManipulation = ref(false)
+const useHeartAndSoul = ref(false)
+const useQuickInnovation = ref(false)
 const backloadProgress = ref(false)
 const minimizeSteps = ref(false)
 
 function runRaphaelSolver() {
-    emits('runSimpleSolver', SequenceSource.RaphaelSolver, raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value, backloadProgress.value, minimizeSteps.value))
+    emits('runSimpleSolver', SequenceSource.RaphaelSolver, raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value, useHeartAndSoul.value, useQuickInnovation.value, backloadProgress.value))
 }
 </script>
 
@@ -65,8 +67,10 @@ function runRaphaelSolver() {
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
         <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
+        <el-checkbox v-model="useHeartAndSoul" :label="$t('heart-and-soul')" />
+        <el-checkbox v-model="useQuickInnovation" :label="$t('quick-innovation')" />
         <el-checkbox v-model="backloadProgress" :label="$t('backload-progress')" />
-        <el-checkbox v-model="minimizeSteps" :label="$t('minimize-steps')" />
+        <el-checkbox v-model="minimizeSteps" :label="$t('minimize-steps')" disabled />
     </el-space>
     <div style="margin-top: 10px;">
         <el-button @click="runRaphaelSolver" type="primary" :loading="raphaelSolveIsSolving">

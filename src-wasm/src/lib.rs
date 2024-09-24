@@ -118,16 +118,18 @@ pub fn reflect_solve(status: JsValue, use_observe: bool) -> Result<JsValue, JsVa
 pub fn raphael_solve(
     status: JsValue,
     use_manipultaion: bool,
+    use_heart_and_soul: bool,
+    use_quick_innovation: bool,
     backload_progress: bool,
-    minimize_steps: bool,
 ) -> Result<JsValue, JsValue> {
     use app_libs::solver::raphael::solve;
     let status: Status = from_value(status)?;
     let result: Vec<Actions> = solve(
         status.clone(),
         use_manipultaion,
+        use_heart_and_soul,
+        use_quick_innovation,
         backload_progress,
-        minimize_steps,
     );
     Ok(to_value(&result)?)
 }
