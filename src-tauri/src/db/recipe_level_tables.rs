@@ -12,8 +12,6 @@ pub struct Model {
     pub class_job_level: i32,
     #[sea_orm(column_name = "SuggestedCraftsmanship")]
     pub suggested_craftsmanship: i32,
-    #[sea_orm(column_name = "SuggestedControl")]
-    pub suggested_control: i32,
     #[sea_orm(column_name = "Difficulty")]
     pub difficulty: i32,
     #[sea_orm(column_name = "Quality")]
