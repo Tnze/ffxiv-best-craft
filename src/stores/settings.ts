@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -18,27 +18,31 @@ import { defineStore } from 'pinia'
 import { CafeMakerApiBase, XivApiRecipeSource, XivapiBase } from '@/components/recipe-manager/remote-source'
 import { DataSource } from '@/components/recipe-manager/source'
 import { YYYYGamesApiBase, WebSource } from '@/components/recipe-manager/web-source'
+import { BetaXivApiRecipeSource, BetaXivapiBase } from '@/components/recipe-manager/beta-xivapi-source'
 
 
 export default defineStore('settings', {
     state: () => ({
         language: 'system',
-        dataSource: <'local' | "yyyy.games" | 'xivapi' | 'cafe'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'local' : 'yyyy.games'),
+        dataSource: <'local' | "yyyy.games" | 'xivapi-old' | 'cafe' | 'xivapi'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'xivapi' : 'xivapi'),
         dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined
     }),
     getters: {
         toJson(): string {
             return JSON.stringify({
                 language: this.language,
+                dataSource: this.dataSource,
+                dataSourceLang: this.dataSourceLang,
             })
         },
         async getDataSource(): Promise<DataSource> {
             let dataSources: Record<string, () => DataSource> = {
                 'yyyy.games': () => new WebSource(YYYYGamesApiBase),
-                'xivapi': () => new XivApiRecipeSource(XivapiBase, this.dataSourceLang),
+                'xivapi-old': () => new XivApiRecipeSource(XivapiBase, this.dataSourceLang),
                 'cafe': () => new XivApiRecipeSource(CafeMakerApiBase),
+                'xivapi': () => new BetaXivApiRecipeSource(BetaXivapiBase, this.dataSourceLang)
             }
-            let defaultSource: () => DataSource = dataSources['yyyy.games']
+            let defaultSource: () => DataSource = dataSources['xivapi']
             if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
                 var { LocalRecipeSource } = await import('../components/recipe-manager/local-source')
                 let localSource = () => new LocalRecipeSource()

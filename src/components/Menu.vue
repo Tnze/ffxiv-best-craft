@@ -20,16 +20,14 @@
 import { ElMenu, ElMenuItem, ElIcon } from 'element-plus'
 import { Notebook, Suitcase, Edit, Setting, Guide } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router';
-import useGuideStore from '@/stores/guide';
 
 const router = useRouter()
-const guideStore = useGuideStore()
 
 </script>
 
 <template>
     <el-menu :default-active="router.currentRoute.value.path" :router="true" :collapse="false">
-        <el-menu-item :index="'/guide/' + guideStore.currentPage">
+        <el-menu-item index="/welcome">
             <el-icon>
                 <guide />
             </el-icon>

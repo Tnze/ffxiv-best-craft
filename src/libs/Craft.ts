@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -47,8 +47,8 @@ export interface Recipe {
 export interface RecipeLevel {
     class_job_level: number,
     stars: number,
-    suggested_craftsmanship: number,
-    suggested_control: number,
+    suggested_craftsmanship: number | null,
+    suggested_control: number | null,
     difficulty: number,
     quality: number,
     progress_divider: number,
@@ -68,11 +68,13 @@ export interface Buffs {
     final_appraisal: number;
     manipulation: number;
     wast_not: number;
-    heart_and_soul: number;
+    heart_and_soul: LimitedActionState;
+    trained_perfection: LimitedActionState;
     careful_observation_used: number;
-    heart_and_soul_used: number;
+    quick_innovation_used: number;
     touch_combo_stage: number;
     observed: number;
+    expedience: number;
 }
 
 export interface Status {
@@ -86,6 +88,12 @@ export interface Status {
     quality: number;
     step: number;
     condition: Conditions;
+}
+
+export enum LimitedActionState {
+    Unused = "Unused",
+    Active = "Active",
+    Used = "Used",
 }
 
 export const compareStatus = (s1: Status, s2: Status): number => {
@@ -154,8 +162,6 @@ export enum Actions {
     CarefulSynthesis = "careful_synthesis",
     Manipulation = "manipulation",
     PrudentTouch = "prudent_touch",
-    FocusedSynthesis = "focused_synthesis",
-    FocusedTouch = "focused_touch",
     Reflect = "reflect",
     PreparatoryTouch = "preparatory_touch",
     Groundwork = "groundwork",
@@ -167,12 +173,56 @@ export enum Actions {
     TrainedFinesse = "trained_finesse",
     CarefulObservation = "careful_observation",
     HeartAndSoul = "heart_and_soul",
+    // 7.0
+    RefinedTouch = "refined_touch",
+    DaringTouch = "daring_touch",
+    ImmaculateMend = "immaculate_mend",
+    QuickInnovation = "quick_innovation",
+    TrainedPerfection = "trained_perfection",
     // fake skills
     RapidSynthesisFail = "rapid_synthesis_fail",
     HastyTouchFail = "hasty_touch_fail",
-    FocusedSynthesisFail = "focused_synthesis_fail",
-    FocusedTouchFail = "focused_touch_fail",
+    DaringTouchFail = "daring_touch_fail",
 }
+
+const waitTimes = new Map([
+    [Actions.BasicSynthesis, 3],
+    [Actions.BasicTouch, 3],
+    [Actions.MastersMend, 3],
+    [Actions.HastyTouch, 3],
+    [Actions.RapidSynthesis, 3],
+    [Actions.Observe, 3],
+    [Actions.TricksOfTheTrade, 2],
+    [Actions.WasteNot, 2],
+    [Actions.Veneration, 2],
+    [Actions.StandardTouch, 3],
+    [Actions.GreatStrides, 2],
+    [Actions.Innovation, 2],
+    [Actions.FinalAppraisal, 2],
+    [Actions.WasteNotII, 2],
+    [Actions.ByregotsBlessing, 3],
+    [Actions.PreciseTouch, 3],
+    [Actions.MuscleMemory, 3],
+    [Actions.CarefulSynthesis, 3],
+    [Actions.Manipulation, 2],
+    [Actions.PrudentTouch, 3],
+    [Actions.Reflect, 3],
+    [Actions.PreparatoryTouch, 3],
+    [Actions.Groundwork, 3],
+    [Actions.DelicateSynthesis, 3],
+    [Actions.IntensiveSynthesis, 3],
+    [Actions.TrainedEye, 3],
+    [Actions.AdvancedTouch, 3],
+    [Actions.PrudentSynthesis, 3],
+    [Actions.TrainedFinesse, 3],
+    [Actions.CarefulObservation, 3],
+    [Actions.HeartAndSoul, 3],
+    [Actions.RefinedTouch, 3],
+    [Actions.DaringTouch, 3],
+    [Actions.ImmaculateMend, 3],
+    [Actions.QuickInnovation, 2],
+    [Actions.TrainedPerfection, 3],
+])
 
 export const newRecipe = async (
     rlv: number,
@@ -267,6 +317,11 @@ export async function craftPointsList(status: Status, actions: Actions[]): Promi
         return craftpoints_list(status, actions)
     }
 };
+
+export function calcWaitTime(...actions: Actions[]) {
+    return actions.map(v => waitTimes.get(v) ?? 0)
+        .reduce((acc, v) => acc + v, 0)
+}
 
 export interface RecipeInfo {
     id: number;

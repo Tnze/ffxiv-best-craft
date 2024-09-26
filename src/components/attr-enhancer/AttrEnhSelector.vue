@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -18,17 +18,19 @@
 
 <script setup lang="ts">
 import { ElForm, ElFormItem, ElSelectV2, ElSwitch, ElDivider } from 'element-plus';
-import { reactive, watch } from 'vue'
-import meals from '@/assets/data/meal.json'
-import potions from '@/assets/data/potions.json'
-import useGearsets from '@/stores/gearsets'
-import { Enhancer } from './Enhancer';
+import { onMounted, reactive, watch, ref, defineAsyncComponent } from 'vue'
+import { Enhancer } from '@/libs/Enhancer';
 import { useFluent } from 'fluent-vue';
 import { Jobs } from '@/libs/Craft';
-import Gearset from '@/components/Gearset.vue';
+import settingStore from '@/stores/settings'
+import { DataSource } from '../recipe-manager/source';
+
+const Gearset = defineAsyncComponent(() => import('@/components/Gearset.vue'))
 
 const { $t } = useFluent();
-const gearsets = useGearsets()
+const setting = settingStore();
+const meals = ref<Enhancer[]>()
+const medicine = ref<Enhancer[]>()
 
 const 专家之证: Enhancer = {
     cm: 100,
@@ -37,7 +39,7 @@ const 专家之证: Enhancer = {
     ct_max: 20,
     cp: 100,
     cp_max: 15,
-    name: "【ilv.136】" + $t('soul-of-the-crafter')
+    name: $t('soul-of-the-crafter')
 }
 
 const props = defineProps<{
@@ -49,10 +51,38 @@ const emits = defineEmits<{
     (event: 'update:modelValue', v: Enhancer[]): void
 }>()
 
-function processData(enhancers: Enhancer[]) {
-    return enhancers.map(value => ({
-        label: value.name, value
-    }))
+onMounted(async () => loadMealsAndMedicine(setting.getDataSource))
+watch(() => setting.getDataSource, loadMealsAndMedicine)
+
+async function loadMealsAndMedicine(ds: Promise<DataSource>) {
+    let datasource = await ds
+    if (datasource.mealsTable) {
+        (async () => {
+            let i = 0, v;
+            meals.value = []
+            do {
+                v = await datasource.mealsTable(i += 1)
+                meals.value = meals.value.concat(v.results)
+            } while (i < v.totalPages)
+        })()
+    }
+    if (datasource.medicineTable) {
+        (async () => {
+            let i = 0, v;
+            medicine.value = []
+            do {
+                v = await datasource.medicineTable(i += 1)
+                medicine.value = medicine.value.concat(v.results)
+            } while (i < v.totalPages)
+        })()
+    }
+}
+
+function enhancerToOptions(enhancers: Enhancer[] | undefined) {
+    return enhancers?.map(value => ({
+        label: value.name,
+        value
+    })) ?? []
 }
 
 const enhancers = reactive<{
@@ -74,12 +104,12 @@ watch(enhancers, e => {
 <template>
     <el-form :model="enhancers" label-width="auto">
         <el-form-item :label="$t('meal')">
-            <el-select-v2 v-model="enhancers.meal" :placeholder="$t('none')" :options="processData(meals)" value-key="name"
-                filterable clearable />
+            <el-select-v2 v-model="enhancers.meal" :placeholder="$t('none')" :options="enhancerToOptions(meals)"
+                value-key="name" clearable remote :loading="!meals" />
         </el-form-item>
-        <el-form-item :label="$t('potion')">
-            <el-select-v2 v-model="enhancers.potion" :placeholder="$t('none')" :options="processData(potions)"
-                value-key="name" filterable clearable />
+        <el-form-item :label="$t('medicine')">
+            <el-select-v2 v-model="enhancers.potion" :placeholder="$t('none')" :options="enhancerToOptions(medicine)"
+                value-key="name" clearable remote :loading="!medicine" />
         </el-form-item>
         <el-form-item :label="$t('soul-of-the-crafter')">
             <el-switch v-model="enhancers.soulOfTheCrafter" />
@@ -110,7 +140,7 @@ watch(enhancers, e => {
 name = 名称
 none = 无
 meal = 食物
-potion = 药水
+medicine = 药水
 soul-of-the-crafter = 专家之证
 </fluent>
 
@@ -118,12 +148,12 @@ soul-of-the-crafter = 专家之证
 name = Name
 none = None
 meal = Meal
-potion = Potion
+medicine = Potion
 soul-of-the-crafter = 专家之证
 </fluent>
 
-<fluent locale="en-US">
-name = Name
-none = None
+<fluent locale="ja-JP">
+meal = 調理品
+medicine = 薬品
 soul-of-the-crafter = マイスターの証
 </fluent>

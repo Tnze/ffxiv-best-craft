@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -32,6 +32,13 @@ if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
             worker.onerror = ev => reject(ev)
             worker.postMessage({ name, args: JSON.stringify(args) })
         })
+    }
+}
+
+declare const window: { clarity: any; } & Window & typeof globalThis;
+function clarityReport(event: string) {
+    if (window.clarity) {
+        window.clarity('event', event)
     }
 }
 
@@ -69,6 +76,7 @@ export async function read_solver(status: Status): Promise<Actions[]> {
 };
 
 export async function rika_solve(status: Status): Promise<Actions[]> {
+    clarityReport('runRikaSolver')
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         return (await pkgTauri).invoke("rika_solve", { status })
     } else {
@@ -77,6 +85,7 @@ export async function rika_solve(status: Status): Promise<Actions[]> {
 }
 
 export async function rika_solve_tnzever(status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean, reduceSteps: boolean): Promise<Actions[]> {
+    clarityReport('runRikaSolverTnzeVer')
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri
         return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve, reduceSteps })
@@ -86,6 +95,7 @@ export async function rika_solve_tnzever(status: Status, useManipulation: boolea
 }
 
 export async function dfs_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
+    clarityReport('runDfsSolver')
     const args = { status, depth, specialist };
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         return (await pkgTauri).invoke("dfs_solve", args)
@@ -95,6 +105,7 @@ export async function dfs_solve(status: Status, depth: number, specialist: boole
 }
 
 export async function nq_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
+    clarityReport('runNqSolver')
     const args = { status, depth, specialist };
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         return (await pkgTauri).invoke("nq_solve", args)
@@ -103,22 +114,26 @@ export async function nq_solve(status: Status, depth: number, specialist: boolea
     }
 }
 
-export async function reflect_solve(status: Status, useManipulation: boolean): Promise<Actions[]> {
+/// 基于DP的闲静手法求解
+/// useManipulation: 是否使用掌握
+/// useWastNot: 是否使用俭约（0：不使用，4：使用俭约，8：使用俭约和长期俭约）
+export async function reflect_solve(status: Status, useManipulation: boolean, useWasteNot: number, useObserve: boolean): Promise<Actions[]> {
+    clarityReport('runReflectSolver')
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri
-        return invoke("reflect_solve", { status, useManipulation })
+        return invoke("reflect_solve", { status, useManipulation, useWasteNot, useObserve })
     } else {
-        throw "solver-doesn-t-exist"
+        return invokeWasmSolver("reflect_solve", { status, useObserve })
     }
 }
 
-export function formatDuration(u: number): string {
-    if (u < 1000) {
-        return u + "ms"
+export async function raphael_solve(status: Status, useManipulation: boolean, useHeartAndSoul: boolean, useQuickInnovation: boolean, backloadProgress: boolean): Promise<Actions[]> {
+    clarityReport('runRaphaelSolver')
+    const args = { status, useManipulation, useHeartAndSoul, useQuickInnovation, backloadProgress };
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        let { invoke } = await pkgTauri
+        return invoke("raphael_solve", args)
     } else {
-        const h = Math.floor(u / 1000 / 3600)
-        const m = Math.floor(u / 1000 / 60) - h * 60
-        const s = (u / 1000 - h * 3600 - m * 60).toFixed(3)
-        return (h > 0 ? h + 'h' : '') + (m > 0 ? m + 'm' : '') + (s + 's')
+        return invokeWasmSolver("raphael_solve", args)
     }
 }

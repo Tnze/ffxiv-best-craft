@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -15,7 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
-import { DataSourceType, RecipesSourceResult } from './source'
+import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from './source'
+import { Enhancer } from "@/libs/Enhancer";
 
 interface XivapiRecipeResult {
     Pagination: {
@@ -65,22 +66,46 @@ export class XivApiRecipeSource {
         this.language = language
     }
 
-    async recipeTable(page: number, searchName: string): Promise<RecipesSourceResult> {
-        const query = new URLSearchParams({
-            'indexes': 'Recipe',
+    async recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult> {
+        const params: Record<string, string> = {
             'page': String(page),
-            'string': searchName,
-            'columns': 'ID,Icon,ItemResult.Name,ItemResult.ID,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable.ID,RequiredCraftsmanship,RequiredControl,CanHq'
-        })
-        if (this.language != undefined) query.set('language', this.language)
-        const url = new URL('search', this.base).toString() + '?' + query.toString();
+            'columns': 'ID,Icon,ItemResult.Name,ItemResult.ID,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable.ID,RequiredCraftsmanship,RequiredControl,CanHq',
+        };
+        const query = new URLSearchParams(params)
+        let url: string;
+        if (searchName || rlv || craftTypeId) {
+            query.set('indexes', 'Recipe')
+            // String?
+            if (searchName !== undefined) {
+                query.set('string', searchName);
+            }
+            // Filters?
+            const filters: string[] = []
+            if (rlv != undefined) {
+                filters.push(`RecipeLevelTable.ID=${rlv}`)
+            }
+            if (craftTypeId != undefined) {
+                filters.push(`CraftType.ID=${craftTypeId}`)
+            }
+            if (filters.length > 0) {
+                query.set('filters', filters.join(','))
+            }
+            // Language?
+            if (this.language != undefined) {
+                query.set('language', this.language)
+            }
+            url = new URL('search', this.base).toString() + '?' + query.toString();
+        } else {
+            url = new URL('Recipe', this.base).toString() + '?' + query.toString();
+        }
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors'
         })
         let data: XivapiRecipeResult = await resp.json()
+        this.checkRespError(data)
         return {
-            recipes: data.Results.map(v => <RecipeInfo>{
+            results: data.Results.filter(v => v.ID != null).map(v => <RecipeInfo>{
                 id: v.ID,
                 rlv: v.RecipeLevelTable.ID,
                 item_id: v.ItemResult.ID,
@@ -104,14 +129,17 @@ export class XivApiRecipeSource {
     async recipesIngredients(recipeId: number): Promise<ItemWithAmount[]> {
         const nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         const needs = new Map<number, ItemWithAmount>() // item_id as key
-        const url = new URL(`Recipe/${recipeId}`, this.base).toString() + '?' + new URLSearchParams({
+        const query = new URLSearchParams({
             'columns': nums.map(n => `AmountIngredient${n},ItemIngredient${n}TargetID`).join(',')
-        }).toString();
+        });
+        if (this.language != undefined) query.set('language', this.language)
+        const url = new URL(`Recipe/${recipeId}`, this.base).toString() + '?' + query.toString();
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors'
         })
         const data = await resp.json()
+        this.checkRespError(data)
         for (const n of nums) {
             const obj = {
                 ingredient_id: data[`ItemIngredient${n}TargetID`] as number,
@@ -130,14 +158,17 @@ export class XivApiRecipeSource {
     }
 
     async recipeLevelTable(rlv: number): Promise<RecipeLevel> {
-        const url = new URL(`RecipeLevelTable/${rlv}`, this.base).toString() + '?' + new URLSearchParams({
+        const query = new URLSearchParams({
             'columns': 'ID,Stars,ClassJobLevel,SuggestedCraftsmanship,SuggestedControl,Difficulty,Quality,Durability,ProgressDivider,QualityDivider,ProgressModifier,QualityModifier,ConditionsFlag'
-        }).toString();
+        });
+        if (this.language != undefined) query.set('language', this.language)
+        const url = new URL(`RecipeLevelTable/${rlv}`, this.base).toString() + '?' + query.toString();
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors'
         })
-        const data = await resp.json()
+        const data = await resp.json();
+        this.checkRespError(data)
         return {
             stars: data.Stars,
             class_job_level: data.ClassJobLevel,
@@ -158,10 +189,6 @@ export class XivApiRecipeSource {
         }
     }
 
-    async recipeInfo(recipeId: number): Promise<RecipeInfo> {
-        throw "todo"
-    }
-
     async itemInfo(id: number): Promise<Item> {
         const query = new URLSearchParams({
             'columns': 'ID,Name,LevelItem,CanBeHq'
@@ -173,6 +200,7 @@ export class XivApiRecipeSource {
             mode: 'cors'
         })
         let data: XivapiItemResult = await resp.json()
+        this.checkRespError(data)
         return {
             id: data.ID,
             name: data.Name,
@@ -181,7 +209,113 @@ export class XivApiRecipeSource {
             category_id: undefined
         }
     }
+
+    async craftTypeList(): Promise<CraftType[]> {
+        const query = new URLSearchParams({
+            'columns': 'ID,Name'
+        });
+        if (this.language != undefined) query.set('language', this.language)
+        const url = new URL(`CraftType`, this.base).toString() + '?' + query.toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        })
+        const data = await resp.json()
+        this.checkRespError(data)
+        return data.Results.map((v: any) => <CraftType>{
+            id: v.ID,
+            name: v.Name,
+        })
+    }
+
+    async medicineTable(page: number): Promise<DataSourceResult<Enhancer>> {
+        const data = await this.getItems(page, MedicineID)
+        return {
+            totalPages: data.Pagination.PageTotal,
+            results: data.Results.flatMap(this.bonusesToEnhancer)
+        }
+    }
+    async mealsTable(page: number): Promise<DataSourceResult<Enhancer>> {
+        const data = await this.getItems(page, Meals)
+        this.checkRespError(data)
+        return {
+            totalPages: data.Pagination.PageTotal,
+            results: data.Results.flatMap(this.bonusesToEnhancer)
+        }
+    }
+
+    private async getItems(page: number, categoryID: number): Promise<any> {
+        const query = new URLSearchParams({
+            'page': String(page),
+            'columns': 'ID,Name,Bonuses'
+        })
+        if (this.language != undefined) query.set('language', this.language)
+        const url = new URL(`search`, this.base).toString() + '?' + query.toString();
+        const resp = await fetch(url, {
+            method: 'POST',
+            mode: 'cors',
+            body: queryBody(categoryID)
+        })
+        const data = resp.json()
+        this.checkRespError(data)
+        return data
+    }
+
+    private bonusesToEnhancer(item: any): Enhancer[] {
+        const { Name, Bonuses } = item
+        return [
+            <Enhancer>{
+                name: Name,
+                cm: Bonuses.Craftsmanship?.Value,
+                cm_max: Bonuses.Craftsmanship?.Max,
+                ct: Bonuses.Control?.Value,
+                ct_max: Bonuses.Control?.Max,
+                cp: Bonuses.CP?.Value,
+                cp_max: Bonuses.CP?.Max,
+            },
+            <Enhancer>{
+                name: Name + " HQ",
+                cm: Bonuses.Craftsmanship?.ValueHQ,
+                cm_max: Bonuses.Craftsmanship?.MaxHQ,
+                ct: Bonuses.Control?.ValueHQ,
+                ct_max: Bonuses.Control?.MaxHQ,
+                cp: Bonuses.CP?.ValueHQ,
+                cp_max: Bonuses.CP?.MaxHQ,
+            }
+        ]
+    }
+
+    private checkRespError(data: any) {
+        if (data.Error === true) {
+            console.error(data);
+            throw data.Message ?? data.Subject ?? "Remote Error"
+        }
+    }
 }
 
 export const CafeMakerApiBase = "https://cafemaker.wakingsands.com/"
 export const XivapiBase = "https://xivapi.com/"
+
+const MedicineID = 43
+const Meals = 45
+const queryBody = (categoryID: number) => JSON.stringify({
+    "indexes": "Item",
+    "body": {
+        "query": {
+            "bool": {
+                "must": { "exists": { "field": "Bonuses" } },
+                "should": [
+                    { "exists": { "field": "Bonuses.CP" } },
+                    { "exists": { "field": "Bonuses.Control" } },
+                    { "exists": { "field": "Bonuses.Craftsmanship" } }
+                ],
+                "minimum_should_match": 1,
+                "filter": [
+                    { "term": { "ItemSearchCategory.ID": categoryID } }
+                ]
+            }
+        },
+        "size": 100,
+        "sort": "LevelItem"
+    }
+})

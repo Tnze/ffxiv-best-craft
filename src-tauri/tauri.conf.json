@@ -1,13 +1,13 @@
 {
     "package": {
         "productName": "BestCraft",
-        "version": "0.15.7"
+        "version": "0.16.0-2"
     },
     "build": {
         "distDir": "../dist",
         "devPath": "http://localhost:5173",
-        "beforeDevCommand": "yarn dev",
-        "beforeBuildCommand": "yarn build"
+        "beforeDevCommand": "pnpm run dev",
+        "beforeBuildCommand": "pnpm run build"
     },
     "tauri": {
         "bundle": {

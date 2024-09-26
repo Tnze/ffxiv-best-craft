@@ -77,11 +77,12 @@ if (isOnTauri) {
                 <el-select v-model="store.dataSource">
                     <el-option v-if="isOnTauri" :label="$t('ds-local')" value="local" />
                     <el-option :label="$t('ds-yyyygames')" value="yyyy.games" />
-                    <!-- <el-option :label="$t('ds-xivapi')" value="xivapi" /> -->
-                    <el-option :label="$t('ds-cafe')" value="cafe" />
+                    <el-option :label="$t('ds-xivapi')" value="xivapi-old" />
+                    <!-- <el-option :label="$t('ds-cafe')" value="cafe" /> -->
+                    <el-option :label="$t('ds-beta-xivapi')" value="xivapi" />
                 </el-select>
             </el-form-item>
-            <el-form-item v-if="store.dataSource == 'xivapi'">
+            <el-form-item v-if="store.dataSource == 'xivapi' || store.dataSource == 'xivapi-old'">
                 <el-select v-model="store.dataSourceLang">
                     <el-option :label="$t('dslang-en')" value="en" />
                     <el-option :label="$t('dslang-ja')" value="ja" />
@@ -97,9 +98,9 @@ if (isOnTauri) {
                     {{ tauriVersion }}
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="onCheckUpdateClick" :loading="checkingUpdate">{{
-                        checkingUpdate ? $t('checking-update') : $t('check-update')
-                        }}</el-button>
+                    <el-button type="primary" @click="onCheckUpdateClick" :loading="checkingUpdate">
+                        {{ checkingUpdate ? $t('checking-update') : $t('check-update') }}
+                    </el-button>
                 </el-form-item>
             </template>
             <el-form-item :label="$t('developer')">
@@ -176,6 +177,7 @@ ds-local = Local
 ds-yyyygames = YYYY.GAMES
 ds-xivapi = Xivapi
 ds-cafe = Cafe Maker
+ds-beta-xivapi = Xivapi (Beta)
 dslang-en = English
 dslang-ja = Japanese
 dslang-de = German

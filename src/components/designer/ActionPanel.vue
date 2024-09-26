@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -20,7 +20,7 @@
 import { ElPopover } from 'element-plus';
 import { computed, reactive, watchEffect } from 'vue'
 import Action from './Action.vue'
-import { Jobs, Actions, Status, allowedList, craftPointsList, Conditions } from '@/libs/Craft'
+import { Jobs, Actions, Status, allowedList, craftPointsList, Conditions, LimitedActionState } from '@/libs/Craft'
 
 const props = defineProps<{
     job: Jobs,
@@ -42,12 +42,15 @@ const actions: Actions[][] = [
         Actions.TrainedEye,
     ],
     [
-        Actions.MastersMend,
+        Actions.TrainedPerfection,
+        Actions.Manipulation,
         Actions.WasteNot,
         Actions.WasteNotII,
-        Actions.Manipulation,
+        Actions.ImmaculateMend,
+        Actions.MastersMend,
     ],
     [
+        Actions.FinalAppraisal,
         Actions.Veneration,
         Actions.PrudentSynthesis,
         Actions.Groundwork,
@@ -56,16 +59,19 @@ const actions: Actions[][] = [
     ],
     [
         Actions.Innovation,
-        Actions.PrudentTouch,
         Actions.PreparatoryTouch,
+        Actions.PrudentTouch,
         Actions.BasicTouch,
         Actions.StandardTouch,
         Actions.AdvancedTouch,
+        Actions.RefinedTouch,
         Actions.TrainedFinesse,
         Actions.GreatStrides,
+        Actions.QuickInnovation,
         Actions.ByregotsBlessing,
     ],
     [
+        Actions.HeartAndSoul,
         Actions.TricksOfTheTrade,
         Actions.IntensiveSynthesis,
         Actions.PreciseTouch,
@@ -73,18 +79,9 @@ const actions: Actions[][] = [
     [
         Actions.DelicateSynthesis,
         Actions.Observe,
-        Actions.FocusedSynthesis,
-        Actions.FocusedTouch,
-    ],
-    [
-        Actions.FinalAppraisal,
-        Actions.CarefulObservation,
-        Actions.HeartAndSoul,
-    ],
-    [
         Actions.RapidSynthesis,
-        Actions.HastyTouch,
-    ]
+        Actions.HastyTouch, // Actions.DaringTouch,
+    ],
 ]
 
 const actionsForSimulator: Actions[][] = [
@@ -92,6 +89,7 @@ const actionsForSimulator: Actions[][] = [
         Actions.Reflect,
         Actions.MuscleMemory,
         Actions.TrainedEye,
+        Actions.CarefulObservation,
     ],
     [
         Actions.Veneration,
@@ -103,7 +101,7 @@ const actionsForSimulator: Actions[][] = [
     ],
     [
         Actions.Innovation,
-        Actions.HastyTouch,
+        Actions.HastyTouch, // Actions.DaringTouch,
         Actions.PrudentTouch,
         Actions.PreparatoryTouch,
         Actions.BasicTouch,
@@ -111,11 +109,11 @@ const actionsForSimulator: Actions[][] = [
         Actions.AdvancedTouch,
         Actions.TrainedFinesse,
         Actions.GreatStrides,
+        Actions.QuickInnovation,
         Actions.ByregotsBlessing,
     ],
     [
         Actions.FinalAppraisal,
-        Actions.CarefulObservation,
         Actions.HeartAndSoul,
         Actions.TricksOfTheTrade,
         Actions.IntensiveSynthesis,
@@ -126,23 +124,27 @@ const actionsForSimulator: Actions[][] = [
         Actions.WasteNot,
         Actions.WasteNotII,
         Actions.Manipulation,
+        Actions.ImmaculateMend,
+        Actions.TrainedPerfection,
     ],
     [
         Actions.DelicateSynthesis,
         Actions.Observe,
-        Actions.FocusedSynthesis,
-        Actions.FocusedTouch,
     ]
 ]
 
-const usedActions = computed(() => props.simulatorMode ? actionsForSimulator : actions)
-
-const fail_actions: Actions[] = [
-    Actions.RapidSynthesisFail,
-    Actions.HastyTouchFail,
-    Actions.FocusedSynthesisFail,
-    Actions.FocusedTouchFail,
-]
+const usedActions = computed(() =>
+    (props.simulatorMode ? actionsForSimulator : actions).map(actions =>
+        actions.map(action => {
+            if (action === Actions.HastyTouch &&
+                props.status != undefined &&
+                props.status.buffs.expedience > 0) {
+                return Actions.DaringTouch;
+            }
+            return action;
+        })
+    )
+)
 
 const isActived = (action: Actions) => {
     if (props.status == undefined)
@@ -157,16 +159,17 @@ const isActived = (action: Actions) => {
         case Actions.PreciseTouch:
             return props.status.condition == Conditions.Good ||
                 props.status.condition == Conditions.Excellent ||
-                props.status.buffs.heart_and_soul > 0
+                props.status.buffs.heart_and_soul == LimitedActionState.Active
         case Actions.ByregotsBlessing:
             return props.status.buffs.inner_quiet > 0
+        case Actions.RefinedTouch:
         case Actions.StandardTouch:
             return props.status.buffs.touch_combo_stage == 1
         case Actions.AdvancedTouch:
-            return props.status.buffs.touch_combo_stage == 2
-        case Actions.FocusedSynthesis:
-        case Actions.FocusedTouch:
-            return props.status.buffs.observed > 0
+            return props.status.buffs.touch_combo_stage == 2 ||
+                props.status.buffs.observed > 0
+        case Actions.DaringTouch:
+            return props.status.buffs.expedience > 0
     }
     return false;
 }
@@ -207,13 +210,6 @@ watchEffect(() => {
                         :cp="cachedCraftPointsList.get(action) || undefined" />
                 </template>
             </el-popover>
-        </div>
-        <div class="group" v-if="!simulatorMode">
-            <Action :job="job" class="item" v-for="action in fail_actions" @click="emit('clickedAction', action)"
-                @mouseover="emit('mousehoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
-                :action="action" :active="isActived(action)"
-                :effect="!disable && cachedAllowedList.get(action) == 'ok' ? 'red-cross' : 'black'"
-                :cp="cachedCraftPointsList.get(action) || undefined" />
         </div>
     </div>
 </template>

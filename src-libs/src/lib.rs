@@ -86,8 +86,7 @@ pub fn simulate_one_step(
         status.cast_action(match action {
             Actions::RapidSynthesis => Actions::RapidSynthesisFail,
             Actions::HastyTouch => Actions::HastyTouchFail,
-            Actions::FocusedSynthesis => Actions::FocusedSynthesisFail,
-            Actions::FocusedTouch => Actions::FocusedTouchFail,
+            Actions::DaringTouch => Actions::DaringTouchFail,
             _ => unreachable!(),
         });
     }

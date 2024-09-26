@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -48,8 +48,7 @@ pub fn solve(status: Status, maximum_depth: usize, specialist: bool) -> Vec<Acti
             };
             *stack_seq.last_mut().unwrap() = next_action;
 
-            if !matches!(next_action, Actions::FocusedSynthesis | Actions::FocusedTouch if status.buffs.observed == 0)
-                && !matches!(next_action, Actions::FinalAppraisal if status.buffs.final_appraisal == 0)
+            if !matches!(next_action, Actions::FinalAppraisal if status.buffs.final_appraisal == 0)
                 && (!matches!(next_action, Actions::HeartAndSoul) || specialist)
                 && stack_seq.len() <= maximum_depth
                 && status.is_action_allowed(next_action).is_ok()
@@ -127,7 +126,7 @@ pub fn solve(status: Status, maximum_depth: usize, specialist: bool) -> Vec<Acti
         specialist: bool,
     ) {
         for next_action in ACTION_LIST {
-            if !matches!(next_action, Actions::FocusedSynthesis | Actions::FocusedTouch if status.buffs.observed == 0)
+            if !matches!(next_action, Actions::AdvancedTouch if status.buffs.observed == 0 && status.buffs.touch_combo_stage != 2)
                 && !matches!(next_action, Actions::FinalAppraisal if status.buffs.final_appraisal == 0)
                 && (!matches!(next_action, Actions::HeartAndSoul) || specialist)
                 && stack_seq.len() <= maximum_depth
@@ -172,9 +171,10 @@ pub fn solve(status: Status, maximum_depth: usize, specialist: bool) -> Vec<Acti
 }
 
 /// 搜索的技能列表
-const ACTION_LIST: [Actions; 30] = [
+const ACTION_LIST: [Actions; 32] = [
     Actions::BasicSynthesis,
     Actions::BasicTouch,
+    Actions::RefinedTouch,
     Actions::MastersMend,
     Actions::Observe,
     Actions::TricksOfTheTrade,
@@ -191,8 +191,6 @@ const ACTION_LIST: [Actions; 30] = [
     Actions::CarefulSynthesis,
     Actions::Manipulation,
     Actions::PrudentTouch,
-    Actions::FocusedSynthesis,
-    Actions::FocusedTouch,
     Actions::Reflect,
     Actions::PreparatoryTouch,
     Actions::Groundwork,
@@ -203,4 +201,7 @@ const ACTION_LIST: [Actions; 30] = [
     Actions::PrudentSynthesis,
     Actions::TrainedFinesse,
     Actions::HeartAndSoul,
+    Actions::ImmaculateMend,
+    Actions::TrainedPerfection,
+    Actions::QuickInnovation,
 ];

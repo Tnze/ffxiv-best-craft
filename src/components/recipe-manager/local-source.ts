@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -14,16 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "../../libs/Craft";
-import { DataSourceType, RecipesSourceResult } from "./source";
+import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
+import { Enhancer } from "@/libs/Enhancer";
+import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from "./source";
 
 export class LocalRecipeSource {
     public sourceType = DataSourceType.Realtime
     invoke = import("@tauri-apps/api").then(pkg => pkg.invoke);
 
-    async recipeTable(page: number, searchName: string): Promise<RecipesSourceResult> {
-        let [recipes, totalPages]: [RecipeInfo[], number] = await (await this.invoke)("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
-        return { recipes, totalPages }
+    async recipeTable(page: number, searchName?: string, _rlv?: number, _craftTypeId?: number): Promise<RecipesSourceResult> {
+        if (searchName === undefined) {
+            searchName = ""
+        }
+        let [results, totalPages]: [RecipeInfo[], number] = await (await this.invoke)("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
+        return { results, totalPages }
     }
 
     async recipesIngredients(recipeId: number): Promise<ItemWithAmount[]> {
@@ -52,5 +56,14 @@ export class LocalRecipeSource {
             category_id?: number,
         };
         return { id, name, level, can_be_hq: can_be_hq != 0, category_id };
+    }
+    async craftTypeList(): Promise<CraftType[]> {
+        throw "todo"
+    }
+    async medicineTable(_page: number): Promise<DataSourceResult<Enhancer>> {
+        throw "todo"
+    }
+    async mealsTable(_page: number): Promise<DataSourceResult<Enhancer>> {
+        throw "todo"
     }
 }

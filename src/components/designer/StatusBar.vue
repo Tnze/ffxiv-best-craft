@@ -21,7 +21,6 @@ import { ElProgress } from 'element-plus';
 import { computed } from 'vue'
 import { Attributes, Status } from '@/libs/Craft';
 import Buffs from './Buffs.vue';
-import { Enhancer } from '../attr-enhancer/Enhancer';
 import Condition from './Condition.vue'
 
 const props = defineProps<{
@@ -58,32 +57,31 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
     <div class="conatiner">
         <div id="durability-and-condition">
             <div id="durability">
-                <span class="bar-title">{{ $t('durability') }}</span> {{ status?.durability }} / {{
-                    status?.recipe.durability }}
+                <span class="bar-title">{{ $t('durability') }} &nbsp;</span>
+                <span>{{ status?.durability }} / {{ status?.recipe.durability }}</span>
+
                 <el-progress :stroke-width="14" :show-text="false" :percentage="durability" :color="durabilityColor"
                     striped />
                 <div id="craft-point"></div>
-                <span class="bar-title">{{ $t('craft-point') }}</span> {{ status?.craft_points }} / {{
-                    status?.attributes.craft_points }}
+                <span class="bar-title">{{ $t('craft-point') }} &nbsp;</span>
+                <span>{{ status?.craft_points }} / {{ status?.attributes.craft_points }}</span>
+
                 <el-progress :stroke-width="12" :percentage="craftPointPercentage" :show-text="false" color="#FF9999"
                     striped />
                 <Condition v-if="showCondition" :cond="status.condition" />
             </div>
         </div>
         <div id="progress-and-buffs">
-            <span class="bar-title">
-                {{ $t('progress') }}
-                {{ status?.progress }} / {{ status?.recipe.difficulty }}
-                <template v-if="remainingProgress > 0">
-                    {{ $t('remaining') }} {{ remainingProgress }}
-                </template>
-            </span>
+            <span class="bar-title">{{ $t('progress') }} &nbsp;</span>
+            <span>{{ status?.progress }} / {{ status?.recipe.difficulty }}</span>
+            <template v-if="remainingProgress > 0">
+                <span class="bar-title">&nbsp; {{ $t('remaining') }} &nbsp;</span>
+                <span>{{ remainingProgress }}</span>
+            </template>
             <el-progress :percentage="progress" :color="progressColor" :show-text="false" :stroke-width="10" />
             <br />
-            <span class="bar-title">
-                {{ $t('quality') }}
-                {{ status?.quality }} / {{ status?.recipe.quality }}
-            </span>
+            <span class="bar-title">{{ $t('quality') }} &nbsp;</span>
+            <span>{{ status?.quality }} / {{ status?.recipe.quality }}</span>
             <el-progress :percentage="quality" :color="qualityColor" :show-text="false" :stroke-width="10" />
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
@@ -112,17 +110,18 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
 .conatiner {
     width: 100%;
     display: flex;
+    /* flex-wrap: wrap; */
     font-size: 14px;
     color: var(--el-text-color-regular);
 }
 
 #durability-and-condition {
-    padding: 3px 10px 5px 5px;
+    /* padding: 3px 10px 5px 5px; */
     flex: none;
 }
 
 #durability {
-    padding: 10px;
+    padding: 5px;
 }
 
 #craft-point {
@@ -163,6 +162,22 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
 
 .bar-title {
     user-select: none;
+}
+
+@media screen and (max-width: 480px) {
+    #progress-and-buffs {
+        flex: 1 1 100%;
+        padding: 5px;
+    }
+
+    #durability-and-condition {
+        order: -2;
+        flex: auto;
+    }
+
+    #attributes {
+        order: -1;
+    }
 }
 </style>
 

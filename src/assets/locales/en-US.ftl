@@ -19,6 +19,9 @@ condition = Condition
 difficulty = Difficulty
 initial-quality = Quality
 
+meals = Meals
+medicines = Medicines
+
 name = Name
 amount = Amount
 
@@ -55,8 +58,6 @@ muscle-memory = Muscle Memory
 careful-synthesis = Careful Synthesis
 manipulation = Manipulation
 prudent-touch = Prudent Touch
-focused-synthesis = Focused Synthesis
-focused-touch = Focused Touch
 reflect = Reflect
 preparatory-touch = Preparatory Touch
 groundwork = Groundwork
@@ -68,6 +69,11 @@ prudent-synthesis = Prudent Synthesis
 trained-finesse = Trained Finesse
 careful-observation = Careful Observation
 heart-and-soul = Heart and Soul
+refined-touch = Refined Touch
+daring-touch = Daring Touch
+immaculate-mend = Immaculate Mend
+quick-innovation = Quick Innovation
+trained-perfection = Trained Perfection
 
 # Conditions
 normal = Normal
@@ -107,3 +113,10 @@ select-recipe = Select Recipe
 custom-recipe = Custom Recipe
 settings = Settings
 title = { $recipe } (Simulator Mode)
+
+# Solvers
+dp-solver = DP
+raphael-solver = Raphael
+bfs-solver = BFS
+tnzever-rika-solver = BFS ~Tnze Impv.~
+dfs-solver = DFS

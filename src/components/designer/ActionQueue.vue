@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -20,10 +20,10 @@
 import { ref, computed, watch, nextTick, toRaw } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import { ElIcon } from 'element-plus';
-import { Loading } from "@element-plus/icons-vue";
+import { Loading, CircleClose } from "@element-plus/icons-vue";
 
 import { Actions, Jobs } from '@/libs/Craft';
-import { formatDuration } from "@/libs/Solver";
+import { formatDuration } from "@/libs/Utils";
 import Action from './Action.vue'
 
 interface Slot {
@@ -40,6 +40,7 @@ const props = defineProps<{
     job: Jobs,
     disabled?: boolean
     noHover?: boolean
+    clearable?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -87,7 +88,11 @@ function removeAction(id: number) {
     }
 }
 
-function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
+function clear() {
+    listBinded.value = []
+}
+
+function calcEffect(index: number): 'normal' | 'red-cross' | 'black' {
     if (props.errList?.find((v) => v.pos == index) !== undefined)
         return 'black'
     else if (props.list[index].action.endsWith('_fail'))
@@ -101,9 +106,10 @@ function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
     <div class="action-queue-container" @click.stop.prevent.right>
         <VueDraggable v-model="listBinded" v-bind="dragOptions" target=".sort-target" @start="isDragging = true"
             @end="nextTick(() => isDragging = false)">
-            <TransitionGroup class="sort-target" type="transition" tag="div" :name="!isDragging ? 'flip-list' : undefined">
+            <TransitionGroup class="sort-target" type="transition" tag="div"
+                :name="!isDragging ? 'flip-list' : undefined">
                 <div v-for="(element, index) in listBinded" class="list-group-item" :key="element.id">
-                    <Action class="action-icon" :job="job" :action="element.action" :effect="calc_effect(index)" disabled
+                    <Action class="action-icon" :job="job" :action="element.action" :effect="calcEffect(index)" disabled
                         @click.stop.prevent.right="removeAction(element.id)" @click="removeAction(element.id)"
                         :no-hover="noHover" />
                 </div>
@@ -111,9 +117,15 @@ function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
                     <Action class="action-icon" :job="job" :action="elem.action" no-hover effect="sunken"
                         :opacity="previewSolver ? 1 : 0.4" disabled />
                 </div>
-                <div v-if="loadingSolverResult" class="list-group-item loading-icon">
-                    <el-icon class="is-loading loading-icon-inner" :size="19.2">
+                <div v-if="loadingSolverResult" class="list-group-item following-icon" key="loading-icon">
+                    <el-icon class="is-loading following-icon-inner" :size="19.2">
                         <Loading />
+                    </el-icon>
+                </div>
+                <div v-if="clearable && listBinded.length > 0" class="list-group-item following-icon" key="clear-icon"
+                    @click="clear">
+                    <el-icon class="following-icon-inner" :size="19.2">
+                        <CircleClose />
                     </el-icon>
                 </div>
             </TransitionGroup>
@@ -154,12 +166,12 @@ function calc_effect(index: number): 'normal' | 'red-cross' | 'black' {
     display: inline-block;
 }
 
-.loading-icon {
+.following-icon {
     position: relative;
     height: calc(48px * 0.8);
 }
 
-.loading-icon-inner {
+.following-icon-inner {
     position: absolute;
     top: 10px;
     left: 5px;

@@ -27,6 +27,16 @@ export interface Slot {
 export interface Sequence {
     slots: Slot[];
     maxid: number;
-    status: Status;
-    errors: { pos: number; err: string }[];
+    source?: SequenceSource;
+}
+
+export enum SequenceSource {
+    AutoSave = "auto-save",
+    Manual = "manual",
+    Solver = "solver",
+    DPSolver = "dp-solver",
+    RaphaelSolver = "raphael-solver",
+    DFSSolver = "dfs-solver",
+    BFSSolver = "bfs-solver",
+    TnzeVerRikaSolver = "tnzever-rika-solver",
 }

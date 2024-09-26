@@ -100,9 +100,37 @@ pub fn dfs_solve(status: JsValue, depth: usize, specialist: bool) -> Result<JsVa
 
 #[wasm_bindgen]
 pub fn nq_solve(status: JsValue, depth: usize, specialist: bool) -> Result<JsValue, JsValue> {
-    use app_libs::solver::normal_quality_solver::solve;
+    use app_libs::solver::normal_progress_solver::solve;
     let status: Status = from_value(status)?;
     let result: Vec<Actions> = solve(status, depth, specialist);
+    Ok(to_value(&result)?)
+}
+
+#[wasm_bindgen]
+pub fn reflect_solve(status: JsValue, use_observe: bool) -> Result<JsValue, JsValue> {
+    use app_libs::solver::reflect_solver::solve;
+    let status: Status = from_value(status)?;
+    let result: Vec<Actions> = solve(status.clone(), false, 0, use_observe);
+    Ok(to_value(&result)?)
+}
+
+#[wasm_bindgen]
+pub fn raphael_solve(
+    status: JsValue,
+    use_manipultaion: bool,
+    use_heart_and_soul: bool,
+    use_quick_innovation: bool,
+    backload_progress: bool,
+) -> Result<JsValue, JsValue> {
+    use app_libs::solver::raphael::solve;
+    let status: Status = from_value(status)?;
+    let result: Vec<Actions> = solve(
+        status.clone(),
+        use_manipultaion,
+        use_heart_and_soul,
+        use_quick_innovation,
+        backload_progress,
+    );
     Ok(to_value(&result)?)
 }
 

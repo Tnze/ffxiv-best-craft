@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -15,21 +15,34 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
+import { Enhancer } from "@/libs/Enhancer";
 
 export interface DataSource {
     sourceType: DataSourceType
-    recipeTable(page: number, searchName: string): Promise<RecipesSourceResult>
+    recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult>
     recipesIngredients(recipeId: number): Promise<ItemWithAmount[]>
     recipeLevelTable(rlv: number): Promise<RecipeLevel>
-    recipeInfo(recipeId: number): Promise<RecipeInfo>
+    recipeInfo?(recipeId: number): Promise<RecipeInfo>
     itemInfo(id: number): Promise<Item>
+    craftTypeList(): Promise<CraftType[]>
+
+    medicineTable(page: number): Promise<DataSourceResult<Enhancer>>
+    mealsTable(page: number): Promise<DataSourceResult<Enhancer>>
+}
+
+export interface CraftType {
+    id: number,
+    name: string,
 }
 
 export enum DataSourceType {
     Realtime, RemoteRealtime, SingleShot
 }
 
-export interface RecipesSourceResult {
-    recipes: RecipeInfo[],
-    totalPages: number
+export interface DataSourceResult<T> {
+    results: T[],
+    totalPages: number,
+    next?(): Promise<DataSourceResult<T>>
 }
+
+export type RecipesSourceResult = DataSourceResult<RecipeInfo>

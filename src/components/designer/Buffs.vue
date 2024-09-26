@@ -18,13 +18,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Buffs } from '@/libs/Craft';
+import { Buffs, LimitedActionState } from '@/libs/Craft';
 
 const props = defineProps<{
     buffs: Buffs
 }>()
 
-const fakeBuffs = ['careful_observation_used', 'heart_and_soul_used', 'touch_combo_stage', 'observed']
+const fakeBuffs = ['careful_observation_used', 'quick_innovation_used', 'touch_combo_stage', 'observed']
 
 const buffsDisplay = computed<{
     url: URL,
@@ -32,17 +32,17 @@ const buffsDisplay = computed<{
 }[]>(() => {
     return Object.entries(props.buffs)
         .filter(v => !fakeBuffs.includes(v[0]))
-        .filter(v => v[1] > 0)
-        .map(([buffName, duration]) => {
+        .filter(v => typeof v[1] === 'number' ? v[1] > 0 : v[1] === LimitedActionState.Active)
+        .map(([buffName, value]) => {
             if (buffName == 'inner_quiet') {
                 return {
-                    url: new URL(`../../assets/buffs/${buffName}_${duration as number}.png`, import.meta.url),
+                    url: new URL(`../../assets/buffs/${buffName}_${value as number}.png`, import.meta.url),
                     duration: undefined
                 }
             } else {
                 return {
                     url: new URL(`../../assets/buffs/${buffName}.png`, import.meta.url),
-                    duration: buffName == 'heart_and_soul' ? undefined : duration as number,
+                    duration: typeof value !== 'number' ? undefined : value as number,
                 }
             }
         })
@@ -74,7 +74,6 @@ const buffsDisplay = computed<{
     margin-top: -8px;
     margin-bottom: -5px;
     font-size: 0.9em;
-    color: var(--el-text-color-regular);
 }
 
 .buff-img {

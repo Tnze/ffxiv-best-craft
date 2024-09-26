@@ -19,6 +19,9 @@ condition = 状態
 difficulty = 必要工数
 initial-quality = 初期品質
 
+meals = 調理品
+medicines = 薬品
+
 carpenter = 木工師
 blacksmith = 鍛冶師
 armorer = 甲冑師
@@ -48,8 +51,6 @@ muscle-memory = 確信
 careful-synthesis = 模範作業
 manipulation = マニピュレーション
 prudent-touch = 倹約加工
-focused-synthesis = 注視作業
-focused-touch = 注視加工
 reflect = 真価
 preparatory-touch = 下地加工
 groundwork = 下地作業
@@ -61,6 +62,14 @@ prudent-synthesis = 倹約作業
 trained-finesse = 匠の神業
 careful-observation = 設計変更
 heart-and-soul = 一心不乱
+refined-touch = 洗練加工
+daring-touch = デアリングタッチ
+immaculate-mend = パーフェクトメンド
+quick-innovation = クイックイノベーション
+trained-perfection = 匠の絶技
+
+desc-immaculate-mend = 耐久を全回復する。
+desc-trained-perfection = 一度だけ、アクションによる耐久の消費が0になる。一回の製作/製作練習につき1回まで使用可能
 
 normal = 通常
 good = 高品質

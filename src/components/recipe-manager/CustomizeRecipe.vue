@@ -66,7 +66,7 @@ const conditionsFlag = computed<Conditions[]>({
         const flag = Object
             .values(Conditions)
             .map((cond, i) => val.indexOf(cond) >= 0 ? 1 << i : 0)
-            .reduce((a, b) => a | b)
+            .reduce((a, b) => a | b, 0)
         customRecipe.value.conditions_flag = flag
     }
 })
@@ -79,7 +79,6 @@ watch(
         () => customRecipe.value.rlv
     ],
     async ([autoLoad, dataSource, rlv]) => {
-        console.log("dataSource", dataSource)
         if (!autoLoad) return;
         try {
             autoLoadLoading.value = true

@@ -27,7 +27,8 @@ use app_libs::{
     analyzer::rand_simulations::Statistics,
     ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status},
     solver::{
-        depth_first_search_solver, normal_quality_solver, rika_solver, Score, Solver, SolverHash,
+        depth_first_search_solver, normal_progress_solver, raphael, reflect_solver, rika_solver,
+        Solver, SolverHash,
     },
     SimulateOneStepResult, SimulateResult,
 };
@@ -41,7 +42,6 @@ use tokio::sync::{Mutex, OnceCell};
 mod db;
 mod memoization_solver;
 mod muscle_memory_solver;
-mod reflect_solver;
 mod rika_tnze_solver;
 
 use db::{craft_types, item_with_amount, items, prelude::*, recipes};
@@ -331,27 +331,34 @@ fn dfs_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
 
 #[tauri::command(async)]
 fn nq_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
-    normal_quality_solver::solve(status, depth, specialist)
+    normal_progress_solver::solve(status, depth, specialist)
 }
 
 #[tauri::command(async)]
-fn reflect_solve(status: Status, use_manipulation: bool) -> Vec<Actions> {
-    let solver = reflect_solver::QualitySolver::new(status.clone(), use_manipulation, 8 + 1, true);
-    let result1 = solver.read_all(&status);
-    let SimulateResult { status: s1, .. } = simulate(status.clone(), result1.clone());
-    // Try reflect
-    let mut s = status.clone();
-    s.cast_action(Actions::Reflect);
-    let mut result2 = solver.read_all(&s);
-    if result2.len() != 0 {
-        result2.insert(0, Actions::Reflect);
-    }
-    let SimulateResult { status: s2, .. } = simulate(s, result2.clone());
-    if Score::from((&s1, result1.len())) > Score::from((&s2, result2.len())) {
-        result1
-    } else {
-        result2
-    }
+fn reflect_solve(
+    status: Status,
+    use_manipulation: bool,
+    use_waste_not: usize,
+    use_observe: bool,
+) -> Vec<Actions> {
+    reflect_solver::solve(status.clone(), use_manipulation, use_waste_not, use_observe)
+}
+
+#[tauri::command(async)]
+fn raphael_solve(
+    status: Status,
+    use_manipultaion: bool,
+    use_heart_and_soul: bool,
+    use_quick_innovation: bool,
+    backload_progress: bool,
+) -> Vec<Actions> {
+    raphael::solve(
+        status.clone(),
+        use_manipultaion,
+        use_heart_and_soul,
+        use_quick_innovation,
+        backload_progress,
+    )
 }
 
 /// 释放求解器
@@ -433,6 +440,7 @@ fn main() {
             dfs_solve,
             nq_solve,
             reflect_solve,
+            raphael_solve,
             set_theme,
             rand_simulation,
             calc_attributes_scope,

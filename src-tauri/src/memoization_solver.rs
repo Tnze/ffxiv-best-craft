@@ -31,7 +31,7 @@ pub struct Solver {
     allow_mn: bool,
     allow_wn: usize,
     allow_obz: bool,
-    touch_caches: Array<Cell<Slot>, 9>,
+    touch_caches: Array<Cell<Slot>, 11>,
 }
 
 impl Solver {
@@ -42,8 +42,11 @@ impl Solver {
     const MAX_TOUCH_COMBO: usize = 2;
     // const MAX_VENERATION: usize = 4;
     const MAX_OBSERVE: usize = 1;
-    const TOUCH_SKILLS: [(Actions, u16); 15] = [
+    const MAX_TRAINED_PERFECTION: usize = 3;
+    const MAX_QUICK_INNOVAATION_USED: usize = 1;
+    const TOUCH_SKILLS: [(Actions, u16); 18] = [
         (Actions::BasicTouch, 10),
+        (Actions::RefinedTouch, 10),
         (Actions::StandardTouch, 10),
         (Actions::AdvancedTouch, 10),
         (Actions::PrudentTouch, 5),
@@ -52,23 +55,27 @@ impl Solver {
         (Actions::GreatStrides, 0),
         (Actions::ByregotsBlessing, 10),
         (Actions::Observe, 0),
-        (Actions::FocusedTouch, 10),
         (Actions::Manipulation, 0),
         (Actions::Innovation, 0),
+        (Actions::QuickInnovation, 0),
         (Actions::WasteNot, 0),
         (Actions::WasteNotII, 0),
         (Actions::MastersMend, 0),
+        (Actions::TrainedPerfection, 0),
+        (Actions::ImmaculateMend, 0),
     ];
 
     pub(crate) fn new(init_status: Status, mn: bool, wn: usize, obz: bool) -> Self {
         let size = [
             obz as usize * Self::MAX_OBSERVE + 1,
+            Self::MAX_QUICK_INNOVAATION_USED + 1,
             Self::MAX_INNER_QUIET + 1,
             Self::MAX_INNOVATION + 1,
             Self::MAX_GREAT_STRIDES + 1,
             mn as usize * Self::MAX_MANIPULATION + 1,
             wn + 1,
             Self::MAX_TOUCH_COMBO + 1,
+            Self::MAX_TRAINED_PERFECTION + 1,
             init_status.recipe.durability as usize / 5 + 1,
             init_status.attributes.craft_points as usize + 1,
         ];
@@ -95,12 +102,14 @@ impl Solver {
         let this_cell = unsafe {
             self.touch_caches.get_unchecked([
                 buffs.observed as usize,
+                buffs.quick_innovation_used as usize,
                 buffs.inner_quiet as usize,
                 buffs.innovation as usize,
                 buffs.great_strides as usize,
                 buffs.manipulation as usize,
                 buffs.wast_not as usize,
                 buffs.touch_combo_stage as usize,
+                buffs.trained_perfection as usize,
                 durability as usize / 5,
                 craft_points as usize,
             ])

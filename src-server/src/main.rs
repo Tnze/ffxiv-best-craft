@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2024 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -16,10 +16,10 @@
 
 use std::{collections::BTreeMap, env};
 
+use salvo::cors;
 use salvo::cors::Cors;
 use salvo::hyper::Method;
 use salvo::prelude::*;
-use salvo::cors;
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::Serialize;
 

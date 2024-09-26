@@ -33,13 +33,11 @@ pub fn solve(craft: Status, mn: bool, wn: usize, obz: bool, reduce_steps: bool) 
         true => 1.5,
         false => 1.8,
     });
-    let focused_prog = craft.calc_synthesis(2.0);
 
     for (s, actions) in phase1_routes {
         let (final_actions, final_cp) = match s.recipe.difficulty - s.progress {
             x if x <= basic_prog => (vec![Actions::BasicSynthesis], 0),
             x if x <= careful_prog => (vec![Actions::CarefulSynthesis], 7),
-            x if x <= focused_prog => (vec![Actions::Observe, Actions::FocusedSynthesis], 12),
             _ => continue,
         };
         let final_du = 1;
@@ -119,7 +117,7 @@ pub fn next_action_picker_1(
 
 pub fn generate_routes_phase1(s: &Status, use_manipulation: bool) -> Vec<(Status, Vec<Actions>)> {
     let max_prog = match s.attributes.level {
-        x if x >= 67 => s.calc_synthesis(2.0),
+        x if x >= 82 => s.calc_synthesis(1.8),
         x if x >= 62 => s.calc_synthesis(1.5),
         x if x >= 31 => s.calc_synthesis(1.2),
         _ => s.calc_synthesis(1.0),

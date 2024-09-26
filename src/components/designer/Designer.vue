@@ -17,13 +17,16 @@
 -->
 
 <script setup lang="ts">
-import { save, open } from '@tauri-apps/api/dialog'
-import { writeFile, readTextFile } from '@tauri-apps/api/fs'
 import { Ref, computed, inject, markRaw, provide, reactive, ref, watch } from "vue";
-import { ElScrollbar, ElMessage, ElMessageBox, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
+import { ElScrollbar, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
 import { Bottom, Close } from "@element-plus/icons-vue";
-import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements } from "@/libs/Craft";
+import { useMediaQuery, useElementSize } from "@vueuse/core";
+
+import { Attributes, Actions, simulate, Status, newStatus, compareStatus, Recipe, Jobs, Item, RecipeLevel, RecipeRequirements, SimulateResult } from "@/libs/Craft";
 import { read_solver } from "@/libs/Solver";
+import { Enhancer } from "@/libs/Enhancer";
+import useDesignerStore from '@/stores/designer';
+
 import ActionPanel from "./ActionPanel.vue";
 import ActionQueue from "./ActionQueue.vue";
 import StatusBar from "./StatusBar.vue";
@@ -31,13 +34,12 @@ import SolverList from "./solvers/List.vue";
 import MacroExporter from "./MacroExporter.vue";
 import InitialQualitySetting from './InitialQualitySetting.vue'
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
-import { Enhancer } from "../attr-enhancer/Enhancer";
 import { useFluent } from 'fluent-vue';
 import StagedActionQueueItem from './StagedActionQueueItem.vue';
 import Analyzers from './Analyzers.vue';
 import { activeSeqKey, displayJobKey } from './injectionkeys';
+import { Slot, Sequence, SequenceSource } from './types';
 
-import { Slot, Sequence } from './types';
 
 const props = defineProps<{
     recipe: Recipe,
@@ -47,10 +49,16 @@ const props = defineProps<{
     item: Item,
     materialQualityFactor: number,
     attributes: Attributes,
+    isCustomRecipe: boolean,
 }>()
 
+const store = useDesignerStore()
 const { $t } = useFluent()
 const displayJob = inject(displayJobKey) as Ref<Jobs>
+const foldMultiFunctionArea = useMediaQuery('screen and (max-width: 480px)')
+
+const actionQueueElem = ref()
+const { height: actionQueueHeight } = useElementSize(actionQueueElem)
 
 // 食物和药水效果
 const attributesEnhancers = ref<Enhancer[]>([]);
@@ -69,7 +77,6 @@ const enhancedAttributes = computed<Attributes>(() => {
         .filter((v) => v.cp && v.cp_max)
         .map((v) => Math.floor(Math.min((craft_points * v.cp!) / 100, v.cp_max!)))
         .reduce(sum, 0);
-    console.log(craftsmanship, control, craft_points)
     return { level, craftsmanship, control, craft_points };
 });
 
@@ -104,9 +111,7 @@ var attributionAlert = computed(() => {
 const isReadingSolver = ref(0);
 const isReadingSolverDisplay = ref(false); // This is basicly (isReadingSolver != 0), with a 500ms delay on rising edge
 const previewSolver = ref(false);
-const openInitQualitySet = ref(false);
-const openAttrEnhSelector = ref(false);
-const activeTab = ref('staged')
+const activeTab = ref('attributes-enhance')
 
 let isReadingSolverDisplayStopTimer: NodeJS.Timeout | null = null;
 watch(isReadingSolver, (irs, irsPrev) => {
@@ -131,9 +136,10 @@ watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => { initSta
 const activeSeq = reactive<Sequence>({
     slots: [],
     maxid: 0,
-    status: initStatus.value,
-    errors: [],
 });
+const activeRst = ref<SimulateResult>()
+simulate(initStatus.value, []).then(v => activeRst.value = v)
+
 provide(activeSeqKey, ref(activeSeq))
 const actions = computed(() => activeSeq.slots.map(slot => slot.action));
 const displayActions = computed(() => {
@@ -149,85 +155,58 @@ function loadSeq(seq: Sequence) {
     activeSeq.slots.splice(0, length, ...seq.slots);
     activeSeq.maxid = seq.maxid;
 }
-function clearSeq() {
-    activeSeq.slots.splice(0);
-    activeSeq.maxid = 0;
-}
 
 // Solver result
 const solverResult = reactive<Sequence>({
     slots: [],
     maxid: 0,
-    status: initStatus.value,
-    errors: [],
 });
-watch(() => activeSeq.status, readSolver);
+const solverResultRst = ref<SimulateResult>()
+watch(initStatus, readSolver);
 
 // Saved Sequence
-const savedSeqs = reactive<{ maxid: number, ary: { key: number, seq: Sequence }[] }>({ maxid: 0, ary: [] });
 watch(initStatus, async (newInitStatus) => {
-    // re-simulate all savedQueues
-    const results = await Promise.all(
-        savedSeqs.ary.map(({ seq }) => simulate(
-            newInitStatus,
-            seq.slots.map((x) => x.action)
-        ))
-    )
-    savedSeqs.ary.forEach(({ seq }, i) => {
-        seq.status = results[i].status;
-        seq.errors = results[i].errors;
-    })
-    savedSeqs.ary.sort((a, b) => {
-        const ord = compareStatus(b.seq.status, a.seq.status)
-        return ord != 0 ? ord : a.key - b.key
-    });
-
     // re-simulate activeSeq
-    let result = await simulate(newInitStatus, actions.value);
-    activeSeq.status = result.status;
-    activeSeq.errors = result.errors;
+    activeRst.value = await simulate(newInitStatus, actions.value);
+    store.sortRotations(newInitStatus);
 });
 watch(actions, async (a) => {
-    let result = await simulate(initStatus.value, a);
-    activeSeq.status = result.status;
-    activeSeq.errors = result.errors;
+    activeRst.value = await simulate(initStatus.value, a);
 });
-function saveSequence() {
+function saveSequence(isManual: boolean) {
     const queue = previewSolver.value
         ? solverResult
         : activeSeq
-    pushSequence({
+    store.pushRotation({
         slots: queue.slots.slice(),
         maxid: queue.maxid,
-        status: queue.status,
-        errors: queue.errors,
+        source: isManual ? SequenceSource.Manual : SequenceSource.AutoSave,
     });
-}
-function pushSequence(seq: Sequence) {
-    const key = savedSeqs.maxid++;
-    savedSeqs.ary.push({ key, seq });
-    savedSeqs.ary.sort((a, b) => {
-        const ord = compareStatus(b.seq.status, a.seq.status)
-        return ord != 0 ? ord : a.key - b.key
-    });
-    activeTab.value = 'staged'
+    store.sortRotations(initStatus.value);
+    activeTab.value = 'store';
 }
 
 const displayedStatus = computed(() => {
     return previewSolver.value && !isReadingSolverDisplay.value && solverResult.slots.length > 0
-        ? solverResult.status
-        : activeSeq.status
+        ? (solverResultRst.value?.status) ?? (activeRst.value?.status) ?? initStatus.value
+        : activeRst.value?.status ?? initStatus.value
 })
-watch(displayedStatus, (status) => {
+watch(displayedStatus, async (status) => {
     if (status.progress < status.recipe.difficulty)
         return;
-    if (savedSeqs.ary.some(v => compareStatus(v.seq.status, status) >= 0))
+    const staged = await Promise.all(store.rotations.staged
+        .map(v => v.seq.slots.map(v => v.action))
+        .map(v => simulate(initStatus.value, v))
+    );
+    if (staged.some(v => compareStatus(v.status, status) >= 0))
         return;
-    saveSequence()
+    saveSequence(false)
 })
 
-async function readSolver(s: Status) {
+async function readSolver() {
     try {
+        const s = activeRst.value?.status;
+        if (!s) return;
         isReadingSolver.value++;
         const newSolverResult = actions.value.concat(await read_solver(s));
         let display = [];
@@ -242,9 +221,7 @@ async function readSolver(s: Status) {
         }
         solverResult.slots = display;
 
-        const result = await simulate(initStatus.value, newSolverResult);
-        solverResult.status = result.status;
-        solverResult.errors = result.errors;
+        solverResultRst.value = await simulate(initStatus.value, newSolverResult);
     } catch (err) {
         solverResult.slots = [];
     } finally {
@@ -252,92 +229,17 @@ async function readSolver(s: Status) {
     }
 }
 
-async function handleSolverResult(actions: Actions[]) {
+async function handleSolverResult(actions: Actions[], solverName: SequenceSource) {
     let slots: Slot[] = [];
     for (const i in actions)
         slots.push({ action: actions[i], id: Number.parseInt(i) })
-    const { status, errors } = await simulate(initStatus.value, actions)
-    pushSequence({
+    store.pushRotation({
         slots,
         maxid: actions.length,
-        status,
-        errors,
+        source: solverName,
     });
-}
-
-async function saveListToJSON() {
-    try {
-        const queues = savedSeqs.ary.map(v => v.seq.slots.map(s => s.action)).filter(v => v.length > 0)
-        try {
-            if (queues.length == 0) {
-                await ElMessageBox.confirm(
-                    $t('number-of-macros-is-zero'),
-                    $t('waring'),
-                    { type: 'warning' }
-                )
-            }
-        } catch {
-            return
-        }
-        const { level, craftsmanship, control, craft_points } = enhancedAttributes.value
-        const path = await save({
-            defaultPath: `${props.item.name}-${level}-${craftsmanship}-${control}-${craft_points}`,
-            filters: [{ name: $t('macro-file-type-name'), extensions: ['json'] }],
-            title: $t('save-file')
-        })
-        if (!path) {
-            return
-        }
-        await writeFile({ path, contents: JSON.stringify(queues) })
-        ElMessage({
-            type: "success",
-            showClose: true,
-            message: $t('save-success'),
-        });
-    } catch (err) {
-        ElMessage({
-            type: "error",
-            showClose: true,
-            message: $t('save-fail', { reason: err as string }),
-        });
-    }
-}
-
-async function openListFromJSON() {
-    const pathlist = <string[]>await open({
-        filters: [{ name: $t('macro-file-type-name'), extensions: ['json'] }],
-        multiple: true,
-        title: $t('open-file')
-    })
-    if (!pathlist)
-        return
-    for (const filepath of pathlist) {
-        try {
-            const content = await readTextFile(filepath)
-            const sequences = <Actions[][]>JSON.parse(content)
-            for (const actions of sequences) {
-                const slots = actions.map((action, index) => { return { id: index, action } })
-                const { status, errors } = await simulate(initStatus.value, actions)
-                pushSequence({
-                    slots,
-                    maxid: slots.length - 1,
-                    status,
-                    errors,
-                });
-            }
-            ElMessage({
-                type: "success",
-                showClose: true,
-                message: $t('read-n-macros', { n: sequences.length }),
-            });
-        } catch (err) {
-            ElMessage({
-                type: "error",
-                showClose: true,
-                message: $t('read-fail', { reason: err as string }),
-            });
-        }
-    }
+    store.sortRotations(initStatus.value);
+    activeTab.value = 'store';
 }
 </script>
 
@@ -349,66 +251,74 @@ async function openListFromJSON() {
         </div>
         <StatusBar class="status-bar" :attributes="enhancedAttributes" :status="displayedStatus"
             :show-condition="false" />
-        <el-tabs v-model="activeTab" tab-position="top" style="height: auto; padding: 0 15px 0 15px;"
-            class="above-panel">
-            <el-tab-pane :label="$t('action-editor')" name="staged" class="staged-panel">
-                <el-scrollbar class="staged-left-panel">
-                    <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeSeq.status" #lower />
-                </el-scrollbar>
-                <div class="staged-right-panel">
-                    <div class="action-queue">
-                        <ActionQueue :job="displayJob" v-model:list="activeSeq.slots"
-                            :solver-result="solverResult.slots" :preview-solver="previewSolver"
-                            :err-list="activeSeq.errors" :loading-solver-result="isReadingSolverDisplay" />
-                    </div>
-                    <el-button-group>
-                        <el-button @click="saveSequence" :icon="Bottom">
-                            {{ $t('save-workspace') }}
-                        </el-button>
-                        <el-button @click="clearSeq" :icon="Close">
-                            {{ $t('clear-workspace') }}
-                        </el-button>
-                        <el-checkbox-button v-model:model-value="previewSolver" v-if="solverResult.slots.length > 0">
-                            {{ $t('apply-solver') }}
-                        </el-checkbox-button>
-                    </el-button-group>
-                    <el-scrollbar class="savedqueue-list">
-                        <TransitionGroup name="savedqueues" tag="div">
-                            <StagedActionQueueItem v-for="({ key, seq }, i) in savedSeqs.ary" :key="key" :seq="seq"
-                                :display-job="displayJob" @load="loadSeq(seq)" @delete="savedSeqs.ary.splice(i, 1)" />
-                        </TransitionGroup>
-                    </el-scrollbar>
+        <div class="above-panel">
+            <el-scrollbar class="above-left-panel">
+                <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeRst?.status" #lower />
+            </el-scrollbar>
+
+            <div class="above-right-panel" style="overflow: hidden;">
+                <div ref="actionQueueElem" class="action-queue">
+                    <ActionQueue :job="displayJob" v-model:list="activeSeq.slots" :solver-result="solverResult.slots"
+                        :preview-solver="previewSolver" :err-list="activeRst?.errors"
+                        :loading-solver-result="isReadingSolverDisplay" clearable />
                 </div>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('init-quality')" name="init-quality" class="above-panel">
-                <el-scrollbar style="flex: auto; padding-left: 30px;">
-                    <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality"
-                        v-model:open="openInitQualitySet" :item="item" :recipe="recipe" :recipe-id="recipeId"
-                        :material-quality-factor="materialQualityFactor" />
-                </el-scrollbar>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance" class="above-panel">
-                <el-scrollbar style="flex: auto; padding-left: 30px;">
-                    <AttrEnhSelector v-model="attributesEnhancers" :job="displayJob" />
-                </el-scrollbar>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('export-macro')" name="export-macro" class="above-panel">
-                <el-scrollbar style="flex: auto; padding-left: 10px;">
-                    <MacroExporter :actions="displayActions" />
-                </el-scrollbar>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('solvers')" name="solver-list" class="above-panel">
-                <el-scrollbar style="flex: auto;">
-                    <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
-                        @solver-load="readSolver(activeSeq.status)" @solver-result="handleSolverResult" />
-                </el-scrollbar>
-            </el-tab-pane>
-            <el-tab-pane :label="$t('analyzers')" name="analyzers" class="above-panel">
-                <el-scrollbar style="flex: auto;">
-                    <Analyzers :init-status="initStatus" :actions="displayActions" />
-                </el-scrollbar>
-            </el-tab-pane>
-        </el-tabs>
+                <el-tabs class="above-tabs" v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top"
+                    :style="`height: calc(100% - ${actionQueueHeight + 10}px)`">
+                    <el-tab-pane :label="$t('init-quality')" name="init-quality" class="multi-function-area">
+                        <el-scrollbar style="flex: auto; padding-left: 30px;">
+                            <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" :item="item"
+                                :recipe="recipe" :recipe-id="recipeId"
+                                :material-quality-factor="materialQualityFactor" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance"
+                        class="multi-function-area">
+                        <el-scrollbar style="flex: auto; padding-left: 30px;">
+                            <AttrEnhSelector v-model="attributesEnhancers"
+                                :job="isCustomRecipe ? undefined : displayJob" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('export-macro')" name="export-macro" class="multi-function-area">
+                        <el-scrollbar style="flex: auto; padding-left: 10px;">
+                            <MacroExporter :actions="displayActions" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('solvers')" name="solver-list" class="multi-function-area">
+                        <el-scrollbar style="flex: auto;">
+                            <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
+                                @solver-load="readSolver()" @solver-result="handleSolverResult" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('store')" name="store" class="multi-function-area">
+                        <el-scrollbar class="savedqueue-list">
+                            <el-button-group>
+                                <el-button @click="saveSequence(true)" :icon="Bottom">
+                                    {{ $t('save-workspace') }}
+                                </el-button>
+                                <el-button @click="store.clearRotations" :icon="Close">
+                                    {{ $t('clear-store') }}
+                                </el-button>
+                                <el-checkbox-button v-model:model-value="previewSolver"
+                                    v-if="solverResult.slots.length > 0">
+                                    {{ $t('apply-solver') }}
+                                </el-checkbox-button>
+                            </el-button-group>
+                            <TransitionGroup name="savedqueues" tag="div">
+                                <StagedActionQueueItem v-for="({ key, seq }, i) in store.rotations.staged" :key="key"
+                                    :seq="seq" :status="initStatus" :display-job="displayJob" @load="loadSeq(seq)"
+                                    @delete="store.deleteRotation(i)" />
+                            </TransitionGroup>
+                        </el-scrollbar>
+                    </el-tab-pane>
+                    <el-tab-pane :label="$t('analyzer')" name="analyzer" class="multi-function-area">
+                        <el-scrollbar style="flex: auto;">
+                            <Analyzers :init-status="initStatus" :actions="displayActions" />
+                        </el-scrollbar>
+                    </el-tab-pane>
+                </el-tabs>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -419,7 +329,8 @@ async function openListFromJSON() {
     margin: 15px;
 }
 
-.el-tabs {
+.above-tabs {
+    /* height: 100%; */
     user-select: none;
 }
 
@@ -441,7 +352,7 @@ async function openListFromJSON() {
     display: flex;
     flex: auto;
     overflow: hidden;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 .above-panel :deep(.el-tabs__content) {
@@ -449,23 +360,40 @@ async function openListFromJSON() {
     flex: auto;
 }
 
-.staged-panel {
-    display: flex;
-    flex-direction: row;
-    flex: auto;
-}
-
-.staged-left-panel {
-    width: 233px;
+.above-left-panel {
+    flex: 0 0 270px;
+    min-width: 140px;
     height: auto;
 }
 
-.staged-right-panel {
+.above-right-panel {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    height: 100%;
+    flex: 1 1 auto;
     margin-left: 5px;
+    height: 100%;
+}
+
+@media screen and (max-width: 480px) {
+    .above-panel {
+        flex-direction: column;
+    }
+
+    .above-left-panel {
+        order: 1;
+        flex: 1 1 auto;
+    }
+
+    .above-right-panel {
+        flex: 0 0 auto;
+        height: inherit;
+    }
+}
+
+.multi-function-area {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
 }
 
 .action-queue {
@@ -474,7 +402,8 @@ async function openListFromJSON() {
 }
 
 .savedqueue-list {
-    margin: 5px 0;
+    margin: 0;
+    flex: auto;
 }
 
 .savedqueues-move,
@@ -495,15 +424,15 @@ async function openListFromJSON() {
 </style>
 
 <fluent locale="zh-CN">
-solvers = 求解器
-export-macro = 导出宏
+solvers = 求解
+export-macro = 导出
 attributes-enhance = 食药&装备
 init-quality = 初期品质
-action-editor = 编排技能
-analyzers = 分析器
+store = 储存
+analyzer = 分析
 
-save-workspace = 暂存
-clear-workspace = 清空
+save-workspace = 储存
+clear-store = 清空
 apply-solver = 应用求解结果
 
 number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
@@ -528,12 +457,13 @@ attributes-requirements = 制作该配方要求：作业精度 ≥ { $craftsmans
 <fluent locale="en-US">
 solvers = Solvers
 export-macro = Export
-attributes-enhance = Attributes Enhance
-staged = Staged
-analyzers = Analyzers
+attributes-enhance = Medicines & Meals
+init-quality = Quality
+store = Store
+analyzer = Analyzer
 
 save-workspace = Save
-clear-workspace = Clear
+clear-store = Clear
 apply-solver = Apply solver result
 
 number-of-macros-is-zero = Number of macros is 0. Continue?
@@ -565,6 +495,8 @@ attributes-requirements = Require: craftsmanship ≥ { $craftsmanship } and cont
 </fluent>
 
 <fluent locale="ja-JP">
+attributes-enhance = 薬品・調理品
+init-quality = 初期品質
 and = { $a }と{ $b }
 attributes-do-not-meet-the-requirements = { $attribute }が足りないため
 attributes-requirements = 製作可能条件：{ craftsmanship }{ $craftsmanship}以上 と { control }{ $control }以上

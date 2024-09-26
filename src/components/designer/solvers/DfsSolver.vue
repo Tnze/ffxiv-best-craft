@@ -18,11 +18,12 @@
 
 <script setup lang="ts">
 import { Actions, Status } from '@/libs/Craft';
-import { ElAlert, ElButton, ElCheckbox, ElLink, ElSlider, ElDialog, ElSpace } from 'element-plus'
+import { ElAlert, ElButton, ElCheckbox, ElLink, ElSlider, ElDialog } from 'element-plus'
 import { useFluent } from 'fluent-vue';
 import { Ref, ref, watch } from 'vue';
 import { nq_solve, dfs_solve } from '@/libs/Solver';
 import { ChatSquare } from '@element-plus/icons-vue'
+import { SequenceSource } from '../types';
 
 const { $t } = useFluent()
 
@@ -31,7 +32,7 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-    (event: 'runSimpleSolver', solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
+    (event: 'runSimpleSolver', solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
 }>()
 
 // dfs求解器最大深度，设置超过该深度会显示警告
@@ -55,7 +56,7 @@ function dfsFormatTooltip(value: number): string {
 }
 
 function runDfsSolver() {
-    emits('runSimpleSolver', "dfs", dfsSolving,
+    emits('runSimpleSolver', SequenceSource.DFSSolver, dfsSolving,
         initStatus => {
             const solver = doNotTouch.value ? nq_solve : dfs_solve
             return solver(initStatus, maxDepth.value, useSpecialist.value)
@@ -76,8 +77,8 @@ function runDfsSolver() {
     </el-dialog>
     <div class="argument-block" style="display: flex;">
         <span class="slider-label">{{ $t('dfs-max-depth') }}</span>
-        <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip" :aria-label="$t('dfs-max-depth')"
-            :disabled="dfsSolving" />
+        <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip"
+            :aria-label="$t('dfs-max-depth')" :disabled="dfsSolving" />
     </div>
     <el-alert v-if="maxDepth > warningDepth" type="warning" :title="$t('dfs-too-depth')" show-icon :closable="false" />
     <el-checkbox v-model="doNotTouch" :label="$t('do-not-touch')" :disabled="dfsSolving" />

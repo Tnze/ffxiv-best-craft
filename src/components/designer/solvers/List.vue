@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -18,14 +18,16 @@
 
 <script setup lang="ts">
 import { Ref, ref } from 'vue'
-import { ElAlert, ElScrollbar, ElButton, ElCheckbox, ElLink, ElMessage, ElMessageBox, ElTabs, ElTabPane, ElCard, ElSpace } from 'element-plus'
+import { ElAlert, ElScrollbar, ElButton, ElLink, ElMessage, ElMessageBox, ElTabs, ElTabPane } from 'element-plus'
 import { Actions, Status } from "@/libs/Craft"
-import { supported as solverSupported, formatDuration, rika_solve, rika_solve_tnzever } from '@/libs/Solver'
+import { supported as solverSupported, rika_solve, rika_solve_tnzever } from '@/libs/Solver'
+import { formatDuration } from '@/libs/Utils'
 import { useFluent } from 'fluent-vue';
 import { Solver } from './DpSolver.vue'
 import DpSolver from './DpSolver.vue'
 import DfsSolver from './DfsSolver.vue'
-import DesktopEditionDownload from '@/components/DesktopEditionDownload.vue';
+import RaphaelSolver from './RaphaelSolver.vue'
+import { SequenceSource } from '../types';
 
 const { $t } = useFluent()
 
@@ -37,19 +39,17 @@ const props = defineProps<{
 
 const emits = defineEmits<{
     (event: 'solverLoad', solver: Solver): void
-    (event: 'solverResult', result: Actions[]): void
+    (event: 'solverResult', result: Actions[], solverName: SequenceSource): void
 }>()
 
 const activeNames = ref<string>("dp")
-const platform = import.meta.env.VITE_BESTCRAFT_TARGET
 
-
-async function runSimpleSolver(solverId: string, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>) {
+async function runSimpleSolver(solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>) {
     const msg1 = ElMessage({
         showClose: true,
         duration: 0,
         type: 'info',
-        message: $t('solving-info', { solverName: $t(solverId + '-solver') }),
+        message: $t('solving-info', { solverName: $t(solverId) }),
     })
     try {
         solvingRunningState.value = true
@@ -59,14 +59,14 @@ async function runSimpleSolver(solverId: string, solvingRunningState: Ref<Boolea
 
         const msgArgs = {
             solveTime: formatDuration(stopTime - startTime),
-            solverName: $t(solverId + '-solver'),
+            solverName: $t(solverId),
         }
         if (result.length > 0) {
             ElMessage({
                 type: 'success',
                 message: $t('simple-solver-finished', msgArgs),
             })
-            emits('solverResult', result)
+            emits('solverResult', result, solverId)
         } else {
             ElMessage({
                 type: 'error',
@@ -102,7 +102,7 @@ async function runRikaSolver() {
             return
         }
     }
-    await runSimpleSolver("bfs", rikaIsSolving, rika_solve)
+    await runSimpleSolver(SequenceSource.BFSSolver, rikaIsSolving, rika_solve)
 }
 
 const tnzeVerRikaIsSolving = ref(false)
@@ -111,7 +111,7 @@ const tnzeVerRikaUseObserve = ref(true)
 const tnzeVerRikaReduceSteps = ref(true)
 
 async function runTnzeVerRikaSolver() {
-    await runSimpleSolver("tnzever-rika", tnzeVerRikaIsSolving,
+    await runSimpleSolver(SequenceSource.TnzeVerRikaSolver, tnzeVerRikaIsSolving,
         initStatus => rika_solve_tnzever(
             initStatus,
             tnzeVerRikaUseManipulation.value,
@@ -127,22 +127,16 @@ async function runTnzeVerRikaSolver() {
 
 <template>
     <el-scrollbar class="container">
-        <template v-if="platform != 'tauri'">
-            <el-alert type="warning" :title="$t('please-use-desktop-solvers')" show-icon :closable="false" />
-            <br />
-        </template>
         <template v-if="!solverSupported">
             <el-alert type="error" :title="$t('web-worker-not-avaliable')" show-icon :closable="false" />
             <br />
         </template>
         <el-tabs v-model="activeNames">
             <el-tab-pane :label="$t('dp-solver')" name="dp">
-                <el-space v-if="platform != 'tauri'" direction="vertical" alignment="flex-start">
-                    <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false">
-                        <DesktopEditionDownload />
-                    </el-alert>
-                </el-space>
-                <DpSolver v-else :init-status="initStatus" :recipe-name="recipeName"
+                <DpSolver :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
+            </el-tab-pane>
+            <el-tab-pane :label="$t('raphael-solver')" name="raphael">
+                <RaphaelSolver :init-status="initStatus" :recipe-name="recipeName"
                     @run-simple-solver="runSimpleSolver" />
             </el-tab-pane>
             <el-tab-pane :label="$t('dfs-solver')" name="dfs" style="flex: auto;">
@@ -166,7 +160,7 @@ async function runTnzeVerRikaSolver() {
                     </template>
                 </i18n>
             </el-tab-pane>
-            <el-tab-pane :label="$t('tnzever-rika-solver')" name="bfs-dp">
+            <!-- <el-tab-pane :label="$t('tnzever-rika-solver')" name="bfs-dp">
                 <el-space v-if="platform != 'tauri'" direction="vertical" alignment="flex-start">
                     <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false">
                         <DesktopEditionDownload />
@@ -182,7 +176,7 @@ async function runTnzeVerRikaSolver() {
                         </el-button>
                     </template>
                 </i18n>
-            </el-tab-pane>
+            </el-tab-pane> -->
         </el-tabs>
     </el-scrollbar>
 </template>
@@ -217,15 +211,8 @@ span {
 </style>
 
 <fluent locale="zh-CN">
-please-use-desktop-solvers = 网页版求解器性能较差，请考虑使用桌面版。
-    网页版求解器依赖于浏览器对 Wasm、ESM WebWorker 的支持，如遇无法使用的情况，请尝试升级您的浏览器。
 solver-not-avaliable = 该求解器尚未适配网页版 BestCraft。如需使用，请点击下方链接下载客户端。
 web-worker-not-avaliable = 您正在使用的浏览器不支持 Web Worker 功能，无法运行求解器。
-
-dp-solver = 动态规划求解 v2.2
-bfs-solver = 广度优先搜索 v1
-tnzever-rika-solver = 广度优先搜索 ~ Tnze Impv. ~ v2
-dfs-solver = 深度优先搜索 v2
 
 do-not-touch = 不推品质
 reduce-steps-info = 最少资源方案
@@ -271,10 +258,6 @@ solver-not-avaliable = The Web edition of BestCraft doesn't support this solver.
 web-worker-not-avaliable = Your browser doesn't support Web Worker, which is required to running solvers.
     
 solver-not-avaliable = Developments of web-based BestCraft haven't done yet. Downloading the Desktop version is required to run these solvers.
-dp-solver = Dynamic Programing v2.2
-bfs-solver = Breadth First Search v1
-tnzever-rika-solver = Breadth First Search ~ Tnze Impv. ~ v2
-dfs-solver = Depth First Search v2
 
 do-not-touch = Do not "touching"
 reduce-steps-info = Minimum resource

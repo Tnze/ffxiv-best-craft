@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue';
 import { ElSpace, ElCard, ElMessage, ElCheckbox } from 'element-plus'
-import { Actions } from '@/libs/Craft';
+import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 
 const props = defineProps<{
@@ -43,7 +43,13 @@ const chunkedActions = computed(() => {
     const minChunks = Math.ceil(props.actions.length / maxLinesPerChunk);
     const size = props.actions.length / minChunks || 14;
     for (let sec = 0; sec < minChunks; sec++) {
-        const section = props.actions.slice(sec * size, Math.min(props.actions.length, (sec + 1) * size))
+        let section;
+        if (genOptions.avgSize) {
+            section = props.actions.slice(sec * size, Math.min(props.actions.length, (sec + 1) * size))
+        } else {
+            const start = sec * maxLinesPerChunk;
+            section = props.actions.slice(start, Math.min(props.actions.length, start + maxLinesPerChunk))
+        }
         let lines = [];
         if (genOptions.hasLock)
             lines.push(`/mlock`)
@@ -52,7 +58,7 @@ const chunkedActions = computed(() => {
             if (actionName.includes(' ')) {
                 actionName = `"${actionName}"`
             }
-            lines.push(`/ac ${actionName} <wait.${waitTimes.get(action)}>`)
+            lines.push(`/ac ${actionName} <wait.${calcWaitTime(action)}>`)
         }
         if (genOptions.hasNotify)
             lines.push(`/echo ${$t('marco-finished', { id: sec + 1 })}<se.1>`)
@@ -78,49 +84,13 @@ const copyChunk = async (i: number, macro: string[]) => {
     })
 }
 
-const waitTimes = new Map([
-    [Actions.BasicSynthesis, 3],
-    [Actions.BasicTouch, 3],
-    [Actions.MastersMend, 3],
-    [Actions.HastyTouch, 3],
-    [Actions.RapidSynthesis, 3],
-    [Actions.Observe, 3],
-    [Actions.TricksOfTheTrade, 2],
-    [Actions.WasteNot, 2],
-    [Actions.Veneration, 2],
-    [Actions.StandardTouch, 3],
-    [Actions.GreatStrides, 2],
-    [Actions.Innovation, 2],
-    [Actions.FinalAppraisal, 2],
-    [Actions.WasteNotII, 2],
-    [Actions.ByregotsBlessing, 3],
-    [Actions.PreciseTouch, 3],
-    [Actions.MuscleMemory, 3],
-    [Actions.CarefulSynthesis, 3],
-    [Actions.Manipulation, 2],
-    [Actions.PrudentTouch, 3],
-    [Actions.FocusedSynthesis, 3],
-    [Actions.FocusedTouch, 3],
-    [Actions.Reflect, 3],
-    [Actions.PreparatoryTouch, 3],
-    [Actions.Groundwork, 3],
-    [Actions.DelicateSynthesis, 3],
-    [Actions.IntensiveSynthesis, 3],
-    [Actions.TrainedEye, 3],
-    [Actions.AdvancedTouch, 3],
-    [Actions.PrudentSynthesis, 3],
-    [Actions.TrainedFinesse, 3],
-    [Actions.CarefulObservation, 3],
-    [Actions.HeartAndSoul, 3],
-])
-
 </script>
 
 <template>
     <div>
         <el-checkbox v-model="genOptions.hasNotify" :label="$t('has-notify')" />
         <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
-        <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" disabled />
+        <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
     </div>
     <el-space wrap alignment="flex-start">
         <el-card v-for="(marco, i) in chunkedActions" class="box-card" shadow="hover" @click="copyChunk(i, marco)">

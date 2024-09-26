@@ -19,26 +19,26 @@ import { defineStore } from "pinia"
 
 export interface GearsetsRow {
     name: Jobs
-    value: Attributes | null
+    value: Attributes | undefined
 }
 
 export default defineStore('gearsets', {
     state: () => ({
         default: {
-            level: 90,
-            craftsmanship: 2786,
-            control: 2764,
-            craft_points: 533,
+            level: 100,
+            craftsmanship: 4000,
+            control: 4000,
+            craft_points: 700,
         },
         special: [
-            { name: Jobs.Carpenter, value: null },
-            { name: Jobs.Blacksmith, value: null },
-            { name: Jobs.Armorer, value: null },
-            { name: Jobs.Goldsmith, value: null },
-            { name: Jobs.Leatherworker, value: null },
-            { name: Jobs.Weaver, value: null },
-            { name: Jobs.Alchemist, value: null },
-            { name: Jobs.Culinarian, value: null },
+            { name: Jobs.Carpenter, value: undefined },
+            { name: Jobs.Blacksmith, value: undefined },
+            { name: Jobs.Armorer, value: undefined },
+            { name: Jobs.Goldsmith, value: undefined },
+            { name: Jobs.Leatherworker, value: undefined },
+            { name: Jobs.Weaver, value: undefined },
+            { name: Jobs.Alchemist, value: undefined },
+            { name: Jobs.Culinarian, value: undefined },
         ] as GearsetsRow[]
     }),
     getters: {
@@ -47,6 +47,9 @@ export default defineStore('gearsets', {
                 default: this.default,
                 special: this.special
             })
+        },
+        attributes() {
+            return (job: Jobs) => this.special.find(v => v.name == job)?.value ?? this.default
         }
     },
     actions: {

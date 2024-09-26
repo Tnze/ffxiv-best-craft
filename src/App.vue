@@ -30,6 +30,7 @@ if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
 import Menu from '@/components/Menu.vue';
 import useSettingsStore from '@/stores/settings';
 import useGearsetsStore from '@/stores/gearsets';
+import useDesignerStore from '@/stores/designer';
 import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent'
 import { useRouter } from 'vue-router';
@@ -38,6 +39,7 @@ const { $t } = useFluent()
 const colorMode = useColorMode()
 const settingStore = useSettingsStore()
 const gearsetsStore = useGearsetsStore()
+const designerStore = useDesignerStore()
 const preferredLang = usePreferredLanguages()
 const bgColor = useCssVar('--app-bg-color', ref(null))
 const bgMainColor = useCssVar('--tnze-main-bg-color', ref(null))
@@ -55,7 +57,6 @@ watchEffect(() => {
     const systemLang = preferredLang.value.find(v => languages.has(v))
     lang.value = settingLang ?? systemLang ?? 'zh-CN'
     selectLanguage(lang.value)
-    console.log("language switched to", lang.value)
 })
 
 // Check update
@@ -68,16 +69,17 @@ async function loadStorages() {
         const { Dir, readTextFile } = await pkgTauriFs
         readTextFile("settings.json", { dir: Dir.App }).then(settingStore.fromJson).catch(e => console.error(e))
         readTextFile("gearsets.json", { dir: Dir.App }).then(gearsetsStore.fromJson).catch(e => console.error(e))
+        readTextFile("designer.json", { dir: Dir.App }).then(designerStore.fromJson).catch(e => console.error(e))
     } else {
         const ifNotNullThen = (v: string | null, f: (v: string) => void) => { if (v != null) f(v) }
         ifNotNullThen(window.localStorage.getItem("settings.json"), settingStore.fromJson)
         ifNotNullThen(window.localStorage.getItem("gearsets.json"), gearsetsStore.fromJson)
+        ifNotNullThen(window.localStorage.getItem("designer.json"), designerStore.fromJson)
     }
 }
 loadStorages()
 
-async function writeJson(name: string, val: any) {
-    let jsonStr = JSON.stringify(val)
+async function writeJson(name: string, jsonStr: string) {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         const { Dir, exists, createDir, writeTextFile } = await pkgTauriFs
         try {
@@ -91,8 +93,9 @@ async function writeJson(name: string, val: any) {
         window.localStorage.setItem(name, jsonStr)
     }
 }
-settingStore.$subscribe((_mutation, state) => writeJson('settings.json', state))
-gearsetsStore.$subscribe((_mutation, state) => writeJson('gearsets.json', state))
+settingStore.$subscribe(() => writeJson('settings.json', settingStore.toJson))
+gearsetsStore.$subscribe(() => writeJson('gearsets.json', gearsetsStore.toJson))
+designerStore.$subscribe(() => writeJson('designer.json', designerStore.toJson))
 
 watchEffect(async () => {
     let isDark: boolean | null;
@@ -125,7 +128,7 @@ watchEffect(async () => {
                         <Operation />
                     </el-icon>
                 </Transition>
-                <h3>{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
+                <h3 class="topbar-title">{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
             </div>
             <div style="height: calc(100% - var(--tnze-topbar-height));">
                 <router-view v-slot="{ Component }">
@@ -271,14 +274,17 @@ watchEffect(async () => {
 }
 
 .topbar>.el-icon {
-    margin: 0 10px;
     color: var(--el-color-info);
     overflow: hidden;
 }
 
+.topbar-title {
+    margin-left: 10px;
+}
+
 .main {
     height: 100%;
-    padding: 0;
+    padding: 0 10px;
     background-color: rgba(246, 246, 246, 0.5);
     flex: auto;
 
@@ -297,7 +303,6 @@ watchEffect(async () => {
 
     .topbar {
         border-bottom: initial;
-        padding-left: 20px;
     }
 
     .main {
