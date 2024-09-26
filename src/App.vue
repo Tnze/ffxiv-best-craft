@@ -176,13 +176,13 @@ watchEffect(async () => {
 }
 
 :root {
-    --el-color-primary: #3fb42d;
-    --el-color-primary-light-3: #5ec35d;
-    --el-color-primary-light-5: #81c27b;
-    --el-color-primary-light-7: #c6ffca;
-    --el-color-primary-light-8: #a2c0a2;
-    --el-color-primary-light-9: #b0bdae;
-    --el-color-primary-dark-2: #288b23;
+    --el-color-primary: #b4ad2d;
+    --el-color-primary-light-3: #c3b55d;
+    --el-color-primary-light-5: #c1c27b;
+    --el-color-primary-light-7: #fdffc6;
+    --el-color-primary-light-8: #c0b9a2;
+    --el-color-primary-light-9: #bdbcae;
+    --el-color-primary-dark-2: #8b7623;
     --el-fill-color-blank: transparent;
 
     --el-border-radius-base: 10px;
@@ -195,13 +195,13 @@ watchEffect(async () => {
 }
 
 :root.dark {
-    --el-color-primary: #299929;
-    --el-color-primary-light-3: #267921;
-    --el-color-primary-light-5: #1f601d;
-    --el-color-primary-light-7: #1b461a;
-    --el-color-primary-light-8: #16331b;
+    --el-color-primary: #997429;
+    --el-color-primary-light-3: #796621;
+    --el-color-primary-light-5: #604e1d;
+    --el-color-primary-light-7: #463b1a;
+    --el-color-primary-light-8: #332a16;
     --el-color-primary-light-9: #18222c;
-    --el-color-primary-dark-2: #5cc952;
+    --el-color-primary-dark-2: #c99f52;
     /* --el-bg-color: var(--tnze-main-bg-color) !important; */
 }
 </style>
