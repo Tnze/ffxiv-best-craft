@@ -75,7 +75,7 @@ export default defineConfig({
       topLevelAwait(),
     ],
   },
-  base: '/dawntrail/',
+  // base: '/dawntrail/',
   build: {
     rollupOptions: {
       input: {
