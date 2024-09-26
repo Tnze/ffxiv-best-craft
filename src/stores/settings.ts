@@ -24,7 +24,7 @@ import { BetaXivApiRecipeSource, BetaXivapiBase } from '@/components/recipe-mana
 export default defineStore('settings', {
     state: () => ({
         language: 'system',
-        dataSource: <'local' | "yyyy.games" | 'xivapi-old' | 'cafe' | 'xivapi'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'xivapi' : 'xivapi'),
+        dataSource: <'local' | "yyyy.games" | 'cafe' | 'xivapi'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'xivapi' : 'xivapi'),
         dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined
     }),
     getters: {
@@ -38,7 +38,6 @@ export default defineStore('settings', {
         async getDataSource(): Promise<DataSource> {
             let dataSources: Record<string, () => DataSource> = {
                 'yyyy.games': () => new WebSource(YYYYGamesApiBase),
-                'xivapi-old': () => new XivApiRecipeSource(XivapiBase, this.dataSourceLang),
                 'cafe': () => new XivApiRecipeSource(CafeMakerApiBase),
                 'xivapi': () => new BetaXivApiRecipeSource(BetaXivapiBase, this.dataSourceLang)
             }
@@ -70,7 +69,7 @@ export default defineStore('settings', {
         },
         fromJson(json: string) {
             this.$patch(JSON.parse(json))
-            if (this.dataSource === "xivapi") {
+            if (this.dataSource !== "xivapi") {
                 this.dataSource = "yyyy.games"
             }
         },

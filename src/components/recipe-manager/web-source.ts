@@ -91,14 +91,29 @@ export class WebSource {
         }
         return { id, name, level, can_be_hq: can_be_hq != 0, category_id };
     }
+
     async craftTypeList(): Promise<CraftType[]> {
         throw "todo"
     }
+
     async medicineTable(_page: number): Promise<DataSourceResult<Enhancer>> {
-        throw "todo"
+        const url = new URL("medicine_table", this.base).toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        })
+        const results = await resp.json() as Enhancer[];
+        return { results, totalPages: 1 };
     }
+
     async mealsTable(_page: number): Promise<DataSourceResult<Enhancer>> {
-        throw "todo"
+        const url = new URL("meals_table", this.base).toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        })
+        const results = await resp.json() as Enhancer[];
+        return { results, totalPages: 1 };
     }
 }
 

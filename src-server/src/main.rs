@@ -58,11 +58,13 @@ async fn main() {
         .into_handler();
 
     let router = Router::with_hoop(cors)
-        .hoop(affix::inject(state))
+        .hoop(affix_state::inject(state))
         .push(Router::with_path("recipe_level_table").get(recipe_level_table))
         .push(Router::with_path("recipe_table").get(recipe_table))
         .push(Router::with_path("recipes_ingredientions").get(recipes_ingredientions))
-        .push(Router::with_path("item_info").get(item_info));
+        .push(Router::with_path("item_info").get(item_info))
+        .push(Router::with_path("medicine_table").get(medicine_table))
+        .push(Router::with_path("meals_table").get(meals_table));
     let listener = TcpListener::new(server_url);
     let acceptor = listener.bind().await;
     Server::new(acceptor).serve(router).await;
@@ -220,5 +222,33 @@ async fn item_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -> 
         .map_err(|_| StatusError::internal_server_error())?
         .ok_or_else(|| StatusError::bad_gateway())?;
     res.render(Json(result));
+    Ok(())
+}
+
+#[derive(FromQueryResult, Serialize)]
+struct Enhancer {
+    name: String, // cm?: i32
+                  // cm_max?: number
+                  // ct?: number
+                  // ct_max?: number
+                  // cp?: number
+                  // cp_max?: number
+}
+
+#[handler]
+async fn medicine_table(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
+    let state = depot
+        .obtain::<AppState>()
+        .map_err(|_| StatusError::internal_server_error())?;
+    res.render(Json(Vec::<Enhancer>::new()));
+    Ok(())
+}
+
+#[handler]
+async fn meals_table(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
+    let state = depot
+        .obtain::<AppState>()
+        .map_err(|_| StatusError::internal_server_error())?;
+    res.render(Json(Vec::<Enhancer>::new()));
     Ok(())
 }
