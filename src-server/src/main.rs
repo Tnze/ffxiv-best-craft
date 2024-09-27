@@ -35,6 +35,7 @@ struct AppState {
 
 #[tokio::main]
 async fn main() {
+    println!("hello, world");
     // get env vars
     dotenvy::dotenv().ok();
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
@@ -63,6 +64,7 @@ async fn main() {
         .push(Router::with_path("recipe_table").get(recipe_table))
         .push(Router::with_path("recipes_ingredientions").get(recipes_ingredientions))
         .push(Router::with_path("item_info").get(item_info))
+        .push(Router::with_path("craft_type").get(craft_type))
         .push(Router::with_path("medicine_table").get(medicine_table))
         .push(Router::with_path("meals_table").get(meals_table));
     let listener = TcpListener::new(server_url);
@@ -87,6 +89,12 @@ struct RecipeInfo {
     required_control: u16,
 
     can_hq: bool,
+}
+
+#[derive(FromQueryResult, Serialize)]
+struct CraftType {
+    id: u32,
+    name: String,
 }
 
 // rlv: i32,
@@ -127,7 +135,7 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
         .query::<String>("search_name")
         .ok_or_else(|| StatusError::bad_request().detail("Need 'search_name'"))?;
 
-    let query = Recipes::find()
+    let mut query = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
         .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
         .join(
@@ -136,7 +144,14 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
         )
         .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
         .select_only()
-        .filter(items::Column::Name.like(&search_name))
+        .filter(items::Column::Name.like(&search_name));
+    if let Some(rlv) = req.query::<u32>("rlv") {
+        query = query.filter(recipes::Column::RecipeLevelId.eq(rlv))
+    }
+    if let Some(craft_type_id) = req.query::<u32>("craft_type_id") {
+        query = query.filter(recipes::Column::CraftTypeId.eq(craft_type_id))
+    }
+    let query = query
         .column_as(recipes::Column::Id, "id")
         .column_as(recipes::Column::RecipeLevelId, "rlv")
         .column_as(items::Column::Id, "item_id")
@@ -173,6 +188,27 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
         p: u64,
     }
     res.render(Json(Resp { data, p }));
+    Ok(())
+}
+
+#[handler]
+async fn craft_type(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
+    let state = depot
+        .obtain::<AppState>()
+        .map_err(|_| StatusError::internal_server_error())?;
+    let query = CraftTypes::find()
+        .column_as(craft_types::Column::Id, "id")
+        .column_as(craft_types::Column::Name, "name")
+        .order_by(craft_types::Column::Id, Order::Asc);
+    let result = query
+        .into_model::<CraftType>()
+        .all(&state.conn)
+        .await
+        .map_err(|err| {
+            println!("Failed to get craft type list: {err}");
+            StatusError::internal_server_error().detail("Failed to get craft type list")
+        })?;
+    res.render(Json(result));
     Ok(())
 }
 

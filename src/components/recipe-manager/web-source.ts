@@ -26,7 +26,7 @@ export class WebSource {
         this.base = base
     }
 
-    async recipeTable(page: number, searchName?: string, _rlv?: number, _craftTypeId?: number): Promise<RecipesSourceResult> {
+    async recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult> {
         if (searchName === undefined) {
             searchName = ""
         }
@@ -34,6 +34,13 @@ export class WebSource {
             "page_id": String(page - 1),
             "search_name": "%" + searchName + "%"
         })
+        if (rlv !== undefined) {
+            query.set("rlv", String(rlv));
+        }
+        if (craftTypeId !== undefined) {
+            query.set("craft_type_id", String(craftTypeId));
+        }
+
         const url = new URL("recipe_table", this.base).toString() + '?' + query.toString();
         const resp = await fetch(url, {
             method: 'GET',
@@ -93,7 +100,12 @@ export class WebSource {
     }
 
     async craftTypeList(): Promise<CraftType[]> {
-        throw "todo"
+        const url = new URL("craft_type", this.base).toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        })
+        return await resp.json() as CraftType[];
     }
 
     async medicineTable(_page: number): Promise<DataSourceResult<Enhancer>> {
