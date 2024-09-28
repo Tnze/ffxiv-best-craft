@@ -132,6 +132,7 @@ async function triggerSearch() {
     const source = await settingStore.getDataSource
     const pageNumber = pagination.Page
     const searching = searchText.value
+    pagination.Page = 1; // 触发搜索时应该翻回第一页，否则搜不到东西
     await updateRecipePage(source, pageNumber, searching)
 }
 
