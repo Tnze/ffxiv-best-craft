@@ -96,7 +96,7 @@ function runRaphaelSolver() {
         <el-checkbox v-model="minimizeSteps" :label="$t('minimize-steps')" disabled />
         <el-space>
             <el-checkbox v-model="adversarial" :label="$t('adversarial')" />
-            <el-tag v-if="backloadProgress" type="danger">{{ $t('quality-down') }}</el-tag>
+            <el-tag v-if="adversarial" type="danger">{{ $t('quality-down') }}</el-tag>
         </el-space>
     </el-space>
     <div style="margin-top: 10px;">
