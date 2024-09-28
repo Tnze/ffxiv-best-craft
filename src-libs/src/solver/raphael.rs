@@ -25,6 +25,7 @@ pub fn solve(
     use_heart_and_soul: bool,
     use_quick_innovation: bool,
     backload_progress: bool,
+    adversarial: bool,
 ) -> Vec<Actions> {
     let mut allowed_actions = ActionMask::from_level(status.attributes.level);
     if !use_heart_and_soul {
@@ -48,7 +49,7 @@ pub fn solve(
         base_quality: status.caches.base_touch as u16,
         job_level: status.attributes.level,
         allowed_actions,
-        adversarial: false,
+        adversarial,
     };
     let state = SimulationState::new(&settings);
     let mut solver = MacroSolver::new(

@@ -351,6 +351,7 @@ fn raphael_solve(
     use_heart_and_soul: bool,
     use_quick_innovation: bool,
     backload_progress: bool,
+    adversarial: bool,
 ) -> Vec<Actions> {
     raphael::solve(
         status.clone(),
@@ -358,6 +359,7 @@ fn raphael_solve(
         use_heart_and_soul,
         use_quick_innovation,
         backload_progress,
+        adversarial,
     )
 }
 

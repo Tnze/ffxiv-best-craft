@@ -121,6 +121,7 @@ pub fn raphael_solve(
     use_heart_and_soul: bool,
     use_quick_innovation: bool,
     backload_progress: bool,
+    adversarial: bool,
 ) -> Result<JsValue, JsValue> {
     use app_libs::solver::raphael::solve;
     let status: Status = from_value(status)?;
@@ -130,6 +131,7 @@ pub fn raphael_solve(
         use_heart_and_soul,
         use_quick_innovation,
         backload_progress,
+        adversarial,
     );
     Ok(to_value(&result)?)
 }

@@ -19,7 +19,7 @@ onmessage = async (e) => {
         case "rika_solve_tnzever":
             throw "unsupported";
         case "raphael_solve":
-            postMessage(raphael_solve(args.status, args.useManipulation, args.useHeartAndSoul, args.useQuickInnovation, args.backloadProgress))
+            postMessage(raphael_solve(args.status, args.useManipulation, args.useHeartAndSoul, args.useQuickInnovation, args.backloadProgress, args.adversarial))
     }
     close()
 };

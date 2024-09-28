@@ -46,9 +46,19 @@ const useHeartAndSoul = ref(false)
 const useQuickInnovation = ref(false)
 const backloadProgress = ref(false)
 const minimizeSteps = ref(false)
+const adversarial = ref(false)
 
 function runRaphaelSolver() {
-    emits('runSimpleSolver', SequenceSource.RaphaelSolver, raphaelSolveIsSolving, initStatus => raphael_solve(initStatus, useManipulation.value, useHeartAndSoul.value, useQuickInnovation.value, backloadProgress.value))
+    emits('runSimpleSolver', SequenceSource.RaphaelSolver, raphaelSolveIsSolving,
+        initStatus => raphael_solve(
+            initStatus,
+            useManipulation.value,
+            useHeartAndSoul.value,
+            useQuickInnovation.value,
+            backloadProgress.value,
+            adversarial.value
+        ),
+    )
 }
 </script>
 
@@ -75,7 +85,8 @@ function runRaphaelSolver() {
             <el-tag v-if="useHeartAndSoul" type="warning">{{ $t('consume-crafters-delineation') }}</el-tag>
         </el-space>
         <el-space>
-            <el-checkbox v-model="useQuickInnovation" :label="$t('enable-action', { action: $t('quick-innovation') })" />
+            <el-checkbox v-model="useQuickInnovation"
+                :label="$t('enable-action', { action: $t('quick-innovation') })" />
             <el-tag v-if="useQuickInnovation" type="warning">{{ $t('consume-crafters-delineation') }}</el-tag>
         </el-space>
         <el-space>
@@ -83,6 +94,10 @@ function runRaphaelSolver() {
             <el-tag v-if="backloadProgress" type="danger">{{ $t('quality-down') }}</el-tag>
         </el-space>
         <el-checkbox v-model="minimizeSteps" :label="$t('minimize-steps')" disabled />
+        <el-space>
+            <el-checkbox v-model="adversarial" :label="$t('adversarial')" />
+            <el-tag v-if="backloadProgress" type="danger">{{ $t('quality-down') }}</el-tag>
+        </el-space>
     </el-space>
     <div style="margin-top: 10px;">
         <el-button @click="runRaphaelSolver" type="primary" :loading="raphaelSolveIsSolving">
@@ -106,6 +121,8 @@ error-with = 错误：{ $err }
 enable-action = 使用技能：{ $action }
 backload-progress = 后置作业技能（快速求解）
 minimize-steps = 最小化步数
+adversarial = 确保 100% 可靠
+
 quality-down = 求解质量下降
 need-learn-manipulation = 需要学习掌握技能
 consume-crafters-delineation = 消耗能工巧匠图纸
@@ -132,6 +149,8 @@ error-with = Error: { $err }
 enable-action = Enable { $action }
 backload-progress = Backload progress (Quick solve)
 minimize-steps = Minimize Steps
+adversarial = Ensure 100% reliability
+
 quality-down = quality decline
 need-learn-manipulation = need manipulation
 consume-crafters-delineation = consume crafter's delineation

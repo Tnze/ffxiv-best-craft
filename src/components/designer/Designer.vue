@@ -233,13 +233,15 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
     let slots: Slot[] = [];
     for (const i in actions)
         slots.push({ action: actions[i], id: Number.parseInt(i) })
-    store.pushRotation({
+    const seq = {
         slots,
         maxid: actions.length,
         source: solverName,
-    });
+    };
+    loadSeq(seq)
+    store.pushRotation(seq);
     store.sortRotations(initStatus.value);
-    activeTab.value = 'store';
+    // activeTab.value = 'store';
 }
 </script>
 
