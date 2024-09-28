@@ -53,6 +53,7 @@ const filterRecipeLevel = ref<number>()
 
 async function craftTypeRemoteMethod() {
     const source = await settingStore.getDataSource;
+    filterCraftType.value = undefined;
     craftTypeOptions.value = await source.craftTypeList();
 }
 
@@ -141,6 +142,12 @@ onMounted(() => {
     triggerSearch()
     craftTypeRemoteMethod()
 })
+
+// 数据源切换时更新
+watch(() => settingStore.getDataSource, (source) => {
+    triggerSearch();
+    craftTypeRemoteMethod();
+});
 
 const confirmDialogVisible = ref(false)
 const selectedRecipe = ref<[Recipe, RecipeInfo]>()
