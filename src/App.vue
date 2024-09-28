@@ -176,13 +176,13 @@ watchEffect(async () => {
 }
 
 :root {
-    --el-color-primary: #b4ad2d;
+    --el-color-primary: #868226;
     --el-color-primary-light-3: #c3b55d;
     --el-color-primary-light-5: #c1c27b;
     --el-color-primary-light-7: #fdffc6;
     --el-color-primary-light-8: #c0b9a2;
     --el-color-primary-light-9: #bdbcae;
-    --el-color-primary-dark-2: #8b7623;
+    --el-color-primary-dark-2: #4f4316;
     --el-fill-color-blank: transparent;
 
     --el-border-radius-base: 10px;
@@ -195,7 +195,7 @@ watchEffect(async () => {
 }
 
 :root.dark {
-    --el-color-primary: #997429;
+    --el-color-primary: #ba8d33;
     --el-color-primary-light-3: #796621;
     --el-color-primary-light-5: #604e1d;
     --el-color-primary-light-7: #463b1a;

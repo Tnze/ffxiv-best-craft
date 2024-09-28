@@ -132,10 +132,10 @@ const destroySolver = async (s: Solver) => {
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
-        <el-checkbox v-model="useMuscleMemory" :label="$t('muscle-memory')" :disabled="platform != 'tauri'" />
-        <el-checkbox v-model="useManipulation" :label="$t('manipulation')" :disabled="platform != 'tauri'" />
-        <el-checkbox v-model="useWasteNot" :label="$t('waste-not')" :disabled="platform != 'tauri'" />
-        <el-checkbox v-model="useObserve" :label="$t('observe')" />
+        <el-checkbox v-model="useMuscleMemory" :label="$t('enable-action', { action: $t('muscle-memory') })" :disabled="platform != 'tauri'" />
+        <el-checkbox v-model="useManipulation" :label="$t('enable-action', { action: $t('manipulation') })" :disabled="platform != 'tauri'" />
+        <el-checkbox v-model="useWasteNot" :label="$t('enable-action', { action: $t('waste-not') })" :disabled="platform != 'tauri'" />
+        <el-checkbox v-model="useObserve" :label="$t('enable-action', { action: $t('observe') })" />
     </el-space>
     <el-alert v-if="useMuscleMemory" type="warning" :title="$t('muscle-memory-msg')" show-icon :closable="false" />
     <div style="margin-top: 10px;">
@@ -177,6 +177,7 @@ create-solver = 创建求解器
 solver-created = 求解器创建成功({ $solveTime })
 release-solver = 释放
 error-with = 错误：{ $err }
+enable-action = 使用技能：{ $action }
 
 dp-solver-info-title = 基于记忆化搜索的动态规划算法。
 dp-solver-info =
@@ -261,6 +262,7 @@ create-solver = Create solver
 solver-created = Solver successfully created({ $solveTime })
 release-solver = Release
 error-with = Error: { $err }
+enable-action = Enable { $action }
 
 dp-solver-info-title = Dynamic programming algorithm based on Memoization Search.
 dp-solver-info =

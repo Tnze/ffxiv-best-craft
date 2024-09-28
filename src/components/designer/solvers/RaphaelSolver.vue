@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { Ref, ref } from 'vue'
-import { ElSpace, ElDialog, ElButton, ElCheckbox, ElLink } from 'element-plus'
+import { ElSpace, ElDialog, ElButton, ElCheckbox, ElLink, ElTag } from 'element-plus'
 import { raphael_solve } from '@/libs/Solver'
 import { ChatSquare } from '@element-plus/icons-vue'
 import { Actions, Status } from '@/libs/Craft';
@@ -66,10 +66,22 @@ function runRaphaelSolver() {
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
-        <el-checkbox v-model="useManipulation" :label="$t('manipulation')" />
-        <el-checkbox v-model="useHeartAndSoul" :label="$t('heart-and-soul')" />
-        <el-checkbox v-model="useQuickInnovation" :label="$t('quick-innovation')" />
-        <el-checkbox v-model="backloadProgress" :label="$t('backload-progress')" />
+        <el-space>
+            <el-checkbox v-model="useManipulation" :label="$t('enable-action', { action: $t('manipulation') })" />
+            <el-tag v-if="useManipulation" type="warning">{{ $t('need-learn-manipulation') }}</el-tag>
+        </el-space>
+        <el-space>
+            <el-checkbox v-model="useHeartAndSoul" :label="$t('enable-action', { action: $t('heart-and-soul') })" />
+            <el-tag v-if="useHeartAndSoul" type="warning">{{ $t('consume-crafters-delineation') }}</el-tag>
+        </el-space>
+        <el-space>
+            <el-checkbox v-model="useQuickInnovation" :label="$t('enable-action', { action: $t('quick-innovation') })" />
+            <el-tag v-if="useQuickInnovation" type="warning">{{ $t('consume-crafters-delineation') }}</el-tag>
+        </el-space>
+        <el-space>
+            <el-checkbox v-model="backloadProgress" :label="$t('backload-progress')" />
+            <el-tag v-if="backloadProgress" type="danger">{{ $t('quality-down') }}</el-tag>
+        </el-space>
         <el-checkbox v-model="minimizeSteps" :label="$t('minimize-steps')" disabled />
     </el-space>
     <div style="margin-top: 10px;">
@@ -91,8 +103,12 @@ solver-start = 开始求解
 simple-solver-solving = 正在求解中
 error-with = 错误：{ $err }
 
-backload-progress = 后置作业技能
+enable-action = 使用技能：{ $action }
+backload-progress = 后置作业技能（快速求解）
 minimize-steps = 最小化步数
+quality-down = 求解质量下降
+need-learn-manipulation = 需要学习掌握技能
+consume-crafters-delineation = 消耗能工巧匠图纸
 
 solver-info-title = Raphael 求解器
 solver-info =
@@ -113,8 +129,12 @@ solver-start = Start
 simple-solver-solving = Solving
 error-with = Error: { $err }
 
-backload-progress = Backload Progress Actions
+enable-action = Enable { $action }
+backload-progress = Backload progress (Quick solve)
 minimize-steps = Minimize Steps
+quality-down = quality decline
+need-learn-manipulation = need manipulation
+consume-crafters-delineation = consume crafter's delineation
 
 solver-info-title = Raphael FFXIV Crafting Solver
 solver-info =
