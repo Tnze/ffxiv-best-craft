@@ -20,10 +20,10 @@
 import { ref } from 'vue';
 import { NSelect } from 'naive-ui';
 
-import { BetaXivapiBase, BetaXivApiRecipeSource } from '@/components/recipe-manager/beta-xivapi-source';
+import { WebSource, YYYYGamesApiBase } from '@/components/recipe-manager/web-source';
 import { Enhancer } from '@/libs/Enhancer';
 
-const dataSource = new BetaXivApiRecipeSource(BetaXivapiBase);
+const dataSource = new WebSource(YYYYGamesApiBase);
 const enhancers = ref<Enhancer[]>()
 const loading = ref(false)
 

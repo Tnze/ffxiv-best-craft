@@ -21,7 +21,7 @@ import { ref } from 'vue';
 import { NSelect, SelectOption, useMessage, useLoadingBar } from 'naive-ui';
 
 import useFcoSimulatorStore from '../stores/simulator';
-import { BetaXivApiRecipeSource, BetaXivapiBase } from '@/components/recipe-manager/beta-xivapi-source';
+import { WebSource, YYYYGamesApiBase } from '@/components/recipe-manager/web-source';
 import { RecipesSourceResult } from '@/components/recipe-manager/source';
 import { newRecipe, RecipeInfo } from '@/libs/Craft';
 
@@ -31,7 +31,7 @@ const store = useFcoSimulatorStore();
 const message = useMessage();
 const loadingBar = useLoadingBar();
 
-const dataSource = new BetaXivApiRecipeSource(BetaXivapiBase);
+const dataSource = new WebSource(YYYYGamesApiBase);
 var lastResult: RecipesSourceResult | undefined;
 var currentPage = 1;
 var currentQuery: string | undefined = undefined;
