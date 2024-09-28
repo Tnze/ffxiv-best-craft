@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use serde::Serialize;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize)]
-#[sea_orm(table_name = "Recipes")]
+#[sea_orm(table_name = "recipes")]
 pub struct Model {
     #[sea_orm(column_name = "Id", primary_key)]
     pub id: u32,
@@ -35,46 +35,46 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::craft_types::Entity",
+        belongs_to = "super::crafttypes::Entity",
         from = "Column::CraftTypeId",
-        to = "super::craft_types::Column::Id",
-        on_update = "Restrict",
+        to = "super::crafttypes::Column::Id",
+        on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    CraftTypes,
+    Crafttypes,
     #[sea_orm(
-        belongs_to = "super::item_with_amount::Entity",
+        belongs_to = "super::itemwithamount::Entity",
         from = "Column::ItemResultId",
-        to = "super::item_with_amount::Column::Id",
-        on_update = "Restrict",
+        to = "super::itemwithamount::Column::Id",
+        on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    ItemWithAmount,
+    Itemwithamount,
     #[sea_orm(
-        belongs_to = "super::recipe_level_tables::Entity",
+        belongs_to = "super::recipeleveltables::Entity",
         from = "Column::RecipeLevelId",
-        to = "super::recipe_level_tables::Column::Id",
-        on_update = "Restrict",
+        to = "super::recipeleveltables::Column::Id",
+        on_update = "NoAction",
         on_delete = "Cascade"
     )]
-    RecipeLevelTables,
+    Recipeleveltables,
 }
 
-impl Related<super::craft_types::Entity> for Entity {
+impl Related<super::crafttypes::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::CraftTypes.def()
+        Relation::Crafttypes.def()
     }
 }
 
-impl Related<super::item_with_amount::Entity> for Entity {
+impl Related<super::itemwithamount::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::ItemWithAmount.def()
+        Relation::Itemwithamount.def()
     }
 }
 
-impl Related<super::recipe_level_tables::Entity> for Entity {
+impl Related<super::recipeleveltables::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::RecipeLevelTables.def()
+        Relation::Recipeleveltables.def()
     }
 }
 

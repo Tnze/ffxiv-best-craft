@@ -24,7 +24,9 @@ use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult
 use serde::Serialize;
 
 mod db;
-use db::{craft_types, item_with_amount, items, prelude::*, recipes};
+use db::{
+    crafttypes, itemaction, itemfood, itemfoodeffect, items, itemwithamount, prelude::*, recipes,
+};
 
 type Result<T> = std::result::Result<T, StatusError>;
 
@@ -110,7 +112,7 @@ async fn recipe_level_table(
     let rlv = req
         .query::<u32>("rlv")
         .ok_or_else(|| StatusError::bad_request())?;
-    let Some(rt) = RecipeLevelTables::find_by_id(rlv)
+    let Some(rt) = Recipeleveltables::find_by_id(rlv)
         .one(&state.conn)
         .await
         .map_err(|_| StatusError::internal_server_error())?
@@ -136,13 +138,13 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
         .ok_or_else(|| StatusError::bad_request().detail("Need 'search_name'"))?;
 
     let mut query = Recipes::find()
-        .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
-        .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
+        .join(JoinType::InnerJoin, recipes::Relation::Crafttypes.def())
+        .join(JoinType::InnerJoin, recipes::Relation::Itemwithamount.def())
         .join(
             JoinType::InnerJoin,
-            recipes::Relation::RecipeLevelTables.def(),
+            recipes::Relation::Recipeleveltables.def(),
         )
-        .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
+        .join(JoinType::InnerJoin, itemwithamount::Relation::Items.def())
         .select_only()
         .filter(items::Column::Name.like(&search_name));
     if let Some(rlv) = req.query::<u32>("rlv") {
@@ -156,7 +158,7 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
         .column_as(recipes::Column::RecipeLevelId, "rlv")
         .column_as(items::Column::Id, "item_id")
         .column_as(items::Column::Name, "item_name")
-        .column_as(craft_types::Column::Name, "job")
+        .column_as(crafttypes::Column::Name, "job")
         .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
         .column_as(recipes::Column::QualityFactor, "quality_factor")
         .column_as(recipes::Column::DurabilityFactor, "durability_factor")
@@ -192,14 +194,14 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
 }
 
 #[handler]
-async fn craft_type(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
+async fn craft_type(_req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
-    let query = CraftTypes::find()
-        .column_as(craft_types::Column::Id, "id")
-        .column_as(craft_types::Column::Name, "name")
-        .order_by(craft_types::Column::Id, Order::Asc);
+    let query = Crafttypes::find()
+        .column_as(crafttypes::Column::Id, "id")
+        .column_as(crafttypes::Column::Name, "name")
+        .order_by(crafttypes::Column::Id, Order::Asc);
     let result = query
         .into_model::<CraftType>()
         .all(&state.conn)
@@ -227,8 +229,8 @@ async fn recipes_ingredientions(
         .ok_or_else(|| StatusError::bad_request())?;
 
     let mut needs = BTreeMap::new();
-    let ing = ItemWithAmount::find()
-        .filter(item_with_amount::Column::RecipeId.eq(recipe_id))
+    let ing = Itemwithamount::find()
+        .filter(itemwithamount::Column::RecipeId.eq(recipe_id))
         .all(&state.conn)
         .await
         .map_err(|_| StatusError::internal_server_error())?;
@@ -261,30 +263,114 @@ async fn item_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -> 
     Ok(())
 }
 
-#[derive(FromQueryResult, Serialize)]
+#[derive(FromQueryResult, Debug)]
+struct ItemFoodAction {
+    name: String,
+    level: u32,
+    item_food_id: u16,
+    item_food_duration: u16,
+}
+
+#[derive(Default, Serialize)]
 struct Enhancer {
-    name: String, // cm?: i32
-                  // cm_max?: number
-                  // ct?: number
-                  // ct_max?: number
-                  // cp?: number
-                  // cp_max?: number
+    name: String,
+    cm: Option<i8>,
+    cm_max: Option<i16>,
+    ct: Option<i8>,
+    ct_max: Option<i16>,
+    cp: Option<i8>,
+    cp_max: Option<i16>,
 }
 
+const MEDICINE_SEARCH_ID: u32 = 43;
+const MEALS_SEARCH_ID: u32 = 45;
+
 #[handler]
-async fn medicine_table(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
+async fn medicine_table(_req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
-    res.render(Json(Vec::<Enhancer>::new()));
+    res.render(Json(query_enhancers(&state.conn, MEDICINE_SEARCH_ID).await?));
     Ok(())
 }
 
 #[handler]
-async fn meals_table(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
+async fn meals_table(_req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
-    res.render(Json(Vec::<Enhancer>::new()));
+    res.render(Json(query_enhancers(&state.conn, MEALS_SEARCH_ID).await?));
     Ok(())
+}
+
+async fn query_enhancers(conn: &DatabaseConnection, search_id: u32) -> Result<Vec<Enhancer>> {
+    let crafting_item_food = Itemfood::find()
+        .join(
+            JoinType::InnerJoin,
+            itemfood::Relation::Itemfoodeffect.def(),
+        )
+        .select_with(Itemfoodeffect)
+        .filter(itemfoodeffect::Column::BaseParam.is_in([11, 70, 71]))
+        .all(conn)
+        .await
+        .map_err(|err| StatusError::internal_server_error().detail(err.to_string()))?
+        .into_iter()
+        .map(|(item_food, effects)| (item_food.id, effects));
+    let mut crafting_item_food = BTreeMap::from_iter(crafting_item_food);
+    let result = Items::find()
+        .select_only()
+        .select_column_as(items::Column::Name, "name")
+        .select_column_as(items::Column::Level, "level")
+        .filter(items::Column::ItemSearchCategoryId.eq(search_id))
+        .join(JoinType::InnerJoin, items::Relation::Itemaction.def())
+        .select_column_as(itemaction::Column::Data2, "item_food_id")
+        .select_column_as(itemaction::Column::Data3, "item_food_duration")
+        .filter(itemaction::Column::Type.between(844, 846))
+        .filter(itemaction::Column::Data2.is_in(crafting_item_food.iter().map(|v| *v.0)))
+        .into_model::<ItemFoodAction>()
+        .all(conn)
+        .await
+        .map_err(|err| StatusError::internal_server_error().detail(err.to_string()))?;
+    let result = result
+        .into_iter()
+        .flat_map(|item| {
+            let mut enh = Enhancer {
+                name: format!("Lv.{} {}", item.level, item.name),
+                ..Enhancer::default()
+            };
+            let mut enh_hq = Enhancer {
+                name: format!("Lv.{} {} HQ", item.level, item.name),
+                ..Enhancer::default()
+            };
+            for item_food in crafting_item_food
+                .get(&(item.item_food_id as u32))
+                .into_iter()
+                .flatten()
+            {
+                match item_food.base_param {
+                    11 => {
+                        enh.cp = Some(item_food.value);
+                        enh.cp_max = Some(item_food.max);
+                        enh_hq.cp = Some(item_food.value_hq);
+                        enh_hq.cp_max = Some(item_food.max_hq);
+                    }
+                    70 => {
+                        enh.cm = Some(item_food.value);
+                        enh.cm_max = Some(item_food.max);
+                        enh_hq.cm = Some(item_food.value_hq);
+                        enh_hq.cm_max = Some(item_food.max_hq);
+                    }
+                    71 => {
+                        enh.ct = Some(item_food.value);
+                        enh.ct_max = Some(item_food.max);
+                        enh_hq.ct = Some(item_food.value_hq);
+                        enh_hq.ct_max = Some(item_food.max_hq);
+                    }
+                    _ => {}
+                }
+            }
+            [enh, enh_hq].into_iter()
+        })
+        .collect();
+    Ok(result)
 }

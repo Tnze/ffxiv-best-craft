@@ -237,7 +237,7 @@ export class BetaXivApiRecipeSource {
         return this.getEnhancers(page, Meals)
     }
 
-    private async getEnhancers(page: number, categoryID: number): Promise<DataSourceResult<Enhancer>> {
+    private async getEnhancers(_page: number, categoryID: number): Promise<DataSourceResult<Enhancer>> {
         const itemFoods = await this.craftingItemFoods();
         const itemFoodsQuery = itemFoods.map((v) => `Data[]=${v[0]}`).join(" ");
         const query = [
