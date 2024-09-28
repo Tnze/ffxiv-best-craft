@@ -44,7 +44,7 @@ mod memoization_solver;
 mod muscle_memory_solver;
 mod rika_tnze_solver;
 
-use db::{craft_types, item_with_amount, items, prelude::*, recipes};
+use db::{craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*, recipes};
 
 /// 创建新的Recipe对象，蕴含了模拟一次制作过程所必要的全部配方信息
 #[tauri::command(async)]
@@ -205,6 +205,137 @@ async fn item_info(
         .map_err(err_to_string)?
         .ok_or("Item not found".to_string())
 }
+
+#[derive(FromQueryResult, Debug)]
+struct ItemFoodAction {
+    name: String,
+    level: u32,
+    item_food_id: u16,
+    item_food_duration: u16,
+}
+
+#[derive(Default, Serialize)]
+struct Enhancer {
+    name: String,
+    cm: Option<i32>,
+    cm_max: Option<i32>,
+    ct: Option<i32>,
+    ct_max: Option<i32>,
+    cp: Option<i32>,
+    cp_max: Option<i32>,
+}
+
+const MEDICINE_SEARCH_ID: u32 = 43;
+const MEALS_SEARCH_ID: u32 = 45;
+
+#[tauri::command(async)]
+async fn craft_type(
+    app_state: tauri::State<'_, AppState>,
+    app_handle: tauri::AppHandle,
+) -> Result<Vec<craft_types::Model>, String> {
+    let db = app_state.get_db(app_handle).await?;
+    let query = CraftTypes::find()
+        .column_as(craft_types::Column::Id, "id")
+        .column_as(craft_types::Column::Name, "name")
+        .order_by(craft_types::Column::Id, Order::Asc);
+    let result = query
+        .into_model::<craft_types::Model>()
+        .all(db)
+        .await
+        .map_err(err_to_string)?;
+    Ok(result)
+}
+
+#[tauri::command(async)]
+async fn medicine_table(
+    app_state: tauri::State<'_, AppState>,
+    app_handle: tauri::AppHandle,
+) -> Result<Vec<Enhancer>, String> {
+    let db = app_state.get_db(app_handle).await?;
+    query_enhancers(db, MEDICINE_SEARCH_ID).await
+}
+
+#[tauri::command(async)]
+async fn meals_table(
+    app_state: tauri::State<'_, AppState>,
+    app_handle: tauri::AppHandle,
+) -> Result<Vec<Enhancer>, String> {
+    let db = app_state.get_db(app_handle).await?;
+    query_enhancers(db, MEALS_SEARCH_ID).await
+}
+
+async fn query_enhancers(conn: &DatabaseConnection, search_id: u32) -> Result<Vec<Enhancer>, String> {
+    let crafting_item_food = ItemFood::find()
+        .join(
+            JoinType::InnerJoin,
+            item_food::Relation::ItemFoodEffect.def(),
+        )
+        .select_with(ItemFoodEffect)
+        .filter(item_food_effect::Column::BaseParam.is_in([11, 70, 71]))
+        .all(conn)
+        .await
+        .map_err(err_to_string)?
+        .into_iter()
+        .map(|(item_food, effects)| (item_food.id, effects));
+    let mut crafting_item_food = BTreeMap::from_iter(crafting_item_food);
+    let result = Items::find()
+        .select_only()
+        .select_column_as(items::Column::Name, "name")
+        .select_column_as(items::Column::Level, "level")
+        .filter(items::Column::ItemSearchCategoryId.eq(search_id))
+        .join(JoinType::InnerJoin, items::Relation::ItemAction.def())
+        .select_column_as(item_action::Column::Data2, "item_food_id")
+        .select_column_as(item_action::Column::Data3, "item_food_duration")
+        .filter(item_action::Column::Type.between(844, 846))
+        .filter(item_action::Column::Data2.is_in(crafting_item_food.iter().map(|v| *v.0)))
+        .into_model::<ItemFoodAction>()
+        .all(conn)
+        .await
+        .map_err(err_to_string)?;
+    let result = result
+        .into_iter()
+        .flat_map(|item| {
+            let mut enh = Enhancer {
+                name: format!("Lv.{} {}", item.level, item.name),
+                ..Enhancer::default()
+            };
+            let mut enh_hq = Enhancer {
+                name: format!("Lv.{} {} HQ", item.level, item.name),
+                ..Enhancer::default()
+            };
+            for item_food in crafting_item_food
+                .get(&(item.item_food_id as i32))
+                .into_iter()
+                .flatten()
+            {
+                match item_food.base_param {
+                    11 => {
+                        enh.cp = Some(item_food.value);
+                        enh.cp_max = Some(item_food.max);
+                        enh_hq.cp = Some(item_food.value_hq);
+                        enh_hq.cp_max = Some(item_food.max_hq);
+                    }
+                    70 => {
+                        enh.cm = Some(item_food.value);
+                        enh.cm_max = Some(item_food.max);
+                        enh_hq.cm = Some(item_food.value_hq);
+                        enh_hq.cm_max = Some(item_food.max_hq);
+                    }
+                    71 => {
+                        enh.ct = Some(item_food.value);
+                        enh.ct_max = Some(item_food.max);
+                        enh_hq.ct = Some(item_food.value_hq);
+                        enh_hq.ct_max = Some(item_food.max_hq);
+                    }
+                    _ => {}
+                }
+            }
+            [enh, enh_hq].into_iter()
+        })
+        .collect();
+    Ok(result)
+}
+
 
 type SolverInstance = Arc<Mutex<Option<Box<dyn Solver + Send>>>>;
 struct AppState {
@@ -434,6 +565,9 @@ fn main() {
             recipe_table,
             recipes_ingredientions,
             item_info,
+            craft_type,
+            medicine_table,
+            meals_table,
             create_solver,
             read_solver,
             destroy_solver,

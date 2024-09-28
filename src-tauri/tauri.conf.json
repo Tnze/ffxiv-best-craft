@@ -68,7 +68,8 @@
                 "scope": [
                     "$APP",
                     "$APP/gearsets.json",
-                    "$APP/settings.json"
+                    "$APP/settings.json",
+                    "$APP/designer.json"
                 ]
             },
             "dialog": {

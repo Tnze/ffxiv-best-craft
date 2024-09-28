@@ -69,7 +69,7 @@ export default defineStore('settings', {
         },
         fromJson(json: string) {
             this.$patch(JSON.parse(json))
-            if (this.dataSource !== "xivapi") {
+            if (this.dataSource !== "xivapi" && (import.meta.env.VITE_BESTCRAFT_TARGET != "tauri" || this.dataSource !== "local")) {
                 this.dataSource = "yyyy.games"
             }
         },

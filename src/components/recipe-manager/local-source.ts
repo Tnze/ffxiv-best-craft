@@ -58,12 +58,14 @@ export class LocalRecipeSource {
         return { id, name, level, can_be_hq: can_be_hq != 0, category_id };
     }
     async craftTypeList(): Promise<CraftType[]> {
-        throw "todo"
+        return await (await this.invoke)("craft_type");
     }
     async medicineTable(_page: number): Promise<DataSourceResult<Enhancer>> {
-        throw "todo"
+        const results: Enhancer[] = await (await this.invoke)("medicine_table");
+        return { results, totalPages: 1 };
     }
     async mealsTable(_page: number): Promise<DataSourceResult<Enhancer>> {
-        throw "todo"
+        const results: Enhancer[] = await (await this.invoke)("meals_table");
+        return { results, totalPages: 1 };
     }
 }

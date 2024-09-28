@@ -93,12 +93,6 @@ struct RecipeInfo {
     can_hq: bool,
 }
 
-#[derive(FromQueryResult, Serialize)]
-struct CraftType {
-    id: u32,
-    name: String,
-}
-
 // rlv: i32,
 #[handler]
 async fn recipe_level_table(
@@ -203,7 +197,7 @@ async fn craft_type(_req: &mut Request, depot: &mut Depot, res: &mut Response) -
         .column_as(crafttypes::Column::Name, "name")
         .order_by(crafttypes::Column::Id, Order::Asc);
     let result = query
-        .into_model::<CraftType>()
+        .into_model::<crafttypes::Model>()
         .all(&state.conn)
         .await
         .map_err(|err| {

@@ -14,27 +14,59 @@ pub struct Model {
     pub level: i32,
     #[sea_orm(column_name = "CanBeHQ")]
     pub can_be_hq: i32,
-    #[sea_orm(column_name = "CategoryId")]
-    pub category_id: Option<i32>,
+    #[sea_orm(column_name = "ItemUICategoryId")]
+    pub item_ui_category_id: Option<i32>,
+    #[sea_orm(column_name = "ItemSearchCategoryId")]
+    pub item_search_category_id: Option<i32>,
+    #[sea_orm(column_name = "ItemActionId")]
+    pub item_action_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::categories::Entity",
-        from = "Column::CategoryId",
-        to = "super::categories::Column::Id",
+        belongs_to = "super::item_action::Entity",
+        from = "Column::ItemActionId",
+        to = "super::item_action::Column::Id",
         on_update = "NoAction",
         on_delete = "NoAction"
     )]
-    Categories,
+    ItemAction,
+    #[sea_orm(
+        belongs_to = "super::item_search_categories::Entity",
+        from = "Column::ItemSearchCategoryId",
+        to = "super::item_search_categories::Column::Id",
+        on_update = "NoAction",
+        on_delete = "NoAction"
+    )]
+    ItemSearchCategories,
+    #[sea_orm(
+        belongs_to = "super::item_ui_categories::Entity",
+        from = "Column::ItemUiCategoryId",
+        to = "super::item_ui_categories::Column::Id",
+        on_update = "NoAction",
+        on_delete = "NoAction"
+    )]
+    ItemUiCategories,
     #[sea_orm(has_many = "super::item_with_amount::Entity")]
     ItemWithAmount,
 }
 
-impl Related<super::categories::Entity> for Entity {
+impl Related<super::item_action::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Categories.def()
+        Relation::ItemAction.def()
+    }
+}
+
+impl Related<super::item_search_categories::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ItemSearchCategories.def()
+    }
+}
+
+impl Related<super::item_ui_categories::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ItemUiCategories.def()
     }
 }
 
