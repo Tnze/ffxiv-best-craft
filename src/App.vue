@@ -145,7 +145,7 @@ watchEffect(async () => {
 <style>
 @font-face {
     font-family: 'xivicon';
-    src: url('./src/assets/fonts/XIV_Icon_Recreations.ttf');
+    src: url('./assets/fonts/XIV_Icon_Recreations.ttf');
 }
 
 #app {
