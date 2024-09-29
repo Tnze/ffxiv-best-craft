@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use serde::Serialize;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize)]
-#[sea_orm(table_name = "itemwithamount")]
+#[sea_orm(table_name = "ItemWithAmount")]
 pub struct Model {
     #[sea_orm(column_name = "Id", primary_key)]
     pub id: u32,
@@ -22,7 +22,7 @@ pub enum Relation {
         belongs_to = "super::items::Entity",
         from = "Column::IngredientId",
         to = "super::items::Column::Id",
-        on_update = "NoAction",
+        on_update = "Restrict",
         on_delete = "Cascade"
     )]
     Items,
@@ -30,8 +30,8 @@ pub enum Relation {
         belongs_to = "super::recipes::Entity",
         from = "Column::RecipeId",
         to = "super::recipes::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
     Recipes,
 }

@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use serde::Serialize;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize)]
-#[sea_orm(table_name = "itemfood_effect")]
+#[sea_orm(table_name = "ItemFoodEffect")]
 pub struct Model {
     #[sea_orm(column_name = "Id", primary_key)]
     pub id: u32,
@@ -25,18 +25,18 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::itemfood::Entity",
+        belongs_to = "super::item_food::Entity",
         from = "Column::ItemFoodId",
-        to = "super::itemfood::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        to = "super::item_food::Column::Id",
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
-    Itemfood,
+    ItemFood,
 }
 
-impl Related<super::itemfood::Entity> for Entity {
+impl Related<super::item_food::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Itemfood.def()
+        Relation::ItemFood.def()
     }
 }
 

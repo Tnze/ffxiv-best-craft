@@ -25,7 +25,8 @@ use serde::Serialize;
 
 mod db;
 use db::{
-    crafttypes, itemaction, itemfood, itemfoodeffect, items, itemwithamount, prelude::*, recipes,
+    craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*,
+    recipes,
 };
 
 type Result<T> = std::result::Result<T, StatusError>;
@@ -106,7 +107,7 @@ async fn recipe_level_table(
     let rlv = req
         .query::<u32>("rlv")
         .ok_or_else(|| StatusError::bad_request())?;
-    let Some(rt) = Recipeleveltables::find_by_id(rlv)
+    let Some(rt) = RecipeLevelTables::find_by_id(rlv)
         .one(&state.conn)
         .await
         .map_err(|_| StatusError::internal_server_error())?
@@ -132,13 +133,13 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
         .ok_or_else(|| StatusError::bad_request().detail("Need 'search_name'"))?;
 
     let mut query = Recipes::find()
-        .join(JoinType::InnerJoin, recipes::Relation::Crafttypes.def())
-        .join(JoinType::InnerJoin, recipes::Relation::Itemwithamount.def())
+        .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
+        .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
         .join(
             JoinType::InnerJoin,
-            recipes::Relation::Recipeleveltables.def(),
+            recipes::Relation::RecipeLevelTables.def(),
         )
-        .join(JoinType::InnerJoin, itemwithamount::Relation::Items.def())
+        .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
         .select_only()
         .filter(items::Column::Name.like(&search_name));
     if let Some(rlv) = req.query::<u32>("rlv") {
@@ -152,7 +153,7 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
         .column_as(recipes::Column::RecipeLevelId, "rlv")
         .column_as(items::Column::Id, "item_id")
         .column_as(items::Column::Name, "item_name")
-        .column_as(crafttypes::Column::Name, "job")
+        .column_as(craft_types::Column::Name, "job")
         .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
         .column_as(recipes::Column::QualityFactor, "quality_factor")
         .column_as(recipes::Column::DurabilityFactor, "durability_factor")
@@ -192,12 +193,12 @@ async fn craft_type(_req: &mut Request, depot: &mut Depot, res: &mut Response) -
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
-    let query = Crafttypes::find()
-        .column_as(crafttypes::Column::Id, "id")
-        .column_as(crafttypes::Column::Name, "name")
-        .order_by(crafttypes::Column::Id, Order::Asc);
+    let query = CraftTypes::find()
+        .column_as(craft_types::Column::Id, "id")
+        .column_as(craft_types::Column::Name, "name")
+        .order_by(craft_types::Column::Id, Order::Asc);
     let result = query
-        .into_model::<crafttypes::Model>()
+        .into_model::<craft_types::Model>()
         .all(&state.conn)
         .await
         .map_err(|err| {
@@ -223,8 +224,8 @@ async fn recipes_ingredientions(
         .ok_or_else(|| StatusError::bad_request())?;
 
     let mut needs = BTreeMap::new();
-    let ing = Itemwithamount::find()
-        .filter(itemwithamount::Column::RecipeId.eq(recipe_id))
+    let ing = ItemWithAmount::find()
+        .filter(item_with_amount::Column::RecipeId.eq(recipe_id))
         .all(&state.conn)
         .await
         .map_err(|_| StatusError::internal_server_error())?;
@@ -284,7 +285,9 @@ async fn medicine_table(_req: &mut Request, depot: &mut Depot, res: &mut Respons
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
-    res.render(Json(query_enhancers(&state.conn, MEDICINE_SEARCH_ID).await?));
+    res.render(Json(
+        query_enhancers(&state.conn, MEDICINE_SEARCH_ID).await?,
+    ));
     Ok(())
 }
 
@@ -298,13 +301,13 @@ async fn meals_table(_req: &mut Request, depot: &mut Depot, res: &mut Response) 
 }
 
 async fn query_enhancers(conn: &DatabaseConnection, search_id: u32) -> Result<Vec<Enhancer>> {
-    let crafting_item_food = Itemfood::find()
+    let crafting_item_food = ItemFood::find()
         .join(
             JoinType::InnerJoin,
-            itemfood::Relation::Itemfoodeffect.def(),
+            item_food::Relation::ItemFoodEffect.def(),
         )
-        .select_with(Itemfoodeffect)
-        .filter(itemfoodeffect::Column::BaseParam.is_in([11, 70, 71]))
+        .select_with(ItemFoodEffect)
+        .filter(item_food_effect::Column::BaseParam.is_in([11, 70, 71]))
         .all(conn)
         .await
         .map_err(|err| StatusError::internal_server_error().detail(err.to_string()))?
@@ -316,11 +319,11 @@ async fn query_enhancers(conn: &DatabaseConnection, search_id: u32) -> Result<Ve
         .select_column_as(items::Column::Name, "name")
         .select_column_as(items::Column::Level, "level")
         .filter(items::Column::ItemSearchCategoryId.eq(search_id))
-        .join(JoinType::InnerJoin, items::Relation::Itemaction.def())
-        .select_column_as(itemaction::Column::Data2, "item_food_id")
-        .select_column_as(itemaction::Column::Data3, "item_food_duration")
-        .filter(itemaction::Column::Type.between(844, 846))
-        .filter(itemaction::Column::Data2.is_in(crafting_item_food.iter().map(|v| *v.0)))
+        .join(JoinType::InnerJoin, items::Relation::ItemAction.def())
+        .select_column_as(item_action::Column::Data2, "item_food_id")
+        .select_column_as(item_action::Column::Data3, "item_food_duration")
+        .filter(item_action::Column::Type.between(844, 846))
+        .filter(item_action::Column::Data2.is_in(crafting_item_food.iter().map(|v| *v.0)))
         .into_model::<ItemFoodAction>()
         .all(conn)
         .await

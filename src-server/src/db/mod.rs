@@ -2,13 +2,13 @@
 
 pub mod prelude;
 
-pub mod crafttypes;
-pub mod itemaction;
-pub mod itemfood;
-pub mod itemfoodeffect;
+pub mod craft_types;
+pub mod item_action;
+pub mod item_food;
+pub mod item_food_effect;
+pub mod item_search_categories;
+pub mod item_ui_categories;
+pub mod item_with_amount;
 pub mod items;
-pub mod itemsearchcategories;
-pub mod itemuicategories;
-pub mod itemwithamount;
-pub mod recipeleveltables;
+pub mod recipe_level_tables;
 pub mod recipes;

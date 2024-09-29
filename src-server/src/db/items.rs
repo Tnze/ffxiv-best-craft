@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use serde::Serialize;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize)]
-#[sea_orm(table_name = "items")]
+#[sea_orm(table_name = "Items")]
 pub struct Model {
     #[sea_orm(column_name = "Id", primary_key)]
     pub id: u32,
@@ -25,54 +25,54 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::itemaction::Entity",
+        belongs_to = "super::item_action::Entity",
         from = "Column::ItemActionId",
-        to = "super::itemaction::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        to = "super::item_action::Column::Id",
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
-    Itemaction,
+    ItemAction,
     #[sea_orm(
-        belongs_to = "super::itemsearchcategories::Entity",
+        belongs_to = "super::item_search_categories::Entity",
         from = "Column::ItemSearchCategoryId",
-        to = "super::itemsearchcategories::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        to = "super::item_search_categories::Column::Id",
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
-    Itemsearchcategories,
+    ItemSearchCategories,
     #[sea_orm(
-        belongs_to = "super::itemuicategories::Entity",
+        belongs_to = "super::item_ui_categories::Entity",
         from = "Column::ItemUiCategoryId",
-        to = "super::itemuicategories::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        to = "super::item_ui_categories::Column::Id",
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
-    Itemuicategories,
-    #[sea_orm(has_many = "super::itemwithamount::Entity")]
-    Itemwithamount,
+    ItemUiCategories,
+    #[sea_orm(has_many = "super::item_with_amount::Entity")]
+    ItemWithAmount,
 }
 
-impl Related<super::itemaction::Entity> for Entity {
+impl Related<super::item_action::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Itemaction.def()
+        Relation::ItemAction.def()
     }
 }
 
-impl Related<super::itemsearchcategories::Entity> for Entity {
+impl Related<super::item_search_categories::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Itemsearchcategories.def()
+        Relation::ItemSearchCategories.def()
     }
 }
 
-impl Related<super::itemuicategories::Entity> for Entity {
+impl Related<super::item_ui_categories::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Itemuicategories.def()
+        Relation::ItemUiCategories.def()
     }
 }
 
-impl Related<super::itemwithamount::Entity> for Entity {
+impl Related<super::item_with_amount::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Itemwithamount.def()
+        Relation::ItemWithAmount.def()
     }
 }
 
