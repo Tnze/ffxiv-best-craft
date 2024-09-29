@@ -143,11 +143,12 @@ watchEffect(async () => {
 </template>
 
 <style>
+@font-face {
+    font-family: 'xivicon';
+    src: url('./src/assets/fonts/XIV_Icon_Recreations.ttf');
+}
+
 #app {
-    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
-        "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     height: 100%;
     margin: 0;
     background: var(--app-bg-color);
@@ -176,6 +177,11 @@ watchEffect(async () => {
 }
 
 :root {
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+        "Microsoft YaHei", "微软雅黑", Arial, sans-serif, "xivicon";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
     --el-color-primary: #868226;
     --el-color-primary-light-3: #c3b55d;
     --el-color-primary-light-5: #c1c27b;

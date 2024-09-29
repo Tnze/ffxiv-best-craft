@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ElForm, ElFormItem, ElSelectV2, ElSwitch, ElDivider } from 'element-plus';
-import { onMounted, reactive, watch, ref, defineAsyncComponent } from 'vue'
+import { onMounted, reactive, watch, ref, defineAsyncComponent, Ref } from 'vue'
 import { Enhancer } from '@/libs/Enhancer';
 import { useFluent } from 'fluent-vue';
 import { Jobs } from '@/libs/Craft';
@@ -64,6 +64,7 @@ async function loadMealsAndMedicine(ds: Promise<DataSource>) {
                 v = await datasource.mealsTable(i += 1)
                 meals.value = meals.value.concat(v.results)
             } while (i < v.totalPages)
+            fix_enhancer_name(meals);
         })()
     }
     if (datasource.medicineTable) {
@@ -74,7 +75,18 @@ async function loadMealsAndMedicine(ds: Promise<DataSource>) {
                 v = await datasource.medicineTable(i += 1)
                 medicine.value = medicine.value.concat(v.results)
             } while (i < v.totalPages)
+            fix_enhancer_name(medicine);
         })()
+    }
+}
+
+function fix_enhancer_name(group: Ref<Enhancer[] | undefined>) {
+    if (group.value == undefined) return;
+    for (const i in group.value) {
+        const oldName = group.value[i].name;
+        if (oldName.endsWith(" HQ")) {
+            group.value[i].name = oldName.replace(" HQ", ' \uE03C');
+        }
     }
 }
 
