@@ -44,7 +44,10 @@ mod memoization_solver;
 mod muscle_memory_solver;
 mod rika_tnze_solver;
 
-use db::{craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*, recipes};
+use db::{
+    craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*,
+    recipes,
+};
 
 /// 创建新的Recipe对象，蕴含了模拟一次制作过程所必要的全部配方信息
 #[tauri::command(async)]
@@ -132,11 +135,13 @@ struct RecipeInfo {
 async fn recipe_table(
     page_id: u64,
     search_name: String,
+    craft_type_id: Option<i32>,
+    recipe_level: Option<i32>,
     app_state: tauri::State<'_, AppState>,
     app_handle: tauri::AppHandle,
 ) -> Result<(Vec<RecipeInfo>, u64), String> {
     let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
-    let paginate = Recipes::find()
+    let mut query = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
         .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
         .join(
@@ -144,7 +149,14 @@ async fn recipe_table(
             recipes::Relation::RecipeLevelTables.def(),
         )
         .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
-        .filter(items::Column::Name.like(&search_name))
+        .filter(items::Column::Name.like(&search_name));
+    if let Some(rlv) = recipe_level {
+        query = query.filter(recipes::Column::RecipeLevelId.eq(rlv))
+    }
+    if let Some(craft_type_id) = craft_type_id {
+        query = query.filter(recipes::Column::CraftTypeId.eq(craft_type_id))
+    }
+    let paginate = query
         .column_as(recipes::Column::Id, "id")
         .column_as(recipes::Column::RecipeLevelId, "rlv")
         .column_as(items::Column::Id, "item_id")
@@ -264,7 +276,10 @@ async fn meals_table(
     query_enhancers(db, MEALS_SEARCH_ID).await
 }
 
-async fn query_enhancers(conn: &DatabaseConnection, search_id: u32) -> Result<Vec<Enhancer>, String> {
+async fn query_enhancers(
+    conn: &DatabaseConnection,
+    search_id: u32,
+) -> Result<Vec<Enhancer>, String> {
     let crafting_item_food = ItemFood::find()
         .join(
             JoinType::InnerJoin,
@@ -335,7 +350,6 @@ async fn query_enhancers(conn: &DatabaseConnection, search_id: u32) -> Result<Ve
         .collect();
     Ok(result)
 }
-
 
 type SolverInstance = Arc<Mutex<Option<Box<dyn Solver + Send>>>>;
 struct AppState {

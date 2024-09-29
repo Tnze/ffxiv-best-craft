@@ -45,5 +45,8 @@ jobs:
           - 更新至国服 7.0 版本
           - 以及其他数不过来的很多更新
 
+          v0.17.1
+          - 修复食药数据不正确的问题
+
         releaseDraft: false
         prerelease: false

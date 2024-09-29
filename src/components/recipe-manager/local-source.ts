@@ -22,11 +22,16 @@ export class LocalRecipeSource {
     public sourceType = DataSourceType.Realtime
     invoke = import("@tauri-apps/api").then(pkg => pkg.invoke);
 
-    async recipeTable(page: number, searchName?: string, _rlv?: number, _craftTypeId?: number): Promise<RecipesSourceResult> {
+    async recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult> {
         if (searchName === undefined) {
             searchName = ""
         }
-        let [results, totalPages]: [RecipeInfo[], number] = await (await this.invoke)("recipe_table", { pageId: page - 1, searchName: "%" + searchName + "%" });
+        let [results, totalPages]: [RecipeInfo[], number] = await (await this.invoke)("recipe_table", { 
+            pageId: page - 1, 
+            searchName: "%" + searchName + "%",
+            craftTypeId,
+            recipeLevel: rlv,
+        });
         return { results, totalPages }
     }
 
