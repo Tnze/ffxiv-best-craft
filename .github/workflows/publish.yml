@@ -47,6 +47,7 @@ jobs:
 
           v0.17.1
           - 修复食药数据不正确的问题
+          - 修复无法使用Raphael求解器的问题
 
         releaseDraft: false
         prerelease: false

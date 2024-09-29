@@ -122,6 +122,7 @@ pub fn raphael_solve(
     use_quick_innovation: bool,
     backload_progress: bool,
     adversarial: bool,
+    unsound_branch_pruning: bool,
 ) -> Result<JsValue, JsValue> {
     use app_libs::solver::raphael::solve;
     let status: Status = from_value(status)?;
@@ -132,6 +133,7 @@ pub fn raphael_solve(
         use_quick_innovation,
         backload_progress,
         adversarial,
+        unsound_branch_pruning,
     );
     Ok(to_value(&result)?)
 }

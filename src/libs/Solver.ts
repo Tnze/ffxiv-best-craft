@@ -133,7 +133,8 @@ export async function raphael_solve(
     useHeartAndSoul: boolean,
     useQuickInnovation: boolean,
     backloadProgress: boolean,
-    adversarial: boolean
+    adversarial: boolean,
+    unsoundBranchPruning: boolean,
 ): Promise<Actions[]> {
     clarityReport('runRaphaelSolver')
     const args = {
@@ -143,6 +144,7 @@ export async function raphael_solve(
         useQuickInnovation,
         backloadProgress,
         adversarial,
+        unsoundBranchPruning,
     };
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
         let { invoke } = await pkgTauri

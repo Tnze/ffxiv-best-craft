@@ -26,6 +26,7 @@ pub fn solve(
     use_quick_innovation: bool,
     backload_progress: bool,
     adversarial: bool,
+    unsound_branch_pruning: bool,
 ) -> Vec<Actions> {
     let mut allowed_actions = ActionMask::from_level(status.attributes.level);
     if !use_heart_and_soul {
@@ -55,7 +56,7 @@ pub fn solve(
     let mut solver = MacroSolver::new(
         settings,
         backload_progress,
-        false,
+        unsound_branch_pruning,
         Box::new(|_| {}),
         Box::new(|_| {}),
     );

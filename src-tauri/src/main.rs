@@ -492,19 +492,21 @@ fn reflect_solve(
 #[tauri::command(async)]
 fn raphael_solve(
     status: Status,
-    use_manipultaion: bool,
+    use_manipulation: bool,
     use_heart_and_soul: bool,
     use_quick_innovation: bool,
     backload_progress: bool,
     adversarial: bool,
+    unsound_branch_pruning: bool,
 ) -> Vec<Actions> {
     raphael::solve(
         status.clone(),
-        use_manipultaion,
+        use_manipulation,
         use_heart_and_soul,
         use_quick_innovation,
         backload_progress,
         adversarial,
+        unsound_branch_pruning,
     )
 }
 

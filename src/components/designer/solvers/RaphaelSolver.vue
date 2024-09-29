@@ -44,8 +44,8 @@ const raphaelSolveIsSolving = ref(false)
 const useManipulation = ref(false)
 const useHeartAndSoul = ref(false)
 const useQuickInnovation = ref(false)
-const backloadProgress = ref(false)
-const minimizeSteps = ref(false)
+const backloadProgress = ref(true)
+const unsoundBranchPruning = ref(true)
 const adversarial = ref(false)
 
 function runRaphaelSolver() {
@@ -56,7 +56,8 @@ function runRaphaelSolver() {
             useHeartAndSoul.value,
             useQuickInnovation.value,
             backloadProgress.value,
-            adversarial.value
+            adversarial.value,
+            unsoundBranchPruning.value,
         ),
     )
 }
@@ -91,12 +92,19 @@ function runRaphaelSolver() {
         </el-space>
         <el-space>
             <el-checkbox v-model="backloadProgress" :label="$t('backload-progress')" />
+            <el-tag v-if="backloadProgress" type="success">{{ $t('speed-up') }}</el-tag>
             <el-tag v-if="backloadProgress" type="danger">{{ $t('quality-down') }}</el-tag>
+            <el-tag v-if="backloadProgress" type="danger">{{ $t('increase-duration') }}</el-tag>
         </el-space>
-        <el-checkbox v-model="minimizeSteps" :label="$t('minimize-steps')" disabled />
+        <el-space>
+            <el-checkbox v-model="unsoundBranchPruning" :label="$t('unsound-branch-pruning')" />
+            <el-tag v-if="unsoundBranchPruning" type="success">{{ $t('speed-up') }}</el-tag>
+            <el-tag v-if="unsoundBranchPruning" type="danger">{{ $t('increase-duration') }}</el-tag>
+        </el-space>
         <el-space>
             <el-checkbox v-model="adversarial" :label="$t('adversarial')" />
             <el-tag v-if="adversarial" type="danger">{{ $t('quality-down') }}</el-tag>
+            <el-tag v-if="adversarial" type="danger">{{ $t('increase-duration') }}</el-tag>
         </el-space>
     </el-space>
     <div style="margin-top: 10px;">
@@ -120,10 +128,12 @@ error-with = 错误：{ $err }
 
 enable-action = 使用技能：{ $action }
 backload-progress = 后置作业技能（快速求解）
-minimize-steps = 最小化步数
-adversarial = 确保 100% 可靠
+unsound-branch-pruning = 不健全剪枝
+adversarial = 确保 100% 可靠（防黑球）
 
-quality-down = 求解质量下降
+speed-up = 求解速度提高
+quality-down = 求解品质下降
+increase-duration = 最终步数增加
 need-learn-manipulation = 需要学习掌握技能
 consume-crafters-delineation = 消耗能工巧匠图纸
 
@@ -148,10 +158,12 @@ error-with = Error: { $err }
 
 enable-action = Enable { $action }
 backload-progress = Backload progress (Quick solve)
-minimize-steps = Minimize Steps
+unsound-branch-pruning = Unsound branch pruning
 adversarial = Ensure 100% reliability
 
+speed-up = speed up
 quality-down = quality decline
+increase-duration = increase macro duration
 need-learn-manipulation = need manipulation
 consume-crafters-delineation = consume crafter's delineation
 
