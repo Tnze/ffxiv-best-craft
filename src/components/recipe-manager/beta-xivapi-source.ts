@@ -297,8 +297,8 @@ export class BetaXivApiRecipeSource {
                 case 11: // CP
                     enh.cp = itemFood.Value[i]
                     enh.cp_max = itemFood.Max[i]
-                    enh.cp = itemFood.ValueHQ[i]
-                    enh.cp_max = itemFood.MaxHQ[i]
+                    enhHq.cp = itemFood.ValueHQ[i]
+                    enhHq.cp_max = itemFood.MaxHQ[i]
                     break;
                 case 70: // Craftsmanship
                     enh.cm = itemFood.Value[i]
