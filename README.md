@@ -35,7 +35,7 @@ Download: [Github](https://gitee.com/Tnze/ffxiv-best-craft/releases)
 <p>
 
 ```bash
-yarn install # 下载依赖 download requirements
+pnpm install # 下载依赖 download requirements
 ```
 
 ### For Web Only
@@ -47,13 +47,13 @@ yarn install # 下载依赖 download requirements
 #### Develop Hotload Server
 
 ```bash
-yarn dev-web
+pnpm run dev-web
 ```
 
 #### Release Build
 
 ```bash
-yarn build-web
+pnpm run build-web
 ```
 
 ### For Tauri
@@ -62,17 +62,17 @@ yarn build-web
 
 按照这篇教程安装Rust、Node和WebView2等组件：[Tauri Getting Started](https://tauri.app/zh/v1/guides/getting-started/prerequisites/)
 
-> 以下 `yarn tauri` 开头的命令可以根据你安装 tauri-cli 方式的不同而有所变化
+> 以下 `cargo tauri` 开头的命令可以根据你安装 tauri-cli 方式的不同而有所变化
 > 见：<https://tauri.app/v1/guides/getting-started/setup/>
-> The commands start with `yarn tauri` below could be different, depending on the way you install tauri-cli.
+> The commands start with `cargo tauri` below could be different, depending on the way you install tauri-cli.
 > See: <https://tauri.app/v1/guides/getting-started/setup/>
 
 #### Develop build
 
 ```bash
-yarn tauri dev
+cargo tauri dev
 # 或 or
-yarn tauri dev --release
+cargo tauri dev --release
 ```
 
 > ⚠️ 调试模式构建的程序运行求解器可能比发布模式慢得多。  
@@ -85,7 +85,7 @@ yarn tauri dev --release
 export TAURI_PRIVATE_KEY="Path or String of your private key"
 export TAURI_KEY_PASSWORD="Your private key password (optional)"
 # 构建和签名 build and signing
-yarn tauri build
+cargo tauri build
 ```
 
 </p>
