@@ -24,7 +24,7 @@ import { BetaXivApiRecipeSource, BetaXivapiBase } from '@/components/recipe-mana
 export default defineStore('settings', {
     state: () => ({
         language: 'system',
-        dataSource: <'local' | "yyyy.games" | 'cafe' | 'xivapi'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'xivapi' : 'xivapi'),
+        dataSource: <'local' | "yyyy.games" | 'cafe' | 'xivapi'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'local' : 'yyyy.games'),
         dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined
     }),
     getters: {
