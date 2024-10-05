@@ -220,7 +220,7 @@ const waitTimes = new Map([
     [Actions.RefinedTouch, 3],
     [Actions.DaringTouch, 3],
     [Actions.ImmaculateMend, 3],
-    [Actions.QuickInnovation, 2],
+    [Actions.QuickInnovation, 3],
     [Actions.TrainedPerfection, 3],
 ])
 
