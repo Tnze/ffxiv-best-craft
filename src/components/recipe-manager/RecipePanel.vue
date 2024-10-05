@@ -138,10 +138,23 @@ async function triggerSearch() {
 }
 
 // 页面载入后更新
-onMounted(() => {
-    triggerSearch()
-    craftTypeRemoteMethod()
-})
+onMounted(async () => {
+    triggerSearch();
+    craftTypeRemoteMethod();
+
+    // 接受跳转参数
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has('recipeId')) {
+        const recipeId = searchParams.get('recipeId');
+        const source = await settingStore.getDataSource;
+        if (source.recipeInfo == undefined) {
+            ElMessage.error($t("datasource-unsupport-recipe-info"));
+            return;
+        }
+        const recipeInfo = await source.recipeInfo(recipeId);
+        await selectRecipeRow(recipeInfo);
+    }
+});
 
 // 数据源切换时更新
 watch(() => settingStore.getDataSource, (source) => {
@@ -155,12 +168,13 @@ const isNormalRecipe = computed(() => {
     return selectedRecipe.value?.[0].conditions_flag === 15
 })
 let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null = null
-const selectRecipeRow = async (row: RecipeInfo) => {
+async function selectRecipeRow(row: RecipeInfo) {
     try {
         isRecipeTableLoading.value = true
+        const source = await settingStore.getDataSource;
         var [recipeLevel, info] = await Promise.all([
-            (await settingStore.getDataSource).recipeLevelTable(row.rlv),
-            (await settingStore.getDataSource).itemInfo(row.item_id)
+            source.recipeLevelTable(row.rlv),
+            source.itemInfo(row.item_id)
         ])
     } catch (e: any) {
         ElMessage.error(String(e))
@@ -294,6 +308,7 @@ const selectRecipeRow = async (row: RecipeInfo) => {
 </style>
 
 <fluent locale="zh-CN">
+datasource-unsupport-recipe-info = 当前数据源不支持从外部选择配方
 confirm-select = 开始制作“{ $itemName }”吗？
 confirm-select2 = 这是一个高难度配方，请选择模式。
 please-confirm = 请确认
@@ -317,6 +332,7 @@ required-control = 最低{ control }
 </fluent>
 
 <fluent locale="en-US">
+datasource-unsupport-recipe-info = Current data-source doesn't support choice recipe from external pages
 confirm-select = Start crafting "{ $itemName }"?
 confirm-select2 = This is a 高难度配方. Please make a choice.
 please-confirm = Please confirm
