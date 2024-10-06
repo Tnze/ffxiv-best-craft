@@ -151,7 +151,14 @@ onMounted(async () => {
             ElMessage.error($t("datasource-unsupport-recipe-info"));
             return;
         }
-        const recipeInfo = await source.recipeInfo(recipeId);
+        try {
+            isRecipeTableLoading.value = true;
+            var recipeInfo = await source.recipeInfo(recipeId);
+        } catch (e: any) {
+            ElMessage.error(String(e));
+            isRecipeTableLoading.value = false;
+            return;
+        }
         await selectRecipeRow(recipeInfo);
     }
 });

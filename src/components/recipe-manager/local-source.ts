@@ -48,10 +48,6 @@ export class LocalRecipeSource {
         return result
     }
 
-    async recipeInfo(recipeId: number): Promise<RecipeInfo> {
-        throw "todo"
-    }
-
     async itemInfo(itemId: number): Promise<Item> {
         const { id, name, level, can_be_hq, category_id } = await (await this.invoke)("item_info", { itemId }) as {
             id: number,

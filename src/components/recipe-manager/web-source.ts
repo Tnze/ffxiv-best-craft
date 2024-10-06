@@ -78,10 +78,6 @@ export class WebSource {
         return result
     }
 
-    async recipeInfo(recipeId: number): Promise<RecipeInfo> {
-        throw "todo"
-    }
-
     async itemInfo(itemId: number): Promise<Item> {
         const query = new URLSearchParams({ 'item_id': String(itemId) })
         const url = new URL("item_info", this.base).toString() + '?' + query.toString();
