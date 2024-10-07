@@ -65,6 +65,7 @@ async fn main() {
         .hoop(affix_state::inject(state))
         .push(Router::with_path("recipe_level_table").get(recipe_level_table))
         .push(Router::with_path("recipe_table").get(recipe_table))
+        .push(Router::with_path("recipe_info").get(recipe_info))
         .push(Router::with_path("recipes_ingredientions").get(recipes_ingredientions))
         .push(Router::with_path("item_info").get(item_info))
         .push(Router::with_path("craft_type").get(craft_type))
@@ -236,6 +237,50 @@ async fn recipes_ingredientions(
             .or_insert(v.amount);
     }
     let result: Vec<_> = needs.into_iter().collect();
+    res.render(Json(result));
+    Ok(())
+}
+
+#[handler]
+async fn recipe_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
+    let state = depot
+        .obtain::<AppState>()
+        .map_err(|_| StatusError::internal_server_error().detail("Obtain AppState error"))?;
+    let recipe_id = req
+        .query::<u32>("recipe_id")
+        .ok_or_else(|| StatusError::bad_request().detail("Need 'recipe_id'"))?;
+    let result = Recipes::find_by_id(recipe_id)
+        .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
+        .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
+        .join(
+            JoinType::InnerJoin,
+            recipes::Relation::RecipeLevelTables.def(),
+        )
+        .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
+        .select_only()
+        .column_as(recipes::Column::Id, "id")
+        .column_as(recipes::Column::RecipeLevelId, "rlv")
+        .column_as(items::Column::Id, "item_id")
+        .column_as(items::Column::Name, "item_name")
+        .column_as(craft_types::Column::Name, "job")
+        .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
+        .column_as(recipes::Column::QualityFactor, "quality_factor")
+        .column_as(recipes::Column::DurabilityFactor, "durability_factor")
+        .column_as(
+            recipes::Column::MaterialQualityFactor,
+            "material_quality_factor",
+        )
+        .column_as(
+            recipes::Column::RequiredCraftsmanship,
+            "required_craftsmanship",
+        )
+        .column_as(recipes::Column::RequiredControl, "required_control")
+        .column_as(recipes::Column::CanHq, "can_hq")
+        .into_model::<RecipeInfo>()
+        .one(&state.conn)
+        .await
+        .map_err(|_| StatusError::internal_server_error())?
+        .ok_or_else(|| StatusError::bad_request().detail("Recipe not found"))?;
     res.render(Json(result));
     Ok(())
 }

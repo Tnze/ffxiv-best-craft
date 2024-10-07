@@ -73,9 +73,19 @@ export class WebSource {
         })
         let result: RecipeLevel = {
             ...await resp.json(),
-            stars: 0,
+            stars: 0, // TODO
         }
         return result
+    }
+
+    async recipeInfo(recipeId: number): Promise<RecipeInfo> {
+        const query = new URLSearchParams({ 'recipe_id': String(recipeId) })
+        const url = new URL("recipe_info", this.base).toString() + '?' + query.toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        })
+        return resp.json()
     }
 
     async itemInfo(itemId: number): Promise<Item> {

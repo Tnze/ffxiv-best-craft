@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ref, reactive, watch, onMounted, onActivated, computed } from 'vue'
+import { ref, reactive, watch, onMounted, onActivated, computed, watchEffect } from 'vue'
 import { ElDescriptions, ElDescriptionsItem, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElForm, ElFormItem, ElSelect, ElOption, ElInputNumber } from 'element-plus'
 import { EditPen } from '@element-plus/icons-vue'
 import { newRecipe, Recipe, RecipeInfo } from '@/libs/Craft'
@@ -141,25 +141,6 @@ async function triggerSearch() {
 onMounted(async () => {
     triggerSearch();
     craftTypeRemoteMethod();
-
-    // 接受跳转参数
-    const recipeId = router.currentRoute.value.query.recipeId;
-    if (recipeId !== undefined) {
-        const source = await settingStore.getDataSource;
-        if (source.recipeInfo == undefined) {
-            ElMessage.error($t("datasource-unsupport-recipe-info"));
-            return;
-        }
-        try {
-            isRecipeTableLoading.value = true;
-            var recipeInfo = await source.recipeInfo(Number(recipeId));
-        } catch (e: any) {
-            ElMessage.error(String(e));
-            isRecipeTableLoading.value = false;
-            return;
-        }
-        await selectRecipeRow(recipeInfo);
-    }
 });
 
 // 数据源切换时更新
@@ -168,12 +149,21 @@ watch(() => settingStore.getDataSource, (source) => {
     craftTypeRemoteMethod();
 });
 
+// 接受跳转参数
+watchEffect(() => {
+    const recipeId = router.currentRoute.value.query.recipeId;
+    if (recipeId !== undefined) {
+        selectRecipeById(Number(recipeId));
+    }
+})
+
 const confirmDialogVisible = ref(false)
 const selectedRecipe = ref<[Recipe, RecipeInfo]>()
 const isNormalRecipe = computed(() => {
     return selectedRecipe.value?.[0].conditions_flag === 15
 })
 let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null = null
+
 async function selectRecipeRow(row: RecipeInfo) {
     try {
         isRecipeTableLoading.value = true
@@ -203,6 +193,24 @@ async function selectRecipeRow(row: RecipeInfo) {
         confirmDialogCallback = null
     }
     confirmDialogVisible.value = true
+}
+
+async function selectRecipeById(recipeId: number) {
+    const source = await settingStore.getDataSource;
+    if (source.recipeInfo == undefined) {
+        ElMessage.error($t("datasource-unsupport-recipe-info"));
+        return;
+    }
+    try {
+        isRecipeTableLoading.value = true;
+        var recipeInfo = await source.recipeInfo(recipeId);
+        // isRecipeTableLoading.value = false; // Done by selectRecipeRow()
+    } catch (e: any) {
+        ElMessage.error(String(e));
+        isRecipeTableLoading.value = false;
+        return;
+    }
+    await selectRecipeRow(recipeInfo);
 }
 
 </script>
