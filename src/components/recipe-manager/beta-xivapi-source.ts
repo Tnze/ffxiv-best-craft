@@ -200,7 +200,6 @@ export class BetaXivApiRecipeSource {
         if (!resp.ok) {
             this.checkRespError(data)
         }
-        console.log(data);
         return BetaXivApiRecipeSource.recipeRowsToRecipe(data);
     }
 

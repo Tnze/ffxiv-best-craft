@@ -143,9 +143,8 @@ onMounted(async () => {
     craftTypeRemoteMethod();
 
     // 接受跳转参数
-    const searchParams = new URLSearchParams(window.location.search);
-    if (searchParams.has('recipeId')) {
-        const recipeId = searchParams.get('recipeId');
+    const recipeId = router.currentRoute.value.query.recipeId;
+    if (recipeId !== undefined) {
         const source = await settingStore.getDataSource;
         if (source.recipeInfo == undefined) {
             ElMessage.error($t("datasource-unsupport-recipe-info"));
@@ -153,7 +152,7 @@ onMounted(async () => {
         }
         try {
             isRecipeTableLoading.value = true;
-            var recipeInfo = await source.recipeInfo(recipeId);
+            var recipeInfo = await source.recipeInfo(Number(recipeId));
         } catch (e: any) {
             ElMessage.error(String(e));
             isRecipeTableLoading.value = false;
