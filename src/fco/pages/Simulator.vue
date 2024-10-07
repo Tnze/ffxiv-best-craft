@@ -30,7 +30,6 @@ import useGearsetsStore from '@/stores/gearsets'
 import ActionPanel from '../components/ActionPanel.vue';
 import AttributesVue from '../components/Attributes.vue';
 import CraftingState from '../components/CraftingState.vue';
-import JobSelect from '../components/JobSelect.vue';
 import RecipeSelect from '../components/RecipeSelect.vue';
 import Analyzer from '../components/Analyzer.vue';
 import SolveModal from '../components/SolveModal.vue';
@@ -52,7 +51,8 @@ const attributs = ref<Attributes>(gearsetsStore.attributes(store.job))
 const initStatus = ref<Status>();
 const simulateResult = ref<SimulateResult>();
 const editMode = ref(false);
-const solverModalShow = ref(false)
+const solverModalShow = ref(false);
+const selectRecipe = ref(false);
 
 // 计算初始状态
 watchEffect(async () => {
@@ -96,14 +96,9 @@ function save() {
 <template>
     <n-message-provider>
         <n-grid x-gap="20px" y-gap="20px" :cols="12" item-responsive responsive="screen">
-            <n-gi span="12 m:2">
-                <!-- <n-checkbox>自定义配方</n-checkbox> -->
-            </n-gi>
-            <n-gi span="6 m:2">
-                <JobSelect />
-            </n-gi>
-            <n-gi span="12 m:4">
-                <RecipeSelect />
+            <n-gi span="12">
+                <RecipeSelect v-model:show="selectRecipe" />
+                <n-button @click="selectRecipe = true">{{ '选择配方' }}</n-button>
             </n-gi>
 
             <n-gi span="12 m:6">

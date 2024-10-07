@@ -18,12 +18,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NSelect, SelectOption, useMessage, useLoadingBar } from 'naive-ui';
+import { NModal, NCard, NSelect, SelectOption, useMessage, useLoadingBar } from 'naive-ui';
 
 import useFcoSimulatorStore from '../stores/simulator';
 import { WebSource, YYYYGamesApiBase } from '@/components/recipe-manager/web-source';
 import { RecipesSourceResult } from '@/components/recipe-manager/source';
 import { newRecipe, RecipeInfo } from '@/libs/Craft';
+import JobSelect from './JobSelect.vue';
 
 const loadingRecipeList = ref(false);
 const options = ref<SelectOption[]>([]);
@@ -126,9 +127,14 @@ async function updateValue(value: number) {
 
 </script>
 <template>
-    <n-select :options="options" :loading="loadingRecipeList" :reset-menu-on-options-change="false"
-        @scroll="handleScroll" @search="setQuery" filterable remote :placeholder="$t('select-recipe')"
-        @update-value="updateValue"></n-select>
+    <n-modal style="width: 90%;">
+        <n-card>
+            <JobSelect />
+            <n-select :options="options" :loading="loadingRecipeList" :reset-menu-on-options-change="false"
+                @scroll="handleScroll" @search="setQuery" filterable remote :placeholder="$t('select-recipe')"
+                @update-value="updateValue"></n-select>
+        </n-card>
+    </n-modal>
 </template>
 
 <fluent locale="zh-CN">
