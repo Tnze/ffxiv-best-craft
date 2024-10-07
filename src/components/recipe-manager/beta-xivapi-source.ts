@@ -186,6 +186,24 @@ export class BetaXivApiRecipeSource {
         }
     }
 
+    async recipeInfo(recipeId: number): Promise<RecipeInfo> {
+        const query = new URLSearchParams({
+            'fields': 'Icon,ItemResult.Name,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq'
+        });
+        if (this.language != undefined) query.set('language', this.language)
+        const url = new URL(`sheet/Recipe/${recipeId}`, this.base).toString() + '?' + query.toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        })
+        const data = await resp.json();
+        if (!resp.ok) {
+            this.checkRespError(data)
+        }
+        console.log(data);
+        return BetaXivApiRecipeSource.recipeRowsToRecipe(data);
+    }
+
     async itemInfo(id: number): Promise<Item> {
         const query = new URLSearchParams({
             'fields': 'Name,LevelItem,CanBeHq,CategoryID'
