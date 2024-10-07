@@ -292,7 +292,7 @@ async fn query_enhancers(
         .map_err(err_to_string)?
         .into_iter()
         .map(|(item_food, effects)| (item_food.id, effects));
-    let mut crafting_item_food = BTreeMap::from_iter(crafting_item_food);
+    let crafting_item_food = BTreeMap::from_iter(crafting_item_food);
     let result = Items::find()
         .select_only()
         .select_column_as(items::Column::Name, "name")
