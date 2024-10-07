@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { Ref, computed, inject, markRaw, provide, reactive, ref, watch } from "vue";
-import { ElScrollbar, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup } from "element-plus";
+import { ElScrollbar, ElAlert, ElTabs, ElTabPane, ElCheckboxButton, ElButton, ElButtonGroup, ElPopconfirm } from "element-plus";
 import { Bottom, Close } from "@element-plus/icons-vue";
 import { useMediaQuery, useElementSize } from "@vueuse/core";
 
@@ -297,9 +297,14 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                                 <el-button @click="saveSequence(true)" :icon="Bottom">
                                     {{ $t('save-workspace') }}
                                 </el-button>
-                                <el-button @click="store.clearRotations" :icon="Close">
-                                    {{ $t('clear-store') }}
-                                </el-button>
+                                <el-popconfirm :title="$t('confirm-clear-store')" @confirm="store.clearRotations()"
+                                    :confirm-button-text="$t('confirm')" :cancel-button-text="$t('cancel')">
+                                    <template #reference>
+                                        <el-button :icon="Close">
+                                            {{ $t('clear-store') }}
+                                        </el-button>
+                                    </template>
+                                </el-popconfirm>
                                 <el-checkbox-button v-model:model-value="previewSolver"
                                     v-if="solverResult.slots.length > 0">
                                     {{ $t('apply-solver') }}
@@ -435,9 +440,11 @@ analyzer = 分析
 
 save-workspace = 储存
 clear-store = 清空
+confirm-clear-store = 确定要清空保存区域吗？
 apply-solver = 应用求解结果
+confirm = 确认
+cancel = 取消
 
-number-of-macros-is-zero = 当前要保存的宏数量为0，是否继续？
 waring = 警告
 
 macro-file-type-name = BestCraft宏文件
@@ -466,9 +473,11 @@ analyzer = Analyzer
 
 save-workspace = Save
 clear-store = Clear
+confirm-clear-store = Are you sure to clear the storeage?
 apply-solver = Apply solver result
+confirm = Confirm
+cancel = Cancel
 
-number-of-macros-is-zero = Number of macros is 0. Continue?
 waring = Warning
 
 macro-file-type-name = BestCraft saved macros file
