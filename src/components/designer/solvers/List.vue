@@ -42,7 +42,7 @@ const emits = defineEmits<{
     (event: 'solverResult', result: Actions[], solverName: SequenceSource): void
 }>()
 
-const activeNames = ref<string>("dp")
+const activeNames = ref<string>("raphael")
 
 async function runSimpleSolver(solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>) {
     const msg1 = ElMessage({
@@ -132,12 +132,12 @@ async function runTnzeVerRikaSolver() {
             <br />
         </template>
         <el-tabs v-model="activeNames">
-            <el-tab-pane :label="$t('dp-solver')" name="dp">
-                <DpSolver :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
-            </el-tab-pane>
             <el-tab-pane :label="$t('raphael-solver')" name="raphael">
                 <RaphaelSolver :init-status="initStatus" :recipe-name="recipeName"
                     @run-simple-solver="runSimpleSolver" />
+            </el-tab-pane>
+            <el-tab-pane :label="$t('dp-solver')" name="dp">
+                <DpSolver :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
             </el-tab-pane>
             <el-tab-pane :label="$t('dfs-solver')" name="dfs" style="flex: auto;">
                 <DfsSolver :can-hq="canHq" @run-simple-solver="runSimpleSolver" />
