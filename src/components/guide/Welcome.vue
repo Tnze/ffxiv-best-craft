@@ -49,6 +49,7 @@ function feedback() {
 }
 
 const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == "web"
+const isYYYYGames = window.location.hostname == "tnze.yyyy.games"
 
 </script>
 
@@ -67,7 +68,7 @@ const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == "web"
                 {{ $t('feedback') }}
             </el-button>
         </div>
-        <el-link v-if="isWebsite" target="_blank" href="https://beian.miit.gov.cn/" type="info">
+        <el-link v-if="isWebsite && isYYYYGames" target="_blank" href="https://beian.miit.gov.cn/" type="info">
             粤ICP备2021156196号-1
         </el-link>
         <el-text class="info-text" type="info">
