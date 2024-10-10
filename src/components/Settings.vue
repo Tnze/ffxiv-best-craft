@@ -76,9 +76,14 @@ if (isOnTauri) {
             <el-form-item :label="$t('data-source')">
                 <el-select v-model="store.dataSource">
                     <el-option v-if="isOnTauri" :label="$t('ds-local')" value="local" />
-                    <el-option :label="$t('ds-yyyygames')" value="yyyy.games" />
-                    <!-- <el-option :label="$t('ds-cafe')" value="cafe" /> -->
-                    <el-option :label="$t('ds-beta-xivapi')" value="xivapi" />
+                    <el-option :label="$t('ds-yyyygames')" value="yyyy.games">
+                        <span style="float: left">{{ $t('ds-yyyygames') }}</span>
+                        <span class="data-source-option-note">{{ $t('ds-yyyygames-desc') }}</span>
+                    </el-option>
+                    <el-option :label="$t('ds-beta-xivapi')" value="xivapi">
+                        <span style="float: left">{{ $t('ds-beta-xivapi') }}</span>
+                        <span class="data-source-option-note">{{ $t('ds-beta-xivapi-desc') }} </span>
+                    </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item v-if="store.dataSource == 'xivapi'">
@@ -137,6 +142,12 @@ if (isOnTauri) {
 .el-select {
     width: 210px;
 }
+
+.data-source-option-note {
+    float: right;
+    color: var(--el-text-color-secondary);
+    font-size: 13px;
+}
 </style>
 
 <fluent locale="zh-CN">
@@ -148,7 +159,9 @@ auto = 自动
 data-source = 数据源
 ds-local = 本地
 # ds-xivapi =
+ds-yyyygames-desc = 国服数据
 # ds-cafe =
+ds-beta-xivapi-desc = 国际服数据
 dslang-en = 英语
 dslang-ja = 日语
 dslang-de = 德语
@@ -174,9 +187,11 @@ auto = Auto
 data-source = Data Source
 ds-local = Local
 ds-yyyygames = YYYY.GAMES
+ds-yyyygames-desc = Chinese
 ds-xivapi = Xivapi
 ds-cafe = Cafe Maker
 ds-beta-xivapi = Xivapi (Beta)
+ds-beta-xivapi-desc = Latest
 dslang-en = English
 dslang-ja = Japanese
 dslang-de = German
