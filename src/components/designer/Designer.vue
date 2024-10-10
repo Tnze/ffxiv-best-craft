@@ -56,6 +56,10 @@ const store = useDesignerStore()
 const { $t } = useFluent()
 const displayJob = inject(displayJobKey) as Ref<Jobs>
 const foldMultiFunctionArea = useMediaQuery('screen and (max-width: 480px)')
+watch(foldMultiFunctionArea, (fold) => {
+    if (!fold && activeTab.value == 'action-panel')
+        activeTab.value = 'attributes-enhance';
+})
 
 const actionQueueElem = ref()
 const { height: actionQueueHeight } = useElementSize(actionQueueElem)
@@ -254,7 +258,7 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
         <StatusBar class="status-bar" :attributes="enhancedAttributes" :status="displayedStatus"
             :show-condition="false" />
         <div class="above-panel">
-            <el-scrollbar class="above-left-panel">
+            <el-scrollbar v-if="!foldMultiFunctionArea" class="above-left-panel">
                 <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeRst?.status" #lower />
             </el-scrollbar>
 
@@ -264,8 +268,12 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                         :preview-solver="previewSolver" :err-list="activeRst?.errors"
                         :loading-solver-result="isReadingSolverDisplay" clearable />
                 </div>
-                <el-tabs class="above-tabs" v-if="!foldMultiFunctionArea" v-model="activeTab" tab-position="top"
+                <el-tabs class="above-tabs" v-model="activeTab" tab-position="top"
                     :style="`height: calc(100% - ${actionQueueHeight + 10}px)`">
+                    <el-tab-pane v-if="foldMultiFunctionArea" :label="$t('action-panel')" name="action-panel"
+                        class="multi-function-area">
+                        <ActionPanel @clicked-action="pushAction" :job="displayJob" :status="activeRst?.status" />
+                    </el-tab-pane>
                     <el-tab-pane :label="$t('init-quality')" name="init-quality" class="multi-function-area">
                         <el-scrollbar style="flex: auto; padding-left: 30px;">
                             <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" :item="item"
@@ -437,6 +445,7 @@ attributes-enhance = 食药&装备
 init-quality = 初期品质
 store = 储存
 analyzer = 分析
+action-panel = 技能面板
 
 save-workspace = 储存
 clear-store = 清空
@@ -470,6 +479,7 @@ attributes-enhance = Medicines & Meals
 init-quality = Quality
 store = Store
 analyzer = Analyzer
+action-panel = Action Panel
 
 save-workspace = Save
 clear-store = Clear
