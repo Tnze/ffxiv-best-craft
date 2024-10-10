@@ -48,6 +48,10 @@ function feedback() {
     window.open('https://pd.qq.com/s/al6b5xo69', '_blank');
 }
 
+function goFco() {
+    window.open('https://yyyy.games/fco/', '_blank');
+}
+
 const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == "web"
 const isYYYYGames = window.location.hostname == "tnze.yyyy.games"
 
@@ -66,6 +70,9 @@ const isYYYYGames = window.location.hostname == "tnze.yyyy.games"
             </el-button>
             <el-button type="info" size="large" @click="feedback">
                 {{ $t('feedback') }}
+            </el-button>
+            <el-button size="large" @click="goFco">
+                {{ $t('go-back') }}
             </el-button>
         </div>
         <el-link v-if="isWebsite && isYYYYGames" target="_blank" href="https://beian.miit.gov.cn/" type="info">
@@ -133,6 +140,7 @@ no-data = 无配方
 
 confirm = 确认
 select-recipe = 选择配方
+go-back = 回到 FCO
 feedback = 反馈问题
 </fluent>
 
@@ -155,5 +163,6 @@ no-data = No recipe
 
 confirm = Confirm
 select-recipe = Select recipe
+go-back = Back to FCO
 feedback = Feedback
 </fluent>
