@@ -20,6 +20,7 @@
 import { ElText, ElButton, ElLink } from 'element-plus';
 import { computed, onActivated } from 'vue';
 import { useFluent } from 'fluent-vue';
+import { clarityReport } from '@/libs/Utils';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void
@@ -46,10 +47,12 @@ const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | '
 
 function feedback() {
     window.open('https://pd.qq.com/s/al6b5xo69', '_blank');
+    clarityReport('goFeedback');
 }
 
 function goFco() {
     window.open('https://yyyy.games/fco/', '_blank');
+    clarityReport('goFco');
 }
 
 const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == "web"

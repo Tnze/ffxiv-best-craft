@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { Actions, Status } from "./Craft";
+import { clarityReport } from "./Utils";
 
 export let supported = true;
 
@@ -32,13 +33,6 @@ if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
             worker.onerror = ev => reject(ev)
             worker.postMessage({ name, args: JSON.stringify(args) })
         })
-    }
-}
-
-declare const window: { clarity: any; } & Window & typeof globalThis;
-function clarityReport(event: string) {
-    if (window.clarity) {
-        window.clarity('event', event)
     }
 }
 

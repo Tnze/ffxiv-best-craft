@@ -24,3 +24,10 @@ export function formatDuration(u: number, fixed?: number): string {
         return (h > 0 ? h + 'h' : '') + (m > 0 ? m + 'm' : '') + (s + 's')
     }
 }
+
+declare const window: { clarity: any; } & Window & typeof globalThis;
+export function clarityReport(event: string) {
+    if (window.clarity) {
+        window.clarity('event', event)
+    }
+}
