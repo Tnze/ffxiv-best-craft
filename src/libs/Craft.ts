@@ -192,7 +192,7 @@ const waitTimes = new Map([
     [Actions.HastyTouch, 3],
     [Actions.RapidSynthesis, 3],
     [Actions.Observe, 3],
-    [Actions.TricksOfTheTrade, 2],
+    [Actions.TricksOfTheTrade, 3],
     [Actions.WasteNot, 2],
     [Actions.Veneration, 2],
     [Actions.StandardTouch, 3],
