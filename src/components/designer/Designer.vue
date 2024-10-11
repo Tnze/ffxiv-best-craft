@@ -276,9 +276,8 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                     </el-tab-pane>
                     <el-tab-pane :label="$t('init-quality')" name="init-quality" class="multi-function-area">
                         <el-scrollbar style="flex: auto; padding-left: 30px;">
-                            <InitialQualitySetting v-if="recipeId != undefined" v-model="initQuality" :item="item"
-                                :recipe="recipe" :recipe-id="recipeId"
-                                :material-quality-factor="materialQualityFactor" />
+                            <InitialQualitySetting v-model="initQuality" :item="item" :recipe="recipe"
+                                :recipe-id="recipeId" :material-quality-factor="materialQualityFactor" />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('attributes-enhance')" name="attributes-enhance"

@@ -28,7 +28,7 @@ const settingStore = useSettingsStore()
 const props = defineProps<{
     item: Item
     recipe: Recipe
-    recipeId: number
+    recipeId?: number
     materialQualityFactor: number
     modelValue: number
 }>()
@@ -49,13 +49,19 @@ const calcItems = (ri: ItemWithAmount[]) => Promise.all(ri.map(
         hqAmount: 0,
     })
 ))
-const inputType = ref<'manully' | 'ingredient'>(props.item.id == -1 ? 'manully' : 'ingredient')
-const manullyInput = computed(() => props.item.id != -1 && inputType.value != 'manully')
+const inputType = ref<'manully' | 'ingredient'>('ingredient')
+const manullyInput = computed(() => props.recipeId !== undefined && inputType.value != 'manully')
 const items = ref<{ item: Item, amount: number, hqAmount: number }[]>([])
 
+watchEffect(() => {
+    if (props.recipeId === undefined) {
+        inputType.value = 'manully';
+    }
+})
+
 watchEffect(async () => {
-    const newId = props.item.id
-    const ri = newId == -1 ? null : await (await settingStore.getDataSource).recipesIngredients(props.recipeId)
+    const recipeId = props.recipeId;
+    const ri = recipeId === undefined ? null : await (await settingStore.getDataSource).recipesIngredients(recipeId)
     items.value = ri == null ? [] : reactive(await calcItems(ri))
 })
 
@@ -73,7 +79,6 @@ watchEffect(() => {
     initQuality.value = Math.floor(props.recipe.quality * maxInitQualityPs * r)
 })
 
-
 </script>
 
 <template>
@@ -82,14 +87,16 @@ watchEffect(() => {
             <el-form-item label=" ">
                 <el-radio-group v-model="inputType">
                     <el-radio-button value="manully">{{ $t('manully-input') }}</el-radio-button>
-                    <el-radio-button value="ingredient">{{ $t('select-hq-ingredients') }}</el-radio-button>
+                    <el-radio-button :disabled="items.length == 0" value="ingredient">
+                        {{ $t('select-hq-ingredients') }}
+                    </el-radio-button>
                 </el-radio-group>
             </el-form-item>
             <el-form-item :label="$t('initial-quality')">
-                <el-input-number v-model="initQuality" :readonly="manullyInput" :controls="!manullyInput" :min="0" :max="recipe.quality"
-                    value-on-clear="min" :step-strictly="true" />
+                <el-input-number v-model="initQuality" :readonly="manullyInput" :controls="!manullyInput" :min="0"
+                    :max="recipe.quality" value-on-clear="min" :step-strictly="true" />
             </el-form-item>
-            <template v-if="props.item.id != -1 && inputType == 'ingredient'">
+            <template v-if="inputType == 'ingredient'">
                 <el-form-item v-for="row in items" :label="row.item.name">
                     <el-button-group v-if="row.item.can_be_hq" class="ml-4">
                         <el-button :icon="ArrowUp" size="small" :disabled="row.hqAmount <= 0"
