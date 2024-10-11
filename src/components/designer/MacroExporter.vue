@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { ElSpace, ElCard, ElMessage, ElCheckbox } from 'element-plus'
 import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
@@ -26,6 +26,9 @@ const props = defineProps<{
     actions: Actions[]
 }>()
 const { $t } = useFluent()
+
+const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == "web";
+const oneclickCopy = ref(true); // 一键复制
 
 const genOptions = reactive({
     hasNotify: true, // 宏执行完成是否提示
@@ -69,19 +72,28 @@ const chunkedActions = computed(() => {
 
 const copyChunk = async (i: number, macro: string[]) => {
     const macroText = macro.join('\r\n').replaceAll(/\u2068|\u2069/g, '')
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
-        let { writeText } = await import('@tauri-apps/api/clipboard')
-        await writeText(macroText)
-    } else {
-        let { useClipboard } = await import("@vueuse/core")
-        useClipboard().copy(macroText)
+    try {
+        if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+            let { writeText } = await import('@tauri-apps/api/clipboard')
+            await writeText(macroText)
+        } else {
+            let { useClipboard } = await import("@vueuse/core")
+            await useClipboard().copy(macroText)
+        }
+        ElMessage({
+            type: 'success',
+            duration: 2000,
+            showClose: true,
+            message: $t('copied-marco', { id: i + 1 })
+        })
+    } catch (e: any) {
+        ElMessage({
+            type: 'error',
+            duration: 2000,
+            showClose: true,
+            message: $t('copy-failed', { err: String(e) })
+        })
     }
-    ElMessage({
-        type: 'success',
-        duration: 2000,
-        showClose: true,
-        message: $t('copied-marco', { id: i + 1 })
-    })
 }
 
 </script>
@@ -91,9 +103,11 @@ const copyChunk = async (i: number, macro: string[]) => {
         <el-checkbox v-model="genOptions.hasNotify" :label="$t('has-notify')" />
         <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
         <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
+        <el-checkbox v-if="isWebsite" v-model="oneclickCopy" :label="$t('oneclick-copy')" />
     </div>
     <el-space wrap alignment="flex-start">
-        <el-card v-for="(marco, i) in chunkedActions" class="box-card" shadow="hover" @click="copyChunk(i, marco)">
+        <el-card v-for="(marco, i) in chunkedActions" :class="oneclickCopy ? 'box-card-oneclick' : 'box-card'"
+            shadow="hover" @click="oneclickCopy ? copyChunk(i, marco) : undefined">
             <span v-for="line in marco">
                 {{ line }}
                 <br />
@@ -112,8 +126,12 @@ const copyChunk = async (i: number, macro: string[]) => {
 }
 
 .box-card {
-    /* width: 200px; */
-    cursor: pointer;
+    user-select: text;
+}
+
+.box-card-oneclick {
+    cursor: copy;
+    user-select: none;
 }
 </style>
 
@@ -121,11 +139,18 @@ const copyChunk = async (i: number, macro: string[]) => {
 has-notify = 添加完成提示
 has-lock = 锁定宏指令
 avg-size = 长度平均化
+oneclick-copy = 一键复制
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
 marco-finished = 宏#{ $id } 已完成！
+copy-failed = 复制失败：{ $err }
 </fluent>
 
 <fluent locale="en-US">
+has-notify = Notification
+has-lock = Lock Macro
+avg-size = Equalize
+oneclick-copy = Oneclick Copy
 copied-marco = Copied M#{ $id } to system clipboard!
 marco-finished = M#{ $id } is finished!
+copy-failed = Copy failed: { $err }
 </fluent>
