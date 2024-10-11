@@ -74,7 +74,7 @@ const isYYYYGames = window.location.hostname == "tnze.yyyy.games"
             <el-button type="info" size="large" @click="feedback">
                 {{ $t('feedback') }}
             </el-button>
-            <el-button size="large" @click="goFco">
+            <el-button v-if="isWebsite" size="large" @click="goFco">
                 {{ $t('go-back') }}
             </el-button>
         </div>
