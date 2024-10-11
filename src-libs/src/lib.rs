@@ -94,6 +94,7 @@ pub fn simulate_one_step(
         status.condition = match status.condition {
             Condition::Good if !force_success => Condition::Normal,
             Condition::Excellent if !force_success => Condition::Poor,
+            Condition::Poor => Condition::Normal,
             Condition::GoodOmen => Condition::Good,
             _ => {
                 ConditionIterator::new(
