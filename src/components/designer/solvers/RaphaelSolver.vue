@@ -44,6 +44,7 @@ const raphaelSolveIsSolving = ref(false)
 const useManipulation = ref(false)
 const useHeartAndSoul = ref(false)
 const useQuickInnovation = ref(false)
+const useTrainedEye = ref(true)
 const backloadProgress = ref(true)
 const unsoundBranchPruning = ref(true)
 const adversarial = ref(false)
@@ -55,6 +56,7 @@ function runRaphaelSolver() {
             useManipulation.value,
             useHeartAndSoul.value,
             useQuickInnovation.value,
+            useTrainedEye.value,
             backloadProgress.value,
             adversarial.value,
             unsoundBranchPruning.value,
@@ -77,6 +79,7 @@ function runRaphaelSolver() {
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
+        <el-checkbox v-model="useTrainedEye" :label="$t('enable-action', { action: $t('trained-eye') })" />
         <el-space>
             <el-checkbox v-model="useManipulation" :label="$t('enable-action', { action: $t('manipulation') })" />
             <el-tag v-if="useManipulation" type="warning">{{ $t('need-learn-manipulation') }}</el-tag>

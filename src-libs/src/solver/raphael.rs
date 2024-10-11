@@ -24,6 +24,7 @@ pub fn solve(
     use_manipultaion: bool,
     use_heart_and_soul: bool,
     use_quick_innovation: bool,
+    use_trained_eye: bool,
     backload_progress: bool,
     adversarial: bool,
     unsound_branch_pruning: bool,
@@ -38,7 +39,7 @@ pub fn solve(
     if !use_manipultaion {
         allowed_actions = allowed_actions.remove(Action::Manipulation);
     }
-    if status.is_action_allowed(Actions::TrainedEye).is_err() {
+    if !use_trained_eye || status.is_action_allowed(Actions::TrainedEye).is_err() {
         allowed_actions = allowed_actions.remove(Action::TrainedEye);
     }
     let settings = Settings {

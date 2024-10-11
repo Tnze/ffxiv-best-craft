@@ -24,6 +24,7 @@ onmessage = async (e) => {
                 args.useManipulation,
                 args.useHeartAndSoul,
                 args.useQuickInnovation,
+                args.useTrainedEye,
                 args.backloadProgress,
                 args.adversarial,
                 args.unsoundBranchPruning,
