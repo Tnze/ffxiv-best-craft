@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ElEmpty, ElResult, ElButton, ElText } from 'element-plus';
+import { ElEmpty, ElResult, ElButton, ElText, ElSkeleton } from 'element-plus';
 import { computed, defineAsyncComponent, onErrorCaptured, ref, provide, onActivated } from 'vue';
 import useGearsetsStore from '@/stores/gearsets';
 import useDesignerStore from '@/stores/designer';
@@ -80,6 +80,10 @@ function reload() {
                 :recipe-level="designerStore.content.recipeLevel" :attributes="attributes" />
         </template>
         <el-empty v-else :description="$t('not-selected')" style="height: 100%;" />
+
+        <template #fallback>
+            <el-skeleton :rows="5" animated />
+        </template>
     </Suspense>
 </template>
 
@@ -113,4 +117,3 @@ sorry = 技術的な理由により、ページを更新することでエラー
     ご不便をおかけしますのでご了承ください。
 invite = この問題の解決に興味がある場合は、リポジトリに「Pull Request」を発行してください
 </fluent>
-        
