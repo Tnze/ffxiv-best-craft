@@ -14,23 +14,44 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { checkUpdate as tauriCheckUpdate, installUpdate, onUpdaterEvent, } from '@tauri-apps/api/updater'
-import { ElButton, ElMessage, ElMessageBox, ElNotification, NotificationHandle } from 'element-plus'
+import { check, Update } from '@tauri-apps/plugin-updater'
+import { relaunch } from '@tauri-apps/plugin-process'
+import { ElButton, ElMessage, ElMessageBox, ElNotification, NotificationHandle, MessageHandler } from 'element-plus'
 import { FluentVariable } from '@fluent/bundle';
 import { h } from 'vue'
 
-import { relaunch } from '@tauri-apps/api/process'
-
-async function updateNow($t: (key: string, value?: Record<string, FluentVariable>) => string) {
-    const msg1 = ElMessage({
-        showClose: true,
-        duration: 0,
-        type: 'info',
-        message: $t('update-installing'),
-    })
+async function updateNow($t: (key: string, value?: Record<string, FluentVariable>) => string, update: Update) {
+    let close = () => { }
     try {
-        // Install the update. This will also restart the app on Windows!
-        await installUpdate()
+        await update.downloadAndInstall((downloadEvent) => {
+            close()
+            let messageHandler;
+            switch (downloadEvent.event) {
+                case 'Started':
+                    messageHandler = ElMessage({
+                        type: 'info',
+                        message: $t('update-started', { contentLength: downloadEvent.data.contentLength || '' }),
+                    })
+                    close = messageHandler.close;
+                    break;
+                case 'Progress':
+                    messageHandler = ElMessage({
+                        showClose: true,
+                        duration: 0,
+                        type: 'info',
+                        message: $t('update-progress', { chunkLength: downloadEvent.data.chunkLength }),
+                    })
+                    close = messageHandler.close;
+                    break;
+                case 'Finished':
+                    messageHandler = ElMessage({
+                        type: 'success',
+                        message: $t('update-done'),
+                    })
+                    close = messageHandler.close;
+                    break;
+            }
+        })
         // On macOS and Linux, restart the app manually.
         // (And we add another confirmation dialog)
         await ElMessageBox.confirm($t('update-ask-relaunch'))
@@ -42,56 +63,23 @@ async function updateNow($t: (key: string, value?: Record<string, FluentVariable
             message: $t('update-error', { error: e as string }),
         })
     } finally {
-        msg1.close()
+        close()
     }
 }
 
-export const checkUpdate = async ($t: (key: string, value?: Record<string, FluentVariable>) => string, silent?: boolean) => {
-    let privClose = () => { }
-    const unlisten = await onUpdaterEvent(({ error, status }) => {
-        if (silent) return;
-        // This will log all updater events, including status updates and errors.
-        privClose()
-        switch (status) {
-            case 'PENDING':
-                privClose = ElMessage({
-                    type: 'info',
-                    message: $t('update-pending'),
-                }).close
-                break;
-            case 'ERROR':
-                privClose = ElMessage({
-                    type: 'error',
-                    message: $t('update-error', { error: error as string }),
-                }).close
-                break;
-            case 'DONE':
-                privClose = ElMessage({
-                    type: 'success',
-                    message: $t('update-done'),
-                }).close
-                break;
-            case 'UPTODATE':
-                privClose = ElMessage({
-                    type: 'success',
-                    message: $t('update-uptodate'),
-                }).close
-                break;
-        }
-    })
-
+export async function checkUpdate($t: (key: string, value?: Record<string, FluentVariable>) => string, silent: boolean) {
     try {
-        const { shouldUpdate, manifest } = await tauriCheckUpdate()
+        const update = await check()
 
-        if (shouldUpdate) {
+        if (update?.available) {
             // Show a dialog asking the user if they want to install the update here.
             let notification: NotificationHandle = ElNotification({
                 type: 'info',
                 position: 'bottom-right',
                 duration: 0,
-                title: $t('update-available', { version: manifest?.version || 'Unknown' }),
+                title: $t('update-available', { version: update.version || 'Unknown' }),
                 message: h('div', [
-                    h('div', { style: 'white-space: pre-wrap;', innerHTML: manifest?.body || '' }),
+                    h('div', { style: 'white-space: pre-wrap;', innerHTML: update.body || '' }),
                     h('div', {
                         style: 'margin-top: 5px; text-align: right',
                     }, [
@@ -100,7 +88,7 @@ export const checkUpdate = async ($t: (key: string, value?: Record<string, Fluen
                             type: 'primary',
                             onClick: () => {
                                 notification.close()
-                                updateNow($t)
+                                updateNow($t, update)
                             }
                         }, () => $t('update-now')),
                         h(ElButton, {
@@ -110,12 +98,13 @@ export const checkUpdate = async ($t: (key: string, value?: Record<string, Fluen
                     ]),
                 ])
             })
-
+        } else if (!silent) {
+            ElMessage({
+                type: 'success',
+                message: $t('update-uptodate'),
+            })
         }
     } catch (error) {
         console.error(error)
     }
-
-    // you need to call unlisten if your handler goes out of scope, for example if the component is unmounted.
-    unlisten()
 }

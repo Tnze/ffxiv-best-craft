@@ -74,7 +74,7 @@ const copyChunk = async (i: number, macro: string[]) => {
     const macroText = macro.join('\r\n').replaceAll(/\u2068|\u2069/g, '')
     try {
         if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
-            let { writeText } = await import('@tauri-apps/api/clipboard')
+            let { writeText } = await import('@tauri-apps/plugin-clipboard-manager')
             await writeText(macroText)
         } else {
             let { useClipboard } = await import("@vueuse/core")

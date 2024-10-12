@@ -36,6 +36,7 @@ use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use rand::thread_rng;
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::Serialize;
+use tauri::path::BaseDirectory;
 use tauri::Manager;
 use tokio::sync::{Mutex, OnceCell};
 
@@ -368,9 +369,9 @@ impl AppState {
     async fn get_db(&self, app_handle: tauri::AppHandle) -> Result<&DatabaseConnection, String> {
         const ESCAPE_SET: &AsciiSet = &CONTROLS.add(b'?').add(b'#');
         let path = app_handle
-            .path_resolver()
-            .resolve_resource("assets/xiv.db")
-            .ok_or("database file not found")?;
+            .path()
+            .resolve("assets/xiv.db", BaseDirectory::Resource)
+            .map_err(|e| format!("database file not found: {e}"))?;
         let path = utf8_percent_encode(&path.to_string_lossy(), ESCAPE_SET).to_string();
         self.db
             .get_or_try_init(|| Database::connect(format!("sqlite:{}?mode=ro", path)))
@@ -538,7 +539,7 @@ async fn destroy_solver(
 /// which means the front-end should make its background transparent to show the window effect below.
 #[tauri::command]
 fn set_theme(app_handle: tauri::AppHandle, is_dark: Option<bool>) -> bool {
-    let window = app_handle.get_window("main").unwrap();
+    let window = app_handle.get_webview_window("main").unwrap();
     #[cfg(target_os = "macos")]
     {
         use window_vibrancy::NSVisualEffectMaterial::HudWindow;
@@ -572,6 +573,10 @@ fn calc_attributes_scope(status: Status, actions: Vec<Actions>) -> Scope {
 fn main() {
     tauri::Builder::default()
         .manage(AppState::new())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .invoke_handler(tauri::generate_handler![
             recipe_level_table,
             new_status,
@@ -600,7 +605,7 @@ fn main() {
             calc_attributes_scope,
         ])
         .setup(|app| {
-            let window = app.get_window("main").unwrap();
+            let window = app.get_webview_window("main").unwrap();
             window.set_decorations(true)?;
 
             let packaeg_info = app.package_info();
@@ -625,6 +630,13 @@ fn main() {
             Ok(())
         })
         .run(tauri::generate_context!())
-        .map_err(|err| msgbox::create("Error", err.to_string().as_str(), msgbox::IconType::Error))
+        // .map_err(|err| msgbox::create("Error", err.to_string().as_str(), msgbox::IconType::Error))
+        .map_err(|err| {
+            use native_dialog::{MessageDialog, MessageType};
+            MessageDialog::new()
+                .set_type(MessageType::Error)
+                .set_text(err.to_string().as_str())
+                .show_confirm()
+        })
         .unwrap();
 }
