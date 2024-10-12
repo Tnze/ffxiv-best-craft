@@ -15,11 +15,14 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 9
     - name: setup node
       uses: actions/setup-node@v4
       with:
-        node-version: lts/*
-        cache: 'pnpm'
+        node-version: 20
+        cache: pnpm
     - run: corepack enable
     - name: install Rust nightly
       uses: dtolnay/rust-toolchain@stable
