@@ -65,6 +65,9 @@ function reload() {
     <Suspense :timeout="30">
         <el-result v-if="errorMessage" icon="error" :title="$t('error-happens')" :sub-title="errorMessage">
             <template #extra>
+                <template v-if="errorMessage.search('WebAssembly') > 0">
+                    <el-text type="warning">{{ $t('upgrade-browser') }}</el-text><br />
+                </template>
                 <el-button @click="reload">{{ $t('reload') }}</el-button><br />
                 <el-text type="info">{{ $t('sorry') }}</el-text><br />
                 <el-text type="info">{{ $t('invite') }}</el-text>
@@ -96,7 +99,7 @@ function reload() {
 <fluent locale="zh-CN">
 error-happens = 加载配方时出现了一些错误
 not-selected = 请先选择配方
-loading = 加载中
+upgrade-browser = 这个问题似乎是浏览器版本过旧导致的，请尝试更新您的浏览器
 reload = 刷新
 sorry = 由于技术原因，出现错误后暂时只能通过刷新页面恢复，对此造成的不便我们深表歉意
 invite = 如果您有兴趣解决这个问题，欢迎向本项目仓库提交PR
@@ -104,8 +107,8 @@ invite = 如果您有兴趣解决这个问题，欢迎向本项目仓库提交PR
 
 <fluent locale="en-US">
 not-selected = Please select recipe first
-loading = Loading
 reload = Reload
+upgrade-browser = Please try upgrade your browser
 sorry = Due to technical reasons, the error can only be temporarily restored by refreshing the page.
     We apologize for any inconvenience caused.
 invite = If you are interested in solving this problem, please submit a Pull Request to the repository
