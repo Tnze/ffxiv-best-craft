@@ -37,6 +37,10 @@ function setInheritFromDefault(val: string | number | boolean) {
         v.value.value = { ...store.default }
     }
 }
+
+const displayValue = computed(() => v.value.value || store.default);
+const isDefault = computed(() => v.value.value == null);
+
 </script>
 
 <template>
@@ -49,20 +53,20 @@ function setInheritFromDefault(val: string | number | boolean) {
                 @change="setInheritFromDefault" />
         </el-form-item>
         <el-form-item :label="$t('level')">
-            <el-input-number v-model="(v.value || store.default).level" :disabled="v.value == null" :min="0" :max="100"
-                :step-strictly="true"></el-input-number>
+            <el-input-number :model-value="displayValue.level" :disabled="isDefault" :controls="!isDefault" :min="1"
+                :max="100" :step-strictly="true" :value-on-clear="0" @change="x => v.value!.level = x!" />
         </el-form-item>
         <el-form-item :label="$t('craftsmanship')">
-            <el-input-number v-model="(v.value || store.default).craftsmanship" :disabled="v.value == null" :min="0"
-                :step-strictly="true"></el-input-number>
+            <el-input-number :model-value="displayValue.craftsmanship" :disabled="isDefault" :controls="!isDefault"
+                :min="0" :step-strictly="true" :value-on-clear="0" @change="x => v.value!.craftsmanship = x!" />
         </el-form-item>
         <el-form-item :label="$t('control')">
-            <el-input-number v-model="(v.value || store.default).control" :disabled="v.value == null" :min="0"
-                :step-strictly="true"></el-input-number>
+            <el-input-number :model-value="displayValue.control" :disabled="isDefault" :controls="!isDefault" :min="0"
+                :step-strictly="true" :value-on-clear="0" @change="x => v.value!.control = x!" />
         </el-form-item>
         <el-form-item :label="$t('craft-point')">
-            <el-input-number v-model="(v.value || store.default).craft_points" :disabled="v.value == null" :min="0"
-                :step-strictly="true"></el-input-number>
+            <el-input-number :model-value="displayValue.craft_points" :disabled="isDefault" :controls="!isDefault"
+                :min="0" :step-strictly="true" :value-on-clear="0" @change="x => v.value!.craft_points = x!" />
         </el-form-item>
     </el-form>
 </template>

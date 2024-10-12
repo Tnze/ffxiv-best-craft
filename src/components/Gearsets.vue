@@ -38,20 +38,20 @@ const jobPage = ref('default')
             <el-tab-pane name="default" :label="$t('default')">
                 <el-form label-position="right" label-width="auto" :model="store.default">
                     <el-form-item :label="$t('level')">
-                        <el-input-number v-model="store.default.level" :min="1" :max="100"
-                            :step-strictly="true"></el-input-number>
+                        <el-input-number :model-value="store.default.level" :min="1" :max="100"
+                            :step-strictly="true" @change="x => store.default.level = x || 1" />
                     </el-form-item>
                     <el-form-item :label="$t('craftsmanship')">
-                        <el-input-number v-model="store.default.craftsmanship" :min="0"
-                            :step-strictly="true"></el-input-number>
+                        <el-input-number :model-value="store.default.craftsmanship" :min="0"
+                            :step-strictly="true" @change="x => store.default.craftsmanship = x || 0" />
                     </el-form-item>
                     <el-form-item :label="$t('control')">
-                        <el-input-number v-model="store.default.control" :min="0"
-                            :step-strictly="true"></el-input-number>
+                        <el-input-number :model-value="store.default.control" :min="0"
+                            :step-strictly="true" @change="x => store.default.control = x || 0" />
                     </el-form-item>
                     <el-form-item :label="$t('craft-point')">
-                        <el-input-number v-model="store.default.craft_points" :min="0"
-                            :step-strictly="true"></el-input-number>
+                        <el-input-number :model-value="store.default.craft_points" :min="0"
+                            :step-strictly="true" @change="x => store.default.craft_points = x || 0" />
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
