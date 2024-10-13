@@ -12,7 +12,7 @@ version = "0.0.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2", features = [] }
+tauri-build = { version = "2", features = ["config-toml"] }
 
 [dependencies]
 crossbeam-channel = "0.5.13"
