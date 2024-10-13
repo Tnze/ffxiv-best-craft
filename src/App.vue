@@ -116,30 +116,31 @@ watchEffect(async () => {
 </script>
 
 <template>
-    <div class="container">
-        <Transition>
-            <div class="overlay" v-if="showMenu" @click="showMenu = false"></div>
-        </Transition>
-        <Menu class="sidebar" v-bind:class="{ 'show-menu': showMenu }"></Menu>
-        <div class="main">
-            <div class="topbar">
-                <Transition name="menuicon">
-                    <el-icon v-if="!unfoldSidebar" :size="25" @click="showMenu = !showMenu">
-                        <Operation />
-                    </el-icon>
-                </Transition>
-                <h3 class="topbar-title">{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
-            </div>
-            <div style="height: calc(100% - var(--tnze-topbar-height));">
-                <router-view v-slot="{ Component }">
-                    <keep-alive>
-                        <component :is="Component" @setTitle="(s: string) => topTitle = s" />
-                    </keep-alive>
-                </router-view>
+    <el-config-provider :locale="elementPlusLang.get(lang)">
+        <div class="container">
+            <Transition>
+                <div class="overlay" v-if="showMenu" @click="showMenu = false"></div>
+            </Transition>
+            <Menu class="sidebar" v-bind:class="{ 'show-menu': showMenu }"></Menu>
+            <div class="main">
+                <div class="topbar">
+                    <Transition name="menuicon">
+                        <el-icon v-if="!unfoldSidebar" :size="25" @click="showMenu = !showMenu">
+                            <Operation />
+                        </el-icon>
+                    </Transition>
+                    <h3 class="topbar-title">{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
+                </div>
+                <div style="height: calc(100% - var(--tnze-topbar-height));">
+                    <router-view v-slot="{ Component }">
+                        <keep-alive>
+                            <component :is="Component" @setTitle="(s: string) => topTitle = s" />
+                        </keep-alive>
+                    </router-view>
+                </div>
             </div>
         </div>
-        <el-config-provider :locale="elementPlusLang.get(lang)" />
-    </div>
+    </el-config-provider>
 </template>
 
 <style>
