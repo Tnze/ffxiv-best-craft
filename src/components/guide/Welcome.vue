@@ -135,7 +135,7 @@ greeting =
         [night] 夜深了
         *[other] 很高兴见到你
     }
-welcome = { greeting }，欢迎使用生产模拟器适配 7.0 版本
+welcome = { greeting }，欢迎使用生产模拟器
 input-recipe-name = 输入配方名称
 loading = 加载中
 no-match = 没有匹配的配方
@@ -158,7 +158,7 @@ greeting =
         [night] It's getting late at night
         *[other] Nice to see you
     }
-welcome = { greeting }. Welcome using BestCraft for FFXIV 7.0 DAWNTRAIL.
+welcome = { greeting }. Welcome using BestCraft for FFXIV DAWNTRAIL.
 input-recipe-name = Input recipe name
 loading = Loading
 no-match = No match recipe
