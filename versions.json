@@ -1,6 +1,6 @@
 {
   "version": "0.18.2",
-  "notes": "See the assets to download this version and install.",
+  "notes": "【实验性】更新至 Tauri 2.0",
   "pub_date": "2024-10-13T03:18:37.549Z",
   "platforms": {
     "darwin-aarch64": {
