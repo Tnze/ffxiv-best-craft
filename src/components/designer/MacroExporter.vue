@@ -64,7 +64,7 @@ const chunkedActions = computed(() => {
             lines.push(`/ac ${actionName} <wait.${calcWaitTime(action)}>`)
         }
         if (genOptions.hasNotify)
-            lines.push(`/echo ${$t('marco-finished', { id: sec + 1 })}<se.1>`)
+            lines.push(`/e ${$t('marco-finished', { id: sec + 1 })}<se.1>`)
         macros.push(lines)
     }
     return macros
