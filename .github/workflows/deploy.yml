@@ -46,7 +46,7 @@ jobs:
       uses: easingthemes/ssh-deploy@v5.1.0
       with:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        ARGS: "-rlzvc -i"
+        ARGS: "-rlzvc --exclude=releases --exclude=.htaccess --exclude=.user.ini --delete --delete-after -i"
         SOURCE: "./"
         REMOTE_HOST: ${{ vars.REMOTE_HOST }}
         REMOTE_USER: ${{ vars.REMOTE_USER }}
