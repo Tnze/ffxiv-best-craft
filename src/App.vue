@@ -23,8 +23,8 @@ import { ElConfigProvider, ElIcon } from 'element-plus';
 import { Operation } from '@element-plus/icons-vue'
 import { useFluent } from 'fluent-vue';
 if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
-    var pkgTauriFs = import('@tauri-apps/api/fs')
-    var pkgTauri = import("@tauri-apps/api/tauri")
+    var pkgTauriFs = import('@tauri-apps/plugin-fs')
+    var pkgTauri = import("@tauri-apps/api/core")
 }
 
 import Menu from '@/components/Menu.vue';
@@ -66,10 +66,10 @@ if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
 
 async function loadStorages() {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
-        const { Dir, readTextFile } = await pkgTauriFs
-        readTextFile("settings.json", { dir: Dir.App }).then(settingStore.fromJson).catch(e => console.error(e))
-        readTextFile("gearsets.json", { dir: Dir.App }).then(gearsetsStore.fromJson).catch(e => console.error(e))
-        readTextFile("designer.json", { dir: Dir.App }).then(designerStore.fromJson).catch(e => console.error(e))
+        const { BaseDirectory, readTextFile } = await pkgTauriFs
+        readTextFile("settings.json", { baseDir: BaseDirectory.AppData }).then(settingStore.fromJson).catch(e => console.error(e))
+        readTextFile("gearsets.json", { baseDir: BaseDirectory.AppData }).then(gearsetsStore.fromJson).catch(e => console.error(e))
+        readTextFile("designer.json", { baseDir: BaseDirectory.AppData }).then(designerStore.fromJson).catch(e => console.error(e))
     } else {
         const ifNotNullThen = (v: string | null, f: (v: string) => void) => { if (v != null) f(v) }
         ifNotNullThen(window.localStorage.getItem("settings.json"), settingStore.fromJson)
@@ -81,11 +81,9 @@ loadStorages()
 
 async function writeJson(name: string, jsonStr: string) {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
-        const { Dir, exists, createDir, writeTextFile } = await pkgTauriFs
+        const { BaseDirectory, exists, createDir, writeTextFile } = await pkgTauriFs
         try {
-            if (!await exists('', { dir: Dir.App }))
-                await createDir('', { dir: Dir.App })
-            await writeTextFile({ contents: jsonStr, path: name }, { dir: Dir.App })
+            await writeTextFile(name, jsonStr, { baseDir: BaseDirectory.AppData })
         } catch (err) {
             console.error(err)
         }

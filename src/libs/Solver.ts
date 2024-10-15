@@ -21,7 +21,7 @@ export let supported = true;
 
 if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
     // Good, the user is using our Desktop edition. Use the native solvers.
-    var pkgTauri = import("@tauri-apps/api/tauri")
+    var pkgTauri = import("@tauri-apps/api/core")
 } else {
     // They are using the Web edition. Only wasm solvers could be used.
     // Check if the browser supports Web Worker.

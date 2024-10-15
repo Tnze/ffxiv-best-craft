@@ -20,7 +20,7 @@ import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from
 
 export class LocalRecipeSource {
     public sourceType = DataSourceType.Realtime
-    invoke = import("@tauri-apps/api").then(pkg => pkg.invoke);
+    invoke = import("@tauri-apps/api/core").then(pkg => pkg.invoke);
 
     async recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult> {
         if (searchName === undefined) {

@@ -50,7 +50,7 @@ if (isOnTauri) {
     onCheckUpdateClick = async () => {
         let { checkUpdate } = await import('../update')
         checkingUpdate.value = true
-        await checkUpdate($t)
+        await checkUpdate($t, false)
         checkingUpdate.value = false
     }
 }

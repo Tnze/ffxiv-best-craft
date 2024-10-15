@@ -1,0 +1,62 @@
+productName = "BestCraft"
+mainBinaryName = "BestCraft"
+version = "0.18.2"
+identifier = "me.tnze.fbc"
+
+[build]
+beforeBuildCommand = "pnpm run build"
+frontendDist = "../dist"
+beforeDevCommand = "pnpm run dev"
+devUrl = "http://localhost:5173"
+
+[bundle]
+active = true
+targets = "all"
+icon = [
+    "icons/32x32.png",
+    "icons/128x128.png",
+    "icons/128x128@2x.png",
+    "icons/icon.icns",
+    "icons/icon.ico",
+]
+resources = ["assets/xiv.db"]
+copyright = "2024 Tnze"
+category = "Game"
+shortDescription = "FF14 Crafting Simulator & Solver."
+longDescription = "A software for FFXIV crafting simulation and auto solving with friendly UI."
+createUpdaterArtifacts = "v1Compatible"
+
+[bundle.windows]
+digestAlgorithm = "sha256"
+timestampUrl = ""
+wix.language = ["zh-CN"]
+
+[bundle.macOS]
+minimumSystemVersion = ""
+exceptionDomain = ""
+
+[bundle.linux]
+deb.depends = []
+
+[plugins]
+[plugins.updater]
+pubkey = "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDI2RUQ0NDQ2MEMyNUZEQUUKUldTdS9TVU1Sa1R0Smd6Rll2ZHBkd25aL1J1eWdhMmpSMjZpZWNvaE45K1R5UDU5Qk1sd3djNEgK"
+endpoints = [
+    "https://gitee.com/Tnze/ffxiv-best-craft/raw/main/versions.json",
+    "https://github.com/Tnze/ffxiv-best-craft/releases/latest/download/latest.json",
+    "https://raw.githubusercontent.com/Tnze/ffxiv-best-craft/main/versions.json",
+    "https://bestcraft.tnze.workers.dev/update/{{target}}/{{current_version}}",
+]
+
+[app]
+[app.security]
+
+[[app.windows]]
+title = "BestCraft"
+width = 1152
+height = 757
+resizable = true
+fullscreen = false
+transparent = true
+decorations = false
+dragDropEnabled = true

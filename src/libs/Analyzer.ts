@@ -3,7 +3,7 @@ import { Actions, Status } from "./Craft";
 
 if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
     // Good, the user is using our Desktop edition. Use the native solvers.
-    var pkgTauri = import("@tauri-apps/api/tauri")
+    var pkgTauri = import("@tauri-apps/api/core")
 }
 
 export interface Statistics {
