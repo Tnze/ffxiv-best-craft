@@ -21,7 +21,7 @@ This is a crafting simulator with solver algorithms for Final Fantasy XIV(FF14).
 - 内存 Memory: 8GiB
 
 下载地址：[Gitee](https://gitee.com/Tnze/ffxiv-best-craft/releases) (Windows Only)  
-Download: [Github](https://gitee.com/Tnze/ffxiv-best-craft/releases)
+Download: [Github](https://github.com/Tnze/ffxiv-best-craft/releases/latest)
 
 - Windows用户请下载 `.msi` 或者 `.nsis` 安装包
 - Mac 用户请下载`dmg`或`app`文件
