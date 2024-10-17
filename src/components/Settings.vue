@@ -18,12 +18,12 @@
 
 <script setup lang="ts">
 import { ref, onActivated } from 'vue'
-import { ElScrollbar, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton, ElDialog } from 'element-plus'
+import { ElScrollbar, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton, ElDialog, ElText } from 'element-plus'
 import { useFluent } from 'fluent-vue'
 import useSettingsStore from '@/stores/settings'
 import { languages } from '../lang'
 import { useColorMode } from '@vueuse/core'
-import { isTauri, isYYYYGames } from '@/libs/Consts'
+import { isTauri, isWebsite, isYYYYGames } from '@/libs/Consts'
 import SupportUs from './SupportUs.vue'
 
 const emit = defineEmits<{
@@ -41,6 +41,7 @@ const tauriVersion = ref('')
 var checkingUpdate = ref(false)
 var onCheckUpdateClick = async () => { }
 const licenseDialogVisible = ref(false)
+const switchLinesDialogVisible = ref(false)
 
 if (isTauri) {
     import('@tauri-apps/api/app').then(({ getName, getVersion, getTauriVersion }) => {
@@ -94,6 +95,24 @@ if (isTauri) {
                     <el-option :label="$t('dslang-de')" value="de" />
                     <el-option :label="$t('dslang-fr')" value="fr" />
                 </el-select>
+            </el-form-item>
+            <el-form-item v-if="isWebsite" :label="$t('switch-lines')">
+                <el-button @click="switchLinesDialogVisible = true">{{ $t('detail') }}</el-button>
+                <el-dialog v-model="switchLinesDialogVisible" :title="$t('switch-lines')">
+                    <p>BestCraft 是开源软件，可以在多个不同的服务器上部署，以下是目前已知的部署了本软件的网站：</p>
+                    <p>
+                        <el-link href="https://tnze.yyyy.games/" type="primary">YYYY.GAMES</el-link>
+                        <el-text size="small" type="info">由 <span>瑤瑤瑤影@神意之地</span> 运营</el-text>
+                    </p>
+                    <p>
+                        <el-link href="https://bestcraft.nbb.fan/" type="primary">NBB.FAN</el-link>
+                        <el-text size="small" type="info">由 <span>N.B.B</span> 运营</el-text>
+                    </p>
+                    <p>
+                        <el-link href="https://ffxiv-best-craft.pages.dev/" type="primary">Cloudflare Pages</el-link>
+                        <el-text size="small" type="info">由 <span>Tnze</span> 随意地设置在 Cloudflare 上，不适合国内访问</el-text>
+                    </p>
+                </el-dialog>
             </el-form-item>
             <template v-if="isTauri">
                 <el-form-item :label="$t('version-number')">
@@ -166,6 +185,7 @@ ds-local = 本地
 ds-yyyygames-desc = 国服数据
 # ds-cafe =
 ds-beta-xivapi-desc = 国际服数据
+switch-lines = 切换线路
 dslang-en = 英语
 dslang-ja = 日语
 dslang-de = 德语
@@ -178,6 +198,7 @@ feedback = 反馈
 license = 许可
 source = 源代码
 donate = 捐赠
+detail = 详情
 
 check-update = 检查更新
 checking-update = 正在检查更新
@@ -197,6 +218,7 @@ ds-xivapi = Xivapi
 ds-cafe = Cafe Maker
 ds-beta-xivapi = Xivapi (Beta)
 ds-beta-xivapi-desc = Latest
+switch-lines = Switch Lines
 dslang-en = English
 dslang-ja = Japanese
 dslang-de = German
@@ -209,6 +231,7 @@ feedback = Feedback
 license = License
 source = Source
 donate = Donate
+detail = Detail
 
 check-update = Check Update
 checking-update = Checking Update
@@ -220,6 +243,7 @@ data-source = データソース
 ds-local = ローカル
 # ds-xivapi =
 # ds-cafe =
+switch-lines = サーバの切り替え
 dslang-en = 英語
 dslang-ja = 日本語
 dslang-de = ドイツ語
@@ -231,6 +255,7 @@ feedback = フィードバック
 license = ライセンス
 source = ソースコード
 donate = 寄付する
+detail = 詳細
 
 check-update = 更新のチェック
 checking-update = 更新をチェックしています
