@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -23,7 +23,8 @@ import { useFluent } from 'fluent-vue'
 import useSettingsStore from '@/stores/settings'
 import { languages } from '../lang'
 import { useColorMode } from '@vueuse/core'
-import { isTauri } from '@/libs/Consts'
+import { isTauri, isYYYYGames } from '@/libs/Consts'
+import SupportUs from './SupportUs.vue'
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void
@@ -125,6 +126,9 @@ if (isTauri) {
                     <p>{{ $t('licenses-notices-3') }}</p>
                 </el-dialog>
             </el-form-item>
+            <el-form-item v-if="isYYYYGames" :label="$t('donate')">
+                <SupportUs />
+            </el-form-item>
         </el-form>
     </el-scrollbar>
 </template>
@@ -173,6 +177,7 @@ developer = ๐•ᴗ•๐
 feedback = 反馈
 license = 许可
 source = 源代码
+donate = 捐赠
 
 check-update = 检查更新
 checking-update = 正在检查更新
@@ -203,6 +208,7 @@ developer = Developer
 feedback = Feedback
 license = License
 source = Source
+donate = Donate
 
 check-update = Check Update
 checking-update = Checking Update
@@ -224,6 +230,7 @@ developer = 開発者
 feedback = フィードバック
 license = ライセンス
 source = ソースコード
+donate = 寄付する
 
 check-update = 更新のチェック
 checking-update = 更新をチェックしています
