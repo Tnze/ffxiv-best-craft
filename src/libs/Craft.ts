@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+import { isTauri } from "./Consts";
+
+if (isTauri) {
     var pkgTauri = import("@tauri-apps/api/core")
 } else {
     var pkgWasm = import("@/../pkg-wasm/app_wasm")
@@ -246,7 +248,7 @@ export async function newStatus(
     recipe: Recipe,
     recipeLevel: RecipeLevel,
 ): Promise<Status> {
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("new_status", { attrs, recipe, recipeLevel })
     } else {
@@ -264,7 +266,7 @@ export interface SimulateResult {
 }
 
 export async function simulate(status: Status, actions: Actions[]): Promise<SimulateResult> {
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("simulate", { status, actions });
     } else {
@@ -279,7 +281,7 @@ export interface SimulateOneStepResult {
 }
 
 export async function simulateOneStep(status: Status, action: Actions, forceSuccess: boolean): Promise<SimulateOneStepResult> {
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("simulate_one_step", { status, action, forceSuccess });
     } else {
@@ -289,7 +291,7 @@ export async function simulateOneStep(status: Status, action: Actions, forceSucc
 };
 
 export async function high_quality_probability(status: Status): Promise<number | null> {
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("high_quality_probability", { status });
     } else {
@@ -299,7 +301,7 @@ export async function high_quality_probability(status: Status): Promise<number |
 }
 
 export async function allowedList(status: Status, actions: Actions[]): Promise<string[]> {
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("allowed_list", { status, skills: actions });
     } else {
@@ -309,7 +311,7 @@ export async function allowedList(status: Status, actions: Actions[]): Promise<s
 };
 
 export async function craftPointsList(status: Status, actions: Actions[]): Promise<number[]> {
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("craftpoints_list", { status, skills: actions })
     } else {

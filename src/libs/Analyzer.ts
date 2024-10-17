@@ -1,7 +1,23 @@
+// This file is part of BestCraft.
+// Copyright (C) 2024 Tnze
+//
+// BestCraft is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// BestCraft is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { isTauri } from "./Consts";
 import { Actions, Status } from "./Craft";
 
-if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+if (isTauri) {
     // Good, the user is using our Desktop edition. Use the native solvers.
     var pkgTauri = import("@tauri-apps/api/core")
 }
@@ -21,7 +37,7 @@ export interface Statistics {
 
 export async function rand_simulation(status: Status, actions: Actions[], n: number, ignoreErrors: boolean): Promise<Statistics> {
     const args = { status, actions, n, ignoreErrors };
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("rand_simulation", args);
     } else {
@@ -42,7 +58,7 @@ export interface Scope {
 
 export async function calc_attributes_scope(status: Status, actions: Actions[]): Promise<Scope> {
     const args = { status, actions };
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("calc_attributes_scope", args);
     } else {

@@ -21,13 +21,13 @@ import { computed, reactive, ref } from 'vue';
 import { ElSpace, ElCard, ElMessage, ElCheckbox } from 'element-plus'
 import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
+import { isTauri, isWebsite } from '@/libs/Consts';
 
 const props = defineProps<{
     actions: Actions[]
 }>()
 const { $t } = useFluent()
 
-const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == "web";
 const oneclickCopy = ref(true); // 一键复制
 
 const genOptions = reactive({
@@ -73,7 +73,7 @@ const chunkedActions = computed(() => {
 const copyChunk = async (i: number, macro: string[]) => {
     const macroText = macro.join('\r\n').replaceAll(/\u2068|\u2069/g, '')
     try {
-        if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+        if (isTauri) {
             let { writeText } = await import('@tauri-apps/plugin-clipboard-manager')
             await writeText(macroText)
         } else {

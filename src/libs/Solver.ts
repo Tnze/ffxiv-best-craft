@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { isTauri } from "./Consts";
 import { Actions, Status } from "./Craft";
 import { clarityReport } from "./Utils";
 
 export let supported = true;
 
-if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+if (isTauri) {
     // Good, the user is using our Desktop edition. Use the native solvers.
     var pkgTauri = import("@tauri-apps/api/core")
 } else {
@@ -52,7 +53,7 @@ export async function create_solver(
 };
 
 export async function destroy_solver(status: Status) {
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         invoke("destroy_solver", { status });
     } else {
@@ -61,7 +62,7 @@ export async function destroy_solver(status: Status) {
 };
 
 export async function read_solver(status: Status): Promise<Actions[]> {
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("read_solver", { status });
     } else {
@@ -71,7 +72,7 @@ export async function read_solver(status: Status): Promise<Actions[]> {
 
 export async function rika_solve(status: Status): Promise<Actions[]> {
     clarityReport('runRikaSolver')
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         return (await pkgTauri).invoke("rika_solve", { status })
     } else {
         return invokeWasmSolver("rika_solve", { status })
@@ -80,7 +81,7 @@ export async function rika_solve(status: Status): Promise<Actions[]> {
 
 export async function rika_solve_tnzever(status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean, reduceSteps: boolean): Promise<Actions[]> {
     clarityReport('runRikaSolverTnzeVer')
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve, reduceSteps })
     } else {
@@ -91,7 +92,7 @@ export async function rika_solve_tnzever(status: Status, useManipulation: boolea
 export async function dfs_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
     clarityReport('runDfsSolver')
     const args = { status, depth, specialist };
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         return (await pkgTauri).invoke("dfs_solve", args)
     } else {
         return invokeWasmSolver("dfs_solve", args)
@@ -101,7 +102,7 @@ export async function dfs_solve(status: Status, depth: number, specialist: boole
 export async function nq_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
     clarityReport('runNqSolver')
     const args = { status, depth, specialist };
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         return (await pkgTauri).invoke("nq_solve", args)
     } else {
         return invokeWasmSolver("nq_solve", args)
@@ -113,7 +114,7 @@ export async function nq_solve(status: Status, depth: number, specialist: boolea
 /// useWastNot: 是否使用俭约（0：不使用，4：使用俭约，8：使用俭约和长期俭约）
 export async function reflect_solve(status: Status, useManipulation: boolean, useWasteNot: number, useObserve: boolean): Promise<Actions[]> {
     clarityReport('runReflectSolver')
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("reflect_solve", { status, useManipulation, useWasteNot, useObserve })
     } else {
@@ -142,7 +143,7 @@ export async function raphael_solve(
         adversarial,
         unsoundBranchPruning,
     };
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         return invoke("raphael_solve", args)
     } else {

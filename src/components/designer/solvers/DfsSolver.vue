@@ -24,6 +24,7 @@ import { Ref, ref, watch } from 'vue';
 import { nq_solve, dfs_solve } from '@/libs/Solver';
 import { ChatSquare } from '@element-plus/icons-vue'
 import { SequenceSource } from '../types';
+import { isTauri } from '@/libs/Consts';
 
 const { $t } = useFluent()
 
@@ -36,7 +37,7 @@ const emits = defineEmits<{
 }>()
 
 // dfs求解器最大深度，设置超过该深度会显示警告
-const warningDepth = import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 6 : 4
+const warningDepth = isTauri ? 6 : 4
 
 const dialogVisible = ref(false)
 const maxDepth = ref(warningDepth);

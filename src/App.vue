@@ -22,7 +22,8 @@ import { useColorMode, usePreferredLanguages, useCssVar, useMediaQuery } from '@
 import { ElConfigProvider, ElIcon } from 'element-plus';
 import { Operation } from '@element-plus/icons-vue'
 import { useFluent } from 'fluent-vue';
-if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+import { isTauri } from './libs/Consts';
+if (isTauri) {
     var pkgTauriFs = import('@tauri-apps/plugin-fs')
     var pkgTauri = import("@tauri-apps/api/core")
 }
@@ -60,12 +61,12 @@ watchEffect(() => {
 })
 
 // Check update
-if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+if (isTauri) {
     onMounted(() => import('./update').then(x => x.checkUpdate($t, true)))
 }
 
 async function loadStorages() {
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         const { BaseDirectory, readTextFile } = await pkgTauriFs
         readTextFile("settings.json", { baseDir: BaseDirectory.AppData }).then(settingStore.fromJson).catch(e => console.error(e))
         readTextFile("gearsets.json", { baseDir: BaseDirectory.AppData }).then(gearsetsStore.fromJson).catch(e => console.error(e))
@@ -80,8 +81,8 @@ async function loadStorages() {
 loadStorages()
 
 async function writeJson(name: string, jsonStr: string) {
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
-        const { BaseDirectory, exists, createDir, writeTextFile } = await pkgTauriFs
+    if (isTauri) {
+        const { BaseDirectory, writeTextFile } = await pkgTauriFs
         try {
             await writeTextFile(name, jsonStr, { baseDir: BaseDirectory.AppData })
         } catch (err) {
@@ -102,7 +103,7 @@ watchEffect(async () => {
     else isDark = null;
 
     let shouldBeTransparent = false;
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { invoke } = await pkgTauri
         // Ask the rust side if the window transparent.
         shouldBeTransparent = await invoke('set_theme', { isDark })

@@ -19,12 +19,13 @@ import { CafeMakerApiBase, XivApiRecipeSource, XivapiBase } from '@/components/r
 import { DataSource } from '@/components/recipe-manager/source'
 import { YYYYGamesApiBase, WebSource } from '@/components/recipe-manager/web-source'
 import { BetaXivApiRecipeSource, BetaXivapiBase } from '@/components/recipe-manager/beta-xivapi-source'
+import { isTauri, isWebsite } from '@/libs/Consts'
 
 
 export default defineStore('settings', {
     state: () => ({
         language: 'system',
-        dataSource: <'local' | "yyyy.games" | 'cafe' | 'xivapi'>(import.meta.env.VITE_BESTCRAFT_TARGET == "tauri" ? 'local' : 'yyyy.games'),
+        dataSource: <'local' | "yyyy.games" | 'cafe' | 'xivapi'>(isTauri ? 'local' : 'yyyy.games'),
         dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined
     }),
     getters: {
@@ -42,7 +43,7 @@ export default defineStore('settings', {
                 'xivapi': () => new BetaXivApiRecipeSource(BetaXivapiBase, this.dataSourceLang)
             }
             let defaultSource: () => DataSource = dataSources['yyyy.games']
-            if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+            if (isTauri) {
                 var { LocalRecipeSource } = await import('../components/recipe-manager/local-source')
                 let localSource = () => new LocalRecipeSource()
                 dataSources['local'] = localSource
@@ -69,7 +70,7 @@ export default defineStore('settings', {
         },
         fromJson(json: string) {
             this.$patch(JSON.parse(json))
-            if (this.dataSource !== "xivapi" && (import.meta.env.VITE_BESTCRAFT_TARGET != "tauri" || this.dataSource !== "local")) {
+            if (this.dataSource !== "xivapi" && (isWebsite || this.dataSource !== "local")) {
                 this.dataSource = "yyyy.games"
             }
         },

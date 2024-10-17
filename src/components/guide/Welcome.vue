@@ -21,6 +21,7 @@ import { ElText, ElButton, ElLink } from 'element-plus';
 import { computed, onActivated } from 'vue';
 import { useFluent } from 'fluent-vue';
 import { clarityReport } from '@/libs/Utils';
+import { isWebsite, isYYYYGames } from '@/libs/Consts';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void
@@ -54,9 +55,6 @@ function goFco() {
     window.open('https://yyyy.games/fco/', '_blank');
     clarityReport('goFco');
 }
-
-const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == "web"
-const isYYYYGames = window.location.hostname == "tnze.yyyy.games"
 
 </script>
 

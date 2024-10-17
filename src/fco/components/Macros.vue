@@ -22,6 +22,7 @@ import { NFlex, NCard, NCheckbox, useMessage } from 'naive-ui';
 import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { formatDuration } from '@/libs/Utils';
+import { isTauri } from '@/libs/Consts';
 
 const props = defineProps<{
     actions: Actions[]
@@ -74,7 +75,7 @@ const chunkedActions = computed(() => {
 
 const copyChunk = async (i: number, macro: string[]) => {
     const macroText = macro.join('\r\n').replaceAll(/\u2068|\u2069/g, '')
-    if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
+    if (isTauri) {
         let { writeText } = await import('@tauri-apps/plugin-clipboard-manager')
         await writeText(macroText)
     } else {

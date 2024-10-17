@@ -23,6 +23,7 @@ import { useFluent } from 'fluent-vue'
 import useSettingsStore from '@/stores/settings'
 import { languages } from '../lang'
 import { useColorMode } from '@vueuse/core'
+import { isTauri } from '@/libs/Consts'
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void
@@ -40,8 +41,7 @@ var checkingUpdate = ref(false)
 var onCheckUpdateClick = async () => { }
 const licenseDialogVisible = ref(false)
 
-const isOnTauri = import.meta.env.VITE_BESTCRAFT_TARGET == 'tauri'
-if (isOnTauri) {
+if (isTauri) {
     import('@tauri-apps/api/app').then(({ getName, getVersion, getTauriVersion }) => {
         getName().then(n => appName.value = n)
         getVersion().then(v => version.value = v)
@@ -75,7 +75,7 @@ if (isOnTauri) {
             </el-form-item>
             <el-form-item :label="$t('data-source')">
                 <el-select v-model="store.dataSource">
-                    <el-option v-if="isOnTauri" :label="$t('ds-local')" value="local" />
+                    <el-option v-if="isTauri" :label="$t('ds-local')" value="local" />
                     <el-option :label="$t('ds-yyyygames')" value="yyyy.games">
                         <span style="float: left">{{ $t('ds-yyyygames') }}</span>
                         <span class="data-source-option-note">{{ $t('ds-yyyygames-desc') }}</span>
@@ -94,7 +94,7 @@ if (isOnTauri) {
                     <el-option :label="$t('dslang-fr')" value="fr" />
                 </el-select>
             </el-form-item>
-            <template v-if="isOnTauri">
+            <template v-if="isTauri">
                 <el-form-item :label="$t('version-number')">
                     {{ version }}
                 </el-form-item>

@@ -25,6 +25,7 @@ import { Actions, Status } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { SequenceSource } from '../types';
 import { formatDuration } from '@/libs/Utils';
+import { isTauri } from '@/libs/Consts';
 
 const { $t } = useFluent()
 
@@ -43,8 +44,6 @@ const emits = defineEmits<{
     (event: 'solverLoad', solver: Solver): void
     (event: 'runSimpleSolver', solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
 }>()
-
-const platform = import.meta.env.VITE_BESTCRAFT_TARGET
 
 const dialogVisible = ref(false)
 const useManipulation = ref(false)
@@ -132,9 +131,9 @@ const destroySolver = async (s: Solver) => {
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
-        <el-checkbox v-model="useMuscleMemory" :label="$t('enable-action', { action: $t('muscle-memory') })" :disabled="platform != 'tauri'" />
-        <el-checkbox v-model="useManipulation" :label="$t('enable-action', { action: $t('manipulation') })" :disabled="platform != 'tauri'" />
-        <el-checkbox v-model="useWasteNot" :label="$t('enable-action', { action: $t('waste-not') })" :disabled="platform != 'tauri'" />
+        <el-checkbox v-model="useMuscleMemory" :label="$t('enable-action', { action: $t('muscle-memory') })" :disabled="!isTauri" />
+        <el-checkbox v-model="useManipulation" :label="$t('enable-action', { action: $t('manipulation') })" :disabled="!isTauri" />
+        <el-checkbox v-model="useWasteNot" :label="$t('enable-action', { action: $t('waste-not') })" :disabled="!isTauri" />
         <el-checkbox v-model="useObserve" :label="$t('enable-action', { action: $t('observe') })" />
     </el-space>
     <el-alert v-if="useMuscleMemory" type="warning" :title="$t('muscle-memory-msg')" show-icon :closable="false" />
