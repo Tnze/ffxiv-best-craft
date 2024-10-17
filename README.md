@@ -8,7 +8,7 @@ This is a crafting simulator with solver algorithms for Final Fantasy XIV(FF14).
 
 ☞ <https://tnze.yyyy.games/#/>
 
-## Desktop Edition 桌面版（支持求解器）
+## Desktop Edition 桌面版
 
 推荐配置 Recommended setup:
 
