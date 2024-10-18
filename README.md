@@ -42,7 +42,11 @@ pnpm install # 下载依赖 download requirements
 
 #### 安装Web依赖 Install Web Dependencies
 
-为了编译Wasm模块，下载：[rustup](https://rustup.rs/)、[wasm-pack](https://rustwasm.github.io/wasm-pack/installer/)
+为了编译Wasm模块，下载：[rustup](https://rustup.rs/)、[wasm-pack](https://rustwasm.github.io/wasm-pack/installer/)、[wasm-bindgen-cli](https://crates.io/crates/wasm-bindgen)
+
+```bash
+cargo install wasm-pack wasm-bindgen-cli
+```
 
 #### Develop Hotload Server
 
