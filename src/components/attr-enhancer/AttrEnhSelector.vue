@@ -94,7 +94,7 @@ function enhancerToOptions(enhancers: Enhancer[] | undefined) {
     return enhancers?.map(value => ({
         label: value.name,
         value
-    })) ?? []
+    })).reverse() ?? []
 }
 
 const enhancers = reactive<{
