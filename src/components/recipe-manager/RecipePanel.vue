@@ -115,6 +115,7 @@ watch(searchText, async searching => {
             break;
         case DataSourceType.RemoteRealtime:
             searchTimer = setTimeout(() => {
+                pagination.Page = 1; // 触发搜索时应该翻回第一页，否则搜不到东西
                 updateRecipePage(source, pagination.Page, searching)
                 searchTimer = null
             }, searchingDelayMs)
