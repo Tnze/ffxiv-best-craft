@@ -62,11 +62,11 @@ fn find_craftsmanship_range(
         }
         low = Some(cm);
     }
-    let mut high = None;
+    let mut high = Some(init_craftsmanship);
     for cm in (init_craftsmanship..).take(5000) {
         let mut status = init_status.clone();
-        refrash_caches(&mut status);
         status.attributes.craftsmanship = cm;
+        refrash_caches(&mut status);
         status = simulate(status, actions);
         if status.step != final_status.step {
             return (low, high);
