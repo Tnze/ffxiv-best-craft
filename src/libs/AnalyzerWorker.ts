@@ -14,10 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { isWebsite } from "./Consts";
-
 onmessage = async (e) => {
-    if (isWebsite) {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == "web") {
         var { rand_simulation, calc_attributes_scope } = await import("../../pkg-wasm/app_wasm")
     } else return
     const { name, args: argsJson } = e.data

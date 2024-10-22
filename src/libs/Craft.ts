@@ -16,7 +16,7 @@
 
 import { isTauri } from "./Consts";
 
-if (isTauri) {
+if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
     var pkgTauri = import("@tauri-apps/api/core")
 } else {
     var pkgWasm = import("@/../pkg-wasm/app_wasm")
