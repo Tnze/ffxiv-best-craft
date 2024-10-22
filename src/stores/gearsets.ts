@@ -26,9 +26,9 @@ export default defineStore('gearsets', {
     state: () => ({
         default: {
             level: 100,
-            craftsmanship: 4000,
-            control: 4000,
-            craft_points: 700,
+            craftsmanship: 4628,
+            control: 4221,
+            craft_points: 533,
         },
         special: [
             { name: Jobs.Carpenter, value: undefined },
