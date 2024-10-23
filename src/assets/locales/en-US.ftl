@@ -99,6 +99,10 @@ update-error = Update failed: { $error }
 update-done = Update done
 update-uptodate = Up-to-date
 
+update-started = Download update started
+update-progress = Download update in progress: { $progress }
+update-done = Download update finished
+
 # Rust Errors
 player-level-lower-than-recipe-requirement = Player level is lower than the recipe's requirement.
 unknown-recipe-level = Unknown recipe level

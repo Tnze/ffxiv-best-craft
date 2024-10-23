@@ -138,6 +138,10 @@ update-error = 更新失败：{ $error }
 update-done = 更新已完成
 update-uptodate = 已是最新版本
 
+update-started = 更新下载开始
+update-progress = 更新下载中：{ $progress }
+update-done = 更新下载结束
+
 # Rust Errors
 player-level-lower-than-recipe-requirement = 玩家等级未达到所选配方最低要求
 unknown-recipe-level = 遇到了数据库中不存在的配方等级

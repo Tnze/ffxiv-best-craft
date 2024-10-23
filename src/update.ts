@@ -18,52 +18,61 @@ import { check, Update } from '@tauri-apps/plugin-updater'
 import { relaunch } from '@tauri-apps/plugin-process'
 import { ElButton, ElMessage, ElMessageBox, ElNotification, NotificationHandle, MessageHandler } from 'element-plus'
 import { FluentVariable } from '@fluent/bundle';
-import { h } from 'vue'
+import { h, ref } from 'vue'
+
 
 async function updateNow($t: (key: string, value?: Record<string, FluentVariable>) => string, update: Update) {
-    let close = () => { }
+    let totalLength = 0;
+    const downloadedLength = ref<number>()
     try {
+        let messageHandler: MessageHandler | undefined = undefined;
         await update.downloadAndInstall((downloadEvent) => {
-            close()
-            let messageHandler;
             switch (downloadEvent.event) {
                 case 'Started':
-                    messageHandler = ElMessage({
-                        type: 'info',
-                        message: $t('update-started', { contentLength: downloadEvent.data.contentLength || '' }),
-                    })
-                    close = messageHandler.close;
-                    break;
-                case 'Progress':
+                    totalLength = downloadEvent.data.contentLength || 0
+                    if (messageHandler) {
+                        messageHandler.close()
+                    }
                     messageHandler = ElMessage({
                         showClose: true,
                         duration: 0,
                         type: 'info',
-                        message: $t('update-progress', { chunkLength: downloadEvent.data.chunkLength }),
+                        message: h(() => {
+                            if (downloadedLength.value === undefined) {
+                                return $t('update-started')
+                            } else {
+                                const percentage = downloadedLength.value / totalLength * 100;
+                                return $t('update-progress', {
+                                    progress: `${percentage.toFixed(2)}%`
+                                })
+                            }
+                        }),
                     })
-                    close = messageHandler.close;
+                    break;
+                case 'Progress':
+                    downloadedLength.value = (downloadedLength.value || 0) + downloadEvent.data.chunkLength;
                     break;
                 case 'Finished':
-                    messageHandler = ElMessage({
+                    if (messageHandler) {
+                        messageHandler.close()
+                    }
+                    ElMessage({
                         type: 'success',
                         message: $t('update-done'),
                     })
-                    close = messageHandler.close;
                     break;
             }
         })
         // On macOS and Linux, restart the app manually.
         // (And we add another confirmation dialog)
         await ElMessageBox.confirm($t('update-ask-relaunch'))
-        await relaunch()
+        // await relaunch()
     } catch (e) {
         // do nothing
         ElMessage({
             type: 'error',
             message: $t('update-error', { error: e as string }),
         })
-    } finally {
-        close()
     }
 }
 

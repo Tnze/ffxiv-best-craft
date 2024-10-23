@@ -93,6 +93,10 @@ update-error = 更新に失敗しました: { $error }
 update-done = 更新完了
 update-uptodate = すでに最新バージョン
 
+update-started = アップデートダウンロード開始
+update-progress = 更新ダウンロード中：{ $progress }
+update-done = 更新ダウンロード終了
+
 # Titles
 attributes = 属性
 settings = 設定
