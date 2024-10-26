@@ -226,7 +226,10 @@ const waitTimes = new Map([
     [Actions.TrainedPerfection, 3],
 ])
 
-const postCastDelay = new Map(waitTimes.entries().map(x => [x[0], x[1] - 0.5]))
+const postCastDelay = new Map()
+for (const [action, time] of waitTimes.entries()) {
+    postCastDelay.set(action, time + 0.5)
+}
 
 export const newRecipe = async (
     rlv: number,

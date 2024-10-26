@@ -60,21 +60,15 @@ function confirm() {
     } else {
         result = input
             .split(/\/[^\s]+|<wait\.\d+>|\n/)
-            .flatMap(v => {
-                if (v.length == 0) {
-                    return [];
-                }
-                v = v.trim()
-                // remove quotation
+            .map(v => v.trim())
+            .filter(v => v.length > 0)
+            .map(v => {
                 if (v.charAt(0) == '"' && v.charAt(v.length - 1) == '"') {
                     v = v.substring(1, v.length - 1);
                 }
-                const action = namesToAction.get(v);
-                if (action == undefined) {
-                    return [];
-                }
-                return [action]
-            });
+                return namesToAction.get(v);
+            })
+            .filter(v => v != undefined);
         if (result.length == 0) {
             ElMessage({
                 type: 'warning',
