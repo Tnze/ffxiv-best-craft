@@ -18,7 +18,8 @@
 
 <script setup lang="ts">
 import { Actions } from '@/libs/Craft';
-import { ElInput, ElButton, ElMessage } from 'element-plus';
+import { clarityReport } from '@/libs/Utils';
+import { ElInput, ElButton, ElMessage, ElCheckbox, ElSpace, ElSwitch } from 'element-plus';
 import { useFluent } from 'fluent-vue';
 import { ref } from 'vue';
 
@@ -40,6 +41,7 @@ for (const bundle of fluent.bundles.value) {
 
 // Textarea input
 const inputText = ref('');
+const strictMode = ref(false)
 
 // Start parcing user input text
 function confirm() {
@@ -50,6 +52,7 @@ function confirm() {
         try {
             result = parseJson(JSON.parse(input))
         } catch (err) {
+            clarityReport('importJsonError');
             ElMessage({
                 type: 'error',
                 showClose: true,
@@ -57,6 +60,7 @@ function confirm() {
             });
             return;
         }
+        clarityReport('importJsonSuccess');
     } else {
         result = input
             .split(/\/[^\s]+|<wait\.\d+>|\n/)
@@ -70,6 +74,7 @@ function confirm() {
             })
             .filter(v => v != undefined);
         if (result.length == 0) {
+            clarityReport('importMacroError');
             ElMessage({
                 type: 'warning',
                 showClose: true,
@@ -77,6 +82,7 @@ function confirm() {
             });
             return;
         }
+        clarityReport('importMacroSuccess');
     }
 
     ElMessage({
@@ -112,9 +118,13 @@ function parseJson(result: any): Actions[] {
 <template>
     <el-input v-model="inputText" type="textarea" class="user-input" :autosize="{ minRows: 4 }"
         :placeholder="$t('auto-recognize')" />
-    <el-button type="primary" @click="confirm" :disabled="inputText.length == 0">
-        {{ $t('confirm') }}
-    </el-button>
+    <el-space>
+        <el-button type="primary" @click="confirm" :disabled="inputText.length == 0">
+            {{ $t('confirm') }}
+        </el-button>
+        <el-checkbox v-model="strictMode" label="严格模式" />
+        <el-switch v-model="strictMode" />
+    </el-space>
 </template>
 
 <style scoped>
