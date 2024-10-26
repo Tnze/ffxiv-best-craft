@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { Actions } from '@/libs/Craft';
-import { ElInput, ElButton } from 'element-plus';
+import { ElInput, ElButton, ElMessage } from 'element-plus';
 import { useFluent } from 'fluent-vue';
 import { ref } from 'vue';
 
@@ -36,7 +36,11 @@ function confirm() {
             const result = JSON.parse(input);
             emits('onRecognized', parseJson(result));
         } catch (err) {
-            console.error($t('err-parse-json', { err: String(err) }))
+            ElMessage({
+                type: 'error',
+                showClose: true,
+                message: $t('err-parse-json', { err: String(err) }),
+            })
         }
     }
 }
@@ -64,7 +68,9 @@ function parseJson(result: any): Actions[] {
 <template>
     <el-input v-model="inputText" type="textarea" class="user-input" :autosize="{ minRows: 4 }"
         :placeholder="$t('auto-recognize')" />
-    <el-button type="primary" @click="confirm">{{ $t('confirm') }}</el-button>
+    <el-button type="primary" @click="confirm" :disabled="inputText.length == 0">
+        {{ $t('confirm') }}
+        </el-button>
 </template>
 
 <style scoped>
