@@ -185,6 +185,7 @@ function saveSequence(isManual: boolean) {
         slots: queue.slots.slice(),
         maxid: queue.maxid,
         source: isManual ? SequenceSource.Manual : SequenceSource.AutoSave,
+        itemName: store.content?.item.name,
     });
     store.sortRotations(initStatus.value);
     activeTab.value = 'store';

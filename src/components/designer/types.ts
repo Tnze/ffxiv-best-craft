@@ -28,6 +28,7 @@ export interface Sequence {
     slots: Slot[];
     maxid: number;
     source?: SequenceSource;
+    itemName?: string;
 }
 
 export enum SequenceSource {

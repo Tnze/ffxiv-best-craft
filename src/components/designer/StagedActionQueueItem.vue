@@ -96,8 +96,11 @@ const waitTime = computed(() => {
                         <el-tag round type="info">
                             {{ $t('duration-tag', { duration: formatDuration(waitTime * 1e3, 0) }) }}
                         </el-tag>
-                        <el-tag round type="info" v-if="seq.source">
+                        <el-tag round type="info" v-if="seq.source !== undefined">
                             {{ $t('source-tag', { typ: String(seq.source), source: $t(String(seq.source)) }) }}
+                        </el-tag>
+                        <el-tag round type="info" v-if="seq.itemName !== undefined">
+                            {{ $t('itemname-tag', { itemName: String(seq.itemName) }) }}
                         </el-tag>
                     </el-space>
                 </el-text>
@@ -151,6 +154,7 @@ delete = 删除
 quality-tag = { quality }：{ $quality }
 steps-tag = { steps }：{ $steps }
 duration-tag = 宏耗时：{ $duration }
+itemname-tag = 物品名：{ $itemName }
 
 # Sources
 manual = 手动保存
@@ -168,6 +172,7 @@ delete = Delete
 quality-tag = { quality }: { $quality }
 steps-tag = { steps }: { $steps }
 duration-tag = Macro Duration: { $duration }
+itemname-tag = Item Name: { $itemName }
 
 # Sources
 manual = Manual
