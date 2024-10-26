@@ -160,6 +160,10 @@ function loadSeq(seq: Sequence) {
     activeSeq.slots.splice(0, length, ...seq.slots);
     activeSeq.maxid = seq.maxid;
 }
+function userImport(actions: Actions[]) {
+    const slots = actions.map((action, id) => <Slot>{ id, action });
+    loadSeq(<Sequence>{ slots, maxid: slots.length })
+}
 
 // Solver result
 const solverResult = reactive<Sequence>({
@@ -296,7 +300,7 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                     </el-tab-pane>
                     <el-tab-pane :label="$t('import-macro')" name="import-macro" class="multi-function-area">
                         <el-scrollbar style="flex: auto;">
-                            <MacroImporter @on-recognized="v => console.log(v)" />
+                            <MacroImporter @on-recognized="userImport" />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('solvers')" name="solver-list" class="multi-function-area">
