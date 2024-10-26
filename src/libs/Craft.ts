@@ -226,6 +226,8 @@ const waitTimes = new Map([
     [Actions.TrainedPerfection, 3],
 ])
 
+const postCastDelay = new Map(waitTimes.entries().map(x => [x[0], x[1] - 0.5]))
+
 export const newRecipe = async (
     rlv: number,
     rt: RecipeLevel,
@@ -320,8 +322,13 @@ export async function craftPointsList(status: Status, actions: Actions[]): Promi
     }
 };
 
-export function calcWaitTime(...actions: Actions[]) {
+export function calcWaitTime(...actions: Actions[]): number {
     return actions.map(v => waitTimes.get(v) ?? 0)
+        .reduce((acc, v) => acc + v, 0)
+}
+
+export function calcPostCastTime(...actions: Actions[]): number {
+    return actions.map(v => postCastDelay.get(v) ?? 0)
         .reduce((acc, v) => acc + v, 0)
 }
 

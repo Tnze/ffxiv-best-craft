@@ -19,9 +19,9 @@
 <script setup lang="ts">
 import { ElButton, ElSpace, ElText, ElTag, ElIcon, ElButtonGroup } from "element-plus";
 import { Delete, Upload, SuccessFilled, WarningFilled, CircleCloseFilled } from "@element-plus/icons-vue";
-import { Sequence } from './types';
+import { Sequence, SequenceSource } from './types';
 import ActionQueue from "./ActionQueue.vue";
-import { calcWaitTime, Jobs, simulate, SimulateResult, Status } from "@/libs/Craft";
+import { calcPostCastTime, calcWaitTime, Jobs, simulate, SimulateResult, Status } from "@/libs/Craft";
 import { formatDuration } from "@/libs/Utils";
 import { ref, computed, watchEffect } from "vue";
 
@@ -68,9 +68,12 @@ const tagType = computed<"success" | "warning" | "info" | "danger" | undefined>(
 })
 
 const waitTime = computed(() => {
-    return calcWaitTime(...props.seq.slots.map(v => v.action))
+    const actions = props.seq.slots.map(v => v.action)
+    return {
+        macro: calcWaitTime(...actions),
+        manual: calcPostCastTime(...actions)
+    }
 })
-
 </script>
 
 <template>
@@ -94,24 +97,30 @@ const waitTime = computed(() => {
                             {{ $t('steps-tag', { steps: simulateResult.status.step ?? seq.slots.length }) }}
                         </el-tag>
                         <el-tag round type="info">
-                            {{ $t('duration-tag', { duration: formatDuration(waitTime * 1e3, 0) }) }}
+                            {{ $t('macro-duration-tag', { duration: formatDuration(waitTime.macro * 1e3, 0) }) }}
                         </el-tag>
-                        <el-tag round type="info" v-if="seq.source !== undefined">
+                        <el-tag round type="info">
+                            {{ $t('manual-duration-tag', { duration: formatDuration(waitTime.manual * 1e3, 1) }) }}
+                        </el-tag>
+                        <el-tag round v-if="seq.source !== undefined"
+                            :type="seq.source.includes('solver') ? 'success' : 'warning'">
                             {{ $t('source-tag', { typ: String(seq.source), source: $t(String(seq.source)) }) }}
                         </el-tag>
                         <el-tag round type="info" v-if="seq.itemName !== undefined">
                             {{ $t('itemname-tag', { itemName: String(seq.itemName) }) }}
                         </el-tag>
+                        <el-button-group>
+                            <el-button :icon="Upload" size="small" round class="savedqueue-item-button"
+                                @click="emit('load')">
+                                {{ $t('load') }}
+                            </el-button>
+                            <el-button :icon="Delete" size="small" round class="savedqueue-item-button"
+                                @click="emit('delete')">
+                                {{ $t('delete') }}
+                            </el-button>
+                        </el-button-group>
                     </el-space>
                 </el-text>
-                <el-button-group class="operators">
-                    <el-button :icon="Upload" size="small" round class="savedqueue-item-button" @click="emit('load')">
-                        {{ $t('load') }}
-                    </el-button>
-                    <el-button :icon="Delete" size="small" round class="savedqueue-item-button" @click="emit('delete')">
-                        {{ $t('delete') }}
-                    </el-button>
-                </el-button-group>
             </div>
         </div>
     </div>
@@ -135,10 +144,6 @@ const waitTime = computed(() => {
     display: flex;
 }
 
-.operators {
-    margin-left: 8px;
-}
-
 .savedqueue-item-button {
     margin-right: 6px;
 }
@@ -153,7 +158,8 @@ load = 加载
 delete = 删除
 quality-tag = { quality }：{ $quality }
 steps-tag = { steps }：{ $steps }
-duration-tag = 宏耗时：{ $duration }
+macro-duration-tag = 宏耗时：{ $duration }
+manual-duration-tag = 手搓耗时：{ $duration }
 itemname-tag = 物品名：{ $itemName }
 
 # Sources
@@ -171,7 +177,8 @@ load = Load
 delete = Delete
 quality-tag = { quality }: { $quality }
 steps-tag = { steps }: { $steps }
-duration-tag = Macro Duration: { $duration }
+macro-duration-tag = Macro Duration: { $duration }
+manual-duration-tag = Manual Duration: { $duration }
 itemname-tag = Item Name: { $itemName }
 
 # Sources
