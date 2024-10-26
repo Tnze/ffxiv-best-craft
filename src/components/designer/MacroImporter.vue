@@ -51,6 +51,7 @@ function confirm() {
     if (input.trimStart().charAt(0) == "[") {
         try {
             result = parseJson(JSON.parse(input))
+            clarityReport('importJsonSuccess');
         } catch (err) {
             clarityReport('importJsonError');
             ElMessage({
@@ -60,18 +61,24 @@ function confirm() {
             });
             return;
         }
-        clarityReport('importJsonSuccess');
+    } else if (strictMode.value) {
+        try {
+            result = parseMacroStrict(input);
+            clarityReport('importMacroStrictSuccess');
+        } catch (err) {
+            ElMessage({
+                type: 'error',
+                showClose: true,
+                message: fluent.$t('err-parse-strict', { err: String(err) }),
+            });
+            return;
+        }
     } else {
         result = input
             .split(/\/[^\s]+|<wait\.\d+>|\n/)
             .map(v => v.trim())
             .filter(v => v.length > 0)
-            .map(v => {
-                if (v.charAt(0) == '"' && v.charAt(v.length - 1) == '"') {
-                    v = v.substring(1, v.length - 1);
-                }
-                return namesToAction.get(v);
-            })
+            .map(v => namesToAction.get(trimQuotation(v)))
             .filter(v => v != undefined);
         if (result.length == 0) {
             clarityReport('importMacroError');
@@ -113,6 +120,36 @@ function parseJson(result: any): Actions[] {
     })
 }
 
+function parseMacroStrict(input: string): Actions[] {
+    return input.split('\n')
+        .flatMap(v => {
+            const matchResult = /^\/(?:ac(?:tion)?|技能)\s+(?<body>.*)$/g.exec(v)
+            return matchResult ? matchResult.groups!['body'] : []
+        })
+        .map((v, i) => {
+            const cmdBody = v.trim(); // "ACTIONNAME <wait.n>"
+            console.log(cmdBody)
+            const matchResult = /^(?<action>"[^"]+"|\S+)(?:\s+<wait\.\d+>)?$/g.exec(cmdBody);
+            if (matchResult == null || matchResult.groups == undefined) {
+                throw fluent.$t('err-parse-line-error', { n: i + 1 });
+            }
+            const actionName = trimQuotation(matchResult.groups['action']);
+            const action = namesToAction.get(actionName);
+            if (action == undefined) {
+                throw fluent.$t('err-invalid-action', { action: actionName });
+            }
+            return action;
+        });
+}
+
+// '"Reflect"' => 'Reflect'
+function trimQuotation(v: string): string {
+    if (v.charAt(0) == '"' && v.charAt(v.length - 1) == '"') {
+        return v.substring(1, v.length - 1);
+    }
+    return v;
+}
+
 </script>
 
 <template>
@@ -141,6 +178,10 @@ err-parse-json = 尝试解析 JSON 失败：{ $err }
 err-not-an-array = 输入的 JSON 不是一个数组
 err-not-a-string = 元素 { $elem } 不是一个字符串
 err-invalid-action = 未知的技能：{ $action }
+
+err-parse-strict = 严格模式导入宏失败：{ $err }
+err-parse-line-error = 导入第 { $n } 行失败
+
 warn-action-not-found = 没有识别到技能
 recognize-success = 识别成功，一共导入了 { $n } 个技能
 </fluent>
