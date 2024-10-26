@@ -32,6 +32,7 @@ import ActionQueue from "./ActionQueue.vue";
 import StatusBar from "./StatusBar.vue";
 import SolverList from "./solvers/List.vue";
 import MacroExporter from "./MacroExporter.vue";
+import MacroImporter from "./MacroImporter.vue";
 import InitialQualitySetting from './InitialQualitySetting.vue'
 import AttrEnhSelector from "../attr-enhancer/AttrEnhSelector.vue";
 import { useFluent } from 'fluent-vue';
@@ -293,6 +294,11 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                             <MacroExporter :actions="displayActions" />
                         </el-scrollbar>
                     </el-tab-pane>
+                    <el-tab-pane :label="$t('import-macro')" name="import-macro" class="multi-function-area">
+                        <el-scrollbar style="flex: auto;">
+                            <MacroImporter @on-recognized="v => console.log(v)" />
+                        </el-scrollbar>
+                    </el-tab-pane>
                     <el-tab-pane :label="$t('solvers')" name="solver-list" class="multi-function-area">
                         <el-scrollbar style="flex: auto;">
                             <SolverList :init-status="initStatus" :recipe-name="item.name" :can-hq="item.can_be_hq"
@@ -441,6 +447,7 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
 <fluent locale="zh-CN">
 solvers = 求解
 export-macro = 导出
+import-macro = 导入
 attributes-enhance = 食药&装备
 init-quality = 初期品质
 store = 储存
@@ -475,6 +482,7 @@ attributes-requirements = 制作该配方要求：作业精度 ≥ { $craftsmans
 <fluent locale="en-US">
 solvers = Solvers
 export-macro = Export
+import-macro = Import
 attributes-enhance = Medicines & Meals
 init-quality = Quality
 store = Store
