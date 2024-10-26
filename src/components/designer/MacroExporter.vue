@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
-import { ElSpace, ElCard, ElMessage, ElCheckbox } from 'element-plus'
+import { ElSpace, ElCard, ElMessage, ElCheckbox, ElDivider } from 'element-plus'
 import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { isTauri, isWebsite } from '@/libs/Consts';
@@ -70,8 +70,12 @@ const chunkedActions = computed(() => {
     return macros
 })
 
-const copyChunk = async (i: number, macro: string[]) => {
+async function copyChunk(i: number, macro: string[]) {
     const macroText = macro.join('\r\n').replaceAll(/\u2068|\u2069/g, '')
+    copy(macroText, $t('copied-marco', { id: i + 1 }))
+}
+
+async function copy(macroText: string, macroInfo: string) {
     try {
         if (isTauri) {
             let { writeText } = await import('@tauri-apps/plugin-clipboard-manager')
@@ -84,36 +88,43 @@ const copyChunk = async (i: number, macro: string[]) => {
             type: 'success',
             duration: 2000,
             showClose: true,
-            message: $t('copied-marco', { id: i + 1 })
+            message: macroInfo,
         })
     } catch (e: any) {
         ElMessage({
             type: 'error',
             duration: 2000,
             showClose: true,
-            message: $t('copy-failed', { err: String(e) })
+            message: $t('copy-failed', { err: String(e) }),
         })
     }
 }
-
 </script>
 
 <template>
-    <div>
-        <el-checkbox v-model="genOptions.hasNotify" :label="$t('has-notify')" />
-        <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
-        <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
-        <el-checkbox v-if="isWebsite" v-model="oneclickCopy" :label="$t('oneclick-copy')" />
-    </div>
-    <el-space wrap alignment="flex-start">
-        <el-card v-for="(marco, i) in chunkedActions" :class="oneclickCopy ? 'box-card-oneclick' : 'box-card'"
-            shadow="hover" @click="oneclickCopy ? copyChunk(i, marco) : undefined">
-            <span v-for="line in marco">
-                {{ line }}
-                <br />
-            </span>
+    <div style="margin-left: 10px;">
+        <div>
+            <el-checkbox v-model="genOptions.hasNotify" :label="$t('has-notify')" />
+            <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
+            <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
+            <el-checkbox v-if="isWebsite" v-model="oneclickCopy" :label="$t('oneclick-copy')" />
+        </div>
+        <el-space wrap alignment="flex-start">
+            <el-card v-for="(marco, i) in chunkedActions" :class="oneclickCopy ? 'box-card-oneclick' : 'box-card'"
+                shadow="hover" @click="oneclickCopy ? copyChunk(i, marco) : undefined">
+                <code class="box-body">
+                    {{ marco.join('\n') }}
+                </code>
+            </el-card>
+        </el-space>
+        <el-divider />
+        <el-card v-if="actions.length > 0" :class="oneclickCopy ? 'box-card-oneclick' : 'box-card'" shadow="hover"
+            style="width: 300px;" @click="oneclickCopy ? copy(JSON.stringify(actions), $t('copied-json')) : undefined">
+            <code class="box-body">
+                {{ JSON.stringify(actions, undefined, 4) }}
+            </code>
         </el-card>
-    </el-space>
+    </div>
 </template>
 
 <style scoped>
@@ -133,6 +144,10 @@ const copyChunk = async (i: number, macro: string[]) => {
     cursor: copy;
     user-select: none;
 }
+
+.box-body {
+    white-space: pre-wrap;
+}
 </style>
 
 <fluent locale="zh-CN">
@@ -140,6 +155,8 @@ has-notify = 添加完成提示
 has-lock = 锁定宏指令
 avg-size = 长度平均化
 oneclick-copy = 一键复制
+
+copied-json = 已复制 JSON 表达式 到系统剪切板
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
 marco-finished = 宏#{ $id } 已完成！
 copy-failed = 复制失败：{ $err }
@@ -150,6 +167,8 @@ has-notify = Notification
 has-lock = Lock Macro
 avg-size = Equalize
 oneclick-copy = Oneclick Copy
+
+copied-json = Copied JSON expression to system clipboard!
 copied-marco = Copied M#{ $id } to system clipboard!
 marco-finished = M#{ $id } is finished!
 copy-failed = Copy failed: { $err }

@@ -289,7 +289,7 @@ async function handleSolverResult(actions: Actions[], solverName: SequenceSource
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('export-macro')" name="export-macro" class="multi-function-area">
-                        <el-scrollbar style="flex: auto; padding-left: 10px;">
+                        <el-scrollbar style="flex: auto;">
                             <MacroExporter :actions="displayActions" />
                         </el-scrollbar>
                     </el-tab-pane>
