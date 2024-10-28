@@ -228,7 +228,7 @@ const waitTimes = new Map([
 
 const postCastDelay = new Map()
 for (const [action, time] of waitTimes.entries()) {
-    postCastDelay.set(action, time + 0.5)
+    postCastDelay.set(action, time - 0.5)
 }
 
 export const newRecipe = async (
