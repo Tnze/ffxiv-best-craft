@@ -34,7 +34,14 @@ export class BetaXivApiRecipeSource {
         this.language = language
     }
 
-    async recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult> {
+    async recipeTable(
+        page: number,
+        searchName?: string,
+        rlv?: number,
+        craftTypeId?: number,
+        jobLevelMin?: number,
+        jobLevelMax?: number,
+    ): Promise<RecipesSourceResult> {
         const params: Record<string, string> = {
             'fields': 'Icon,ItemResult.Name,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq',
             // 'limit': "100",
@@ -55,6 +62,12 @@ export class BetaXivApiRecipeSource {
         }
         if (craftTypeId != undefined) {
             filters.push(`CraftType=${craftTypeId}`)
+        }
+        if (jobLevelMin != undefined) {
+            filters.push(`RecipeLevelTable.ClassJobLevel>=${jobLevelMin}`)
+        }
+        if (jobLevelMax != undefined) {
+            filters.push(`RecipeLevelTable.ClassJobLevel<=${jobLevelMax}`)
         }
 
         // Fetch
