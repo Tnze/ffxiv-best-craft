@@ -19,7 +19,14 @@ import { Enhancer } from "@/libs/Enhancer";
 
 export interface DataSource {
     sourceType: DataSourceType
-    recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult>
+    recipeTable(
+        page: number,
+        searchName?: string,
+        rlv?: number,
+        craftTypeId?: number,
+        jobLevelMin?: number,
+        jobLevelMax?: number,
+    ): Promise<RecipesSourceResult>
     recipesIngredients(recipeId: number): Promise<ItemWithAmount[]>
     recipeLevelTable(rlv: number): Promise<RecipeLevel>
     recipeInfo?(recipeId: number): Promise<RecipeInfo>

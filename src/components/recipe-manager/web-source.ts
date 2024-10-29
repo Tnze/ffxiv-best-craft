@@ -26,7 +26,14 @@ export class WebSource {
         this.base = base
     }
 
-    async recipeTable(page: number, searchName?: string, rlv?: number, craftTypeId?: number): Promise<RecipesSourceResult> {
+    async recipeTable(
+        page: number,
+        searchName?: string,
+        rlv?: number,
+        craftTypeId?: number,
+        jobLevelMin?: number,
+        jobLevelMax?: number,
+    ): Promise<RecipesSourceResult> {
         if (searchName === undefined) {
             searchName = ""
         }
@@ -39,6 +46,13 @@ export class WebSource {
         }
         if (craftTypeId !== undefined) {
             query.set("craft_type_id", String(craftTypeId));
+        }
+        console.log("job level", jobLevelMin, jobLevelMax)
+        if (jobLevelMin !== undefined) {
+            query.set("job_level_min", String(jobLevelMin));
+        }
+        if (jobLevelMax !== undefined) {
+            query.set("job_level_max", String(jobLevelMax));
         }
 
         const url = new URL("recipe_table", this.base).toString() + '?' + query.toString();

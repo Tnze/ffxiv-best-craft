@@ -48,6 +48,7 @@ const displayTable = ref<RecipeInfo[]>([])
 const isRecipeTableLoading = ref(false)
 const compactLayout = useMediaQuery('screen and (max-width: 500px)')
 const filterCraftType = ref<number>()
+const filterLevel = ref<number>()
 const craftTypeOptions = ref<CraftType[]>([])
 const filterRecipeLevel = ref<number>()
 
@@ -62,7 +63,14 @@ async function updateRecipePage(dataSource: DataSource, pageNumber: number, sear
     // 对于已有缓存的加载会很快，只有较慢的情况才需要显示Loading
     let timer = setTimeout(() => isRecipeTableLoading.value = true, 200)
     try {
-        let promise = dataSource.recipeTable(pageNumber, searching, filterRecipeLevel.value, filterCraftType.value)
+        let promise = dataSource.recipeTable(
+            pageNumber,
+            searching,
+            filterRecipeLevel.value,
+            filterCraftType.value,
+            filterLevel.value ? filterLevel.value * 10 - 9 : undefined,
+            filterLevel.value ? filterLevel.value * 10 : undefined,
+        )
         loadRecipeTableResult = promise
         let { results, totalPages, next } = await promise
         if (loadRecipeTableResult == promise) {
@@ -276,6 +284,11 @@ async function selectRecipeById(recipeId: number) {
                     <el-option v-for="{ id, name } in craftTypeOptions" :key="id" :value="id" :label="name" />
                 </el-select>
             </el-form-item>
+            <el-form-item :label="$t('level')">
+                <el-select v-model="filterLevel" style="width: 200px" @change="triggerSearch" clearable>
+                    <el-option v-for="i in 10" :key="i" :value="i" :label="`${i * 10 - 9} ~ ${i * 10}`" />
+                </el-select>
+            </el-form-item>
             <el-form-item :label="$t('recipe-level')">
                 <el-input-number v-model="filterRecipeLevel" clearable :min="1" :max="799" :step="1" step-strictly
                     :controls="false" @change="triggerSearch" />
@@ -338,6 +351,7 @@ please-wait = 请稍等...
 
 type = 类型
 craft-type = 制作类型
+level = 等级
 name = 名称
 true = 是
 false = 否
@@ -362,6 +376,7 @@ please-wait = Please wait...
 
 type = Type
 craft-type = Craft Type
+level = Level
 name = Name
 true = True
 false = False

@@ -26,7 +26,7 @@ use serde::Serialize;
 mod db;
 use db::{
     craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*,
-    recipes,
+    recipe_level_tables, recipes,
 };
 
 type Result<T> = std::result::Result<T, StatusError>;
@@ -148,6 +148,12 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
     }
     if let Some(craft_type_id) = req.query::<u32>("craft_type_id") {
         query = query.filter(recipes::Column::CraftTypeId.eq(craft_type_id))
+    }
+    if let Some(job_level_min) = req.query::<u32>("job_level_min") {
+        query = query.filter(recipe_level_tables::Column::ClassJobLevel.gte(job_level_min))
+    }
+    if let Some(job_level_max) = req.query::<u32>("job_level_max") {
+        query = query.filter(recipe_level_tables::Column::ClassJobLevel.lte(job_level_max))
     }
     let query = query
         .column_as(recipes::Column::Id, "id")
