@@ -280,18 +280,18 @@ async function selectRecipeById(recipeId: number) {
         <el-form :inline="true">
             <el-form-item :label="$t('craft-type')">
                 <el-select v-model="filterCraftType" clearable :remote-method="craftTypeRemoteMethod"
-                    style="width: 200px" @change="triggerSearch">
+                    style="width: 180px" @change="triggerSearch">
                     <el-option v-for="{ id, name } in craftTypeOptions" :key="id" :value="id" :label="name" />
                 </el-select>
             </el-form-item>
             <el-form-item :label="$t('level')">
-                <el-select v-model="filterLevel" style="width: 200px" @change="triggerSearch" clearable>
+                <el-select v-model="filterLevel" style="width: 100px" @change="triggerSearch" clearable>
                     <el-option v-for="i in 10" :key="i" :value="i" :label="`${i * 10 - 9} ~ ${i * 10}`" />
                 </el-select>
             </el-form-item>
             <el-form-item :label="$t('recipe-level')">
-                <el-input-number v-model="filterRecipeLevel" clearable :min="1" :max="799" :step="1" step-strictly
-                    :controls="false" @change="triggerSearch" />
+                <el-input-number v-model="filterRecipeLevel" style="width: 100px" clearable :min="1" :max="799"
+                    :step="1" step-strictly :controls="false" @change="triggerSearch" />
             </el-form-item>
         </el-form>
         <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row

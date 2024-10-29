@@ -47,7 +47,7 @@ mod rika_tnze_solver;
 
 use db::{
     craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*,
-    recipes,
+    recipe_level_tables, recipes,
 };
 
 /// 创建新的Recipe对象，蕴含了模拟一次制作过程所必要的全部配方信息
@@ -138,6 +138,8 @@ async fn recipe_table(
     search_name: String,
     craft_type_id: Option<i32>,
     recipe_level: Option<i32>,
+    job_level_min: Option<i32>,
+    job_level_max: Option<i32>,
     app_state: tauri::State<'_, AppState>,
     app_handle: tauri::AppHandle,
 ) -> Result<(Vec<RecipeInfo>, u64), String> {
@@ -156,6 +158,12 @@ async fn recipe_table(
     }
     if let Some(craft_type_id) = craft_type_id {
         query = query.filter(recipes::Column::CraftTypeId.eq(craft_type_id))
+    }
+    if let Some(job_level_min) = job_level_min {
+        query = query.filter(recipe_level_tables::Column::ClassJobLevel.gte(job_level_min))
+    }
+    if let Some(job_level_max) = job_level_max {
+        query = query.filter(recipe_level_tables::Column::ClassJobLevel.lte(job_level_max))
     }
     let paginate = query
         .column_as(recipes::Column::Id, "id")
