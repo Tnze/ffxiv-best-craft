@@ -188,48 +188,43 @@ export enum Actions {
 }
 
 const waitTimes = new Map([
-    [Actions.BasicSynthesis, 3],
-    [Actions.BasicTouch, 3],
-    [Actions.MastersMend, 3],
-    [Actions.HastyTouch, 3],
-    [Actions.RapidSynthesis, 3],
-    [Actions.Observe, 3],
-    [Actions.TricksOfTheTrade, 3],
-    [Actions.WasteNot, 2],
-    [Actions.Veneration, 2],
-    [Actions.StandardTouch, 3],
-    [Actions.GreatStrides, 2],
-    [Actions.Innovation, 2],
-    [Actions.FinalAppraisal, 2],
-    [Actions.WasteNotII, 2],
-    [Actions.ByregotsBlessing, 3],
-    [Actions.PreciseTouch, 3],
-    [Actions.MuscleMemory, 3],
-    [Actions.CarefulSynthesis, 3],
-    [Actions.Manipulation, 2],
-    [Actions.PrudentTouch, 3],
-    [Actions.Reflect, 3],
-    [Actions.PreparatoryTouch, 3],
-    [Actions.Groundwork, 3],
-    [Actions.DelicateSynthesis, 3],
-    [Actions.IntensiveSynthesis, 3],
-    [Actions.TrainedEye, 3],
-    [Actions.AdvancedTouch, 3],
-    [Actions.PrudentSynthesis, 3],
-    [Actions.TrainedFinesse, 3],
-    [Actions.CarefulObservation, 3],
-    [Actions.HeartAndSoul, 3],
-    [Actions.RefinedTouch, 3],
-    [Actions.DaringTouch, 3],
-    [Actions.ImmaculateMend, 3],
-    [Actions.QuickInnovation, 3],
-    [Actions.TrainedPerfection, 3],
+    [Actions.BasicSynthesis, 2.17],
+    [Actions.BasicTouch, 2.17],
+    [Actions.MastersMend, 2.17],
+    [Actions.HastyTouch, 2.17],
+    [Actions.RapidSynthesis, 2.17],
+    [Actions.Observe, 2.17],
+    [Actions.TricksOfTheTrade, 2.17],
+    [Actions.WasteNot, 1.07],
+    [Actions.Veneration, 1.07],
+    [Actions.StandardTouch, 2.17],
+    [Actions.GreatStrides, 1.07],
+    [Actions.Innovation, 1.07],
+    [Actions.FinalAppraisal, 1.07],
+    [Actions.WasteNotII, 1.07],
+    [Actions.ByregotsBlessing, 2.17],
+    [Actions.PreciseTouch, 2.17],
+    [Actions.MuscleMemory, 2.17],
+    [Actions.CarefulSynthesis, 2.17],
+    [Actions.Manipulation, 1.07],
+    [Actions.PrudentTouch, 2.17],
+    [Actions.Reflect, 2.17],
+    [Actions.PreparatoryTouch, 2.17],
+    [Actions.Groundwork, 2.17],
+    [Actions.DelicateSynthesis, 2.17],
+    [Actions.IntensiveSynthesis, 2.17],
+    [Actions.TrainedEye, 2.17],
+    [Actions.AdvancedTouch, 2.17],
+    [Actions.PrudentSynthesis, 2.17],
+    [Actions.TrainedFinesse, 2.17],
+    [Actions.CarefulObservation, 2.17],
+    [Actions.HeartAndSoul, 2.17],
+    [Actions.RefinedTouch, 2.17],
+    [Actions.DaringTouch, 2.17],
+    [Actions.ImmaculateMend, 2.17],
+    [Actions.QuickInnovation, 2.17],
+    [Actions.TrainedPerfection, 2.17],
 ])
-
-const postCastDelay = new Map()
-for (const [action, time] of waitTimes.entries()) {
-    postCastDelay.set(action, time - 0.5)
-}
 
 export const newRecipe = async (
     rlv: number,
@@ -326,12 +321,12 @@ export async function craftPointsList(status: Status, actions: Actions[]): Promi
 };
 
 export function calcWaitTime(...actions: Actions[]): number {
-    return actions.map(v => waitTimes.get(v) ?? 0)
+    return actions.map(v => Math.ceil(waitTimes.get(v) ?? 0))
         .reduce((acc, v) => acc + v, 0)
 }
 
 export function calcPostCastTime(...actions: Actions[]): number {
-    return actions.map(v => postCastDelay.get(v) ?? 0)
+    return actions.map(v => waitTimes.get(v) ?? 0)
         .reduce((acc, v) => acc + v, 0)
 }
 
