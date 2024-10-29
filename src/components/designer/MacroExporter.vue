@@ -60,7 +60,7 @@ const chunkedActions = computed(() => {
     if (genOptions.hasLock)
         maxLinesPerChunk--
     const minChunks = Math.ceil(props.actions.length / maxLinesPerChunk);
-    const size = props.actions.length / minChunks || 14;
+    const size = Math.ceil(props.actions.length / minChunks);
     for (let sec = 0; sec < minChunks; sec++) {
         let section;
         if (genOptions.avgSize) {
