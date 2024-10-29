@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive, ref, watchEffect } from 'vue';
 import { ElSpace, ElCard, ElMessage, ElCheckbox, ElDivider } from 'element-plus'
 import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
@@ -32,9 +32,25 @@ const oneclickCopy = ref(true); // 一键复制
 
 const genOptions = reactive({
     hasNotify: true, // 宏执行完成是否提示
+    hasNotifyIndeterminate: true, // 自动确定是否添加完成提示
     hasLock: false, // 添加锁定宏语句
     avgSize: true, // 让每个宏的长度尽量相同
 })
+
+// 自动确认是否添加完成提示
+watchEffect(() => {
+    if (genOptions.hasNotifyIndeterminate) {
+        let maxLinesPerChunk = 15
+        if (genOptions.hasLock)
+            maxLinesPerChunk--;
+        // hasNotify == 0
+        const minChunks1 = Math.ceil(props.actions.length / maxLinesPerChunk);
+        // hasNotify == 1
+        maxLinesPerChunk--;
+        const minChunks2 = Math.ceil(props.actions.length / maxLinesPerChunk);
+        genOptions.hasNotify = minChunks1 == minChunks2;
+    }
+});
 
 const chunkedActions = computed(() => {
     const macros = []
@@ -108,7 +124,8 @@ async function copy(macroText: string, macroInfo: string) {
 <template>
     <div style="margin-left: 10px;">
         <div>
-            <el-checkbox v-model="genOptions.hasNotify" :label="$t('has-notify')" />
+            <el-checkbox v-model="genOptions.hasNotify" :indeterminate="genOptions.hasNotifyIndeterminate"
+                @change="genOptions.hasNotifyIndeterminate = false" :label="$t('has-notify')" />
             <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
             <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
             <el-checkbox v-if="isWebsite" v-model="oneclickCopy" :label="$t('oneclick-copy')" />
