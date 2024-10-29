@@ -185,7 +185,7 @@ copy-failed = 复制失败：{ $err }
 
 <fluent locale="en-US">
 has-notify = Notification
-has-lock = Lock Macro
+has-lock = Macro Lock
 avg-size = Equalize
 oneclick-copy = Oneclick Copy
 

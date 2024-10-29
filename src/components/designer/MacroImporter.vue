@@ -159,7 +159,7 @@ function trimQuotation(v: string): string {
         <el-button type="primary" @click="confirm" :disabled="inputText.length == 0">
             {{ $t('confirm') }}
         </el-button>
-        <el-checkbox v-model="strictMode" label="严格模式" />
+        <el-checkbox v-model="strictMode" :label="$t('strict-mode')" />
         <el-switch v-model="strictMode" />
     </el-space>
 </template>
@@ -173,6 +173,7 @@ function trimQuotation(v: string): string {
 <fluent locale="zh-CN">
 auto-recognize = 粘贴自动识别
 confirm = 确认
+strict-mode = 严格模式
 
 err-parse-json = 尝试解析 JSON 失败：{ $err }
 err-not-an-array = 输入的 JSON 不是一个数组
@@ -184,4 +185,24 @@ err-parse-line-error = 导入第 { $n } 行失败
 
 warn-action-not-found = 没有识别到技能
 recognize-success = 识别成功，一共导入了 { $n } 个技能
+</fluent>
+
+<fluent locale="en-US">
+auto-recognize = Paste macros or JSON here
+confirm = Confirm
+strict-mode = Strict mode
+
+err-parse-json = Try parsing JSON failed: { $err }
+err-not-an-array = Input JSON is not an array
+err-not-a-string = Element { $elem } is not a string
+err-invalid-action = Invalid action: { $action }
+
+err-parse-strict = Try parsing in strict mode failed: { $err }
+err-parse-line-error = Parsing line { $n } failed
+
+warn-action-not-found = No action is found
+recognize-success = Recognize successed, { $n ->
+    [one] one action is
+    *[other] {$n} actions are
+} imported
 </fluent>
