@@ -57,6 +57,10 @@ const chunkedActions = computed(() => {
         if (genOptions.hasLock)
             lines.push(`/mlock`)
         for (let action of section) {
+            // 将冒进替换成仓促
+            if (action == Actions.DaringTouch) {
+                action = Actions.HastyTouch;
+            }
             let actionName = $t(action.replaceAll('_', '-'))
             if (actionName.includes(' ')) {
                 actionName = `"${actionName}"`
