@@ -132,6 +132,7 @@ if (isTauri) {
             </el-form-item>
             <el-form-item :label="$t('feedback')">
                 <el-link href="https://pd.qq.com/s/al6b5xo69" target="_blank">QQ频道</el-link>
+                <el-link href="https://qm.qq.com/q/YMujBifn6G" target="_blank">QQ群聊</el-link>
             </el-form-item>
             <el-form-item :label="$t('source')">
                 <el-link href="https://gitee.com/Tnze/ffxiv-best-craft" target="_blank">Gitee</el-link>
@@ -194,7 +195,7 @@ system-lang = 跟随系统
 version-number = 版本号
 tauri = Tauri
 developer = 作者
-feedback = 反馈
+feedback = 反馈 / 聊天
 license = 许可
 source = 源代码
 donate = 捐赠
