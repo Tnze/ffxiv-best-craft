@@ -17,15 +17,16 @@
 -->
 
 <script setup lang="ts">
-import { onMounted, ref, watch, watchEffect } from 'vue';
+import { h, onMounted, ref, watch, watchEffect } from 'vue';
 import { useColorMode, usePreferredLanguages, useCssVar, useMediaQuery } from '@vueuse/core';
-import { ElConfigProvider, ElIcon } from 'element-plus';
+import { ElConfigProvider, ElIcon, ElMessage } from 'element-plus';
 import { Operation } from '@element-plus/icons-vue'
 import { useFluent } from 'fluent-vue';
 import { isTauri } from './libs/Consts';
 if (isTauri) {
     var pkgTauriFs = import('@tauri-apps/plugin-fs')
     var pkgTauri = import("@tauri-apps/api/core")
+    var pkgTauriPath = import("@tauri-apps/api/path")
 }
 
 import Menu from '@/components/Menu.vue';
@@ -82,14 +83,23 @@ loadStorages()
 
 async function writeJson(name: string, jsonStr: string) {
     if (isTauri) {
-        const { BaseDirectory, writeTextFile } = await pkgTauriFs
+        const { BaseDirectory, writeTextFile, exists, mkdir } = await pkgTauriFs;
+        const { appDataDir } = await pkgTauriPath;
         try {
-            await writeTextFile(name, jsonStr, { baseDir: BaseDirectory.AppData })
+            const appDataPath = await appDataDir();
+            if (!await exists(appDataPath)) {
+                await mkdir(appDataPath, { recursive: true });
+            }
+            await writeTextFile(name, jsonStr, { baseDir: BaseDirectory.AppData });
         } catch (err) {
-            console.error(err)
+            console.error(err);
+            ElMessage({
+                type: 'error',
+                message: $t('error-save-file', { file: name, err: String(err) })
+            });
         }
     } else {
-        window.localStorage.setItem(name, jsonStr)
+        window.localStorage.setItem(name, jsonStr);
     }
 }
 settingStore.$subscribe(() => writeJson('settings.json', settingStore.toJson))
@@ -317,3 +327,7 @@ watchEffect(async () => {
     }
 }
 </style>
+
+<fluent locale="zh-CN">
+error-save-file = 保存文件 { $file } 失败：{ $err }
+</fluent>
