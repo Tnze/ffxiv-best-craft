@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { h, onMounted, ref, watch, watchEffect } from 'vue';
+import { onMounted, ref, watch, watchEffect } from 'vue';
 import { useColorMode, usePreferredLanguages, useCssVar, useMediaQuery } from '@vueuse/core';
 import { ElConfigProvider, ElIcon, ElMessage } from 'element-plus';
 import { Operation } from '@element-plus/icons-vue'
@@ -330,4 +330,12 @@ watchEffect(async () => {
 
 <fluent locale="zh-CN">
 error-save-file = 保存文件 { $file } 失败：{ $err }
+</fluent>
+
+<fluent locale="en-US">
+error-save-file = Failed when saving { $file }: { $err }
+</fluent>
+    
+<fluent locale="ja-JP">
+error-save-file = ファイル { $file } の保存に失敗しました: { $err }
 </fluent>
