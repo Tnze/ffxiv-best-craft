@@ -47,7 +47,6 @@ export class WebSource {
         if (craftTypeId !== undefined) {
             query.set("craft_type_id", String(craftTypeId));
         }
-        console.log("job level", jobLevelMin, jobLevelMax)
         if (jobLevelMin !== undefined) {
             query.set("job_level_min", String(jobLevelMin));
         }

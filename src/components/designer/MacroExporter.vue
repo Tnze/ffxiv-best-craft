@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref, watchEffect } from 'vue';
-import { ElSpace, ElCard, ElMessage, ElCheckbox, ElDivider } from 'element-plus'
+import { ElSpace, ElCard, ElMessage, ElCheckbox, ElDivider, ElSelectV2, ElInputNumber, ElForm, ElFormItem } from 'element-plus'
 import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { isTauri, isWebsite } from '@/libs/Consts';
@@ -32,10 +32,16 @@ const oneclickCopy = ref(true); // 一键复制
 
 const genOptions = reactive({
     hasNotify: true, // 宏执行完成是否提示
+    notifySound: "<se.1>", // 宏完成提示音
     hasNotifyIndeterminate: true, // 自动确定是否添加完成提示
     hasLock: false, // 添加锁定宏语句
     avgSize: true, // 让每个宏的长度尽量相同
+    waitTimeInc: 0, // 增加等待时间(秒)
 })
+
+const notifySoundOptions = Array.from({ length: 16 })
+    .map((_, i) => ({ value: `<se.${i + 1}>`, label: `<se.${i + 1}>` }));
+notifySoundOptions.splice(0, 0, { value: `<se>`, label: `<se>` })
 
 // 自动确认是否添加完成提示
 watchEffect(() => {
@@ -81,10 +87,11 @@ const chunkedActions = computed(() => {
             if (actionName.includes(' ')) {
                 actionName = `"${actionName}"`
             }
-            lines.push(`/ac ${actionName} <wait.${calcWaitTime(action)}>`)
+            lines.push(`/ac ${actionName} <wait.${calcWaitTime(action) + genOptions.waitTimeInc}>`)
         }
-        if (genOptions.hasNotify)
-            lines.push(`/e ${$t('marco-finished', { id: sec + 1 })}<se.1>`)
+        if (genOptions.hasNotify) {
+            lines.push(`/e ${$t('marco-finished', { id: sec + 1 })}${genOptions.notifySound}`);
+        }
         macros.push(lines)
     }
     return macros
@@ -123,13 +130,25 @@ async function copy(macroText: string, macroInfo: string) {
 
 <template>
     <div style="margin-left: 10px;">
-        <div>
-            <el-checkbox v-model="genOptions.hasNotify" :indeterminate="genOptions.hasNotifyIndeterminate"
-                @change="genOptions.hasNotifyIndeterminate = false" :label="$t('has-notify')" />
-            <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
-            <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
-            <el-checkbox v-if="isWebsite" v-model="oneclickCopy" :label="$t('oneclick-copy')" />
-        </div>
+        <el-form :inline="true">
+            <el-form-item>
+                <el-checkbox v-model="genOptions.hasNotify" :indeterminate="genOptions.hasNotifyIndeterminate"
+                    @change="genOptions.hasNotifyIndeterminate = false" :label="$t('has-notify')" />
+                <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
+                <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
+                <el-checkbox v-if="isWebsite" v-model="oneclickCopy" :label="$t('oneclick-copy')" />
+            </el-form-item>
+            <el-form-item :label="$t('notify-sound')">
+                <el-select-v2 v-model="genOptions.notifySound" :disabled="!genOptions.hasNotify"
+                    :options="notifySoundOptions" size="small" style="width: 200px" />
+            </el-form-item>
+            <el-form-item :label="$t('wait-time-inc')">
+                <el-input-number v-model="genOptions.waitTimeInc" size="small" controls-position="right" :min="0"
+                    :step-strictly="true" />
+            </el-form-item>
+        </el-form>
+        <!-- <el-space wrap :size="20" style="width: 100%">
+        </el-space> -->
         <el-space wrap alignment="flex-start">
             <el-card v-for="(marco, i) in chunkedActions" :class="oneclickCopy ? 'box-card-oneclick' : 'box-card'"
                 shadow="hover" @click="oneclickCopy ? copyChunk(i, marco) : undefined">
@@ -176,6 +195,8 @@ has-notify = 添加完成提示
 has-lock = 锁定宏指令
 avg-size = 长度平均化
 oneclick-copy = 一键复制
+notify-sound = 提示音
+wait-time-inc = 增加等待时间
 
 copied-json = 已复制 JSON 表达式 到系统剪切板
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
