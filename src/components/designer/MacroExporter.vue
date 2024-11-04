@@ -130,14 +130,14 @@ async function copy(macroText: string, macroInfo: string) {
 
 <template>
     <div style="margin-left: 10px;">
+        <div>
+            <el-checkbox v-model="genOptions.hasNotify" :indeterminate="genOptions.hasNotifyIndeterminate"
+                @change="genOptions.hasNotifyIndeterminate = false" :label="$t('has-notify')" />
+            <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
+            <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
+            <el-checkbox v-if="isWebsite" v-model="oneclickCopy" :label="$t('oneclick-copy')" />
+        </div>
         <el-form :inline="true">
-            <el-form-item>
-                <el-checkbox v-model="genOptions.hasNotify" :indeterminate="genOptions.hasNotifyIndeterminate"
-                    @change="genOptions.hasNotifyIndeterminate = false" :label="$t('has-notify')" />
-                <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
-                <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
-                <el-checkbox v-if="isWebsite" v-model="oneclickCopy" :label="$t('oneclick-copy')" />
-            </el-form-item>
             <el-form-item :label="$t('notify-sound')">
                 <el-select-v2 v-model="genOptions.notifySound" :disabled="!genOptions.hasNotify"
                     :options="notifySoundOptions" size="small" style="width: 200px" />
@@ -147,8 +147,6 @@ async function copy(macroText: string, macroInfo: string) {
                     :step-strictly="true" />
             </el-form-item>
         </el-form>
-        <!-- <el-space wrap :size="20" style="width: 100%">
-        </el-space> -->
         <el-space wrap alignment="flex-start">
             <el-card v-for="(marco, i) in chunkedActions" :class="oneclickCopy ? 'box-card-oneclick' : 'box-card'"
                 shadow="hover" @click="oneclickCopy ? copyChunk(i, marco) : undefined">
