@@ -207,6 +207,8 @@ has-notify = Notification
 has-lock = Macro Lock
 avg-size = Equalize
 oneclick-copy = Oneclick Copy
+notify-sound = Beep type
+wait-time-inc = Increase waiting time
 
 copied-json = Copied JSON expression to system clipboard!
 copied-marco = Copied M#{ $id } to system clipboard!
