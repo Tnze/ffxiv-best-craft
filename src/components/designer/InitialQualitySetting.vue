@@ -83,7 +83,7 @@ watchEffect(() => {
 
 <template>
     <div style="display: flex; flex-direction: column;">
-        <el-form label-width="auto">
+        <el-form label-width="auto" @submit.prevent>
             <el-form-item label=" ">
                 <el-radio-group v-model="inputType">
                     <el-radio-button value="manully">{{ $t('manully-input') }}</el-radio-button>
