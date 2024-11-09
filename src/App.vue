@@ -150,8 +150,13 @@ watchEffect(async () => {
         // Ask the rust side if the window transparent.
         shouldBeTransparent = await invoke('set_theme', { isDark });
     }
-    bgColor.value = shouldBeTransparent ? 'transparent' : 'var(--el-bg-color)';
-    bgMainColor.value = shouldBeTransparent ? '#2e2e2e80' : '#242424';
+    if (shouldBeTransparent) {
+        bgColor.value = 'transparent';
+        bgMainColor.value = isDark ? '#2e2e2e80' : '#FFFFFF80';
+    } else {
+        bgColor.value = 'var(--el-bg-color)';
+        bgMainColor.value = isDark ? '#242424' : 'var(--el-bg-color-page)';
+    }
 });
 </script>
 
@@ -225,12 +230,17 @@ watchEffect(async () => {
 
 .el-dialog {
     --el-dialog-border-radius: var(--el-border-radius-round) !important;
-    box-shadow: none !important;
-    border: 1px solid var(--el-border-color-light);
+    --el-dialog-bg-color: var(--tnze-main-bg-color) !important;
+    /* box-shadow: none !important; */
+    border: 2px solid var(--el-border-color);
 }
 
 .el-card {
     --el-card-border-radius: var(--el-border-radius-base) !important;
+}
+
+.el-popper {
+    --el-popper-border-radius: 10px;
 }
 
 :root {
@@ -240,13 +250,13 @@ watchEffect(async () => {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    --el-color-primary: #868226;
-    --el-color-primary-light-3: #c3b55d;
-    --el-color-primary-light-5: #c1c27b;
-    --el-color-primary-light-7: #fdffc6;
-    --el-color-primary-light-8: #c0b9a2;
-    --el-color-primary-light-9: #bdbcae;
-    --el-color-primary-dark-2: #4f4316;
+    --el-color-primary: #ff6d00;
+    --el-color-primary-light-3: #ff7900;
+    --el-color-primary-light-5: #ff8500;
+    --el-color-primary-light-7: #ff9100;
+    --el-color-primary-light-8: #ff9e00;
+    --el-color-primary-light-9: #ff9e00;
+    --el-color-primary-dark-2: #f25c54;
     --el-fill-color-blank: transparent;
 
     --el-border-radius-base: 10px;
@@ -259,13 +269,13 @@ watchEffect(async () => {
 }
 
 :root.dark {
-    --el-color-primary: #ba8d33;
-    --el-color-primary-light-3: #796621;
-    --el-color-primary-light-5: #604e1d;
-    --el-color-primary-light-7: #463b1a;
-    --el-color-primary-light-8: #332a16;
-    --el-color-primary-light-9: #18222c;
-    --el-color-primary-dark-2: #c99f52;
+    --el-color-primary: #9d4edd;
+    --el-color-primary-light-3: #7b2cbf;
+    --el-color-primary-light-5: #5a189a;
+    --el-color-primary-light-7: #3c096c;
+    --el-color-primary-light-8: #240046;
+    --el-color-primary-light-9: #240046;
+    --el-color-primary-dark-2: #7b2cbf;
     /* --el-bg-color: var(--tnze-main-bg-color) !important; */
 }
 </style>
@@ -349,7 +359,7 @@ watchEffect(async () => {
 .main {
     height: 100%;
     padding: 0 10px;
-    background-color: rgba(246, 246, 246, 0.5);
+    /* background-color: rgba(246, 246, 246, 0.5); */
     flex: auto;
 
     transition: margin-left 0.5s;
