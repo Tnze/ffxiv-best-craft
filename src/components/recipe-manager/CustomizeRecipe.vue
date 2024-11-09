@@ -53,25 +53,25 @@ const autoLoad = ref(true);
 const autoLoadLoading = ref(false);
 
 const defaultRecipe = {
-    rlv: 610,
+    rlv: 710,
     job_level: 90,
-    difficulty: 4143,
-    quality: 8199,
-    durability: 60,
+    difficulty: 7500,
+    quality: 16500,
+    durability: 70,
     conditions_flag: 15,
 };
 const defaultRecipeLevel = {
-    class_job_level: 90,
+    class_job_level: 100,
     stars: 0,
-    suggested_craftsmanship: 0,
-    suggested_control: 0,
-    difficulty: 4143,
-    quality: 8199,
-    progress_divider: 180,
-    quality_divider: 180,
-    progress_modifier: 100,
-    quality_modifier: 100,
-    durability: 60,
+    suggested_craftsmanship: 4740,
+    suggested_control: null,
+    difficulty: 7500,
+    quality: 15000,
+    progress_divider: 170,
+    quality_divider: 150,
+    progress_modifier: 90,
+    quality_modifier: 75,
+    durability: 70,
     conditions_flag: 15,
 };
 
@@ -229,12 +229,12 @@ function confirm(simulatorMode: boolean) {
                 </el-form-item>
             </el-form>
             <span>
-                <el-button type="default" @click="router.back()">{{
-                    $t('back')
-                }}</el-button>
-                <el-button type="primary" @click="confirm(false)">{{
-                    $t('confirm')
-                }}</el-button>
+                <el-button type="default" @click="router.back()">
+                    {{ $t('back') }}
+                </el-button>
+                <el-button type="primary" @click="confirm(false)">
+                    {{ $t('confirm') }}
+                </el-button>
                 <el-button
                     type="primary"
                     v-if="customRecipe.conditions_flag != 15"
