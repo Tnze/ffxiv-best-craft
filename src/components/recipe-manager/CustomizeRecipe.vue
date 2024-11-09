@@ -54,7 +54,7 @@ const autoLoadLoading = ref(false);
 
 const defaultRecipe = {
     rlv: 710,
-    job_level: 90,
+    job_level: 100,
     difficulty: 7500,
     quality: 16500,
     durability: 70,
