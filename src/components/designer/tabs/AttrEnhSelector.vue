@@ -23,20 +23,15 @@ import {
     ElSelectV2,
     ElSwitch,
     ElDivider,
+    ElSpace,
 } from 'element-plus';
-import {
-    onMounted,
-    reactive,
-    watch,
-    ref,
-    defineAsyncComponent,
-    Ref,
-} from 'vue';
-import { Enhancer } from '@/libs/Enhancer';
+import { onMounted, reactive, watch, ref, defineAsyncComponent, h } from 'vue';
+import { Enhancer, calculateEnhancedAttributs } from '@/libs/Enhancer';
 import { useFluent } from 'fluent-vue';
-import { Jobs } from '@/libs/Craft';
+import { Attributes, Jobs } from '@/libs/Craft';
 import settingStore from '@/stores/settings';
 import { DataSource } from '../../recipe-manager/source';
+import AttrEnhSelectorOption from './AttrEnhSelectorOption.vue';
 
 const Gearset = defineAsyncComponent(() => import('@/components/Gearset.vue'));
 
@@ -58,6 +53,7 @@ const 专家之证: Enhancer = {
 const props = defineProps<{
     modelValue: Enhancer[];
     job?: Jobs;
+    attributs?: Attributes;
 }>();
 
 const emits = defineEmits<{
@@ -78,7 +74,6 @@ async function loadMealsAndMedicine(ds: Promise<DataSource>) {
                 v = await datasource.mealsTable((i += 1));
                 meals.value = meals.value.concat(v.results);
             } while (i < v.totalPages);
-            fix_enhancer_name(meals);
         })();
     }
     if (datasource.medicineTable) {
@@ -90,28 +85,23 @@ async function loadMealsAndMedicine(ds: Promise<DataSource>) {
                 v = await datasource.medicineTable((i += 1));
                 medicine.value = medicine.value.concat(v.results);
             } while (i < v.totalPages);
-            fix_enhancer_name(medicine);
         })();
-    }
-}
-
-function fix_enhancer_name(group: Ref<Enhancer[] | undefined>) {
-    if (group.value == undefined) return;
-    for (const i in group.value) {
-        const oldName = group.value[i].name;
-        if (oldName.endsWith(' HQ')) {
-            group.value[i].name = oldName.replace(' HQ', ' \uE03C');
-        }
     }
 }
 
 function enhancerToOptions(enhancers: Enhancer[] | undefined) {
     return (
         enhancers
-            ?.map(value => ({
-                label: value.name,
-                value,
-            }))
+            ?.map(value => {
+                const newName = value.name + (value.is_hq ? ' \uE03C' : '');
+                return {
+                    label: newName,
+                    value: {
+                        ...value,
+                        name: newName, // el-select needs a unique key
+                    },
+                };
+            })
             .reverse() ?? []
     );
 }
@@ -129,6 +119,16 @@ watch(enhancers, e => {
     if (e.soulOfTheCrafter) result.push(专家之证);
     emits('update:modelValue', result);
 });
+
+function EnhIncComponent(props: {
+    inc: { cm: number; ct: number; cp: number };
+}) {
+    const list = [];
+    if (props.inc.cm) list.push($t('craftsmanship') + ` +${props.inc.cm}`);
+    if (props.inc.ct) list.push($t('control') + ` +${props.inc.ct}`);
+    if (props.inc.cp) list.push($t('craft-point') + ` +${props.inc.cp}`);
+    return h(ElSpace, list);
+}
 </script>
 
 <template>
@@ -136,27 +136,52 @@ watch(enhancers, e => {
         <el-form-item :label="$t('meal')">
             <el-select-v2
                 v-model="enhancers.meal"
-                :placeholder="$t('none')"
                 :options="enhancerToOptions(meals)"
                 value-key="name"
                 clearable
                 remote
                 :loading="!meals"
+                :item-height="50"
+            >
+                <template #default="{ item }">
+                    <AttrEnhSelectorOption :enh="item.value" />
+                </template>
+            </el-select-v2>
+            <EnhIncComponent
+                class="enhnacer-info"
+                v-if="enhancers.meal && attributs"
+                :inc="calculateEnhancedAttributs(attributs, enhancers.meal)[1]"
             />
         </el-form-item>
         <el-form-item :label="$t('medicine')">
             <el-select-v2
                 v-model="enhancers.potion"
-                :placeholder="$t('none')"
                 :options="enhancerToOptions(medicine)"
                 value-key="name"
                 clearable
                 remote
                 :loading="!medicine"
+                :item-height="50"
+            >
+                <template #default="{ item }">
+                    <AttrEnhSelectorOption :enh="item.value" />
+                </template>
+            </el-select-v2>
+            <EnhIncComponent
+                class="enhnacer-info"
+                v-if="enhancers.potion && attributs"
+                :inc="
+                    calculateEnhancedAttributs(attributs, enhancers.potion)[1]
+                "
             />
         </el-form-item>
         <el-form-item :label="$t('soul-of-the-crafter')">
             <el-switch v-model="enhancers.soulOfTheCrafter" />
+            <EnhIncComponent
+                class="enhnacer-info"
+                v-if="enhancers.soulOfTheCrafter && attributs"
+                :inc="calculateEnhancedAttributs(attributs, 专家之证)[1]"
+            />
         </el-form-item>
     </el-form>
     <template v-if="job != undefined">
@@ -178,19 +203,21 @@ watch(enhancers, e => {
 .enhancer-table {
     width: 100%;
 }
+
+.enhnacer-info {
+    color: var(--el-color-info);
+    font-size: var(--el-font-size-extra-small);
+    margin-inline-start: 8px;
+}
 </style>
 
 <fluent locale="zh-CN">
-name = 名称
-none = 无
 meal = 食物
 medicine = 药水
 soul-of-the-crafter = 专家之证
 </fluent>
 
 <fluent locale="en-US">
-name = Name
-none = None
 meal = Meal
 medicine = Potion
 soul-of-the-crafter = 专家之证

@@ -335,9 +335,10 @@ export class BetaXivApiRecipeSource {
             row_id: number;
             fields: {
                 Name: string;
+                'LevelItem@as(raw)': number;
                 ItemAction: any;
             };
-        }>('Item', query, 'Name,ItemAction');
+        }>('Item', query, 'Name,ItemAction,LevelItem@as(raw)');
         const itemFoodsMap = new Map(itemFoods);
         return {
             totalPages: 1,
@@ -348,7 +349,8 @@ export class BetaXivApiRecipeSource {
                 return (
                     itemFood?.map(v => ({
                         ...v,
-                        name: item.fields.Name + v.name,
+                        name: item.fields.Name,
+                        level: item.fields['LevelItem@as(raw)'],
                     })) ?? []
                 );
             }),
@@ -387,8 +389,8 @@ export class BetaXivApiRecipeSource {
         name: string,
         itemFood: any,
     ): [Enhancer, Enhancer] {
-        const enh = <Enhancer>{ name };
-        const enhHq = <Enhancer>{ name: name + ' HQ' };
+        const enh = <Enhancer>{ name, is_hq: false };
+        const enhHq = <Enhancer>{ name, is_hq: true };
         for (let i = 0; i < 3; i++) {
             switch (itemFood['BaseParam@as(raw)'][i]) {
                 case 11: // CP

@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -17,12 +17,13 @@
 -->
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import hoverUrl from '@/assets/icons/icona_frame_tex.png';
-import { Jobs, Actions } from '@/libs/Craft';
+import { Actions, Jobs } from '@/libs/Craft';
+import { displayJobKey } from './injectionkeys';
 
 const props = defineProps<{
-    job: Jobs;
+    job?: Jobs;
     action: Actions;
     disabled?: boolean;
     active?: boolean;
@@ -32,12 +33,15 @@ const props = defineProps<{
     opacity?: number;
 }>();
 
+const job = inject(displayJobKey)!;
+
 const iconUrl = computed(() => {
     let actionName: string = props.action;
     if (actionName.endsWith('_fail'))
         actionName = actionName.slice(0, actionName.length - '_fail'.length);
+    const jobName = props.job ?? job.value;
     return new URL(
-        `../../assets/icons/${props.job.toLowerCase()}/${actionName}.png`,
+        `../../assets/icons/${jobName.toLowerCase()}/${actionName}.png`,
         import.meta.url,
     ).href;
 });

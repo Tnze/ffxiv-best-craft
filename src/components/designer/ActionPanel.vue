@@ -21,7 +21,6 @@ import { ElPopover } from 'element-plus';
 import { computed, reactive, watchEffect } from 'vue';
 import Action from './Action.vue';
 import {
-    Jobs,
     Actions,
     Status,
     allowedList,
@@ -31,7 +30,6 @@ import {
 } from '@/libs/Craft';
 
 const props = defineProps<{
-    job: Jobs;
     status?: Status;
     simulatorMode?: boolean;
     disable?: boolean;
@@ -215,7 +213,6 @@ watchEffect(() => {
             >
                 <template #reference>
                     <Action
-                        :job="job"
                         class="item"
                         @click="emit('clickedAction', action)"
                         @mouseover="emit('mousehoverAction', action)"
@@ -251,7 +248,3 @@ watchEffect(() => {
     margin: calc(-48px * 0.07);
 }
 </style>
-
-<fluent locale="zh-CN">
-action-panel = 技能面板
-</fluent>

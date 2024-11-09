@@ -55,7 +55,7 @@ import {
     SimulateResult,
 } from '@/libs/Craft';
 import { read_solver } from '@/libs/Solver';
-import { Enhancer } from '@/libs/Enhancer';
+import { calculateEnhancedAttributs, Enhancer } from '@/libs/Enhancer';
 import useDesignerStore from '@/stores/designer';
 
 import AttrEnhSelector from './tabs/AttrEnhSelector.vue';
@@ -89,8 +89,9 @@ const { $t } = useFluent();
 const displayJob = inject(displayJobKey) as Ref<Jobs>;
 const foldMultiFunctionArea = useMediaQuery('screen and (max-width: 480px)');
 watch(foldMultiFunctionArea, fold => {
-    if (!fold && activeTab.value == 'action-panel')
+    if (!fold && activeTab.value == 'action-panel') {
         activeTab.value = 'attributes-enhance';
+    }
 });
 
 const actionQueueElem = ref();
@@ -99,23 +100,11 @@ const { height: actionQueueHeight } = useElementSize(actionQueueElem);
 // 食物和药水效果
 const attributesEnhancers = ref<Enhancer[]>([]);
 const enhancedAttributes = computed<Attributes>(() => {
-    let { level, craftsmanship, control, craft_points } = props.attributes;
-    const sum = (prev: number, curr: number) => prev + curr;
-    craftsmanship += attributesEnhancers.value
-        .filter(v => v.cm && v.cm_max)
-        .map(v =>
-            Math.floor(Math.min((craftsmanship * v.cm!) / 100, v.cm_max!)),
-        )
-        .reduce(sum, 0);
-    control += attributesEnhancers.value
-        .filter(v => v.ct && v.ct_max)
-        .map(v => Math.floor(Math.min((control * v.ct!) / 100, v.ct_max!)))
-        .reduce(sum, 0);
-    craft_points += attributesEnhancers.value
-        .filter(v => v.cp && v.cp_max)
-        .map(v => Math.floor(Math.min((craft_points * v.cp!) / 100, v.cp_max!)))
-        .reduce(sum, 0);
-    return { level, craftsmanship, control, craft_points };
+    const [attr, _] = calculateEnhancedAttributs(
+        props.attributes,
+        ...attributesEnhancers.value,
+    );
+    return attr;
 });
 
 // Attribution Alert
@@ -369,7 +358,6 @@ async function handleSolverResult(
                     >
                         <ActionPanel
                             @clicked-action="pushAction"
-                            :job="displayJob"
                             :status="activeRst?.status"
                         />
                     </el-tab-pane>
@@ -397,6 +385,7 @@ async function handleSolverResult(
                             <AttrEnhSelector
                                 v-model="attributesEnhancers"
                                 :job="isCustomRecipe ? undefined : displayJob"
+                                :attributs="attributes"
                             />
                         </el-scrollbar>
                     </el-tab-pane>

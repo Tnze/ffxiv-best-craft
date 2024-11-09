@@ -43,7 +43,7 @@ import { Enhancer } from '@/libs/Enhancer';
 import StatusBarVue from './StatusBar.vue';
 import ActionPanelVue from './ActionPanel.vue';
 import ActionQueueVue from './ActionQueue.vue';
-import AttrEnhSelector from '../attr-enhancer/AttrEnhSelector.vue';
+import AttrEnhSelector from './tabs/AttrEnhSelector.vue';
 import { displayJobKey } from './injectionkeys';
 
 const props = defineProps<{
