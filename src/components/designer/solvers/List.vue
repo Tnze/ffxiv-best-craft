@@ -17,61 +17,82 @@
 -->
 
 <script setup lang="ts">
-import { Ref, ref } from 'vue'
-import { ElAlert, ElScrollbar, ElButton, ElLink, ElMessage, ElMessageBox, ElTabs, ElTabPane } from 'element-plus'
-import { Actions, Status } from "@/libs/Craft"
-import { supported as solverSupported, rika_solve, rika_solve_tnzever } from '@/libs/Solver'
-import { formatDuration } from '@/libs/Utils'
+import { Ref, ref } from 'vue';
+import {
+    ElAlert,
+    ElScrollbar,
+    ElButton,
+    ElLink,
+    ElMessage,
+    ElMessageBox,
+    ElTabs,
+    ElTabPane,
+} from 'element-plus';
+import { Actions, Status } from '@/libs/Craft';
+import {
+    supported as solverSupported,
+    rika_solve,
+    rika_solve_tnzever,
+} from '@/libs/Solver';
+import { formatDuration } from '@/libs/Utils';
 import { useFluent } from 'fluent-vue';
-import { Solver } from './DpSolver.vue'
-import DpSolver from './DpSolver.vue'
-import DfsSolver from './DfsSolver.vue'
-import RaphaelSolver from './RaphaelSolver.vue'
+import { Solver } from './DpSolver.vue';
+import DpSolver from './DpSolver.vue';
+import DfsSolver from './DfsSolver.vue';
+import RaphaelSolver from './RaphaelSolver.vue';
 import { SequenceSource } from '../types';
 
-const { $t } = useFluent()
+const { $t } = useFluent();
 
 const props = defineProps<{
-    initStatus: Status,
-    recipeName: string,
-    canHq: boolean
-}>()
+    initStatus: Status;
+    recipeName: string;
+    canHq: boolean;
+}>();
 
 const emits = defineEmits<{
-    (event: 'solverLoad', solver: Solver): void
-    (event: 'solverResult', result: Actions[], solverName: SequenceSource): void
-}>()
+    (event: 'solverLoad', solver: Solver): void;
+    (
+        event: 'solverResult',
+        result: Actions[],
+        solverName: SequenceSource,
+    ): void;
+}>();
 
-const activeNames = ref<string>("raphael")
+const activeNames = ref<string>('raphael');
 
-async function runSimpleSolver(solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>) {
+async function runSimpleSolver(
+    solverId: SequenceSource,
+    solvingRunningState: Ref<Boolean>,
+    solver: (initStatus: Status) => Promise<Actions[]>,
+) {
     const msg1 = ElMessage({
         showClose: true,
         duration: 0,
         type: 'info',
         message: $t('solving-info', { solverName: $t(solverId) }),
-    })
+    });
     try {
-        solvingRunningState.value = true
-        const startTime = new Date().getTime()
-        const result = await solver(props.initStatus)
-        const stopTime = new Date().getTime()
+        solvingRunningState.value = true;
+        const startTime = new Date().getTime();
+        const result = await solver(props.initStatus);
+        const stopTime = new Date().getTime();
 
         const msgArgs = {
             solveTime: formatDuration(stopTime - startTime),
             solverName: $t(solverId),
-        }
+        };
         if (result.length > 0) {
             ElMessage({
                 type: 'success',
                 message: $t('simple-solver-finished', msgArgs),
-            })
-            emits('solverResult', result, solverId)
+            });
+            emits('solverResult', result, solverId);
         } else {
             ElMessage({
                 type: 'error',
                 message: $t('simple-solver-finished-no-result', msgArgs),
-            })
+            });
         }
     } catch (err) {
         ElMessage({
@@ -79,80 +100,115 @@ async function runSimpleSolver(solverId: SequenceSource, solvingRunningState: Re
             duration: 0,
             type: 'error',
             message: $t('error-with', { err: $t(err as string) }),
-        })
-        console.error(err)
+        });
+        console.error(err);
     } finally {
-        solvingRunningState.value = false
-        msg1.close()
+        solvingRunningState.value = false;
+        msg1.close();
     }
 }
 
-
-const rikaIsSolving = ref(false)
+const rikaIsSolving = ref(false);
 
 async function runRikaSolver() {
-    if (props.initStatus.recipe.rlv < 560 || props.initStatus.recipe.difficulty < 70) {
+    if (
+        props.initStatus.recipe.rlv < 560 ||
+        props.initStatus.recipe.difficulty < 70
+    ) {
         try {
             await ElMessageBox.confirm(
                 $t('rika-solver-warning'),
                 $t('warning'),
-                { type: 'warning' },
-            )
+                {
+                    type: 'warning',
+                },
+            );
         } catch (_err) {
-            return
+            return;
         }
     }
-    await runSimpleSolver(SequenceSource.BFSSolver, rikaIsSolving, rika_solve)
+    await runSimpleSolver(SequenceSource.BFSSolver, rikaIsSolving, rika_solve);
 }
 
-const tnzeVerRikaIsSolving = ref(false)
-const tnzeVerRikaUseManipulation = ref(true)
-const tnzeVerRikaUseObserve = ref(true)
-const tnzeVerRikaReduceSteps = ref(true)
+const tnzeVerRikaIsSolving = ref(false);
+const tnzeVerRikaUseManipulation = ref(true);
+const tnzeVerRikaUseObserve = ref(true);
+const tnzeVerRikaReduceSteps = ref(true);
 
 async function runTnzeVerRikaSolver() {
-    await runSimpleSolver(SequenceSource.TnzeVerRikaSolver, tnzeVerRikaIsSolving,
-        initStatus => rika_solve_tnzever(
-            initStatus,
-            tnzeVerRikaUseManipulation.value,
-            8,
-            tnzeVerRikaUseObserve.value,
-            tnzeVerRikaReduceSteps.value
-        )
-    )
+    await runSimpleSolver(
+        SequenceSource.TnzeVerRikaSolver,
+        tnzeVerRikaIsSolving,
+        initStatus =>
+            rika_solve_tnzever(
+                initStatus,
+                tnzeVerRikaUseManipulation.value,
+                8,
+                tnzeVerRikaUseObserve.value,
+                tnzeVerRikaReduceSteps.value,
+            ),
+    );
 }
-
-
 </script>
 
 <template>
     <el-scrollbar class="container">
         <template v-if="!solverSupported">
-            <el-alert type="error" :title="$t('web-worker-not-avaliable')" show-icon :closable="false" />
+            <el-alert
+                type="error"
+                :title="$t('web-worker-not-avaliable')"
+                show-icon
+                :closable="false"
+            />
             <br />
         </template>
         <el-tabs v-model="activeNames">
             <el-tab-pane :label="$t('raphael-solver')" name="raphael">
-                <RaphaelSolver :init-status="initStatus" :recipe-name="recipeName"
-                    @run-simple-solver="runSimpleSolver" />
+                <RaphaelSolver
+                    :init-status="initStatus"
+                    :recipe-name="recipeName"
+                    @run-simple-solver="runSimpleSolver"
+                />
             </el-tab-pane>
             <el-tab-pane :label="$t('dp-solver')" name="dp">
-                <DpSolver :init-status="initStatus" :recipe-name="recipeName" @run-simple-solver="runSimpleSolver" />
+                <DpSolver
+                    :init-status="initStatus"
+                    :recipe-name="recipeName"
+                    @run-simple-solver="runSimpleSolver"
+                />
             </el-tab-pane>
-            <el-tab-pane :label="$t('dfs-solver')" name="dfs" style="flex: auto;">
-                <DfsSolver :can-hq="canHq" @run-simple-solver="runSimpleSolver" />
+            <el-tab-pane
+                :label="$t('dfs-solver')"
+                name="dfs"
+                style="flex: auto"
+            >
+                <DfsSolver
+                    :can-hq="canHq"
+                    @run-simple-solver="runSimpleSolver"
+                />
             </el-tab-pane>
             <el-tab-pane :label="$t('bfs-solver')" name="bfs">
                 <i18n path="rika-solver-info" tag="span" class="solver-info">
                     <template #rikaRepoLink="{ designByRika }">
-                        <el-link type="primary" href="https://github.com/RikaKagurasaka/xiv_craft_solver"
-                            target="_blank">
+                        <el-link
+                            type="primary"
+                            href="https://github.com/RikaKagurasaka/xiv_craft_solver"
+                            target="_blank"
+                        >
                             {{ designByRika }}
                         </el-link>
                     </template>
                     <template #startButton>
-                        <el-button type="primary" @click="runRikaSolver" :loading="rikaIsSolving">
-                            {{ rikaIsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
+                        <el-button
+                            type="primary"
+                            @click="runRikaSolver"
+                            :loading="rikaIsSolving"
+                        >
+                            {{
+                                rikaIsSolving
+                                    ? $t('simple-solver-solving')
+                                    : $t('solver-start')
+                            }}
                         </el-button>
                     </template>
                     <template #rikaSaidLine="{ rikaSaid }">

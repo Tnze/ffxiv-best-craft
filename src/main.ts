@@ -14,20 +14,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import { fluent } from './fluent'
-import { ElLoading } from "element-plus";
-import { router } from './router'
-import ElTableInfiniteScroll from "el-table-infinite-scroll";
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import { fluent } from './fluent';
+import { ElLoading } from 'element-plus';
+import { router } from './router';
+import ElTableInfiniteScroll from 'el-table-infinite-scroll';
 
-import 'element-plus/theme-chalk/dark/css-vars.css'
-import 'element-plus/es/components/message/style/css'
-import 'element-plus/es/components/message-box/style/css'
+import 'element-plus/theme-chalk/dark/css-vars.css';
+import 'element-plus/es/components/message/style/css';
+import 'element-plus/es/components/message-box/style/css';
 
-import App from './App.vue'
+import App from './App.vue';
 
-const pinia = createPinia()
+const pinia = createPinia();
 
 createApp(App)
     .directive('tnze-loading', ElLoading.directive)
@@ -35,4 +35,4 @@ createApp(App)
     .use(router)
     .use(fluent)
     .use(ElTableInfiniteScroll)
-    .mount('#app')
+    .mount('#app');

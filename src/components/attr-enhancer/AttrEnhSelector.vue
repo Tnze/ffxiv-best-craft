@@ -17,20 +17,33 @@
 -->
 
 <script setup lang="ts">
-import { ElForm, ElFormItem, ElSelectV2, ElSwitch, ElDivider } from 'element-plus';
-import { onMounted, reactive, watch, ref, defineAsyncComponent, Ref } from 'vue'
+import {
+    ElForm,
+    ElFormItem,
+    ElSelectV2,
+    ElSwitch,
+    ElDivider,
+} from 'element-plus';
+import {
+    onMounted,
+    reactive,
+    watch,
+    ref,
+    defineAsyncComponent,
+    Ref,
+} from 'vue';
 import { Enhancer } from '@/libs/Enhancer';
 import { useFluent } from 'fluent-vue';
 import { Jobs } from '@/libs/Craft';
-import settingStore from '@/stores/settings'
+import settingStore from '@/stores/settings';
 import { DataSource } from '../recipe-manager/source';
 
-const Gearset = defineAsyncComponent(() => import('@/components/Gearset.vue'))
+const Gearset = defineAsyncComponent(() => import('@/components/Gearset.vue'));
 
 const { $t } = useFluent();
 const setting = settingStore();
-const meals = ref<Enhancer[]>()
-const medicine = ref<Enhancer[]>()
+const meals = ref<Enhancer[]>();
+const medicine = ref<Enhancer[]>();
 
 const 专家之证: Enhancer = {
     cm: 100,
@@ -39,44 +52,46 @@ const 专家之证: Enhancer = {
     ct_max: 20,
     cp: 100,
     cp_max: 15,
-    name: $t('soul-of-the-crafter')
-}
+    name: $t('soul-of-the-crafter'),
+};
 
 const props = defineProps<{
-    modelValue: Enhancer[],
-    job?: Jobs
-}>()
+    modelValue: Enhancer[];
+    job?: Jobs;
+}>();
 
 const emits = defineEmits<{
-    (event: 'update:modelValue', v: Enhancer[]): void
-}>()
+    (event: 'update:modelValue', v: Enhancer[]): void;
+}>();
 
-onMounted(async () => loadMealsAndMedicine(setting.getDataSource))
-watch(() => setting.getDataSource, loadMealsAndMedicine)
+onMounted(async () => loadMealsAndMedicine(setting.getDataSource));
+watch(() => setting.getDataSource, loadMealsAndMedicine);
 
 async function loadMealsAndMedicine(ds: Promise<DataSource>) {
-    let datasource = await ds
+    let datasource = await ds;
     if (datasource.mealsTable) {
         (async () => {
-            let i = 0, v;
-            meals.value = []
+            let i = 0,
+                v;
+            meals.value = [];
             do {
-                v = await datasource.mealsTable(i += 1)
-                meals.value = meals.value.concat(v.results)
-            } while (i < v.totalPages)
+                v = await datasource.mealsTable((i += 1));
+                meals.value = meals.value.concat(v.results);
+            } while (i < v.totalPages);
             fix_enhancer_name(meals);
-        })()
+        })();
     }
     if (datasource.medicineTable) {
         (async () => {
-            let i = 0, v;
-            medicine.value = []
+            let i = 0,
+                v;
+            medicine.value = [];
             do {
-                v = await datasource.medicineTable(i += 1)
-                medicine.value = medicine.value.concat(v.results)
-            } while (i < v.totalPages)
+                v = await datasource.medicineTable((i += 1));
+                medicine.value = medicine.value.concat(v.results);
+            } while (i < v.totalPages);
             fix_enhancer_name(medicine);
-        })()
+        })();
     }
 }
 
@@ -84,44 +99,61 @@ function fix_enhancer_name(group: Ref<Enhancer[] | undefined>) {
     if (group.value == undefined) return;
     for (const i in group.value) {
         const oldName = group.value[i].name;
-        if (oldName.endsWith(" HQ")) {
-            group.value[i].name = oldName.replace(" HQ", ' \uE03C');
+        if (oldName.endsWith(' HQ')) {
+            group.value[i].name = oldName.replace(' HQ', ' \uE03C');
         }
     }
 }
 
 function enhancerToOptions(enhancers: Enhancer[] | undefined) {
-    return enhancers?.map(value => ({
-        label: value.name,
-        value
-    })).reverse() ?? []
+    return (
+        enhancers
+            ?.map(value => ({
+                label: value.name,
+                value,
+            }))
+            .reverse() ?? []
+    );
 }
 
 const enhancers = reactive<{
-    meal: Enhancer | null,
-    potion: Enhancer | null,
-    soulOfTheCrafter: boolean,
-}>({ meal: null, potion: null, soulOfTheCrafter: false })
+    meal: Enhancer | null;
+    potion: Enhancer | null;
+    soulOfTheCrafter: boolean;
+}>({ meal: null, potion: null, soulOfTheCrafter: false });
 
 watch(enhancers, e => {
-    const result = []
-    if (e.meal != null) result.push(e.meal)
-    if (e.potion != null) result.push(e.potion)
-    if (e.soulOfTheCrafter) result.push(专家之证)
-    emits('update:modelValue', result)
-})
-
+    const result = [];
+    if (e.meal != null) result.push(e.meal);
+    if (e.potion != null) result.push(e.potion);
+    if (e.soulOfTheCrafter) result.push(专家之证);
+    emits('update:modelValue', result);
+});
 </script>
 
 <template>
     <el-form :model="enhancers" label-width="auto">
         <el-form-item :label="$t('meal')">
-            <el-select-v2 v-model="enhancers.meal" :placeholder="$t('none')" :options="enhancerToOptions(meals)"
-                value-key="name" clearable remote :loading="!meals" />
+            <el-select-v2
+                v-model="enhancers.meal"
+                :placeholder="$t('none')"
+                :options="enhancerToOptions(meals)"
+                value-key="name"
+                clearable
+                remote
+                :loading="!meals"
+            />
         </el-form-item>
         <el-form-item :label="$t('medicine')">
-            <el-select-v2 v-model="enhancers.potion" :placeholder="$t('none')" :options="enhancerToOptions(medicine)"
-                value-key="name" clearable remote :loading="!medicine" />
+            <el-select-v2
+                v-model="enhancers.potion"
+                :placeholder="$t('none')"
+                :options="enhancerToOptions(medicine)"
+                value-key="name"
+                clearable
+                remote
+                :loading="!medicine"
+            />
         </el-form-item>
         <el-form-item :label="$t('soul-of-the-crafter')">
             <el-switch v-model="enhancers.soulOfTheCrafter" />

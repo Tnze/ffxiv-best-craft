@@ -17,16 +17,25 @@
 -->
 
 <script setup lang="ts">
-import { ElMenu, ElMenuItem, ElIcon } from 'element-plus'
-import { Notebook, Suitcase, Edit, Setting, Guide } from '@element-plus/icons-vue'
+import { ElMenu, ElMenuItem, ElIcon } from 'element-plus';
+import {
+    Notebook,
+    Suitcase,
+    Edit,
+    Setting,
+    Guide,
+} from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 
-const router = useRouter()
-
+const router = useRouter();
 </script>
 
 <template>
-    <el-menu :default-active="router.currentRoute.value.path" :router="true" :collapse="false">
+    <el-menu
+        :default-active="router.currentRoute.value.path"
+        :router="true"
+        :collapse="false"
+    >
         <el-menu-item index="/welcome">
             <el-icon>
                 <guide />

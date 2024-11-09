@@ -1,4 +1,4 @@
-<!-- 
+<!--
     This file is part of BestCraft.
     Copyright (C) 2024  Tnze
 
@@ -17,120 +17,175 @@
 -->
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, toRaw } from 'vue'
-import { VueDraggable } from 'vue-draggable-plus'
+import { ref, computed, watch, nextTick, toRaw } from 'vue';
+import { VueDraggable } from 'vue-draggable-plus';
 import { ElIcon } from 'element-plus';
-import { Loading, CircleClose } from "@element-plus/icons-vue";
+import { Loading, CircleClose } from '@element-plus/icons-vue';
 
 import { Actions, Jobs } from '@/libs/Craft';
-import { formatDuration } from "@/libs/Utils";
-import Action from './Action.vue'
+import { formatDuration } from '@/libs/Utils';
+import Action from './Action.vue';
 
 interface Slot {
-    id: number
-    action: Actions
+    id: number;
+    action: Actions;
 }
 
 const props = defineProps<{
-    list: Slot[]
-    solverResult?: Slot[]
-    loadingSolverResult?: boolean
-    previewSolver?: boolean
-    errList?: { pos: number, err: string }[]
-    job: Jobs,
-    disabled?: boolean
-    noHover?: boolean
-    clearable?: boolean
-}>()
+    list: Slot[];
+    solverResult?: Slot[];
+    loadingSolverResult?: boolean;
+    previewSolver?: boolean;
+    errList?: { pos: number; err: string }[];
+    job: Jobs;
+    disabled?: boolean;
+    noHover?: boolean;
+    clearable?: boolean;
+}>();
 
 const emit = defineEmits<{
-    (event: 'update:list', v: Slot[]): void
-}>()
+    (event: 'update:list', v: Slot[]): void;
+}>();
 
-const isDragging = ref(false)
-const solverAdds = computed(() => props.solverResult?.slice(props.list.length) ?? [])
+const isDragging = ref(false);
+const solverAdds = computed(
+    () => props.solverResult?.slice(props.list.length) ?? [],
+);
 const dragOptions = computed(() => {
     return {
         animation: 150,
-        group: "description",
+        group: 'description',
         disabled: props.disabled || false,
-        ghostClass: "ghost"
-    }
-})
+        ghostClass: 'ghost',
+    };
+});
 const listBinded = computed({
     get: () => props.list,
-    set: (v: Slot[]) => emit('update:list', toRaw(v.filter(x => x != undefined)))
-})
+    set: (v: Slot[]) =>
+        emit('update:list', toRaw(v.filter(x => x != undefined))),
+});
 
 let startTime = 0;
 let stopTimer: NodeJS.Timeout | null = null;
-const solveTime = ref(0) // in micro second
-const hideSolverResult = ref(false)
-watch(() => props.loadingSolverResult, (newVal, oldVal) => {
-    if (newVal) {
-        startTime = new Date().getTime()
-        stopTimer = setTimeout(() => { hideSolverResult.value = true }, 500)
-    } else if (oldVal) {
-        solveTime.value = new Date().getTime() - startTime
-        if (stopTimer) clearTimeout(stopTimer)
-        hideSolverResult.value = false
-    }
-})
+const solveTime = ref(0); // in micro second
+const hideSolverResult = ref(false);
+watch(
+    () => props.loadingSolverResult,
+    (newVal, oldVal) => {
+        if (newVal) {
+            startTime = new Date().getTime();
+            stopTimer = setTimeout(() => {
+                hideSolverResult.value = true;
+            }, 500);
+        } else if (oldVal) {
+            solveTime.value = new Date().getTime() - startTime;
+            if (stopTimer) clearTimeout(stopTimer);
+            hideSolverResult.value = false;
+        }
+    },
+);
 
 function removeAction(id: number) {
     if (!props.disabled) {
-        const index = listBinded.value.findIndex(elem => elem.id == id)
+        const index = listBinded.value.findIndex(elem => elem.id == id);
         if (index != -1) {
-            const list = toRaw(props.list).slice()
-            list.splice(index, 1)
-            listBinded.value = list
+            const list = toRaw(props.list).slice();
+            list.splice(index, 1);
+            listBinded.value = list;
         }
     }
 }
 
 function clear() {
-    listBinded.value = []
+    listBinded.value = [];
 }
 
 function calcEffect(index: number): 'normal' | 'red-cross' | 'black' {
-    if (props.errList?.find((v) => v.pos == index) !== undefined)
-        return 'black'
-    else if (props.list[index].action.endsWith('_fail'))
-        return 'red-cross'
-    return 'normal'
+    if (props.errList?.find(v => v.pos == index) !== undefined) return 'black';
+    else if (props.list[index].action.endsWith('_fail')) return 'red-cross';
+    return 'normal';
 }
-
 </script>
 
 <template>
     <div class="action-queue-container" @click.stop.prevent.right>
-        <VueDraggable v-model="listBinded" v-bind="dragOptions" target=".sort-target" @start="isDragging = true"
-            @end="nextTick(() => isDragging = false)">
-            <TransitionGroup class="sort-target" type="transition" tag="div"
-                :name="!isDragging ? 'flip-list' : undefined">
-                <div v-for="(element, index) in listBinded" class="list-group-item" :key="element.id">
-                    <Action class="action-icon" :job="job" :action="element.action" :effect="calcEffect(index)" disabled
-                        @click.stop.prevent.right="removeAction(element.id)" @click="removeAction(element.id)"
-                        :no-hover="noHover" />
+        <VueDraggable
+            v-model="listBinded"
+            v-bind="dragOptions"
+            target=".sort-target"
+            @start="isDragging = true"
+            @end="nextTick(() => (isDragging = false))"
+        >
+            <TransitionGroup
+                class="sort-target"
+                type="transition"
+                tag="div"
+                :name="!isDragging ? 'flip-list' : undefined"
+            >
+                <div
+                    v-for="(element, index) in listBinded"
+                    class="list-group-item"
+                    :key="element.id"
+                >
+                    <Action
+                        class="action-icon"
+                        :job="job"
+                        :action="element.action"
+                        :effect="calcEffect(index)"
+                        disabled
+                        @click.stop.prevent.right="removeAction(element.id)"
+                        @click="removeAction(element.id)"
+                        :no-hover="noHover"
+                    />
                 </div>
-                <div v-if="!hideSolverResult" v-for="elem in solverAdds" class="list-group-item" :key="elem.id">
-                    <Action class="action-icon" :job="job" :action="elem.action" no-hover effect="sunken"
-                        :opacity="previewSolver ? 1 : 0.4" disabled />
+                <div
+                    v-if="!hideSolverResult"
+                    v-for="elem in solverAdds"
+                    class="list-group-item"
+                    :key="elem.id"
+                >
+                    <Action
+                        class="action-icon"
+                        :job="job"
+                        :action="elem.action"
+                        no-hover
+                        effect="sunken"
+                        :opacity="previewSolver ? 1 : 0.4"
+                        disabled
+                    />
                 </div>
-                <div v-if="loadingSolverResult" class="list-group-item following-icon" key="loading-icon">
-                    <el-icon class="is-loading following-icon-inner" :size="19.2">
+                <div
+                    v-if="loadingSolverResult"
+                    class="list-group-item following-icon"
+                    key="loading-icon"
+                >
+                    <el-icon
+                        class="is-loading following-icon-inner"
+                        :size="19.2"
+                    >
                         <Loading />
                     </el-icon>
                 </div>
-                <div v-if="clearable && listBinded.length > 0" class="list-group-item following-icon" key="clear-icon"
-                    @click="clear">
+                <div
+                    v-if="clearable && listBinded.length > 0"
+                    class="list-group-item following-icon"
+                    key="clear-icon"
+                    @click="clear"
+                >
                     <el-icon class="following-icon-inner" :size="19.2">
                         <CircleClose />
                     </el-icon>
                 </div>
             </TransitionGroup>
-            <span v-if="!loadingSolverResult && solverResult && solverResult.length > 0" class="solve-time">
-                {{ $t('solved-in', { 'time': formatDuration(solveTime) }) }}
+            <span
+                v-if="
+                    !loadingSolverResult &&
+                    solverResult &&
+                    solverResult.length > 0
+                "
+                class="solve-time"
+            >
+                {{ $t('solved-in', { time: formatDuration(solveTime) }) }}
             </span>
         </VueDraggable>
     </div>
@@ -189,7 +244,6 @@ function calcEffect(index: number): 'normal' | 'red-cross' | 'black' {
     color: var(--el-text-color-secondary);
 }
 </style>
-
 
 <fluent locale="zh-CN">
 solved-in = 求解完成（{ $time }）

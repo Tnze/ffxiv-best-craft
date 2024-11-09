@@ -22,19 +22,23 @@ import { useFluent } from 'fluent-vue';
 import { Jobs } from '@/libs/Craft';
 import useFcoSimulatorStore from '../stores/simulator';
 
-const { $t } = useFluent()
+const { $t } = useFluent();
 const store = useFcoSimulatorStore();
 
 const options: SelectOption[] = Object.values(Jobs).map(j => ({
     label: String(j),
     value: j,
-}))
+}));
 
 const renderTag: SelectRenderLabel = (option, selected) => {
-    return $t(option.label as string)
-}
+    return $t(option.label as string);
+};
 </script>
 
 <template>
-    <n-select v-model:value="store.job" :options="options" :render-label="renderTag"></n-select>
+    <n-select
+        v-model:value="store.job"
+        :options="options"
+        :render-label="renderTag"
+    ></n-select>
 </template>

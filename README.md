@@ -12,21 +12,21 @@ This is a crafting simulator with solver algorithms for Final Fantasy XIV(FF14).
 
 推荐配置 Recommended setup:
 
-- 操作系统 OS: Windows 11, MacOS, Linux
-- 内存 Memory: 16GiB
+-   操作系统 OS: Windows 11, MacOS, Linux
+-   内存 Memory: 16GiB
 
 最低配置 Required setup:
 
-- 操作系统 OS: Windows 10
-- 内存 Memory: 8GiB
+-   操作系统 OS: Windows 10
+-   内存 Memory: 8GiB
 
 下载地址：[Gitee](https://gitee.com/Tnze/ffxiv-best-craft/releases) (Windows Only)  
 Download: [Github](https://github.com/Tnze/ffxiv-best-craft/releases/latest)
 
-- Windows用户请下载 `.msi` 或者 `.nsis` 安装包
-- Mac 用户请下载`dmg`或`app`文件
-- Debian 及 Ubuntu 用户请下载`AppImage`或`deb`文件
-- 其他 Linux 用户请下载`AppImage`文件
+-   Windows用户请下载 `.msi` 或者 `.nsis` 安装包
+-   Mac 用户请下载`dmg`或`app`文件
+-   Debian 及 Ubuntu 用户请下载`AppImage`或`deb`文件
+-   其他 Linux 用户请下载`AppImage`文件
 
 ## Develope 开发指引
 

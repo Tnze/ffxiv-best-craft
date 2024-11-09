@@ -21,37 +21,61 @@ import { computed } from 'vue';
 import { Buffs, LimitedActionState } from '@/libs/Craft';
 
 const props = defineProps<{
-    buffs: Buffs
-}>()
+    buffs: Buffs;
+}>();
 
-const fakeBuffs = ['careful_observation_used', 'quick_innovation_used', 'touch_combo_stage', 'observed']
+const fakeBuffs = [
+    'careful_observation_used',
+    'quick_innovation_used',
+    'touch_combo_stage',
+    'observed',
+];
 
-const buffsDisplay = computed<{
-    url: URL,
-    duration: number | undefined
-}[]>(() => {
+const buffsDisplay = computed<
+    {
+        url: URL;
+        duration: number | undefined;
+    }[]
+>(() => {
     return Object.entries(props.buffs)
         .filter(v => !fakeBuffs.includes(v[0]))
-        .filter(v => typeof v[1] === 'number' ? v[1] > 0 : v[1] === LimitedActionState.Active)
+        .filter(v =>
+            typeof v[1] === 'number'
+                ? v[1] > 0
+                : v[1] === LimitedActionState.Active,
+        )
         .map(([buffName, value]) => {
             if (buffName == 'inner_quiet') {
                 return {
-                    url: new URL(`../../assets/buffs/${buffName}_${value as number}.png`, import.meta.url),
-                    duration: undefined
-                }
+                    url: new URL(
+                        `../../assets/buffs/${buffName}_${value as number}.png`,
+                        import.meta.url,
+                    ),
+                    duration: undefined,
+                };
             } else {
                 return {
-                    url: new URL(`../../assets/buffs/${buffName}.png`, import.meta.url),
-                    duration: typeof value !== 'number' ? undefined : value as number,
-                }
+                    url: new URL(
+                        `../../assets/buffs/${buffName}.png`,
+                        import.meta.url,
+                    ),
+                    duration:
+                        typeof value !== 'number'
+                            ? undefined
+                            : (value as number),
+                };
             }
-        })
-})
+        });
+});
 </script>
 
 <template>
     <div class="container">
-        <div class="buff" v-for="buffDisplay in buffsDisplay" :duration="buffDisplay.duration">
+        <div
+            class="buff"
+            v-for="buffDisplay in buffsDisplay"
+            :duration="buffDisplay.duration"
+        >
             <img class="buff-img" :src="buffDisplay.url.href" />
         </div>
     </div>

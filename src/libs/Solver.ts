@@ -14,27 +14,32 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { isTauri } from "./Consts";
-import { Actions, Status } from "./Craft";
-import { clarityReport } from "./Utils";
+import { isTauri } from './Consts';
+import { Actions, Status } from './Craft';
+import { clarityReport } from './Utils';
 
 export let supported = true;
 
 if (isTauri) {
     // Good, the user is using our Desktop edition. Use the native solvers.
-    var pkgTauri = import("@tauri-apps/api/core")
+    var pkgTauri = import('@tauri-apps/api/core');
 } else {
     // They are using the Web edition. Only wasm solvers could be used.
     // Check if the browser supports Web Worker.
-    if (!window.Worker) supported = false
+    if (!window.Worker) supported = false;
     var invokeWasmSolver = (name: string, args: any): Promise<Actions[]> => {
         return new Promise((resolve, reject) => {
-            const worker = new Worker(new URL('./SolverWorker.ts', import.meta.url), { type: 'module' })
-            worker.onmessage = ev => resolve(ev.data)
-            worker.onerror = ev => reject(ev)
-            worker.postMessage({ name, args: JSON.stringify(args) })
-        })
-    }
+            const worker = new Worker(
+                new URL('./SolverWorker.ts', import.meta.url),
+                {
+                    type: 'module',
+                },
+            );
+            worker.onmessage = ev => resolve(ev.data);
+            worker.onerror = ev => reject(ev);
+            worker.postMessage({ name, args: JSON.stringify(args) });
+        });
+    };
 }
 
 export async function create_solver(
@@ -43,82 +48,112 @@ export async function create_solver(
     useManipulation: boolean,
     useObserve: boolean,
 ) {
-    let { invoke } = await pkgTauri
-    return invoke("create_solver", {
+    let { invoke } = await pkgTauri;
+    return invoke('create_solver', {
         status,
         useMuscleMemory,
         useManipulation,
         useObserve,
     });
-};
+}
 
 export async function destroy_solver(status: Status) {
     if (isTauri) {
-        let { invoke } = await pkgTauri
-        invoke("destroy_solver", { status });
+        let { invoke } = await pkgTauri;
+        invoke('destroy_solver', { status });
     } else {
-        throw "solver-doesn-t-exist"
+        throw 'solver-doesn-t-exist';
     }
-};
+}
 
 export async function read_solver(status: Status): Promise<Actions[]> {
     if (isTauri) {
-        let { invoke } = await pkgTauri
-        return invoke("read_solver", { status });
+        let { invoke } = await pkgTauri;
+        return invoke('read_solver', { status });
     } else {
-        throw "solver-doesn-t-exist"
+        throw 'solver-doesn-t-exist';
     }
-};
+}
 
 export async function rika_solve(status: Status): Promise<Actions[]> {
-    clarityReport('runRikaSolver')
+    clarityReport('runRikaSolver');
     if (isTauri) {
-        return (await pkgTauri).invoke("rika_solve", { status })
+        return (await pkgTauri).invoke('rika_solve', { status });
     } else {
-        return invokeWasmSolver("rika_solve", { status })
+        return invokeWasmSolver('rika_solve', { status });
     }
 }
 
-export async function rika_solve_tnzever(status: Status, useManipulation: boolean, useWastNot: number, useObserve: boolean, reduceSteps: boolean): Promise<Actions[]> {
-    clarityReport('runRikaSolverTnzeVer')
+export async function rika_solve_tnzever(
+    status: Status,
+    useManipulation: boolean,
+    useWastNot: number,
+    useObserve: boolean,
+    reduceSteps: boolean,
+): Promise<Actions[]> {
+    clarityReport('runRikaSolverTnzeVer');
     if (isTauri) {
-        let { invoke } = await pkgTauri
-        return invoke("rika_solve_tnzever", { status, useManipulation, useWastNot, useObserve, reduceSteps })
+        let { invoke } = await pkgTauri;
+        return invoke('rika_solve_tnzever', {
+            status,
+            useManipulation,
+            useWastNot,
+            useObserve,
+            reduceSteps,
+        });
     } else {
-        throw "solver-doesn-t-exist"
+        throw 'solver-doesn-t-exist';
     }
 }
 
-export async function dfs_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
-    clarityReport('runDfsSolver')
+export async function dfs_solve(
+    status: Status,
+    depth: number,
+    specialist: boolean,
+): Promise<Actions[]> {
+    clarityReport('runDfsSolver');
     const args = { status, depth, specialist };
     if (isTauri) {
-        return (await pkgTauri).invoke("dfs_solve", args)
+        return (await pkgTauri).invoke('dfs_solve', args);
     } else {
-        return invokeWasmSolver("dfs_solve", args)
+        return invokeWasmSolver('dfs_solve', args);
     }
 }
 
-export async function nq_solve(status: Status, depth: number, specialist: boolean): Promise<Actions[]> {
-    clarityReport('runNqSolver')
+export async function nq_solve(
+    status: Status,
+    depth: number,
+    specialist: boolean,
+): Promise<Actions[]> {
+    clarityReport('runNqSolver');
     const args = { status, depth, specialist };
     if (isTauri) {
-        return (await pkgTauri).invoke("nq_solve", args)
+        return (await pkgTauri).invoke('nq_solve', args);
     } else {
-        return invokeWasmSolver("nq_solve", args)
+        return invokeWasmSolver('nq_solve', args);
     }
 }
 
 /// 基于DP的闲静手法求解
 /// useManipulation: 是否使用掌握
 /// useWastNot: 是否使用俭约（0：不使用，4：使用俭约，8：使用俭约和长期俭约）
-export async function reflect_solve(status: Status, useManipulation: boolean, useWasteNot: number, useObserve: boolean): Promise<Actions[]> {
-    clarityReport('runReflectSolver')
+export async function reflect_solve(
+    status: Status,
+    useManipulation: boolean,
+    useWasteNot: number,
+    useObserve: boolean,
+): Promise<Actions[]> {
+    clarityReport('runReflectSolver');
     if (isTauri) {
-        let { invoke } = await pkgTauri
-        return invoke("reflect_solve", { status, useManipulation, useWasteNot, useObserve })
+        let { invoke } = await pkgTauri;
+        return invoke('reflect_solve', {
+            status,
+            useManipulation,
+            useWasteNot,
+            useObserve,
+        });
     } else {
-        return invokeWasmSolver("reflect_solve", { status, useObserve })
+        return invokeWasmSolver('reflect_solve', { status, useObserve });
     }
 }
 
@@ -132,7 +167,7 @@ export async function raphael_solve(
     adversarial: boolean,
     unsoundBranchPruning: boolean,
 ): Promise<Actions[]> {
-    clarityReport('runRaphaelSolver')
+    clarityReport('runRaphaelSolver');
     const args = {
         status,
         useManipulation,
@@ -144,9 +179,9 @@ export async function raphael_solve(
         unsoundBranchPruning,
     };
     if (isTauri) {
-        let { invoke } = await pkgTauri
-        return invoke("raphael_solve", args)
+        let { invoke } = await pkgTauri;
+        return invoke('raphael_solve', args);
     } else {
-        return invokeWasmSolver("raphael_solve", args)
+        return invokeWasmSolver('raphael_solve', args);
     }
 }

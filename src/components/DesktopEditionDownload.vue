@@ -18,19 +18,27 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ElDescriptions, ElDescriptionsItem, ElLink, ElSpace } from 'element-plus';
+import {
+    ElDescriptions,
+    ElDescriptionsItem,
+    ElLink,
+    ElSpace,
+} from 'element-plus';
 
 interface Versions {
-    version: string,
-    notes: string,
-    pub_date: string,
-    platforms: Record<string, {
-        signature: string,
-        url: string,
-    }>
+    version: string;
+    notes: string;
+    pub_date: string;
+    platforms: Record<
+        string,
+        {
+            signature: string;
+            url: string;
+        }
+    >;
 }
 
-const versions = ref<Versions>()
+const versions = ref<Versions>();
 
 // const endpoints = [
 //     "https://gitee.com/Tnze/ffxiv-best-craft/raw/main/versions.json",
@@ -42,24 +50,42 @@ async function requestVersions() {
     // const requests = endpoints.map(async endpoint => fetch(endpoint, { method: 'GET', mode: 'cors' }));
     // const firstResponse = await Promise.any(requests);
     // versions.value = await firstResponse.json();
-    versions.value = await import('@/../versions.json')
+    versions.value = await import('@/../versions.json');
 }
 
-requestVersions()
-
-
+requestVersions();
 </script>
 
 <template>
     <el-descriptions tnze-loading="versions" :column="1" :border="true">
-        <el-descriptions-item :label="$t('version')">{{ versions?.version ?? $t('loading') }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('version')">{{
+            versions?.version ?? $t('loading')
+        }}</el-descriptions-item>
         <el-descriptions-item :label="$t('date')">
-            {{ versions ? new Date(versions?.pub_date).toLocaleString() : $t('loading') }}
+            {{
+                versions
+                    ? new Date(versions?.pub_date).toLocaleString()
+                    : $t('loading')
+            }}
         </el-descriptions-item>
         <el-descriptions-item :label="$t('download')">
-            <el-space v-if="versions" direction="vertical" alignment="flex-start">
-                <el-link v-for="x, platform in versions.platforms" :href="x.url" target="_blank" type="primary">
-                    {{ (platform.substring(0, 1).toUpperCase() + platform.substring(1)).replaceAll('-', ' ') }}
+            <el-space
+                v-if="versions"
+                direction="vertical"
+                alignment="flex-start"
+            >
+                <el-link
+                    v-for="(x, platform) in versions.platforms"
+                    :href="x.url"
+                    target="_blank"
+                    type="primary"
+                >
+                    {{
+                        (
+                            platform.substring(0, 1).toUpperCase() +
+                            platform.substring(1)
+                        ).replaceAll('-', ' ')
+                    }}
                 </el-link>
             </el-space>
             <template v-else>{{ $t('loading') }}</template>

@@ -18,15 +18,20 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch, watchEffect } from 'vue';
-import { useColorMode, usePreferredLanguages, useCssVar, useMediaQuery } from '@vueuse/core';
+import {
+    useColorMode,
+    usePreferredLanguages,
+    useCssVar,
+    useMediaQuery,
+} from '@vueuse/core';
 import { ElConfigProvider, ElIcon, ElMessage } from 'element-plus';
-import { Operation } from '@element-plus/icons-vue'
+import { Operation } from '@element-plus/icons-vue';
 import { useFluent } from 'fluent-vue';
 import { isTauri } from './libs/Consts';
 if (isTauri) {
-    var pkgTauriFs = import('@tauri-apps/plugin-fs')
-    var pkgTauri = import("@tauri-apps/api/core")
-    var pkgTauriPath = import("@tauri-apps/api/path")
+    var pkgTauriFs = import('@tauri-apps/plugin-fs');
+    var pkgTauri = import('@tauri-apps/api/core');
+    var pkgTauriPath = import('@tauri-apps/api/path');
 }
 
 import Menu from '@/components/Menu.vue';
@@ -34,77 +39,104 @@ import useSettingsStore from '@/stores/settings';
 import useGearsetsStore from '@/stores/gearsets';
 import useDesignerStore from '@/stores/designer';
 import { elementPlusLang, languages } from './lang';
-import { selectLanguage } from './fluent'
+import { selectLanguage } from './fluent';
 import { useRouter } from 'vue-router';
 
-const { $t } = useFluent()
-const colorMode = useColorMode()
-const settingStore = useSettingsStore()
-const gearsetsStore = useGearsetsStore()
-const designerStore = useDesignerStore()
-const preferredLang = usePreferredLanguages()
-const bgColor = useCssVar('--app-bg-color', ref(null))
-const bgMainColor = useCssVar('--tnze-main-bg-color', ref(null))
+const { $t } = useFluent();
+const colorMode = useColorMode();
+const settingStore = useSettingsStore();
+const gearsetsStore = useGearsetsStore();
+const designerStore = useDesignerStore();
+const preferredLang = usePreferredLanguages();
+const bgColor = useCssVar('--app-bg-color', ref(null));
+const bgMainColor = useCssVar('--tnze-main-bg-color', ref(null));
 
-const router = useRouter()
-const showMenu = ref(false)
-const topTitle = ref('')
-const unfoldSidebar = useMediaQuery('screen and (min-width: 760px)')
-watch(router.currentRoute, () => showMenu.value = false)
+const router = useRouter();
+const showMenu = ref(false);
+const topTitle = ref('');
+const unfoldSidebar = useMediaQuery('screen and (min-width: 760px)');
+watch(router.currentRoute, () => (showMenu.value = false));
 
-const lang = ref('zh-CN')
+const lang = ref('zh-CN');
 watchEffect(() => {
-    let settingLang: string | null = settingStore.language
-    if (settingLang == 'system') settingLang = null
-    const systemLang = preferredLang.value.find(v => languages.has(v))
-    lang.value = settingLang ?? systemLang ?? 'zh-CN'
-    selectLanguage(lang.value)
-})
+    let settingLang: string | null = settingStore.language;
+    if (settingLang == 'system') settingLang = null;
+    const systemLang = preferredLang.value.find(v => languages.has(v));
+    lang.value = settingLang ?? systemLang ?? 'zh-CN';
+    selectLanguage(lang.value);
+});
 
 // Check update
 if (isTauri) {
-    onMounted(() => import('./update').then(x => x.checkUpdate($t, true)))
+    onMounted(() => import('./update').then(x => x.checkUpdate($t, true)));
 }
 
 async function loadStorages() {
     if (isTauri) {
-        const { BaseDirectory, readTextFile } = await pkgTauriFs
-        readTextFile("settings.json", { baseDir: BaseDirectory.AppData }).then(settingStore.fromJson).catch(e => console.error(e))
-        readTextFile("gearsets.json", { baseDir: BaseDirectory.AppData }).then(gearsetsStore.fromJson).catch(e => console.error(e))
-        readTextFile("designer.json", { baseDir: BaseDirectory.AppData }).then(designerStore.fromJson).catch(e => console.error(e))
+        const { BaseDirectory, readTextFile } = await pkgTauriFs;
+        readTextFile('settings.json', { baseDir: BaseDirectory.AppData })
+            .then(settingStore.fromJson)
+            .catch(e => console.error(e));
+        readTextFile('gearsets.json', { baseDir: BaseDirectory.AppData })
+            .then(gearsetsStore.fromJson)
+            .catch(e => console.error(e));
+        readTextFile('designer.json', { baseDir: BaseDirectory.AppData })
+            .then(designerStore.fromJson)
+            .catch(e => console.error(e));
     } else {
-        const ifNotNullThen = (v: string | null, f: (v: string) => void) => { if (v != null) f(v) }
-        ifNotNullThen(window.localStorage.getItem("settings.json"), settingStore.fromJson)
-        ifNotNullThen(window.localStorage.getItem("gearsets.json"), gearsetsStore.fromJson)
-        ifNotNullThen(window.localStorage.getItem("designer.json"), designerStore.fromJson)
+        const ifNotNullThen = (v: string | null, f: (v: string) => void) => {
+            if (v != null) f(v);
+        };
+        ifNotNullThen(
+            window.localStorage.getItem('settings.json'),
+            settingStore.fromJson,
+        );
+        ifNotNullThen(
+            window.localStorage.getItem('gearsets.json'),
+            gearsetsStore.fromJson,
+        );
+        ifNotNullThen(
+            window.localStorage.getItem('designer.json'),
+            designerStore.fromJson,
+        );
     }
 }
-loadStorages()
+loadStorages();
 
 async function writeJson(name: string, jsonStr: string) {
     if (isTauri) {
-        const { BaseDirectory, writeTextFile, exists, mkdir } = await pkgTauriFs;
+        const { BaseDirectory, writeTextFile, exists, mkdir } =
+            await pkgTauriFs;
         const { appDataDir } = await pkgTauriPath;
         try {
             const appDataPath = await appDataDir();
-            if (!await exists(appDataPath)) {
+            if (!(await exists(appDataPath))) {
                 await mkdir(appDataPath, { recursive: true });
             }
-            await writeTextFile(name, jsonStr, { baseDir: BaseDirectory.AppData });
+            await writeTextFile(name, jsonStr, {
+                baseDir: BaseDirectory.AppData,
+            });
         } catch (err) {
             console.error(err);
             ElMessage({
                 type: 'error',
-                message: $t('error-save-file', { file: name, err: String(err) })
+                message: $t('error-save-file', {
+                    file: name,
+                    err: String(err),
+                }),
             });
         }
     } else {
         window.localStorage.setItem(name, jsonStr);
     }
 }
-settingStore.$subscribe(() => writeJson('settings.json', settingStore.toJson))
-gearsetsStore.$subscribe(() => writeJson('gearsets.json', gearsetsStore.toJson))
-designerStore.$subscribe(() => writeJson('designer.json', designerStore.toJson))
+settingStore.$subscribe(() => writeJson('settings.json', settingStore.toJson));
+gearsetsStore.$subscribe(() =>
+    writeJson('gearsets.json', gearsetsStore.toJson),
+);
+designerStore.$subscribe(() =>
+    writeJson('designer.json', designerStore.toJson),
+);
 
 watchEffect(async () => {
     let isDark: boolean | null;
@@ -114,36 +146,51 @@ watchEffect(async () => {
 
     let shouldBeTransparent = false;
     if (isTauri) {
-        let { invoke } = await pkgTauri
+        let { invoke } = await pkgTauri;
         // Ask the rust side if the window transparent.
-        shouldBeTransparent = await invoke('set_theme', { isDark })
+        shouldBeTransparent = await invoke('set_theme', { isDark });
     }
-    bgColor.value = shouldBeTransparent ? 'transparent' : 'var(--el-bg-color)'
-    bgMainColor.value = shouldBeTransparent ? '#2e2e2e80' : '#242424'
-})
-
+    bgColor.value = shouldBeTransparent ? 'transparent' : 'var(--el-bg-color)';
+    bgMainColor.value = shouldBeTransparent ? '#2e2e2e80' : '#242424';
+});
 </script>
 
 <template>
     <el-config-provider :locale="elementPlusLang.get(lang)">
         <div class="container">
             <Transition>
-                <div class="overlay" v-if="showMenu" @click="showMenu = false"></div>
+                <div
+                    class="overlay"
+                    v-if="showMenu"
+                    @click="showMenu = false"
+                ></div>
             </Transition>
-            <Menu class="sidebar" v-bind:class="{ 'show-menu': showMenu }"></Menu>
+            <Menu
+                class="sidebar"
+                v-bind:class="{ 'show-menu': showMenu }"
+            ></Menu>
             <div class="main">
                 <div class="topbar">
                     <Transition name="menuicon">
-                        <el-icon v-if="!unfoldSidebar" :size="25" @click="showMenu = !showMenu">
+                        <el-icon
+                            v-if="!unfoldSidebar"
+                            :size="25"
+                            @click="showMenu = !showMenu"
+                        >
                             <Operation />
                         </el-icon>
                     </Transition>
-                    <h3 class="topbar-title">{{ topTitle == '' ? '' : $t(topTitle) }}</h3>
+                    <h3 class="topbar-title">
+                        {{ topTitle == '' ? '' : $t(topTitle) }}
+                    </h3>
                 </div>
-                <div style="height: calc(100% - var(--tnze-topbar-height));">
+                <div style="height: calc(100% - var(--tnze-topbar-height))">
                     <router-view v-slot="{ Component }">
                         <keep-alive>
-                            <component :is="Component" @setTitle="(s: string) => topTitle = s" />
+                            <component
+                                :is="Component"
+                                @setTitle="(s: string) => (topTitle = s)"
+                            />
                         </keep-alive>
                     </router-view>
                 </div>
@@ -188,7 +235,8 @@ watchEffect(async () => {
 
 :root {
     font-family: Inter, 'Helvetica Neue', Helvetica, 'PingFang SC',
-        'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif, "xivicon";
+        'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif,
+        'xivicon';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
@@ -235,7 +283,7 @@ watchEffect(async () => {
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(0, 0, 0, .6);
+    background: rgba(0, 0, 0, 0.6);
     z-index: 9;
 }
 
@@ -254,7 +302,7 @@ watchEffect(async () => {
 }
 
 .menuicon-enter-active {
-    transition: transform .5s ease;
+    transition: transform 0.5s ease;
 }
 
 .menuicon-enter-from {
@@ -271,7 +319,7 @@ watchEffect(async () => {
     background-color: var(--el-bg-color-overlay);
 
     transform: translateX(-100%);
-    transition: transform .5s;
+    transition: transform 0.5s;
 }
 
 .sidebar.show-menu {
@@ -283,13 +331,13 @@ watchEffect(async () => {
     width: 100%;
     box-sizing: border-box;
     flex: none;
-    transition: height .5s;
+    transition: height 0.5s;
     display: flex;
     align-items: center;
     overflow: hidden;
 }
 
-.topbar>.el-icon {
+.topbar > .el-icon {
     color: var(--el-color-info);
     overflow: hidden;
 }
@@ -304,7 +352,7 @@ watchEffect(async () => {
     background-color: rgba(246, 246, 246, 0.5);
     flex: auto;
 
-    transition: margin-left .5s;
+    transition: margin-left 0.5s;
 }
 
 :root.dark .main {
@@ -335,7 +383,7 @@ error-save-file = 保存文件 { $file } 失败：{ $err }
 <fluent locale="en-US">
 error-save-file = Failed when saving { $file }: { $err }
 </fluent>
-    
+
 <fluent locale="ja-JP">
 error-save-file = ファイル { $file } の保存に失敗しました: { $err }
 </fluent>

@@ -17,44 +17,70 @@
 -->
 
 <script setup lang="ts">
-import { Ref, reactive, ref } from 'vue'
-import { ElAlert, ElSpace, ElDialog, ElCard, ElButton, ElCheckbox, ElTable, ElTableColumn, ElMessage } from 'element-plus'
-import { create_solver, destroy_solver, reflect_solve } from '@/libs/Solver'
-import { ChatSquare } from '@element-plus/icons-vue'
+import { Ref, reactive, ref } from 'vue';
+import {
+    ElAlert,
+    ElSpace,
+    ElDialog,
+    ElCard,
+    ElButton,
+    ElCheckbox,
+    ElTable,
+    ElTableColumn,
+    ElMessage,
+} from 'element-plus';
+import { create_solver, destroy_solver, reflect_solve } from '@/libs/Solver';
+import { ChatSquare } from '@element-plus/icons-vue';
 import { Actions, Status } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { SequenceSource } from '../types';
 import { formatDuration } from '@/libs/Utils';
 import { isTauri } from '@/libs/Consts';
 
-const { $t } = useFluent()
+const { $t } = useFluent();
 
 export interface Solver {
-    initStatus: Status,
-    name: string,
-    status: 'solving' | 'prepared' | 'destroying'
+    initStatus: Status;
+    name: string;
+    status: 'solving' | 'prepared' | 'destroying';
 }
 
 const props = defineProps<{
-    initStatus: Status,
-    recipeName: string,
-}>()
+    initStatus: Status;
+    recipeName: string;
+}>();
 
 const emits = defineEmits<{
-    (event: 'solverLoad', solver: Solver): void
-    (event: 'runSimpleSolver', solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
-}>()
+    (event: 'solverLoad', solver: Solver): void;
+    (
+        event: 'runSimpleSolver',
+        solverId: SequenceSource,
+        solvingRunningState: Ref<Boolean>,
+        solver: (initStatus: Status) => Promise<Actions[]>,
+    ): void;
+}>();
 
-const dialogVisible = ref(false)
-const useManipulation = ref(false)
-const useWasteNot = ref(false)
-const useMuscleMemory = ref(false)
-const useObserve = ref(true)
-const solvers = ref<Solver[]>([])
+const dialogVisible = ref(false);
+const useManipulation = ref(false);
+const useWasteNot = ref(false);
+const useMuscleMemory = ref(false);
+const useObserve = ref(true);
+const solvers = ref<Solver[]>([]);
 
-const reflectSolveIsSolving = ref(false)
+const reflectSolveIsSolving = ref(false);
 function runReflectSolver() {
-    emits('runSimpleSolver', SequenceSource.DPSolver, reflectSolveIsSolving, initStatus => reflect_solve(initStatus, useManipulation.value, useWasteNot.value ? 8 : 0, useObserve.value))
+    emits(
+        'runSimpleSolver',
+        SequenceSource.DPSolver,
+        reflectSolveIsSolving,
+        initStatus =>
+            reflect_solve(
+                initStatus,
+                useManipulation.value,
+                useWasteNot.value ? 8 : 0,
+                useObserve.value,
+            ),
+    );
 }
 
 const createSolver = async () => {
@@ -63,67 +89,73 @@ const createSolver = async () => {
         duration: 0,
         type: 'info',
         message: $t('solving-info', { solverName: $t('dp-solver') }),
-    })
+    });
     let solver = reactive(<Solver>{
         initStatus: {
             ...props.initStatus!,
             quality: 0, // bypass the solver bug that we can't handle the initial quality
         },
         name: props.recipeName,
-        status: 'solving'
-    })
+        status: 'solving',
+    });
     try {
-        solvers.value.push(solver)
+        solvers.value.push(solver);
         const startTime = new Date().getTime();
         await create_solver(
             solver.initStatus,
             useMuscleMemory.value,
             useManipulation.value,
             useObserve.value,
-        )
+        );
         const stopTime = new Date().getTime();
         ElMessage({
             showClose: true,
             type: 'success',
-            message: $t('solver-created', { solveTime: formatDuration(stopTime - startTime) }),
-        })
-        solver.status = 'prepared'
-        emits('solverLoad', solver)
+            message: $t('solver-created', {
+                solveTime: formatDuration(stopTime - startTime),
+            }),
+        });
+        solver.status = 'prepared';
+        emits('solverLoad', solver);
     } catch (err) {
-        solvers.value.splice(solvers.value.indexOf(solver), 1)
+        solvers.value.splice(solvers.value.indexOf(solver), 1);
         ElMessage({
             type: 'error',
             message: $t('error-with', { err: $t(err as string) }),
-        })
-        console.error(err)
+        });
+        console.error(err);
     } finally {
-        msg1.close()
+        msg1.close();
     }
-}
+};
 
 const destroySolver = async (s: Solver) => {
     try {
         s.status = 'destroying';
-        await destroy_solver(s.initStatus)
-        solvers.value.splice(solvers.value.indexOf(s), 1)
+        await destroy_solver(s.initStatus);
+        solvers.value.splice(solvers.value.indexOf(s), 1);
     } catch (err) {
         ElMessage({
             type: 'error',
             message: `${err}`,
-        })
-        console.error(err)
+        });
+        console.error(err);
     }
-}
-
+};
 </script>
 
 <template>
     <el-dialog v-model="dialogVisible" :title="$t('dp-solver-info-title')">
         <i18n path="dp-solver-info" tag="span" class="solver-info">
-            <template #usageBlock="{ muscleMemoryMsg }">
-            </template>
+            <template #usageBlock="{ muscleMemoryMsg }"> </template>
             <template #infoBlock="{ infoMsg }">
-                <el-alert type="info" :title="infoMsg" show-icon :closable="false" style="white-space: normal;" />
+                <el-alert
+                    type="info"
+                    :title="infoMsg"
+                    show-icon
+                    :closable="false"
+                    style="white-space: normal"
+                />
             </template>
             <template #calcCard="{ calcMsg }">
                 <el-card shadow="never">{{ calcMsg }}</el-card>
@@ -131,22 +163,62 @@ const destroySolver = async (s: Solver) => {
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
-        <el-checkbox v-model="useMuscleMemory" :label="$t('enable-action', { action: $t('muscle-memory') })" :disabled="!isTauri" />
-        <el-checkbox v-model="useManipulation" :label="$t('enable-action', { action: $t('manipulation') })" :disabled="!isTauri" />
-        <el-checkbox v-model="useWasteNot" :label="$t('enable-action', { action: $t('waste-not') })" :disabled="!isTauri" />
-        <el-checkbox v-model="useObserve" :label="$t('enable-action', { action: $t('observe') })" />
+        <el-checkbox
+            v-model="useMuscleMemory"
+            :label="$t('enable-action', { action: $t('muscle-memory') })"
+            :disabled="!isTauri"
+        />
+        <el-checkbox
+            v-model="useManipulation"
+            :label="$t('enable-action', { action: $t('manipulation') })"
+            :disabled="!isTauri"
+        />
+        <el-checkbox
+            v-model="useWasteNot"
+            :label="$t('enable-action', { action: $t('waste-not') })"
+            :disabled="!isTauri"
+        />
+        <el-checkbox
+            v-model="useObserve"
+            :label="$t('enable-action', { action: $t('observe') })"
+        />
     </el-space>
-    <el-alert v-if="useMuscleMemory" type="warning" :title="$t('muscle-memory-msg')" show-icon :closable="false" />
-    <div style="margin-top: 10px;">
-        <el-button v-if="useMuscleMemory" type="primary" :disabled="initStatus == undefined" @click="createSolver">
+    <el-alert
+        v-if="useMuscleMemory"
+        type="warning"
+        :title="$t('muscle-memory-msg')"
+        show-icon
+        :closable="false"
+    />
+    <div style="margin-top: 10px">
+        <el-button
+            v-if="useMuscleMemory"
+            type="primary"
+            :disabled="initStatus == undefined"
+            @click="createSolver"
+        >
             {{ $t('create-solver') }}
         </el-button>
-        <el-button v-else @click="runReflectSolver" type="primary" :loading="reflectSolveIsSolving">
-            {{ reflectSolveIsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
+        <el-button
+            v-else
+            @click="runReflectSolver"
+            type="primary"
+            :loading="reflectSolveIsSolving"
+        >
+            {{
+                reflectSolveIsSolving
+                    ? $t('simple-solver-solving')
+                    : $t('solver-start')
+            }}
         </el-button>
         <el-button :icon="ChatSquare" circle @click="dialogVisible = true" />
     </div>
-    <el-table v-if="useMuscleMemory" :data="solvers" :empty-text="$t('dp-solver-empty-text')" style="width: 100%">
+    <el-table
+        v-if="useMuscleMemory"
+        :data="solvers"
+        :empty-text="$t('dp-solver-empty-text')"
+        style="width: 100%"
+    >
         <el-table-column>
             <template #default="scope">
                 {{ scope.row.name }}
@@ -154,8 +226,13 @@ const destroySolver = async (s: Solver) => {
         </el-table-column>
         <el-table-column align="right">
             <template #default="scope">
-                <el-button size="small" type="danger" @click="destroySolver(scope.row)"
-                    :disabled="scope.row.status != 'prepared'" :loading="scope.row.status != 'prepared'">
+                <el-button
+                    size="small"
+                    type="danger"
+                    @click="destroySolver(scope.row)"
+                    :disabled="scope.row.status != 'prepared'"
+                    :loading="scope.row.status != 'prepared'"
+                >
                     {{ $t('release-solver') }}
                 </el-button>
             </template>

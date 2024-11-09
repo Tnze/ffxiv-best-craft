@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Actions, Status } from "@/libs/Craft";
+import { Actions, Status } from '@/libs/Craft';
 
 export interface Slot {
     id: number;
@@ -32,12 +32,12 @@ export interface Sequence {
 }
 
 export enum SequenceSource {
-    AutoSave = "auto-save",
-    Manual = "manual",
-    Solver = "solver",
-    DPSolver = "dp-solver",
-    RaphaelSolver = "raphael-solver",
-    DFSSolver = "dfs-solver",
-    BFSSolver = "bfs-solver",
-    TnzeVerRikaSolver = "tnzever-rika-solver",
+    AutoSave = 'auto-save',
+    Manual = 'manual',
+    Solver = 'solver',
+    DPSolver = 'dp-solver',
+    RaphaelSolver = 'raphael-solver',
+    DFSSolver = 'dfs-solver',
+    BFSSolver = 'bfs-solver',
+    TnzeVerRikaSolver = 'tnzever-rika-solver',
 }

@@ -19,19 +19,25 @@
 <script setup lang="ts">
 import { Actions } from '@/libs/Craft';
 import { clarityReport } from '@/libs/Utils';
-import { ElInput, ElButton, ElMessage, ElCheckbox, ElSpace, ElSwitch } from 'element-plus';
+import {
+    ElInput,
+    ElButton,
+    ElMessage,
+    ElCheckbox,
+    ElSpace,
+    ElSwitch,
+} from 'element-plus';
 import { useFluent } from 'fluent-vue';
 import { ref } from 'vue';
 
 const emits = defineEmits<{
-    onRecognized: [actions: Actions[]]
-}>()
+    onRecognized: [actions: Actions[]];
+}>();
 const fluent = useFluent();
 
 // Create a map converts action names to std Action enum
 const namesToAction: Map<string, Actions> = new Map();
-const actionKeys = Object.values(Actions)
-    .filter(v => !v.endsWith('_fail'));
+const actionKeys = Object.values(Actions).filter(v => !v.endsWith('_fail'));
 for (const bundle of fluent.bundles.value) {
     for (const action of actionKeys) {
         const msg = fluent.getMessage(bundle, action.replaceAll('_', '-'))!;
@@ -41,16 +47,16 @@ for (const bundle of fluent.bundles.value) {
 
 // Textarea input
 const inputText = ref('');
-const strictMode = ref(false)
+const strictMode = ref(false);
 
 // Start parcing user input text
 function confirm() {
     const input = inputText.value;
     let result: Actions[];
 
-    if (input.trimStart().charAt(0) == "[") {
+    if (input.trimStart().charAt(0) == '[') {
         try {
-            result = parseJson(JSON.parse(input))
+            result = parseJson(JSON.parse(input));
             clarityReport('importJsonSuccess');
         } catch (err) {
             clarityReport('importJsonError');
@@ -98,7 +104,7 @@ function confirm() {
         message: fluent.$t('recognize-success', { n: result.length }),
     });
     emits('onRecognized', result);
-    inputText.value = "";
+    inputText.value = '';
 }
 
 // Parse input as json
@@ -110,26 +116,30 @@ function parseJson(result: any): Actions[] {
 
     return result.map(v => {
         if (typeof v != 'string') {
-            throw fluent.$t('err-not-a-string', { elem: String(v) })
+            throw fluent.$t('err-not-a-string', { elem: String(v) });
         }
         if (validActions.has(v)) {
-            return v as Actions
+            return v as Actions;
         } else {
-            throw fluent.$t('err-invalid-action', { action: String(v) })
+            throw fluent.$t('err-invalid-action', { action: String(v) });
         }
-    })
+    });
 }
 
 function parseMacroStrict(input: string): Actions[] {
-    return input.split('\n')
+    return input
+        .split('\n')
         .flatMap(v => {
-            const matchResult = /^\/(?:ac(?:tion)?|技能)\s+(?<body>.*)$/g.exec(v)
-            return matchResult ? matchResult.groups!['body'] : []
+            const matchResult = /^\/(?:ac(?:tion)?|技能)\s+(?<body>.*)$/g.exec(
+                v,
+            );
+            return matchResult ? matchResult.groups!['body'] : [];
         })
         .map((v, i) => {
             const cmdBody = v.trim(); // "ACTIONNAME <wait.n>"
-            console.log(cmdBody)
-            const matchResult = /^(?<action>"[^"]+"|\S+)(?:\s+<wait\.\d+>)?$/g.exec(cmdBody);
+            console.log(cmdBody);
+            const matchResult =
+                /^(?<action>"[^"]+"|\S+)(?:\s+<wait\.\d+>)?$/g.exec(cmdBody);
             if (matchResult == null || matchResult.groups == undefined) {
                 throw fluent.$t('err-parse-line-error', { n: i + 1 });
             }
@@ -149,14 +159,22 @@ function trimQuotation(v: string): string {
     }
     return v;
 }
-
 </script>
 
 <template>
-    <el-input v-model="inputText" type="textarea" class="user-input" :autosize="{ minRows: 4 }"
-        :placeholder="$t('auto-recognize')" />
+    <el-input
+        v-model="inputText"
+        type="textarea"
+        class="user-input"
+        :autosize="{ minRows: 4 }"
+        :placeholder="$t('auto-recognize')"
+    />
     <el-space>
-        <el-button type="primary" @click="confirm" :disabled="inputText.length == 0">
+        <el-button
+            type="primary"
+            @click="confirm"
+            :disabled="inputText.length == 0"
+        >
             {{ $t('confirm') }}
         </el-button>
         <el-checkbox v-model="strictMode" :label="$t('strict-mode')" />

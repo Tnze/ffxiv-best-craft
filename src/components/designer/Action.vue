@@ -17,66 +17,71 @@
 -->
 
 <script setup lang="ts">
-
-import { computed } from 'vue'
-import hoverUrl from '@/assets/icons/icona_frame_tex.png'
+import { computed } from 'vue';
+import hoverUrl from '@/assets/icons/icona_frame_tex.png';
 import { Jobs, Actions } from '@/libs/Craft';
 
 const props = defineProps<{
-    job: Jobs,
-    action: Actions,
-    disabled?: boolean,
-    active?: boolean,
-    noHover?: boolean,
-    effect?: 'normal' | 'red-cross' | 'blue-cross' | 'black' | 'sunken',
-    cp?: number,
-    opacity?: number,
+    job: Jobs;
+    action: Actions;
+    disabled?: boolean;
+    active?: boolean;
+    noHover?: boolean;
+    effect?: 'normal' | 'red-cross' | 'blue-cross' | 'black' | 'sunken';
+    cp?: number;
+    opacity?: number;
 }>();
 
 const iconUrl = computed(() => {
     let actionName: string = props.action;
     if (actionName.endsWith('_fail'))
-        actionName = actionName.slice(0, actionName.length - '_fail'.length)
-    return new URL(`../../assets/icons/${props.job.toLowerCase()}/${actionName}.png`, import.meta.url).href
-})
+        actionName = actionName.slice(0, actionName.length - '_fail'.length);
+    return new URL(
+        `../../assets/icons/${props.job.toLowerCase()}/${actionName}.png`,
+        import.meta.url,
+    ).href;
+});
 
 const hoverLayerOffset = computed(() => {
     switch (props.effect) {
         case 'sunken':
-            return 'top -96px left 0px'
+            return 'top -96px left 0px';
         case 'black':
-            return 'top 0px left -48px'
+            return 'top 0px left -48px';
         case 'blue-cross':
-            return 'top -48px left 0px'
+            return 'top -48px left 0px';
         case 'red-cross':
-            return 'top -48px left -48px'
+            return 'top -48px left -48px';
         case undefined:
         case 'normal':
         default:
-            return 'top 0px left 0px'
+            return 'top 0px left 0px';
     }
-})
+});
 
 const onClick = (event: MouseEvent) => {
-    const animElem = (event.target as HTMLElement).firstElementChild
+    const animElem = (event.target as HTMLElement).firstElementChild;
     if (!props.disabled && animElem != null) {
-        animElem.classList.add('click-animation')
+        animElem.classList.add('click-animation');
         animElem.getAnimations()?.forEach(anim => {
-            anim.cancel()
-            anim.play()
-        })
+            anim.cancel();
+            anim.play();
+        });
     }
-}
+};
 const onAnimationEnd = (event: AnimationEvent) => {
-    const animElem = (event.target as HTMLElement)
-    animElem.classList.remove('click-animation')
-}
-
+    const animElem = event.target as HTMLElement;
+    animElem.classList.remove('click-animation');
+};
 </script>
 
 <template>
-    <div class="action" @click="onClick" v-bind:class="noHover ? '' : 'action-hover'"
-        v-bind:style="{ opacity: opacity ?? 1 }">
+    <div
+        class="action"
+        @click="onClick"
+        v-bind:class="noHover ? '' : 'action-hover'"
+        v-bind:style="{ opacity: opacity ?? 1 }"
+    >
         <div @animationend="onAnimationEnd($event)"></div>
         <div v-if="active" class="active-mask"></div>
         <div v-if="cp != undefined" class="craft-point">{{ cp }}</div>
@@ -89,11 +94,13 @@ const onAnimationEnd = (event: AnimationEvent) => {
     display: inline-block;
     width: 48px;
     height: 48px;
-    background: v-bind("'url(' + hoverUrl + ') no-repeat ' + hoverLayerOffset + ', url(' + iconUrl + ') no-repeat top 3px left 4px'");
+    background: v-bind(
+        "'url(' + hoverUrl + ') no-repeat ' + hoverLayerOffset + ', url(' + iconUrl + ') no-repeat top 3px left 4px'"
+    );
 }
 
 .action-hover:hover::after {
-    content: "";
+    content: '';
     display: block;
     width: 72px;
     height: 72px;
@@ -101,12 +108,13 @@ const onAnimationEnd = (event: AnimationEvent) => {
     left: -12px;
     position: absolute;
     pointer-events: none;
-    background: url("../../assets/icons/icona_frame_tex.png") no-repeat top 0px left -240px;
+    background: url('../../assets/icons/icona_frame_tex.png') no-repeat top 0px
+        left -240px;
     cursor: v-bind("disabled ? 'inherit' : 'pointer'");
 }
 
 .click-animation {
-    content: "";
+    content: '';
     display: block;
     width: 64px;
     height: 64px;
@@ -114,17 +122,18 @@ const onAnimationEnd = (event: AnimationEvent) => {
     left: -8px;
     position: absolute;
     pointer-events: none;
-    background: url("../../assets/icons/icona_frame_tex.png") no-repeat top -72px left -240px;
+    background: url('../../assets/icons/icona_frame_tex.png') no-repeat top -72px
+        left -240px;
     animation: clickable-wave 0.3s;
 }
 
 .active-mask::after {
-    content: "";
+    content: '';
     width: 48px;
     height: 48px;
     position: absolute;
     pointer-events: none;
-    background-image: url("../../assets/icons/icona_frame_tex.png");
+    background-image: url('../../assets/icons/icona_frame_tex.png');
     animation: active 0.25s steps(1, start) infinite;
 }
 

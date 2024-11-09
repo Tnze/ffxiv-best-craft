@@ -17,51 +17,67 @@
 -->
 
 <script setup lang="ts">
-import { Ref, ref } from 'vue'
-import { ElSpace, ElDialog, ElButton, ElCheckbox, ElLink, ElTag } from 'element-plus'
-import { raphael_solve } from '@/libs/Solver'
-import { ChatSquare } from '@element-plus/icons-vue'
+import { Ref, ref } from 'vue';
+import {
+    ElSpace,
+    ElDialog,
+    ElButton,
+    ElCheckbox,
+    ElLink,
+    ElTag,
+} from 'element-plus';
+import { raphael_solve } from '@/libs/Solver';
+import { ChatSquare } from '@element-plus/icons-vue';
 import { Actions, Status } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { SequenceSource } from '../types';
 
-const { $t } = useFluent()
+const { $t } = useFluent();
 
 const props = defineProps<{
-    initStatus: Status,
-    recipeName: string,
-}>()
+    initStatus: Status;
+    recipeName: string;
+}>();
 
 const emits = defineEmits<{
-    (event: 'runSimpleSolver', solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
-}>()
+    (
+        event: 'runSimpleSolver',
+        solverId: SequenceSource,
+        solvingRunningState: Ref<Boolean>,
+        solver: (initStatus: Status) => Promise<Actions[]>,
+    ): void;
+}>();
 
 // UI states
-const dialogVisible = ref(false)
-const raphaelSolveIsSolving = ref(false)
+const dialogVisible = ref(false);
+const raphaelSolveIsSolving = ref(false);
 
 // Solver options
-const useManipulation = ref(false)
-const useHeartAndSoul = ref(false)
-const useQuickInnovation = ref(false)
-const useTrainedEye = ref(true)
-const backloadProgress = ref(true)
-const unsoundBranchPruning = ref(true)
-const adversarial = ref(false)
+const useManipulation = ref(false);
+const useHeartAndSoul = ref(false);
+const useQuickInnovation = ref(false);
+const useTrainedEye = ref(true);
+const backloadProgress = ref(true);
+const unsoundBranchPruning = ref(true);
+const adversarial = ref(false);
 
 function runRaphaelSolver() {
-    emits('runSimpleSolver', SequenceSource.RaphaelSolver, raphaelSolveIsSolving,
-        initStatus => raphael_solve(
-            initStatus,
-            useManipulation.value,
-            useHeartAndSoul.value,
-            useQuickInnovation.value,
-            useTrainedEye.value,
-            backloadProgress.value,
-            adversarial.value,
-            unsoundBranchPruning.value,
-        ),
-    )
+    emits(
+        'runSimpleSolver',
+        SequenceSource.RaphaelSolver,
+        raphaelSolveIsSolving,
+        initStatus =>
+            raphael_solve(
+                initStatus,
+                useManipulation.value,
+                useHeartAndSoul.value,
+                useQuickInnovation.value,
+                useTrainedEye.value,
+                backloadProgress.value,
+                adversarial.value,
+                unsoundBranchPruning.value,
+            ),
+    );
 }
 </script>
 
@@ -69,50 +85,100 @@ function runRaphaelSolver() {
     <el-dialog v-model="dialogVisible" :title="$t('solver-info-title')">
         <i18n path="solver-info" tag="span" class="solver-info">
             <template #origin>
-                <el-link href="https://www.raphael-xiv.com/" target="_blank">https://www.raphael-xiv.com/</el-link>
+                <el-link href="https://www.raphael-xiv.com/" target="_blank"
+                    >https://www.raphael-xiv.com/</el-link
+                >
             </template>
             <template #source>
-                <el-link href="https://github.com/KonaeAkira/raphael-rs/" target="_blank">
+                <el-link
+                    href="https://github.com/KonaeAkira/raphael-rs/"
+                    target="_blank"
+                >
                     https://github.com/KonaeAkira/raphael-rs/
                 </el-link>
             </template>
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
-        <el-checkbox v-model="useTrainedEye" :label="$t('enable-action', { action: $t('trained-eye') })" />
+        <el-checkbox
+            v-model="useTrainedEye"
+            :label="$t('enable-action', { action: $t('trained-eye') })"
+        />
         <el-space>
-            <el-checkbox v-model="useManipulation" :label="$t('enable-action', { action: $t('manipulation') })" />
-            <el-tag v-if="useManipulation" type="warning">{{ $t('need-learn-manipulation') }}</el-tag>
+            <el-checkbox
+                v-model="useManipulation"
+                :label="$t('enable-action', { action: $t('manipulation') })"
+            />
+            <el-tag v-if="useManipulation" type="warning">{{
+                $t('need-learn-manipulation')
+            }}</el-tag>
         </el-space>
         <el-space>
-            <el-checkbox v-model="useHeartAndSoul" :label="$t('enable-action', { action: $t('heart-and-soul') })" />
-            <el-tag v-if="useHeartAndSoul" type="warning">{{ $t('consume-crafters-delineation') }}</el-tag>
+            <el-checkbox
+                v-model="useHeartAndSoul"
+                :label="$t('enable-action', { action: $t('heart-and-soul') })"
+            />
+            <el-tag v-if="useHeartAndSoul" type="warning">{{
+                $t('consume-crafters-delineation')
+            }}</el-tag>
         </el-space>
         <el-space>
-            <el-checkbox v-model="useQuickInnovation"
-                :label="$t('enable-action', { action: $t('quick-innovation') })" />
-            <el-tag v-if="useQuickInnovation" type="warning">{{ $t('consume-crafters-delineation') }}</el-tag>
+            <el-checkbox
+                v-model="useQuickInnovation"
+                :label="$t('enable-action', { action: $t('quick-innovation') })"
+            />
+            <el-tag v-if="useQuickInnovation" type="warning">{{
+                $t('consume-crafters-delineation')
+            }}</el-tag>
         </el-space>
         <el-space>
-            <el-checkbox v-model="backloadProgress" :label="$t('backload-progress')" />
-            <el-tag v-if="backloadProgress" type="success">{{ $t('speed-up') }}</el-tag>
-            <el-tag v-if="backloadProgress" type="danger">{{ $t('quality-down') }}</el-tag>
-            <el-tag v-if="backloadProgress" type="danger">{{ $t('increase-duration') }}</el-tag>
+            <el-checkbox
+                v-model="backloadProgress"
+                :label="$t('backload-progress')"
+            />
+            <el-tag v-if="backloadProgress" type="success">{{
+                $t('speed-up')
+            }}</el-tag>
+            <el-tag v-if="backloadProgress" type="danger">{{
+                $t('quality-down')
+            }}</el-tag>
+            <el-tag v-if="backloadProgress" type="danger">{{
+                $t('increase-duration')
+            }}</el-tag>
         </el-space>
         <el-space>
-            <el-checkbox v-model="unsoundBranchPruning" :label="$t('unsound-branch-pruning')" />
-            <el-tag v-if="unsoundBranchPruning" type="success">{{ $t('speed-up') }}</el-tag>
-            <el-tag v-if="unsoundBranchPruning" type="danger">{{ $t('increase-duration') }}</el-tag>
+            <el-checkbox
+                v-model="unsoundBranchPruning"
+                :label="$t('unsound-branch-pruning')"
+            />
+            <el-tag v-if="unsoundBranchPruning" type="success">{{
+                $t('speed-up')
+            }}</el-tag>
+            <el-tag v-if="unsoundBranchPruning" type="danger">{{
+                $t('increase-duration')
+            }}</el-tag>
         </el-space>
         <el-space>
             <el-checkbox v-model="adversarial" :label="$t('adversarial')" />
-            <el-tag v-if="adversarial" type="danger">{{ $t('quality-down') }}</el-tag>
-            <el-tag v-if="adversarial" type="danger">{{ $t('increase-duration') }}</el-tag>
+            <el-tag v-if="adversarial" type="danger">{{
+                $t('quality-down')
+            }}</el-tag>
+            <el-tag v-if="adversarial" type="danger">{{
+                $t('increase-duration')
+            }}</el-tag>
         </el-space>
     </el-space>
-    <div style="margin-top: 10px;">
-        <el-button @click="runRaphaelSolver" type="primary" :loading="raphaelSolveIsSolving">
-            {{ raphaelSolveIsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
+    <div style="margin-top: 10px">
+        <el-button
+            @click="runRaphaelSolver"
+            type="primary"
+            :loading="raphaelSolveIsSolving"
+        >
+            {{
+                raphaelSolveIsSolving
+                    ? $t('simple-solver-solving')
+                    : $t('solver-start')
+            }}
         </el-button>
         <el-button :icon="ChatSquare" circle @click="dialogVisible = true" />
     </div>

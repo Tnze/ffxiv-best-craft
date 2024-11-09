@@ -18,71 +18,109 @@
 
 <script setup lang="ts">
 import { ElEmpty, ElResult, ElButton, ElText, ElSkeleton } from 'element-plus';
-import { computed, defineAsyncComponent, onErrorCaptured, ref, provide, onActivated } from 'vue';
+import {
+    computed,
+    defineAsyncComponent,
+    onErrorCaptured,
+    ref,
+    provide,
+    onActivated,
+} from 'vue';
 import useGearsetsStore from '@/stores/gearsets';
 import useDesignerStore from '@/stores/designer';
 import { useFluent } from 'fluent-vue';
-import { displayJobKey } from "./injectionkeys"
+import { displayJobKey } from './injectionkeys';
 import { Jobs } from '@/libs/Craft';
 
 const emit = defineEmits<{
-    (e: 'setTitle', title: string): void
-}>()
+    (e: 'setTitle', title: string): void;
+}>();
 
-const gearsetsStore = useGearsetsStore()
-const designerStore = useDesignerStore()
-const { $t } = useFluent()
+const gearsetsStore = useGearsetsStore();
+const designerStore = useDesignerStore();
+const { $t } = useFluent();
 
-onActivated(() => emit('setTitle', designerStore.content?.item.name ?? ''))
+onActivated(() => emit('setTitle', designerStore.content?.item.name ?? ''));
 
-const Designer = defineAsyncComponent(() => import('./Designer.vue'))
-const Simulator = defineAsyncComponent(() => import('./Simulator.vue'))
+const Designer = defineAsyncComponent(() => import('./Designer.vue'));
+const Simulator = defineAsyncComponent(() => import('./Simulator.vue'));
 
-const isCustomRecipe = computed(() => designerStore.content?.job === undefined)
+const isCustomRecipe = computed(() => designerStore.content?.job === undefined);
 const attributes = computed(() => {
     const job = designerStore.content?.job;
-    return job ? gearsetsStore.special.find(v => v.name == job)?.value ?? gearsetsStore.default : gearsetsStore.default
-})
-const errorMessage = ref<string>()
+    return job
+        ? (gearsetsStore.special.find(v => v.name == job)?.value ??
+              gearsetsStore.default)
+        : gearsetsStore.default;
+});
+const errorMessage = ref<string>();
 
-provide(displayJobKey, computed(() => designerStore.content?.job ?? Jobs.Culinarian))
+provide(
+    displayJobKey,
+    computed(() => designerStore.content?.job ?? Jobs.Culinarian),
+);
 
 onErrorCaptured((err: unknown, instance, info) => {
-    console.error(err, instance, info)
+    console.error(err, instance, info);
     try {
-        errorMessage.value = $t(String(err))
+        errorMessage.value = $t(String(err));
     } catch {
-        errorMessage.value = String(err)
+        errorMessage.value = String(err);
     }
-    return false
-})
+    return false;
+});
 function reload() {
-    window.location.reload()
+    window.location.reload();
 }
 </script>
 
 <template>
     <Suspense :timeout="30">
-        <el-result v-if="errorMessage" icon="error" :title="$t('error-happens')" :sub-title="errorMessage">
+        <el-result
+            v-if="errorMessage"
+            icon="error"
+            :title="$t('error-happens')"
+            :sub-title="errorMessage"
+        >
             <template #extra>
                 <template v-if="errorMessage.search('WebAssembly') > 0">
-                    <el-text type="warning">{{ $t('upgrade-browser') }}</el-text><br />
+                    <el-text type="warning">{{ $t('upgrade-browser') }}</el-text
+                    ><br />
                 </template>
-                <el-button @click="reload">{{ $t('reload') }}</el-button><br />
-                <el-text type="info">{{ $t('sorry') }}</el-text><br />
+                <el-button @click="reload">{{ $t('reload') }}</el-button
+                ><br />
+                <el-text type="info">{{ $t('sorry') }}</el-text
+                ><br />
                 <el-text type="info">{{ $t('invite') }}</el-text>
             </template>
         </el-result>
         <template v-else-if="designerStore.content != null">
-            <Designer v-if="!designerStore.content.simulatorMode" :item="designerStore.content.item"
-                :recipe="designerStore.content.recipe" :recipe-id="designerStore.content.recipeId"
-                :material-quality-factor="designerStore.content.materialQualityFactor"
-                :recipe-level="designerStore.content.recipeLevel" :requirements="designerStore.content.requirements"
-                :attributes="attributes" :is-custom-recipe="isCustomRecipe" />
-            <Simulator v-else :item="designerStore.content.item" :recipe="designerStore.content.recipe"
-                :recipe-level="designerStore.content.recipeLevel" :attributes="attributes" />
+            <Designer
+                v-if="!designerStore.content.simulatorMode"
+                :item="designerStore.content.item"
+                :recipe="designerStore.content.recipe"
+                :recipe-id="designerStore.content.recipeId"
+                :material-quality-factor="
+                    designerStore.content.materialQualityFactor
+                "
+                :recipe-level="designerStore.content.recipeLevel"
+                :requirements="designerStore.content.requirements"
+                :attributes="attributes"
+                :is-custom-recipe="isCustomRecipe"
+            />
+            <Simulator
+                v-else
+                :item="designerStore.content.item"
+                :recipe="designerStore.content.recipe"
+                :recipe-level="designerStore.content.recipeLevel"
+                :attributes="attributes"
+            />
         </template>
-        <el-empty v-else :description="$t('not-selected')" style="height: 100%;" />
+        <el-empty
+            v-else
+            :description="$t('not-selected')"
+            style="height: 100%"
+        />
 
         <template #fallback>
             <el-skeleton :rows="5" animated />

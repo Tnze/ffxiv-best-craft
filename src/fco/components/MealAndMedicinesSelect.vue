@@ -20,22 +20,26 @@
 import { ref } from 'vue';
 import { NSelect } from 'naive-ui';
 
-import { WebSource, YYYYGamesApiBase } from '@/components/recipe-manager/web-source';
+import {
+    WebSource,
+    YYYYGamesApiBase,
+} from '@/components/recipe-manager/web-source';
 import { Enhancer } from '@/libs/Enhancer';
 
 const dataSource = new WebSource(YYYYGamesApiBase);
-const enhancers = ref<Enhancer[]>()
-const loading = ref(false)
+const enhancers = ref<Enhancer[]>();
+const loading = ref(false);
 
-const props = defineProps<{ type: 'meals' | 'medicines' }>()
+const props = defineProps<{ type: 'meals' | 'medicines' }>();
 
 const emits = defineEmits<{
-    (event: 'select', v: Enhancer | undefined): void
-}>()
+    (event: 'select', v: Enhancer | undefined): void;
+}>();
 
 async function loadMeals() {
-    let i = 0, v;
-    enhancers.value = []
+    let i = 0,
+        v;
+    enhancers.value = [];
 
     loading.value = true;
     do {
@@ -43,24 +47,30 @@ async function loadMeals() {
             v = await v.next();
         } else {
             v = await (props.type == 'meals'
-                ? dataSource.mealsTable(i += 1)
-                : dataSource.medicineTable(i += 1));
+                ? dataSource.mealsTable((i += 1))
+                : dataSource.medicineTable((i += 1)));
         }
-        enhancers.value = enhancers.value.concat(v.results)
-    } while (i < v.totalPages || v.next)
+        enhancers.value = enhancers.value.concat(v.results);
+    } while (i < v.totalPages || v.next);
     loading.value = false;
 }
-loadMeals()
+loadMeals();
 
 function handleUpdateValue(i: number) {
-    emits('select', enhancers.value ? enhancers.value[i] : undefined)
+    emits('select', enhancers.value ? enhancers.value[i] : undefined);
 }
-
 </script>
 
 <template>
-    <n-select :placeholder="$t('select-meals')" :options="enhancers?.map((v, i) => ({ label: v.name, value: i }))"
-        @update-value="handleUpdateValue" :loading="loading" clearable remote :reset-menu-on-options-change="false" />
+    <n-select
+        :placeholder="$t('select-meals')"
+        :options="enhancers?.map((v, i) => ({ label: v.name, value: i }))"
+        @update-value="handleUpdateValue"
+        :loading="loading"
+        clearable
+        remote
+        :reset-menu-on-options-change="false"
+    />
 </template>
 
 <fluent locale="zh-CN">

@@ -18,39 +18,57 @@
 
 <script setup lang="ts">
 import { ElProgress } from 'element-plus';
-import { computed } from 'vue'
+import { computed } from 'vue';
 import { Attributes, Status } from '@/libs/Craft';
 import Buffs from './Buffs.vue';
-import Condition from './Condition.vue'
+import Condition from './Condition.vue';
 
 const props = defineProps<{
     status: Status;
     attributes: Attributes;
     showCondition: boolean;
-}>()
+}>();
 
-const durability = computed<number>(() => props.status === undefined ? 100 : props.status.durability / props.status.recipe.durability * 100)
-const progress = computed<number>(() => props.status === undefined ? 100 : props.status.progress / props.status.recipe.difficulty * 100)
-const remainingProgress = computed(() => props.status.recipe.difficulty - props.status.progress)
-const quality = computed<number>(() => props.status === undefined ? 100 : props.status.quality / props.status.recipe.quality * 100)
+const durability = computed<number>(() =>
+    props.status === undefined
+        ? 100
+        : (props.status.durability / props.status.recipe.durability) * 100,
+);
+const progress = computed<number>(() =>
+    props.status === undefined
+        ? 100
+        : (props.status.progress / props.status.recipe.difficulty) * 100,
+);
+const remainingProgress = computed(
+    () => props.status.recipe.difficulty - props.status.progress,
+);
+const quality = computed<number>(() =>
+    props.status === undefined
+        ? 100
+        : (props.status.quality / props.status.recipe.quality) * 100,
+);
 
 const progressColor = computed<string>(() => {
     if (props.status.progress >= props.status.recipe.difficulty)
-        return '#13CE66'
-    if (props.status.durability <= 0)
-        return '#F56C6C'
-    return '#409EFF'
-})
-const qualityColor = computed<string>(() => props.status.quality >= props.status.recipe.quality ? '#13CE66' : '#409EFF')
+        return '#13CE66';
+    if (props.status.durability <= 0) return '#F56C6C';
+    return '#409EFF';
+});
+const qualityColor = computed<string>(() =>
+    props.status.quality >= props.status.recipe.quality ? '#13CE66' : '#409EFF',
+);
 
 const durabilityColor = [
     { color: '#FF999E', percentage: 20 },
     { color: '#FFD470', percentage: 50 },
     { color: '#62C3FF', percentage: 100 },
-]
+];
 
-const craftPointPercentage = computed(() => props.status?.craft_points / props.status?.attributes.craft_points * 100)
-
+const craftPointPercentage = computed(
+    () =>
+        (props.status?.craft_points / props.status?.attributes.craft_points) *
+        100,
+);
 </script>
 
 <template>
@@ -58,49 +76,91 @@ const craftPointPercentage = computed(() => props.status?.craft_points / props.s
         <div id="durability-and-condition">
             <div id="durability">
                 <span class="bar-title">{{ $t('durability') }} &nbsp;</span>
-                <span>{{ status?.durability }} / {{ status?.recipe.durability }}</span>
+                <span
+                    >{{ status?.durability }} /
+                    {{ status?.recipe.durability }}</span
+                >
 
-                <el-progress :stroke-width="14" :show-text="false" :percentage="durability" :color="durabilityColor"
-                    striped />
+                <el-progress
+                    :stroke-width="14"
+                    :show-text="false"
+                    :percentage="durability"
+                    :color="durabilityColor"
+                    striped
+                />
                 <div id="craft-point"></div>
                 <span class="bar-title">{{ $t('craft-point') }} &nbsp;</span>
-                <span>{{ status?.craft_points }} / {{ status?.attributes.craft_points }}</span>
+                <span
+                    >{{ status?.craft_points }} /
+                    {{ status?.attributes.craft_points }}</span
+                >
 
-                <el-progress :stroke-width="12" :percentage="craftPointPercentage" :show-text="false" color="#FF9999"
-                    striped />
+                <el-progress
+                    :stroke-width="12"
+                    :percentage="craftPointPercentage"
+                    :show-text="false"
+                    color="#FF9999"
+                    striped
+                />
                 <Condition v-if="showCondition" :cond="status.condition" />
             </div>
         </div>
         <div id="progress-and-buffs">
             <span class="bar-title">{{ $t('progress') }} &nbsp;</span>
-            <span>{{ status?.progress }} / {{ status?.recipe.difficulty }}</span>
+            <span
+                >{{ status?.progress }} / {{ status?.recipe.difficulty }}</span
+            >
             <template v-if="remainingProgress > 0">
-                <span class="bar-title">&nbsp; {{ $t('remaining') }} &nbsp;</span>
+                <span class="bar-title"
+                    >&nbsp; {{ $t('remaining') }} &nbsp;</span
+                >
                 <span>{{ remainingProgress }}</span>
             </template>
-            <el-progress :percentage="progress" :color="progressColor" :show-text="false" :stroke-width="10" />
+            <el-progress
+                :percentage="progress"
+                :color="progressColor"
+                :show-text="false"
+                :stroke-width="10"
+            />
             <br />
             <span class="bar-title">{{ $t('quality') }} &nbsp;</span>
             <span>{{ status?.quality }} / {{ status?.recipe.quality }}</span>
-            <el-progress :percentage="quality" :color="qualityColor" :show-text="false" :stroke-width="10" />
+            <el-progress
+                :percentage="quality"
+                :color="qualityColor"
+                :show-text="false"
+                :stroke-width="10"
+            />
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
         <div id="attributes">
             <div class="attr-block">
-                <span class="attr-label">{{ $t('display-attrs-label', { label: $t('level') }) }}</span>
+                <span class="attr-label">{{
+                    $t('display-attrs-label', { label: $t('level') })
+                }}</span>
                 <span class="attr-value">{{ status?.attributes.level }}</span>
             </div>
             <div class="attr-block">
-                <span class="attr-label">{{ $t('display-attrs-label', { label: $t('craftsmanship') }) }}</span>
-                <span class="attr-value">{{ status?.attributes.craftsmanship }}</span>
+                <span class="attr-label">{{
+                    $t('display-attrs-label', { label: $t('craftsmanship') })
+                }}</span>
+                <span class="attr-value">{{
+                    status?.attributes.craftsmanship
+                }}</span>
             </div>
             <div class="attr-block">
-                <span class="attr-label">{{ $t('display-attrs-label', { label: $t('control') }) }}</span>
+                <span class="attr-label">{{
+                    $t('display-attrs-label', { label: $t('control') })
+                }}</span>
                 <span class="attr-value">{{ status?.attributes.control }}</span>
             </div>
             <div class="attr-block">
-                <span class="attr-label">{{ $t('display-attrs-label', { label: $t('craft-point') }) }}</span>
-                <span class="attr-value">{{ status?.attributes.craft_points }}</span>
+                <span class="attr-label">{{
+                    $t('display-attrs-label', { label: $t('craft-point') })
+                }}</span>
+                <span class="attr-value">{{
+                    status?.attributes.craft_points
+                }}</span>
             </div>
         </div>
     </div>

@@ -17,10 +17,29 @@
 -->
 
 <script setup lang="ts">
-import { ElScrollbar, ElDialog, ElButton, ElTable, ElTableColumn, ElCard, ElSwitch } from 'element-plus';
+import {
+    ElScrollbar,
+    ElDialog,
+    ElButton,
+    ElTable,
+    ElTableColumn,
+    ElCard,
+    ElSwitch,
+} from 'element-plus';
 import { Ref, computed, inject, ref, watch } from 'vue';
-import { Recipe, Item, Attributes, Jobs, newStatus, Status, Actions, Conditions, simulateOneStep, RecipeLevel } from '@/libs/Craft';
-import { Enhancer } from "@/libs/Enhancer";
+import {
+    Recipe,
+    Item,
+    Attributes,
+    Jobs,
+    newStatus,
+    Status,
+    Actions,
+    Conditions,
+    simulateOneStep,
+    RecipeLevel,
+} from '@/libs/Craft';
+import { Enhancer } from '@/libs/Enhancer';
 import StatusBarVue from './StatusBar.vue';
 import ActionPanelVue from './ActionPanel.vue';
 import ActionQueueVue from './ActionQueue.vue';
@@ -28,17 +47,17 @@ import AttrEnhSelector from '../attr-enhancer/AttrEnhSelector.vue';
 import { displayJobKey } from './injectionkeys';
 
 const props = defineProps<{
-    recipe: Recipe,
-    recipeLevel: RecipeLevel,
-    item: Item,
-    attributes: Attributes,
-}>()
-const displayJob = inject(displayJobKey) as Ref<Jobs>
+    recipe: Recipe;
+    recipeLevel: RecipeLevel;
+    item: Item;
+    attributes: Attributes;
+}>();
+const displayJob = inject(displayJobKey) as Ref<Jobs>;
 
 interface Slot {
-    id: number,
-    action: Actions,
-    condition: Conditions,
+    id: number;
+    action: Actions;
+    condition: Conditions;
 }
 
 const attributesEnhancers = ref<Enhancer[]>([]);
@@ -46,16 +65,16 @@ const enhancedAttributes = computed<Attributes>(() => {
     let { level, craftsmanship, control, craft_points } = props.attributes;
     const sum = (prev: number, curr: number) => prev + curr;
     craftsmanship += attributesEnhancers.value
-        .filter((v) => v.cm && v.cm_max)
-        .map((v) => Math.min((craftsmanship * v.cm!) / 100, v.cm_max!))
+        .filter(v => v.cm && v.cm_max)
+        .map(v => Math.min((craftsmanship * v.cm!) / 100, v.cm_max!))
         .reduce(sum, 0);
     control += attributesEnhancers.value
-        .filter((v) => v.ct && v.ct_max)
-        .map((v) => Math.min((control * v.ct!) / 100, v.ct_max!))
+        .filter(v => v.ct && v.ct_max)
+        .map(v => Math.min((control * v.ct!) / 100, v.ct_max!))
         .reduce(sum, 0);
     craft_points += attributesEnhancers.value
-        .filter((v) => v.cp && v.cp_max)
-        .map((v) => Math.min((craft_points * v.cp!) / 100, v.cp_max!))
+        .filter(v => v.cp && v.cp_max)
+        .map(v => Math.min((craft_points * v.cp!) / 100, v.cp_max!))
         .reduce(sum, 0);
     return {
         level,
@@ -64,70 +83,89 @@ const enhancedAttributes = computed<Attributes>(() => {
         craft_points,
     };
 });
-const initStatus = ref<Status>({ ...await newStatus(enhancedAttributes.value, props.recipe, props.recipeLevel), quality: 0 });
-watch([props, enhancedAttributes], async ([p, attr]) => { initStatus.value = { ...await newStatus(attr, p.recipe, p.recipeLevel), quality: 0 } });
+const initStatus = ref<Status>({
+    ...(await newStatus(
+        enhancedAttributes.value,
+        props.recipe,
+        props.recipeLevel,
+    )),
+    quality: 0,
+});
+watch([props, enhancedAttributes], async ([p, attr]) => {
+    initStatus.value = {
+        ...(await newStatus(attr, p.recipe, p.recipeLevel)),
+        quality: 0,
+    };
+});
 
-const currentStatus = ref<Status>(initStatus.value)
-const seq = ref<Slot[]>([])
-const openAttrEnhSelector = ref(false)
-const results = ref<Status[]>([])
-const waiting = ref(false)
-const preview = ref<Status | null>(null)
-const rapidMode = ref(true)
+const currentStatus = ref<Status>(initStatus.value);
+const seq = ref<Slot[]>([]);
+const openAttrEnhSelector = ref(false);
+const results = ref<Status[]>([]);
+const waiting = ref(false);
+const preview = ref<Status | null>(null);
+const rapidMode = ref(true);
 let timer: any;
 
-const sleep = (t: number) => new Promise((resolve) => setTimeout(resolve, t))
+const sleep = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 async function pushAction(action: Actions) {
     if (waiting.value) return;
-    leaveAction()
+    leaveAction();
     try {
         let wait;
-        waiting.value = true
+        waiting.value = true;
         if (!rapidMode.value) {
         }
-        wait = sleep(rapidMode.value ? 300 : 1500)
-        const { status, is_success } = await simulateOneStep(currentStatus.value, action, false);
+        wait = sleep(rapidMode.value ? 300 : 1500);
+        const { status, is_success } = await simulateOneStep(
+            currentStatus.value,
+            action,
+            false,
+        );
         await wait;
-        currentStatus.value = status
+        currentStatus.value = status;
         if (!is_success) {
-            action = <Actions>action.concat('_fail')
+            action = <Actions>action.concat('_fail');
         }
         seq.value.push({
-            id: seq.value.length, action,
+            id: seq.value.length,
+            action,
             condition: currentStatus.value.condition,
-        })
-        if (status.progress >= status.recipe.difficulty || status.durability <= 0) {
+        });
+        if (
+            status.progress >= status.recipe.difficulty ||
+            status.durability <= 0
+        ) {
             await sleep(2500);
             restart();
         }
     } catch (e: unknown) {
-        console.error(e)
+        console.error(e);
     } finally {
-        if (timer != null) clearTimeout(timer)
-        waiting.value = false
+        if (timer != null) clearTimeout(timer);
+        waiting.value = false;
     }
 }
 
 function restart() {
-    results.value.push(currentStatus.value)
-    seq.value.splice(0)
-    currentStatus.value = initStatus.value
+    results.value.push(currentStatus.value);
+    seq.value.splice(0);
+    currentStatus.value = initStatus.value;
 }
 
 function hoverAction(action: Actions) {
-    if (timer != null) clearTimeout(timer)
+    if (timer != null) clearTimeout(timer);
     timer = setTimeout(() => {
         simulateOneStep(currentStatus.value, action, true)
-            .then(v => preview.value = v.status)
-            .catch(_e => { })
-    }, 1000)
+            .then(v => (preview.value = v.status))
+            .catch(_e => {});
+    }, 1000);
 }
 
 function leaveAction() {
-    if (timer != null) clearTimeout(timer)
-    preview.value = null
+    if (timer != null) clearTimeout(timer);
+    preview.value = null;
 }
-
 </script>
 
 <template>
@@ -135,25 +173,51 @@ function leaveAction() {
         <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
             <AttrEnhSelector v-model="attributesEnhancers" />
         </el-dialog>
-        <StatusBarVue class="status-bar" :attributes="attributes" :enhancers="attributesEnhancers"
-            :status="preview ?? currentStatus" :show-condition="true" @click-attributes="openAttrEnhSelector = true" />
+        <StatusBarVue
+            class="status-bar"
+            :attributes="attributes"
+            :enhancers="attributesEnhancers"
+            :status="preview ?? currentStatus"
+            :show-condition="true"
+            @click-attributes="openAttrEnhSelector = true"
+        />
         <el-scrollbar class="action-queue">
             <ActionQueueVue :job="displayJob" :list="seq" disabled no-hover />
         </el-scrollbar>
         <div class="actionpanel">
             <el-scrollbar class="action-panel">
-                <ActionPanelVue @clicked-action="pushAction" :disable="waiting" :job="displayJob"
-                    :status="currentStatus" simulator-mode #lower @mousehover-action="hoverAction"
-                    @mouseleave-action="leaveAction" />
-                <el-button class="drop" @click="restart" type="danger">{{ $t('restart') }}</el-button>
-                <el-switch v-model="rapidMode" inline-prompt active-text="高速模式" inactive-text="真实体验" />
+                <ActionPanelVue
+                    @clicked-action="pushAction"
+                    :disable="waiting"
+                    :job="displayJob"
+                    :status="currentStatus"
+                    simulator-mode
+                    #lower
+                    @mousehover-action="hoverAction"
+                    @mouseleave-action="leaveAction"
+                />
+                <el-button class="drop" @click="restart" type="danger">{{
+                    $t('restart')
+                }}</el-button>
+                <el-switch
+                    v-model="rapidMode"
+                    inline-prompt
+                    active-text="高速模式"
+                    inactive-text="真实体验"
+                />
             </el-scrollbar>
             <el-card class="results">
                 <el-scrollbar>
                     <el-table :data="results">
                         <el-table-column prop="step" :label="$t('steps')" />
-                        <el-table-column prop="progress" :label="$t('progress')" />
-                        <el-table-column prop="quality" :label="$t('quality')" />
+                        <el-table-column
+                            prop="progress"
+                            :label="$t('progress')"
+                        />
+                        <el-table-column
+                            prop="quality"
+                            :label="$t('quality')"
+                        />
                     </el-table>
                 </el-scrollbar>
             </el-card>

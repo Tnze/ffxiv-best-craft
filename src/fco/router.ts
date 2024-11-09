@@ -24,8 +24,12 @@ const router = createRouter({
     routes: [
         { path: '/', redirect: '/simulator' },
         { path: '/simulator', name: 'simulator', component: Simulator },
-        { path: '/crafter-attributes', name: 'attributes', component: CrafterAttributes },
-    ]
+        {
+            path: '/crafter-attributes',
+            name: 'attributes',
+            component: CrafterAttributes,
+        },
+    ],
 });
 
-export { router }
+export { router };

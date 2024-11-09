@@ -23,42 +23,66 @@ import { NCard, NProgress, NDivider, NFlex } from 'naive-ui';
 import { Jobs, Status, high_quality_probability } from '@/libs/Craft';
 
 const props = defineProps<{
-    job?: Jobs
-    status?: Status
-    successRate?: number
-}>()
+    job?: Jobs;
+    status?: Status;
+    successRate?: number;
+}>();
 
-const hqRate = ref<number>()
+const hqRate = ref<number>();
 watchEffect(async () => {
     if (props.status) {
-        hqRate.value = await high_quality_probability(props.status) ?? undefined
+        hqRate.value =
+            (await high_quality_probability(props.status)) ?? undefined;
     }
-})
-
+});
 </script>
 
 <template>
     <n-card>
         <template #header>
-            Lv.{{ status?.attributes.level ?? 0 }} {{ job ? $t(job) : "未知职业" }}
+            Lv.{{ status?.attributes.level ?? 0 }}
+            {{ job ? $t(job) : '未知职业' }}
         </template>
         <span>{{ $t('progress') }}</span>
-        <n-progress type="line" :height="24"
-            :percentage="status ? status.progress / status.recipe.difficulty * 100 : 0">
+        <n-progress
+            type="line"
+            :height="24"
+            :percentage="
+                status ? (status.progress / status.recipe.difficulty) * 100 : 0
+            "
+        >
             {{ status?.progress ?? 0 }} / {{ status?.recipe.difficulty ?? 0 }}
         </n-progress>
         <span>{{ $t('quality') }}</span>
-        <n-progress type="line" :height="24" :percentage="status ? status.quality / status.recipe.quality * 100 : 0">
+        <n-progress
+            type="line"
+            :height="24"
+            :percentage="
+                status ? (status.quality / status.recipe.quality) * 100 : 0
+            "
+        >
             {{ status?.quality ?? 0 }} / {{ status?.recipe.quality ?? 0 }}
         </n-progress>
         <span>{{ $t('craft-point') }}</span>
-        <n-progress type="line" :height="24"
-            :percentage="status ? status.craft_points / status.attributes.craft_points * 100 : 0">
-            {{ status?.craft_points ?? 0 }} / {{ status?.attributes.craft_points ?? 0 }}
+        <n-progress
+            type="line"
+            :height="24"
+            :percentage="
+                status
+                    ? (status.craft_points / status.attributes.craft_points) *
+                      100
+                    : 0
+            "
+        >
+            {{ status?.craft_points ?? 0 }} /
+            {{ status?.attributes.craft_points ?? 0 }}
         </n-progress>
         <n-divider />
         <n-flex justify="space-between">
-            <span>耐久度 {{ status?.durability ?? 0 }} / {{ status?.recipe.durability ?? 0 }}</span>
+            <span
+                >耐久度 {{ status?.durability ?? 0 }} /
+                {{ status?.recipe.durability ?? 0 }}</span
+            >
             <span>优质率 {{ hqRate ?? 0 }}%</span>
             <span>成功率 {{ successRate ?? 100 }}%</span>
         </n-flex>

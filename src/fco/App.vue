@@ -17,23 +17,37 @@
 -->
 
 <script setup lang="ts">
-import { NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter, NConfigProvider, NLoadingBarProvider, darkTheme, zhCN } from 'naive-ui';
+import {
+    NLayout,
+    NLayoutHeader,
+    NLayoutContent,
+    NLayoutFooter,
+    NConfigProvider,
+    NLoadingBarProvider,
+    darkTheme,
+    zhCN,
+} from 'naive-ui';
 import Navicator from './components/Navicator.vue';
-import { useDark } from '@vueuse/core'
+import { useDark } from '@vueuse/core';
 
-const dark = useDark()
+const dark = useDark();
 
 const themeOverrides = {
     common: {
         borderRadius: '14px',
-    }
-}
+    },
+};
 </script>
 
 <template>
-    <n-config-provider :theme="dark ? darkTheme : undefined" :theme-overrides="themeOverrides" :locale="zhCN" abstract>
-        <n-layout class="page" style="height: 100%;">
-            <n-layout-header style="padding: 5px;">
+    <n-config-provider
+        :theme="dark ? darkTheme : undefined"
+        :theme-overrides="themeOverrides"
+        :locale="zhCN"
+        abstract
+    >
+        <n-layout class="page" style="height: 100%">
+            <n-layout-header style="padding: 5px">
                 <Navicator />
             </n-layout-header>
             <n-layout-content class="content">

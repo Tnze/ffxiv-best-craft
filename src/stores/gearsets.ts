@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Jobs, Attributes } from "@/libs/Craft"
-import { defineStore } from "pinia"
+import { Jobs, Attributes } from '@/libs/Craft';
+import { defineStore } from 'pinia';
 
 export interface GearsetsRow {
-    name: Jobs
-    value: Attributes | undefined
+    name: Jobs;
+    value: Attributes | undefined;
 }
 
 export default defineStore('gearsets', {
@@ -39,24 +39,25 @@ export default defineStore('gearsets', {
             { name: Jobs.Weaver, value: undefined },
             { name: Jobs.Alchemist, value: undefined },
             { name: Jobs.Culinarian, value: undefined },
-        ] as GearsetsRow[]
+        ] as GearsetsRow[],
     }),
     getters: {
         toJson(): string {
             return JSON.stringify({
                 default: this.default,
-                special: this.special
-            })
+                special: this.special,
+            });
         },
         attributes() {
-            return (job: Jobs) => this.special.find(v => v.name == job)?.value ?? this.default
-        }
+            return (job: Jobs) =>
+                this.special.find(v => v.name == job)?.value ?? this.default;
+        },
     },
     actions: {
         fromJson(json: string) {
-            let v = JSON.parse(json)
-            this.default = v.default
-            this.special = v.special
+            let v = JSON.parse(json);
+            this.default = v.default;
+            this.special = v.special;
         },
     },
-})
+});

@@ -25,7 +25,7 @@ import { formatDuration } from '@/libs/Utils';
 import { isTauri } from '@/libs/Consts';
 
 const props = defineProps<{
-    actions: Actions[]
+    actions: Actions[];
 }>();
 const { $t } = useFluent();
 const message = useMessage();
@@ -34,72 +34,88 @@ const genOptions = reactive({
     hasNotify: true, // 宏执行完成是否提示
     hasLock: false, // 添加锁定宏语句
     avgSize: true, // 让每个宏的长度尽量相同
-})
+});
 
 const chunkedActions = computed(() => {
-    const macros = []
-    let maxLinesPerChunk = 15
-    if (genOptions.hasNotify)
-        maxLinesPerChunk--
-    if (genOptions.hasLock)
-        maxLinesPerChunk--
+    const macros = [];
+    let maxLinesPerChunk = 15;
+    if (genOptions.hasNotify) maxLinesPerChunk--;
+    if (genOptions.hasLock) maxLinesPerChunk--;
     const minChunks = Math.ceil(props.actions.length / maxLinesPerChunk);
     const size = props.actions.length / minChunks || 14;
     for (let sec = 0; sec < minChunks; sec++) {
         let section: Actions[];
         if (genOptions.avgSize) {
-            section = props.actions.slice(sec * size, Math.min(props.actions.length, (sec + 1) * size))
+            section = props.actions.slice(
+                sec * size,
+                Math.min(props.actions.length, (sec + 1) * size),
+            );
         } else {
             const start = sec * maxLinesPerChunk;
-            section = props.actions.slice(start, Math.min(props.actions.length, start + maxLinesPerChunk))
+            section = props.actions.slice(
+                start,
+                Math.min(props.actions.length, start + maxLinesPerChunk),
+            );
         }
         const lines = [];
         let totalWaitTime = 0;
-        if (genOptions.hasLock)
-            lines.push(`/mlock`)
+        if (genOptions.hasLock) lines.push(`/mlock`);
         for (let action of section) {
             const waitTime = calcWaitTime(action);
-            let actionName = $t(action.replaceAll('_', '-'))
+            let actionName = $t(action.replaceAll('_', '-'));
             if (actionName.includes(' ')) {
-                actionName = `"${actionName}"`
+                actionName = `"${actionName}"`;
             }
             lines.push(`/ac ${actionName} <wait.${waitTime}>`);
             totalWaitTime += waitTime;
         }
         if (genOptions.hasNotify)
-            lines.push(`/echo ${$t('macro-finished', { id: sec + 1 })}<se.1>`)
-        macros.push({ lines, totalWaitTime })
+            lines.push(`/echo ${$t('macro-finished', { id: sec + 1 })}<se.1>`);
+        macros.push({ lines, totalWaitTime });
     }
-    return macros
-})
+    return macros;
+});
 
 const copyChunk = async (i: number, macro: string[]) => {
-    const macroText = macro.join('\r\n').replaceAll(/\u2068|\u2069/g, '')
+    const macroText = macro.join('\r\n').replaceAll(/\u2068|\u2069/g, '');
     if (isTauri) {
-        let { writeText } = await import('@tauri-apps/plugin-clipboard-manager')
-        await writeText(macroText)
+        let { writeText } = await import(
+            '@tauri-apps/plugin-clipboard-manager'
+        );
+        await writeText(macroText);
     } else {
-        let { useClipboard } = await import("@vueuse/core")
-        useClipboard().copy(macroText)
+        let { useClipboard } = await import('@vueuse/core');
+        useClipboard().copy(macroText);
     }
-    message.success(
-        $t('copied-macro', { id: i + 1 }), {
+    message.success($t('copied-macro', { id: i + 1 }), {
         duration: 2000,
         closable: true,
-    })
-}
-
+    });
+};
 </script>
 
 <template>
     <n-flex vertical>
         <n-flex>
-            <n-checkbox v-model:checked="genOptions.hasNotify" :label="$t('has-notify')" />
-            <n-checkbox v-model:checked="genOptions.hasLock" :label="$t('has-lock')" />
-            <n-checkbox v-model:checked="genOptions.avgSize" :label="$t('avg-size')" />
+            <n-checkbox
+                v-model:checked="genOptions.hasNotify"
+                :label="$t('has-notify')"
+            />
+            <n-checkbox
+                v-model:checked="genOptions.hasLock"
+                :label="$t('has-lock')"
+            />
+            <n-checkbox
+                v-model:checked="genOptions.avgSize"
+                :label="$t('avg-size')"
+            />
         </n-flex>
         <template v-for="({ lines, totalWaitTime }, i) in chunkedActions">
-            <span>{{ $t('macro') }} #{{ i + 1 }} ({{ formatDuration(totalWaitTime * 1e3, 0) }})</span>
+            <span
+                >{{ $t('macro') }} #{{ i + 1 }} ({{
+                    formatDuration(totalWaitTime * 1e3, 0)
+                }})</span
+            >
             <n-card class="box-card" @click="copyChunk(i, lines)" hoverable>
                 <span v-for="line in lines">
                     {{ line }}

@@ -22,26 +22,26 @@ import { RouterLink } from 'vue-router';
 import { NGradientText, NMenu } from 'naive-ui';
 import type { MenuOption } from 'naive-ui';
 
-
 const menuOptions: MenuOption[] = [
     {
         key: 'simulator',
-        label: () => h(
-            RouterLink,
-            { to: { name: 'simulator' } },
-            { default: () => '模拟器' }
-        ),
+        label: () =>
+            h(
+                RouterLink,
+                { to: { name: 'simulator' } },
+                { default: () => '模拟器' },
+            ),
     },
     {
         key: 'attributes',
-        label: () => h(
-            RouterLink,
-            { to: { name: 'attributes' } },
-            { default: () => '状态参数' }
-        ),
+        label: () =>
+            h(
+                RouterLink,
+                { to: { name: 'attributes' } },
+                { default: () => '状态参数' },
+            ),
     },
 ];
-
 </script>
 
 <template>

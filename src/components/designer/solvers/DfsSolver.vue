@@ -18,51 +18,69 @@
 
 <script setup lang="ts">
 import { Actions, Status } from '@/libs/Craft';
-import { ElAlert, ElButton, ElCheckbox, ElLink, ElSlider, ElDialog } from 'element-plus'
+import {
+    ElAlert,
+    ElButton,
+    ElCheckbox,
+    ElLink,
+    ElSlider,
+    ElDialog,
+} from 'element-plus';
 import { useFluent } from 'fluent-vue';
 import { Ref, ref, watch } from 'vue';
 import { nq_solve, dfs_solve } from '@/libs/Solver';
-import { ChatSquare } from '@element-plus/icons-vue'
+import { ChatSquare } from '@element-plus/icons-vue';
 import { SequenceSource } from '../types';
 import { isTauri } from '@/libs/Consts';
 
-const { $t } = useFluent()
+const { $t } = useFluent();
 
 const props = defineProps<{
-    canHq: boolean
-}>()
+    canHq: boolean;
+}>();
 
 const emits = defineEmits<{
-    (event: 'runSimpleSolver', solverId: SequenceSource, solvingRunningState: Ref<Boolean>, solver: (initStatus: Status) => Promise<Actions[]>): void
-}>()
+    (
+        event: 'runSimpleSolver',
+        solverId: SequenceSource,
+        solvingRunningState: Ref<Boolean>,
+        solver: (initStatus: Status) => Promise<Actions[]>,
+    ): void;
+}>();
 
 // dfs求解器最大深度，设置超过该深度会显示警告
-const warningDepth = isTauri ? 6 : 4
+const warningDepth = isTauri ? 6 : 4;
 
-const dialogVisible = ref(false)
+const dialogVisible = ref(false);
 const maxDepth = ref(warningDepth);
 const useSpecialist = ref(false);
 const doNotTouch = ref(false);
 const dfsSolving = ref(false);
 
-watch(() => props.canHq, v => {
-    // single way update
-    doNotTouch.value = !v
-})
+watch(
+    () => props.canHq,
+    v => {
+        // single way update
+        doNotTouch.value = !v;
+    },
+);
 
 function dfsFormatTooltip(value: number): string {
     let str = String(value);
-    if (value > warningDepth) str = '⚠️' + str
-    return str
+    if (value > warningDepth) str = '⚠️' + str;
+    return str;
 }
 
 function runDfsSolver() {
-    emits('runSimpleSolver', SequenceSource.DFSSolver, dfsSolving,
+    emits(
+        'runSimpleSolver',
+        SequenceSource.DFSSolver,
+        dfsSolving,
         initStatus => {
-            const solver = doNotTouch.value ? nq_solve : dfs_solve
-            return solver(initStatus, maxDepth.value, useSpecialist.value)
-        }
-    )
+            const solver = doNotTouch.value ? nq_solve : dfs_solve;
+            return solver(initStatus, maxDepth.value, useSpecialist.value);
+        },
+    );
 }
 </script>
 
@@ -70,20 +88,44 @@ function runDfsSolver() {
     <el-dialog v-model="dialogVisible" :title="$t('dfs-solver-info-title')">
         <i18n path="dfs-solver-info" tag="span" class="solver-info">
             <template #ffxivCraftingAlgo="{ commandLineTool }">
-                <el-link type="primary" href="https://github.com/Tnze/ffxiv-crafting-algo" target="_blank">
+                <el-link
+                    type="primary"
+                    href="https://github.com/Tnze/ffxiv-crafting-algo"
+                    target="_blank"
+                >
                     {{ commandLineTool }}
                 </el-link>
             </template>
         </i18n>
     </el-dialog>
-    <div class="argument-block" style="display: flex;">
+    <div class="argument-block" style="display: flex">
         <span class="slider-label">{{ $t('dfs-max-depth') }}</span>
-        <el-slider v-model="maxDepth" :min="1" :max="10" :format-tooltip="dfsFormatTooltip"
-            :aria-label="$t('dfs-max-depth')" :disabled="dfsSolving" />
+        <el-slider
+            v-model="maxDepth"
+            :min="1"
+            :max="10"
+            :format-tooltip="dfsFormatTooltip"
+            :aria-label="$t('dfs-max-depth')"
+            :disabled="dfsSolving"
+        />
     </div>
-    <el-alert v-if="maxDepth > warningDepth" type="warning" :title="$t('dfs-too-depth')" show-icon :closable="false" />
-    <el-checkbox v-model="doNotTouch" :label="$t('do-not-touch')" :disabled="dfsSolving" />
-    <el-checkbox v-model="useSpecialist" :label="$t('specialist')" :disabled="dfsSolving" />
+    <el-alert
+        v-if="maxDepth > warningDepth"
+        type="warning"
+        :title="$t('dfs-too-depth')"
+        show-icon
+        :closable="false"
+    />
+    <el-checkbox
+        v-model="doNotTouch"
+        :label="$t('do-not-touch')"
+        :disabled="dfsSolving"
+    />
+    <el-checkbox
+        v-model="useSpecialist"
+        :label="$t('specialist')"
+        :disabled="dfsSolving"
+    />
     <div>
         <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
             {{ dfsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
@@ -113,7 +155,7 @@ function runDfsSolver() {
     margin-bottom: 0;
 }
 
-.argument-block .slider-label+.el-slider {
+.argument-block .slider-label + .el-slider {
     flex: 0 0 70%;
 }
 </style>

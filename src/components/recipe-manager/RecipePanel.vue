@@ -17,40 +17,68 @@
 -->
 
 <script setup lang="ts">
-import { ref, reactive, watch, onMounted, onActivated, computed, watchEffect } from 'vue'
-import { ElDescriptions, ElDescriptionsItem, ElInput, ElButton, ElDialog, ElTable, ElTableColumn, ElPagination, ElMessage, ElForm, ElFormItem, ElSelect, ElOption, ElInputNumber } from 'element-plus'
-import { EditPen } from '@element-plus/icons-vue'
-import { newRecipe, Recipe, RecipeInfo } from '@/libs/Craft'
+import {
+    ref,
+    reactive,
+    watch,
+    onMounted,
+    onActivated,
+    computed,
+    watchEffect,
+} from 'vue';
+import {
+    ElDescriptions,
+    ElDescriptionsItem,
+    ElInput,
+    ElButton,
+    ElDialog,
+    ElTable,
+    ElTableColumn,
+    ElPagination,
+    ElMessage,
+    ElForm,
+    ElFormItem,
+    ElSelect,
+    ElOption,
+    ElInputNumber,
+} from 'element-plus';
+import { EditPen } from '@element-plus/icons-vue';
+import { newRecipe, Recipe, RecipeInfo } from '@/libs/Craft';
 import { useRouter } from 'vue-router';
 import { useFluent } from 'fluent-vue';
 import { selectRecipe } from './common';
-import { CraftType, DataSource, DataSourceType, RecipesSourceResult } from './source';
-import useSettingsStore from '@/stores/settings'
+import {
+    CraftType,
+    DataSource,
+    DataSourceType,
+    RecipesSourceResult,
+} from './source';
+import useSettingsStore from '@/stores/settings';
 import { useMediaQuery } from '@vueuse/core';
 
 const emit = defineEmits<{
-    (e: 'setTitle', title: string): void
-}>()
-onActivated(() => emit('setTitle', 'select-recipe'))
+    (e: 'setTitle', title: string): void;
+}>();
+onActivated(() => emit('setTitle', 'select-recipe'));
 
-const searchingDelayMs = 200
-const settingStore = useSettingsStore()
-const router = useRouter()
-const { $t } = useFluent()
+const searchingDelayMs = 200;
+const settingStore = useSettingsStore();
+const router = useRouter();
+const { $t } = useFluent();
 
-const searchText = ref('')
+const searchText = ref('');
 const pagination = reactive({
     Page: 1,
-    PageTotal: 1
-})
-const infiniteRecipeNext = ref<() => Promise<RecipesSourceResult>>()
-const displayTable = ref<RecipeInfo[]>([])
-const isRecipeTableLoading = ref(false)
-const compactLayout = useMediaQuery('screen and (max-width: 500px)')
-const filterCraftType = ref<number>()
-const filterLevel = ref<number>()
-const craftTypeOptions = ref<CraftType[]>([])
-const filterRecipeLevel = ref<number>()
+    PageTotal: 1,
+});
+const infiniteRecipeNext = ref<() => Promise<RecipesSourceResult>>();
+const displayTable = ref<RecipeInfo[]>([]);
+const isRecipeTableLoading = ref(false);
+const compactLayout = useMediaQuery('screen and (max-width: 500px)');
+const filterCraftType = ref<number>();
+const filterLevel = ref<number>();
+const craftTypeOptions = ref<CraftType[]>([]);
+const filterRecipeLevel = ref<number>();
 
 async function craftTypeRemoteMethod() {
     const source = await settingStore.getDataSource;
@@ -58,10 +86,17 @@ async function craftTypeRemoteMethod() {
     craftTypeOptions.value = await source.craftTypeList();
 }
 
-let loadRecipeTableResult: Promise<{ results: RecipeInfo[], totalPages: number }> | null = null
-async function updateRecipePage(dataSource: DataSource, pageNumber: number, searching: string) {
+let loadRecipeTableResult: Promise<{
+    results: RecipeInfo[];
+    totalPages: number;
+}> | null = null;
+async function updateRecipePage(
+    dataSource: DataSource,
+    pageNumber: number,
+    searching: string,
+) {
     // 对于已有缓存的加载会很快，只有较慢的情况才需要显示Loading
-    let timer = setTimeout(() => isRecipeTableLoading.value = true, 200)
+    let timer = setTimeout(() => (isRecipeTableLoading.value = true), 200);
     try {
         let promise = dataSource.recipeTable(
             pageNumber,
@@ -70,20 +105,20 @@ async function updateRecipePage(dataSource: DataSource, pageNumber: number, sear
             filterCraftType.value,
             filterLevel.value ? filterLevel.value * 10 - 9 : undefined,
             filterLevel.value ? filterLevel.value * 10 : undefined,
-        )
-        loadRecipeTableResult = promise
-        let { results, totalPages, next } = await promise
+        );
+        loadRecipeTableResult = promise;
+        let { results, totalPages, next } = await promise;
         if (loadRecipeTableResult == promise) {
-            displayTable.value = results
-            pagination.PageTotal = totalPages
-            loadRecipeTableResult = null
+            displayTable.value = results;
+            pagination.PageTotal = totalPages;
+            loadRecipeTableResult = null;
             infiniteRecipeNext.value = next;
         }
     } catch (e: any) {
-        ElMessage.error(String(e))
+        ElMessage.error(String(e));
     } finally {
-        clearTimeout(timer)
-        isRecipeTableLoading.value = false
+        clearTimeout(timer);
+        isRecipeTableLoading.value = false;
     }
 }
 
@@ -91,59 +126,62 @@ async function infiniteRecipeLoad() {
     if (infiniteRecipeNext.value == undefined) {
         return;
     }
-    let timer = setTimeout(() => isRecipeTableLoading.value = true, 20)
+    let timer = setTimeout(() => (isRecipeTableLoading.value = true), 20);
     try {
         const promise = infiniteRecipeNext.value();
         loadRecipeTableResult = promise;
-        let { results, totalPages, next } = await promise
+        let { results, totalPages, next } = await promise;
         if (loadRecipeTableResult == promise) {
-            displayTable.value = displayTable.value.concat(results)
-            pagination.PageTotal = totalPages
-            loadRecipeTableResult = null
+            displayTable.value = displayTable.value.concat(results);
+            pagination.PageTotal = totalPages;
+            loadRecipeTableResult = null;
             infiniteRecipeNext.value = next;
         }
     } catch (e: any) {
-        ElMessage.error(String(e))
+        ElMessage.error(String(e));
     } finally {
-        clearTimeout(timer)
-        isRecipeTableLoading.value = false
+        clearTimeout(timer);
+        isRecipeTableLoading.value = false;
     }
 }
 
 // 搜索时更新
 let searchTimer: any = null;
 watch(searchText, async searching => {
-    const source = await settingStore.getDataSource
+    const source = await settingStore.getDataSource;
     if (searchTimer != null) {
-        clearTimeout(searchTimer)
+        clearTimeout(searchTimer);
     }
     switch (source.sourceType) {
         case DataSourceType.Realtime:
-            updateRecipePage(source, pagination.Page, searching)
+            updateRecipePage(source, pagination.Page, searching);
             break;
         case DataSourceType.RemoteRealtime:
             searchTimer = setTimeout(() => {
                 pagination.Page = 1; // 触发搜索时应该翻回第一页，否则搜不到东西
-                updateRecipePage(source, pagination.Page, searching)
-                searchTimer = null
-            }, searchingDelayMs)
+                updateRecipePage(source, pagination.Page, searching);
+                searchTimer = null;
+            }, searchingDelayMs);
             break;
     }
-})
+});
 
 // 翻页时更新
-watch(() => pagination.Page, async pageNumber => {
-    const source = await settingStore.getDataSource
-    await updateRecipePage(source, pageNumber, searchText.value)
-})
+watch(
+    () => pagination.Page,
+    async pageNumber => {
+        const source = await settingStore.getDataSource;
+        await updateRecipePage(source, pageNumber, searchText.value);
+    },
+);
 
 // 回车手动更新
 async function triggerSearch() {
-    const source = await settingStore.getDataSource
-    const pageNumber = pagination.Page
-    const searching = searchText.value
+    const source = await settingStore.getDataSource;
+    const pageNumber = pagination.Page;
+    const searching = searchText.value;
     pagination.Page = 1; // 触发搜索时应该翻回第一页，否则搜不到东西
-    await updateRecipePage(source, pageNumber, searching)
+    await updateRecipePage(source, pageNumber, searching);
 }
 
 // 页面载入后更新
@@ -153,10 +191,13 @@ onMounted(async () => {
 });
 
 // 数据源切换时更新
-watch(() => settingStore.getDataSource, (source) => {
-    triggerSearch();
-    craftTypeRemoteMethod();
-});
+watch(
+    () => settingStore.getDataSource,
+    source => {
+        triggerSearch();
+        craftTypeRemoteMethod();
+    },
+);
 
 // 接受跳转参数
 watchEffect(() => {
@@ -164,50 +205,60 @@ watchEffect(() => {
     if (recipeId !== undefined) {
         selectRecipeById(Number(recipeId));
     }
-})
+});
 
-const confirmDialogVisible = ref(false)
-const selectedRecipe = ref<[Recipe, RecipeInfo]>()
+const confirmDialogVisible = ref(false);
+const selectedRecipe = ref<[Recipe, RecipeInfo]>();
 const isNormalRecipe = computed(() => {
-    return selectedRecipe.value?.[0].conditions_flag === 15
-})
-let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null = null
+    return selectedRecipe.value?.[0].conditions_flag === 15;
+});
+let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null =
+    null;
 
 async function selectRecipeRow(row: RecipeInfo) {
     try {
-        isRecipeTableLoading.value = true
+        isRecipeTableLoading.value = true;
         const source = await settingStore.getDataSource;
         var [recipeLevel, info] = await Promise.all([
             source.recipeLevelTable(row.rlv),
-            source.itemInfo(row.item_id)
-        ])
+            source.itemInfo(row.item_id),
+        ]);
     } catch (e: any) {
-        ElMessage.error(String(e))
-        return
+        ElMessage.error(String(e));
+        return;
     } finally {
-        isRecipeTableLoading.value = false
+        isRecipeTableLoading.value = false;
     }
     const recipe = await newRecipe(
         row.rlv,
         recipeLevel,
         row.difficulty_factor,
         row.quality_factor,
-        row.durability_factor
-    )
+        row.durability_factor,
+    );
     selectedRecipe.value = [recipe, row];
     confirmDialogCallback = (mode: 'designer' | 'simulator') => {
-        selectRecipe(recipe, row.id, recipeLevel, row.material_quality_factor, row, info, row.job, mode == 'simulator')
-        router.push({ name: "designer" })
-        confirmDialogVisible.value = false
-        confirmDialogCallback = null
-    }
-    confirmDialogVisible.value = true
+        selectRecipe(
+            recipe,
+            row.id,
+            recipeLevel,
+            row.material_quality_factor,
+            row,
+            info,
+            row.job,
+            mode == 'simulator',
+        );
+        router.push({ name: 'designer' });
+        confirmDialogVisible.value = false;
+        confirmDialogCallback = null;
+    };
+    confirmDialogVisible.value = true;
 }
 
 async function selectRecipeById(recipeId: number) {
     const source = await settingStore.getDataSource;
     if (source.recipeInfo == undefined) {
-        ElMessage.error($t("datasource-unsupport-recipe-info"));
+        ElMessage.error($t('datasource-unsupport-recipe-info'));
         return;
     }
     try {
@@ -221,19 +272,26 @@ async function selectRecipeById(recipeId: number) {
     }
     await selectRecipeRow(recipeInfo);
 }
-
 </script>
 
 <template>
     <div class="container">
-        <el-dialog v-model="confirmDialogVisible" :title="$t('please-confirm')" :align-center="true"
-            :width="compactLayout ? '90%' : '50%'">
+        <el-dialog
+            v-model="confirmDialogVisible"
+            :title="$t('please-confirm')"
+            :align-center="true"
+            :width="compactLayout ? '90%' : '50%'"
+        >
             <el-descriptions>
                 <el-descriptions-item :label="$t('name')" :span="3">
                     {{ selectedRecipe?.[1].item_name }}
                 </el-descriptions-item>
-                <el-descriptions-item :label="$t('recipe-level')">{{ selectedRecipe?.[0].rlv }}</el-descriptions-item>
-                <el-descriptions-item :label="$t('type')">{{ selectedRecipe?.[1].job }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('recipe-level')">{{
+                    selectedRecipe?.[0].rlv
+                }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('type')">{{
+                    selectedRecipe?.[1].job
+                }}</el-descriptions-item>
                 <el-descriptions-item :label="$t('level')">
                     {{ selectedRecipe?.[0].job_level }}
                 </el-descriptions-item>
@@ -250,9 +308,12 @@ async function selectRecipeById(recipeId: number) {
             </el-descriptions>
             <br />
             <span>
-                {{ isNormalRecipe
-                    ? $t('confirm-select', { itemName: selectedRecipe?.[1].item_name || '' })
-                    : $t('confirm-select2')
+                {{
+                    isNormalRecipe
+                        ? $t('confirm-select', {
+                              itemName: selectedRecipe?.[1].item_name || '',
+                          })
+                        : $t('confirm-select2')
                 }}
             </span>
             <template #footer>
@@ -260,51 +321,120 @@ async function selectRecipeById(recipeId: number) {
                     <el-button @click="confirmDialogVisible = false">
                         {{ $t('cancel') }}
                     </el-button>
-                    <el-button v-if="!isNormalRecipe" type="primary" @click="confirmDialogCallback!('simulator')">
+                    <el-button
+                        v-if="!isNormalRecipe"
+                        type="primary"
+                        @click="confirmDialogCallback!('simulator')"
+                    >
                         {{ $t('simulator-mode') }}
                     </el-button>
-                    <el-button type="primary" @click="confirmDialogCallback!('designer')">
+                    <el-button
+                        type="primary"
+                        @click="confirmDialogCallback!('designer')"
+                    >
                         {{ $t(isNormalRecipe ? 'confirm' : 'designer-mode') }}
                     </el-button>
                 </span>
             </template>
         </el-dialog>
-        <el-input v-model="searchText" @keydown.enter="triggerSearch" class="search-input" :placeholder="$t('search')"
-            clearable>
+        <el-input
+            v-model="searchText"
+            @keydown.enter="triggerSearch"
+            class="search-input"
+            :placeholder="$t('search')"
+            clearable
+        >
             <template #append>
-                <el-button :icon="EditPen" @click="router.push('/recipe/customize')">
+                <el-button
+                    :icon="EditPen"
+                    @click="router.push('/recipe/customize')"
+                >
                     {{ $t('custom-recipe') }}
                 </el-button>
             </template>
         </el-input>
         <el-form :inline="true">
             <el-form-item :label="$t('craft-type')">
-                <el-select v-model="filterCraftType" clearable :remote-method="craftTypeRemoteMethod"
-                    style="width: 180px" @change="triggerSearch">
-                    <el-option v-for="{ id, name } in craftTypeOptions" :key="id" :value="id" :label="name" />
+                <el-select
+                    v-model="filterCraftType"
+                    clearable
+                    :remote-method="craftTypeRemoteMethod"
+                    style="width: 180px"
+                    @change="triggerSearch"
+                >
+                    <el-option
+                        v-for="{ id, name } in craftTypeOptions"
+                        :key="id"
+                        :value="id"
+                        :label="name"
+                    />
                 </el-select>
             </el-form-item>
             <el-form-item :label="$t('level')">
-                <el-select v-model="filterLevel" style="width: 100px" @change="triggerSearch" clearable>
-                    <el-option v-for="i in 10" :key="i" :value="i" :label="`${i * 10 - 9} ~ ${i * 10}`" />
+                <el-select
+                    v-model="filterLevel"
+                    style="width: 100px"
+                    @change="triggerSearch"
+                    clearable
+                >
+                    <el-option
+                        v-for="i in 10"
+                        :key="i"
+                        :value="i"
+                        :label="`${i * 10 - 9} ~ ${i * 10}`"
+                    />
                 </el-select>
             </el-form-item>
             <el-form-item :label="$t('recipe-level')">
-                <el-input-number v-model="filterRecipeLevel" style="width: 100px" clearable :min="1" :max="799"
-                    :step="1" step-strictly :controls="false" @change="triggerSearch" />
+                <el-input-number
+                    v-model="filterRecipeLevel"
+                    style="width: 100px"
+                    clearable
+                    :min="1"
+                    :max="799"
+                    :step="1"
+                    step-strictly
+                    :controls="false"
+                    @change="triggerSearch"
+                />
             </el-form-item>
         </el-form>
-        <el-table v-tnze-loading="isRecipeTableLoading" :element-loading-text="$t('please-wait')" highlight-current-row
-            @row-click="selectRecipeRow" :data="displayTable" height="100%" style="width: 100%"
-            v-el-table-infinite-scroll="infiniteRecipeLoad" :infinite-scroll-disabled="infiniteRecipeNext == undefined"
-            :infinite-scroll-immediate="false" :infinite-scroll-distance="100">
-            <el-table-column prop="id" label="ID" :width="compactLayout ? undefined : 100" />
-            <el-table-column prop="rlv" :label="$t('recipe-level')" :width="compactLayout ? undefined : 100" />
-            <el-table-column prop="job" :label="$t('type')" :width="compactLayout ? undefined : 200" />
+        <el-table
+            v-tnze-loading="isRecipeTableLoading"
+            :element-loading-text="$t('please-wait')"
+            highlight-current-row
+            @row-click="selectRecipeRow"
+            :data="displayTable"
+            height="100%"
+            style="width: 100%"
+            v-el-table-infinite-scroll="infiniteRecipeLoad"
+            :infinite-scroll-disabled="infiniteRecipeNext == undefined"
+            :infinite-scroll-immediate="false"
+            :infinite-scroll-distance="100"
+        >
+            <el-table-column
+                prop="id"
+                label="ID"
+                :width="compactLayout ? undefined : 100"
+            />
+            <el-table-column
+                prop="rlv"
+                :label="$t('recipe-level')"
+                :width="compactLayout ? undefined : 100"
+            />
+            <el-table-column
+                prop="job"
+                :label="$t('type')"
+                :width="compactLayout ? undefined : 200"
+            />
             <el-table-column prop="item_name" :label="$t('name')" />
         </el-table>
-        <el-pagination v-if="pagination.PageTotal > 1" layout="prev, pager, next" v-model:current-page="pagination.Page"
-            :page-count="pagination.PageTotal" />
+        <el-pagination
+            v-if="pagination.PageTotal > 1"
+            layout="prev, pager, next"
+            v-model:current-page="pagination.Page"
+            :page-count="pagination.PageTotal"
+        />
     </div>
 </template>
 

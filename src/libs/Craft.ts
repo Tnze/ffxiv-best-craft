@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { isTauri } from "./Consts";
+import { isTauri } from './Consts';
 
-if (import.meta.env.VITE_BESTCRAFT_TARGET == "tauri") {
-    var pkgTauri = import("@tauri-apps/api/core")
+if (import.meta.env.VITE_BESTCRAFT_TARGET == 'tauri') {
+    var pkgTauri = import('@tauri-apps/api/core');
 } else {
-    var pkgWasm = import("@/../pkg-wasm/app_wasm")
+    var pkgWasm = import('@/../pkg-wasm/app_wasm');
 }
 
 export interface Attributes {
@@ -30,11 +30,11 @@ export interface Attributes {
 }
 
 export interface Item {
-    id: number,
-    name: string,
-    level: number,
-    can_be_hq: boolean,
-    category_id?: number,
+    id: number;
+    name: string;
+    level: number;
+    can_be_hq: boolean;
+    category_id?: number;
 }
 
 export interface Recipe {
@@ -47,18 +47,18 @@ export interface Recipe {
 }
 
 export interface RecipeLevel {
-    class_job_level: number,
-    stars: number,
-    suggested_craftsmanship: number | null,
-    suggested_control: number | null,
-    difficulty: number,
-    quality: number,
-    progress_divider: number,
-    quality_divider: number,
-    progress_modifier: number,
-    quality_modifier: number,
-    durability: number,
-    conditions_flag: number,
+    class_job_level: number;
+    stars: number;
+    suggested_craftsmanship: number | null;
+    suggested_control: number | null;
+    difficulty: number;
+    quality: number;
+    progress_divider: number;
+    quality_divider: number;
+    progress_modifier: number;
+    quality_modifier: number;
+    durability: number;
+    conditions_flag: number;
 }
 
 export interface Buffs {
@@ -93,20 +93,17 @@ export interface Status {
 }
 
 export enum LimitedActionState {
-    Unused = "Unused",
-    Active = "Active",
-    Used = "Used",
+    Unused = 'Unused',
+    Active = 'Active',
+    Used = 'Used',
 }
 
 export const compareStatus = (s1: Status, s2: Status): number => {
-    if (s1.progress != s2.progress)
-        return s1.progress - s2.progress;
-    if (s1.quality != s2.quality)
-        return s1.quality - s2.quality;
-    if (s1.step != s2.step)
-        return s2.step - s1.step;
-    return 0
-}
+    if (s1.progress != s2.progress) return s1.progress - s2.progress;
+    if (s1.quality != s2.quality) return s1.quality - s2.quality;
+    if (s1.step != s2.step) return s2.step - s1.step;
+    return 0;
+};
 
 export enum Conditions {
     // 白：通常
@@ -129,62 +126,62 @@ export enum Conditions {
     // 紫：技能效果持续增加两回合
     Primed = 'Primed',
     // 粉：下一回合必定是红球
-    GoodOmen = "GoodOmen",
+    GoodOmen = 'GoodOmen',
 }
 
 export enum Jobs {
-    Carpenter = "carpenter",
-    Blacksmith = "blacksmith",
-    Armorer = "armorer",
-    Goldsmith = "goldsmith",
-    Leatherworker = "leatherworker",
-    Weaver = "weaver",
-    Alchemist = "alchemist",
-    Culinarian = "culinarian",
+    Carpenter = 'carpenter',
+    Blacksmith = 'blacksmith',
+    Armorer = 'armorer',
+    Goldsmith = 'goldsmith',
+    Leatherworker = 'leatherworker',
+    Weaver = 'weaver',
+    Alchemist = 'alchemist',
+    Culinarian = 'culinarian',
 }
 
 export enum Actions {
-    BasicSynthesis = "basic_synthesis",
-    BasicTouch = "basic_touch",
-    MastersMend = "masters_mend",
-    HastyTouch = "hasty_touch",
-    RapidSynthesis = "rapid_synthesis",
-    Observe = "observe",
-    TricksOfTheTrade = "tricks_of_the_trade",
-    WasteNot = "waste_not",
-    Veneration = "veneration",
-    StandardTouch = "standard_touch",
-    GreatStrides = "great_strides",
-    Innovation = "innovation",
-    FinalAppraisal = "final_appraisal",
-    WasteNotII = "waste_not_ii",
-    ByregotsBlessing = "byregot_s_blessing",
-    PreciseTouch = "precise_touch",
-    MuscleMemory = "muscle_memory",
-    CarefulSynthesis = "careful_synthesis",
-    Manipulation = "manipulation",
-    PrudentTouch = "prudent_touch",
-    Reflect = "reflect",
-    PreparatoryTouch = "preparatory_touch",
-    Groundwork = "groundwork",
-    DelicateSynthesis = "delicate_synthesis",
-    IntensiveSynthesis = "intensive_synthesis",
-    TrainedEye = "trained_eye",
-    AdvancedTouch = "advanced_touch",
-    PrudentSynthesis = "prudent_synthesis",
-    TrainedFinesse = "trained_finesse",
-    CarefulObservation = "careful_observation",
-    HeartAndSoul = "heart_and_soul",
+    BasicSynthesis = 'basic_synthesis',
+    BasicTouch = 'basic_touch',
+    MastersMend = 'masters_mend',
+    HastyTouch = 'hasty_touch',
+    RapidSynthesis = 'rapid_synthesis',
+    Observe = 'observe',
+    TricksOfTheTrade = 'tricks_of_the_trade',
+    WasteNot = 'waste_not',
+    Veneration = 'veneration',
+    StandardTouch = 'standard_touch',
+    GreatStrides = 'great_strides',
+    Innovation = 'innovation',
+    FinalAppraisal = 'final_appraisal',
+    WasteNotII = 'waste_not_ii',
+    ByregotsBlessing = 'byregot_s_blessing',
+    PreciseTouch = 'precise_touch',
+    MuscleMemory = 'muscle_memory',
+    CarefulSynthesis = 'careful_synthesis',
+    Manipulation = 'manipulation',
+    PrudentTouch = 'prudent_touch',
+    Reflect = 'reflect',
+    PreparatoryTouch = 'preparatory_touch',
+    Groundwork = 'groundwork',
+    DelicateSynthesis = 'delicate_synthesis',
+    IntensiveSynthesis = 'intensive_synthesis',
+    TrainedEye = 'trained_eye',
+    AdvancedTouch = 'advanced_touch',
+    PrudentSynthesis = 'prudent_synthesis',
+    TrainedFinesse = 'trained_finesse',
+    CarefulObservation = 'careful_observation',
+    HeartAndSoul = 'heart_and_soul',
     // 7.0
-    RefinedTouch = "refined_touch",
-    DaringTouch = "daring_touch",
-    ImmaculateMend = "immaculate_mend",
-    QuickInnovation = "quick_innovation",
-    TrainedPerfection = "trained_perfection",
+    RefinedTouch = 'refined_touch',
+    DaringTouch = 'daring_touch',
+    ImmaculateMend = 'immaculate_mend',
+    QuickInnovation = 'quick_innovation',
+    TrainedPerfection = 'trained_perfection',
     // fake skills
-    RapidSynthesisFail = "rapid_synthesis_fail",
-    HastyTouchFail = "hasty_touch_fail",
-    DaringTouchFail = "daring_touch_fail",
+    RapidSynthesisFail = 'rapid_synthesis_fail',
+    HastyTouchFail = 'hasty_touch_fail',
+    DaringTouchFail = 'daring_touch_fail',
 }
 
 const waitTimes = new Map([
@@ -224,7 +221,7 @@ const waitTimes = new Map([
     [Actions.ImmaculateMend, 2.17],
     [Actions.QuickInnovation, 2.17],
     [Actions.TrainedPerfection, 2.17],
-])
+]);
 
 export const newRecipe = async (
     rlv: number,
@@ -236,9 +233,9 @@ export const newRecipe = async (
     return {
         rlv,
         job_level: rt.class_job_level,
-        difficulty: Math.floor(rt.difficulty * difficultyFactor / 100),
-        quality: Math.floor(rt.quality * qualityFactor / 100),
-        durability: Math.floor(rt.durability * durabilityFactor / 100),
+        difficulty: Math.floor((rt.difficulty * difficultyFactor) / 100),
+        quality: Math.floor((rt.quality * qualityFactor) / 100),
+        durability: Math.floor((rt.durability * durabilityFactor) / 100),
         conditions_flag: rt.conditions_flag,
     };
 };
@@ -249,13 +246,13 @@ export async function newStatus(
     recipeLevel: RecipeLevel,
 ): Promise<Status> {
     if (isTauri) {
-        let { invoke } = await pkgTauri
-        return invoke("new_status", { attrs, recipe, recipeLevel })
+        let { invoke } = await pkgTauri;
+        return invoke('new_status', { attrs, recipe, recipeLevel });
     } else {
-        let { new_status } = await pkgWasm
-        return new_status(attrs, recipe, recipeLevel)
+        let { new_status } = await pkgWasm;
+        return new_status(attrs, recipe, recipeLevel);
     }
-};
+}
 
 export interface SimulateResult {
     status: Status;
@@ -265,69 +262,86 @@ export interface SimulateResult {
     }[];
 }
 
-export async function simulate(status: Status, actions: Actions[]): Promise<SimulateResult> {
+export async function simulate(
+    status: Status,
+    actions: Actions[],
+): Promise<SimulateResult> {
     if (isTauri) {
-        let { invoke } = await pkgTauri
-        return invoke("simulate", { status, actions });
+        let { invoke } = await pkgTauri;
+        return invoke('simulate', { status, actions });
     } else {
-        let { simulate } = await pkgWasm
-        return simulate(status, actions)
+        let { simulate } = await pkgWasm;
+        return simulate(status, actions);
     }
-};
+}
 
 export interface SimulateOneStepResult {
     status: Status;
     is_success: boolean;
 }
 
-export async function simulateOneStep(status: Status, action: Actions, forceSuccess: boolean): Promise<SimulateOneStepResult> {
+export async function simulateOneStep(
+    status: Status,
+    action: Actions,
+    forceSuccess: boolean,
+): Promise<SimulateOneStepResult> {
     if (isTauri) {
-        let { invoke } = await pkgTauri
-        return invoke("simulate_one_step", { status, action, forceSuccess });
+        let { invoke } = await pkgTauri;
+        return invoke('simulate_one_step', { status, action, forceSuccess });
     } else {
-        let { simulate_one_step } = await pkgWasm
-        return simulate_one_step(status, action, forceSuccess)
-    }
-};
-
-export async function high_quality_probability(status: Status): Promise<number | null> {
-    if (isTauri) {
-        let { invoke } = await pkgTauri
-        return invoke("high_quality_probability", { status });
-    } else {
-        let { high_quality_probability } = await pkgWasm
-        return high_quality_probability(status)
+        let { simulate_one_step } = await pkgWasm;
+        return simulate_one_step(status, action, forceSuccess);
     }
 }
 
-export async function allowedList(status: Status, actions: Actions[]): Promise<string[]> {
+export async function high_quality_probability(
+    status: Status,
+): Promise<number | null> {
     if (isTauri) {
-        let { invoke } = await pkgTauri
-        return invoke("allowed_list", { status, skills: actions });
+        let { invoke } = await pkgTauri;
+        return invoke('high_quality_probability', { status });
     } else {
-        let { allowed_list } = await pkgWasm
-        return allowed_list(status, actions)
+        let { high_quality_probability } = await pkgWasm;
+        return high_quality_probability(status);
     }
-};
+}
 
-export async function craftPointsList(status: Status, actions: Actions[]): Promise<number[]> {
+export async function allowedList(
+    status: Status,
+    actions: Actions[],
+): Promise<string[]> {
     if (isTauri) {
-        let { invoke } = await pkgTauri
-        return invoke("craftpoints_list", { status, skills: actions })
+        let { invoke } = await pkgTauri;
+        return invoke('allowed_list', { status, skills: actions });
     } else {
-        let { craftpoints_list } = await pkgWasm
-        return craftpoints_list(status, actions)
+        let { allowed_list } = await pkgWasm;
+        return allowed_list(status, actions);
     }
-};
+}
+
+export async function craftPointsList(
+    status: Status,
+    actions: Actions[],
+): Promise<number[]> {
+    if (isTauri) {
+        let { invoke } = await pkgTauri;
+        return invoke('craftpoints_list', { status, skills: actions });
+    } else {
+        let { craftpoints_list } = await pkgWasm;
+        return craftpoints_list(status, actions);
+    }
+}
 
 export function calcWaitTime(...actions: Actions[]): number {
-    return actions.map(v => Math.ceil(waitTimes.get(v) ?? 0))
-        .reduce((acc, v) => acc + v, 0)
+    return actions
+        .map(v => Math.ceil(waitTimes.get(v) ?? 0))
+        .reduce((acc, v) => acc + v, 0);
 }
 
 export function calcPostCastTime(...actions: Actions[]): number {
-    return actions.map(v => waitTimes.get(v) ?? 0)
-        .reduce((acc, v) => acc + v, 0)
+    return actions
+        .map(v => waitTimes.get(v) ?? 0)
+        .reduce((acc, v) => acc + v, 0);
 }
 
 export interface RecipeInfo {
@@ -349,8 +363,8 @@ export interface RecipeInfo {
 }
 
 export interface RecipeRequirements {
-    required_craftsmanship: number,
-    required_control: number,
+    required_craftsmanship: number;
+    required_control: number;
 }
 
 export interface ItemWithAmount {

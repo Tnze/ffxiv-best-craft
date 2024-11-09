@@ -16,18 +16,18 @@
 
 export function formatDuration(u: number, fixed?: number): string {
     if (u < 1000) {
-        return u + "ms"
+        return u + 'ms';
     } else {
-        const h = Math.floor(u / 1000 / 3600)
-        const m = Math.floor(u / 1000 / 60) - h * 60
-        const s = (u / 1000 - h * 3600 - m * 60).toFixed(fixed ?? 3)
-        return (h > 0 ? h + 'h' : '') + (m > 0 ? m + 'm' : '') + (s + 's')
+        const h = Math.floor(u / 1000 / 3600);
+        const m = Math.floor(u / 1000 / 60) - h * 60;
+        const s = (u / 1000 - h * 3600 - m * 60).toFixed(fixed ?? 3);
+        return (h > 0 ? h + 'h' : '') + (m > 0 ? m + 'm' : '') + (s + 's');
     }
 }
 
-declare const window: { clarity: any; } & Window & typeof globalThis;
+declare const window: { clarity: any } & Window & typeof globalThis;
 export function clarityReport(event: string) {
     if (window.clarity) {
-        window.clarity('event', event)
+        window.clarity('event', event);
     }
 }

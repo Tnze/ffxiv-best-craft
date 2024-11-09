@@ -18,10 +18,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NModal, NCard, NSelect, SelectOption, useMessage, useLoadingBar } from 'naive-ui';
+import {
+    NModal,
+    NCard,
+    NSelect,
+    SelectOption,
+    useMessage,
+    useLoadingBar,
+} from 'naive-ui';
 
 import useFcoSimulatorStore from '../stores/simulator';
-import { WebSource, YYYYGamesApiBase } from '@/components/recipe-manager/web-source';
+import {
+    WebSource,
+    YYYYGamesApiBase,
+} from '@/components/recipe-manager/web-source';
 import { RecipesSourceResult } from '@/components/recipe-manager/source';
 import { newRecipe, RecipeInfo } from '@/libs/Craft';
 import JobSelect from './JobSelect.vue';
@@ -57,15 +67,13 @@ async function loadOptions() {
         }
         if (currentQuery == query) {
             options.value = options.value.concat(
-                lastResult.results.map(
-                    recipe => ({
-                        label: recipe.item_name,
-                        value: recipe.id,
-                    })
-                )
+                lastResult.results.map(recipe => ({
+                    label: recipe.item_name,
+                    value: recipe.id,
+                })),
             );
             for (const recipeInfo of lastResult.results) {
-                recipeInfos.set(recipeInfo.id, recipeInfo)
+                recipeInfos.set(recipeInfo.id, recipeInfo);
             }
         }
     } catch (e: any) {
@@ -76,13 +84,13 @@ async function loadOptions() {
         }
     }
 }
-loadOptions()
+loadOptions();
 
 function handleScroll(e: Event) {
-    const currentTarget = e.currentTarget as HTMLElement
+    const currentTarget = e.currentTarget as HTMLElement;
     if (
-        currentTarget.scrollTop + currentTarget.offsetHeight
-        >= currentTarget.scrollHeight - 100
+        currentTarget.scrollTop + currentTarget.offsetHeight >=
+        currentTarget.scrollHeight - 100
     ) {
         loadOptions();
     }
@@ -108,31 +116,38 @@ async function updateValue(value: number) {
         loadingBar.start();
         var [recipeLevel, _info] = await Promise.all([
             dataSource.recipeLevelTable(recipeInfo.rlv),
-            dataSource.itemInfo(recipeInfo.item_id)
-        ])
+            dataSource.itemInfo(recipeInfo.item_id),
+        ]);
         const recipe = await newRecipe(
             recipeInfo.rlv,
             recipeLevel,
             recipeInfo.difficulty_factor,
             recipeInfo.quality_factor,
-            recipeInfo.durability_factor
-        )
-        store.recipe = { recipe, recipeLevel, recipeInfo }
+            recipeInfo.durability_factor,
+        );
+        store.recipe = { recipe, recipeLevel, recipeInfo };
         loadingBar.finish();
     } catch (e: any) {
-        message.error(String(e))
+        message.error(String(e));
         loadingBar.error();
     }
 }
-
 </script>
 <template>
-    <n-modal style="width: 90%;">
+    <n-modal style="width: 90%">
         <n-card>
             <JobSelect />
-            <n-select :options="options" :loading="loadingRecipeList" :reset-menu-on-options-change="false"
-                @scroll="handleScroll" @search="setQuery" filterable remote :placeholder="$t('select-recipe')"
-                @update-value="updateValue"></n-select>
+            <n-select
+                :options="options"
+                :loading="loadingRecipeList"
+                :reset-menu-on-options-change="false"
+                @scroll="handleScroll"
+                @search="setQuery"
+                filterable
+                remote
+                :placeholder="$t('select-recipe')"
+                @update-value="updateValue"
+            ></n-select>
         </n-card>
     </n-modal>
 </template>

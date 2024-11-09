@@ -1,7 +1,7 @@
 {
-  "recommendations": [
-    "Vue.volar",
-    "rust-lang.rust-analyzer",
-    "tamasfe.even-better-toml",
-  ]
+    "recommendations": [
+        "Vue.volar",
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml"
+    ]
 }

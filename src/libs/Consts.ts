@@ -14,6 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == "web"
-export const isTauri = import.meta.env.VITE_BESTCRAFT_TARGET == "tauri"
-export const isYYYYGames = window.location.hostname == "tnze.yyyy.games"
+export const isWebsite = import.meta.env.VITE_BESTCRAFT_TARGET == 'web';
+export const isTauri = import.meta.env.VITE_BESTCRAFT_TARGET == 'tauri';
+export const isYYYYGames = window.location.hostname == 'tnze.yyyy.games';

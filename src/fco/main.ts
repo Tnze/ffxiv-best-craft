@@ -14,17 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import { router } from './router'
-import { fluent } from '../fluent'
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import { router } from './router';
+import { fluent } from '../fluent';
 
-import App from './App.vue'
+import App from './App.vue';
 
-const pinia = createPinia()
+const pinia = createPinia();
 
-createApp(App)
-    .use(pinia)
-    .use(router)
-    .use(fluent)
-    .mount('#app')
+createApp(App).use(pinia).use(router).use(fluent).mount('#app');

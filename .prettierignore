@@ -1,0 +1,17 @@
+# Ignore artifacts:
+dist
+pkg-wasm
+
+# Ignore rust projects
+src-libs
+src-tauri
+src-wasm
+src-server
+
+# Ignore lock files
+pnpm-lock.yaml
+Cargo.lock
+
+# Ignore root htmls
+index.html
+fco.html

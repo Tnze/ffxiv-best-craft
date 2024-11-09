@@ -14,48 +14,58 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { compareStatus, Item, Jobs, Recipe, RecipeLevel, RecipeRequirements, simulate, SimulateResult, Status } from "@/libs/Craft"
-import { defineStore } from "pinia"
-import { Sequence } from "@/components/designer/types"
+import {
+    compareStatus,
+    Item,
+    Jobs,
+    Recipe,
+    RecipeLevel,
+    RecipeRequirements,
+    simulate,
+    SimulateResult,
+    Status,
+} from '@/libs/Craft';
+import { defineStore } from 'pinia';
+import { Sequence } from '@/components/designer/types';
 
-type StagedSequence = { key: number, seq: Sequence };
+type StagedSequence = { key: number; seq: Sequence };
 
 export default defineStore('designer', {
     state: () => ({
         content: null as {
-            item: Item,
-            job?: Jobs,
-            recipe: Recipe,
-            recipeId?: number,
-            recipeLevel: RecipeLevel,
-            materialQualityFactor: number,
-            requirements: RecipeRequirements,
-            simulatorMode: boolean,
+            item: Item;
+            job?: Jobs;
+            recipe: Recipe;
+            recipeId?: number;
+            recipeLevel: RecipeLevel;
+            materialQualityFactor: number;
+            requirements: RecipeRequirements;
+            simulatorMode: boolean;
         } | null,
         rotations: {
             staged: <StagedSequence[]>[],
             maxid: 0,
-        }
+        },
     }),
     getters: {
         toJson(): string {
             return JSON.stringify({
                 rotations: this.rotations,
-            })
-        }
+            });
+        },
     },
     actions: {
         selectRecipe(payload: {
-            job?: Jobs,
-            item: Item,
-            recipe: Recipe,
-            recipeId?: number,
-            recipeLevel: RecipeLevel,
-            materialQualityFactor: number,
-            requirements: RecipeRequirements,
-            simulatorMode: boolean,
+            job?: Jobs;
+            item: Item;
+            recipe: Recipe;
+            recipeId?: number;
+            recipeLevel: RecipeLevel;
+            materialQualityFactor: number;
+            requirements: RecipeRequirements;
+            simulatorMode: boolean;
         }) {
-            this.content = payload
+            this.content = payload;
         },
 
         pushRotation(seq: Sequence) {
@@ -64,20 +74,22 @@ export default defineStore('designer', {
         },
 
         deleteRotation(i: number) {
-            this.rotations.staged.splice(i, 1)
+            this.rotations.staged.splice(i, 1);
         },
 
         clearRotations() {
-            this.rotations.staged.length = 0
+            this.rotations.staged.length = 0;
         },
 
         async sortRotations(initStatus: Status) {
             const results = new Map<number, SimulateResult>();
-            await Promise.all(this.rotations.staged.map(async (v) => {
-                const actions = v.seq.slots.map(v => v.action);
-                const result = await simulate(initStatus, actions);
-                results.set(v.key, result);
-            }));
+            await Promise.all(
+                this.rotations.staged.map(async v => {
+                    const actions = v.seq.slots.map(v => v.action);
+                    const result = await simulate(initStatus, actions);
+                    results.set(v.key, result);
+                }),
+            );
             this.rotations.staged.sort((a, b) => {
                 const as = results.get(a.key)!.status;
                 const bs = results.get(b.key)!.status;
@@ -90,8 +102,8 @@ export default defineStore('designer', {
                 const v = JSON.parse(json);
                 this.rotations = v.rotations;
             } catch (e: any) {
-                console.error(e)
+                console.error(e);
             }
         },
-    }
-})
+    },
+});

@@ -17,46 +17,59 @@
 -->
 
 <script setup lang="ts">
-import { ref, onActivated } from 'vue'
-import { ElScrollbar, ElForm, ElFormItem, ElSelect, ElOption, ElButton, ElLink, ElRadioGroup, ElRadioButton, ElDialog, ElText } from 'element-plus'
-import { useFluent } from 'fluent-vue'
-import useSettingsStore from '@/stores/settings'
-import { languages } from '../lang'
-import { useColorMode } from '@vueuse/core'
-import { isTauri, isWebsite, isYYYYGames } from '@/libs/Consts'
-import SupportUs from './SupportUs.vue'
+import { ref, onActivated } from 'vue';
+import {
+    ElScrollbar,
+    ElForm,
+    ElFormItem,
+    ElSelect,
+    ElOption,
+    ElButton,
+    ElLink,
+    ElRadioGroup,
+    ElRadioButton,
+    ElDialog,
+    ElText,
+} from 'element-plus';
+import { useFluent } from 'fluent-vue';
+import useSettingsStore from '@/stores/settings';
+import { languages } from '../lang';
+import { useColorMode } from '@vueuse/core';
+import { isTauri, isWebsite, isYYYYGames } from '@/libs/Consts';
+import SupportUs from './SupportUs.vue';
 
 const emit = defineEmits<{
-    (e: 'setTitle', title: string): void
-}>()
-onActivated(() => emit('setTitle', 'settings'))
+    (e: 'setTitle', title: string): void;
+}>();
+onActivated(() => emit('setTitle', 'settings'));
 
-const { $t } = useFluent()
-const store = useSettingsStore()
-const colorMode = useColorMode().store
+const { $t } = useFluent();
+const store = useSettingsStore();
+const colorMode = useColorMode().store;
 
-const appName = ref('BestCraft')
-const version = ref('')
-const tauriVersion = ref('')
-var checkingUpdate = ref(false)
-var onCheckUpdateClick = async () => { }
-const licenseDialogVisible = ref(false)
-const switchLinesDialogVisible = ref(false)
+const appName = ref('BestCraft');
+const version = ref('');
+const tauriVersion = ref('');
+var checkingUpdate = ref(false);
+var onCheckUpdateClick = async () => {};
+const licenseDialogVisible = ref(false);
+const switchLinesDialogVisible = ref(false);
 
 if (isTauri) {
-    import('@tauri-apps/api/app').then(({ getName, getVersion, getTauriVersion }) => {
-        getName().then(n => appName.value = n)
-        getVersion().then(v => version.value = v)
-        getTauriVersion().then(t => tauriVersion.value = t)
-    })
+    import('@tauri-apps/api/app').then(
+        ({ getName, getVersion, getTauriVersion }) => {
+            getName().then(n => (appName.value = n));
+            getVersion().then(v => (version.value = v));
+            getTauriVersion().then(t => (tauriVersion.value = t));
+        },
+    );
     onCheckUpdateClick = async () => {
-        let { checkUpdate } = await import('../update')
-        checkingUpdate.value = true
-        await checkUpdate($t, false)
-        checkingUpdate.value = false
-    }
+        let { checkUpdate } = await import('../update');
+        checkingUpdate.value = true;
+        await checkUpdate($t, false);
+        checkingUpdate.value = false;
+    };
 }
-
 </script>
 
 <template>
@@ -65,26 +78,48 @@ if (isTauri) {
             <el-form-item :label="$t('language')">
                 <el-select v-model="store.language">
                     <el-option :label="$t('system-lang')" value="system" />
-                    <el-option v-for="[v, name] in languages" :label="name" :value="v" />
+                    <el-option
+                        v-for="[v, name] in languages"
+                        :label="name"
+                        :value="v"
+                    />
                 </el-select>
             </el-form-item>
             <el-form-item :label="$t('theme')">
                 <el-radio-group v-model="colorMode">
-                    <el-radio-button value="light">{{ $t('light') }}</el-radio-button>
-                    <el-radio-button value="dark">{{ $t('dark') }}</el-radio-button>
-                    <el-radio-button value="auto">{{ $t('auto') }}</el-radio-button>
+                    <el-radio-button value="light">{{
+                        $t('light')
+                    }}</el-radio-button>
+                    <el-radio-button value="dark">{{
+                        $t('dark')
+                    }}</el-radio-button>
+                    <el-radio-button value="auto">{{
+                        $t('auto')
+                    }}</el-radio-button>
                 </el-radio-group>
             </el-form-item>
             <el-form-item :label="$t('data-source')">
                 <el-select v-model="store.dataSource">
-                    <el-option v-if="isTauri" :label="$t('ds-local')" value="local" />
+                    <el-option
+                        v-if="isTauri"
+                        :label="$t('ds-local')"
+                        value="local"
+                    />
                     <el-option :label="$t('ds-yyyygames')" value="yyyy.games">
-                        <span style="float: left">{{ $t('ds-yyyygames') }}</span>
-                        <span class="data-source-option-note">{{ $t('ds-yyyygames-desc') }}</span>
+                        <span style="float: left">{{
+                            $t('ds-yyyygames')
+                        }}</span>
+                        <span class="data-source-option-note">{{
+                            $t('ds-yyyygames-desc')
+                        }}</span>
                     </el-option>
                     <el-option :label="$t('ds-beta-xivapi')" value="xivapi">
-                        <span style="float: left">{{ $t('ds-beta-xivapi') }}</span>
-                        <span class="data-source-option-note">{{ $t('ds-beta-xivapi-desc') }} </span>
+                        <span style="float: left">{{
+                            $t('ds-beta-xivapi')
+                        }}</span>
+                        <span class="data-source-option-note"
+                            >{{ $t('ds-beta-xivapi-desc') }}
+                        </span>
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -97,20 +132,45 @@ if (isTauri) {
                 </el-select>
             </el-form-item>
             <el-form-item v-if="isWebsite" :label="$t('switch-lines')">
-                <el-button @click="switchLinesDialogVisible = true">{{ $t('detail') }}</el-button>
-                <el-dialog v-model="switchLinesDialogVisible" :title="$t('switch-lines')">
-                    <p>BestCraft 是开源软件，可以在多个不同的服务器上部署，以下是目前已知的部署了本软件的网站：</p>
+                <el-button @click="switchLinesDialogVisible = true">{{
+                    $t('detail')
+                }}</el-button>
+                <el-dialog
+                    v-model="switchLinesDialogVisible"
+                    :title="$t('switch-lines')"
+                >
                     <p>
-                        <el-link href="https://tnze.yyyy.games/" type="primary">YYYY.GAMES</el-link>
-                        <el-text size="small" type="info">由 <span>瑤瑤瑤影@神意之地</span> 运营</el-text>
+                        BestCraft
+                        是开源软件，可以在多个不同的服务器上部署，以下是目前已知的部署了本软件的网站：
                     </p>
                     <p>
-                        <el-link href="https://bestcraft.nbb.fan/" type="primary">NBB.FAN</el-link>
-                        <el-text size="small" type="info">由 <span>N.B.B</span> 运营</el-text>
+                        <el-link href="https://tnze.yyyy.games/" type="primary"
+                            >YYYY.GAMES</el-link
+                        >
+                        <el-text size="small" type="info"
+                            >由 <span>瑤瑤瑤影@神意之地</span> 运营</el-text
+                        >
                     </p>
                     <p>
-                        <el-link href="https://ffxiv-best-craft.pages.dev/" type="primary">Cloudflare Pages</el-link>
-                        <el-text size="small" type="info">由 <span>Tnze</span> 随意地设置在 Cloudflare 上，不适合国内访问</el-text>
+                        <el-link
+                            href="https://bestcraft.nbb.fan/"
+                            type="primary"
+                            >NBB.FAN</el-link
+                        >
+                        <el-text size="small" type="info"
+                            >由 <span>N.B.B</span> 运营</el-text
+                        >
+                    </p>
+                    <p>
+                        <el-link
+                            href="https://ffxiv-best-craft.pages.dev/"
+                            type="primary"
+                            >Cloudflare Pages</el-link
+                        >
+                        <el-text size="small" type="info"
+                            >由 <span>Tnze</span> 随意地设置在 Cloudflare
+                            上，不适合国内访问</el-text
+                        >
                     </p>
                 </el-dialog>
             </el-form-item>
@@ -122,25 +182,48 @@ if (isTauri) {
                     {{ tauriVersion }}
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="onCheckUpdateClick" :loading="checkingUpdate">
-                        {{ checkingUpdate ? $t('checking-update') : $t('check-update') }}
+                    <el-button
+                        type="primary"
+                        @click="onCheckUpdateClick"
+                        :loading="checkingUpdate"
+                    >
+                        {{
+                            checkingUpdate
+                                ? $t('checking-update')
+                                : $t('check-update')
+                        }}
                     </el-button>
                 </el-form-item>
             </template>
-            <el-form-item :label="$t('developer')">
-                Tnze
-            </el-form-item>
+            <el-form-item :label="$t('developer')"> Tnze </el-form-item>
             <el-form-item :label="$t('feedback')">
-                <el-link href="https://pd.qq.com/s/al6b5xo69" target="_blank">QQ频道</el-link>
-                <el-link href="https://qm.qq.com/q/YMujBifn6G" target="_blank">QQ群聊</el-link>
+                <el-link href="https://pd.qq.com/s/al6b5xo69" target="_blank"
+                    >QQ频道</el-link
+                >
+                <el-link href="https://qm.qq.com/q/YMujBifn6G" target="_blank"
+                    >QQ群聊</el-link
+                >
             </el-form-item>
             <el-form-item :label="$t('source')">
-                <el-link href="https://gitee.com/Tnze/ffxiv-best-craft" target="_blank">Gitee</el-link>
-                <el-link href="https://github.com/Tnze/ffxiv-best-craft" target="_blank">Github</el-link>
+                <el-link
+                    href="https://gitee.com/Tnze/ffxiv-best-craft"
+                    target="_blank"
+                    >Gitee</el-link
+                >
+                <el-link
+                    href="https://github.com/Tnze/ffxiv-best-craft"
+                    target="_blank"
+                    >Github</el-link
+                >
             </el-form-item>
             <el-form-item :label="$t('license')">
                 <el-button @click="licenseDialogVisible = true">AGPL</el-button>
-                <el-dialog class="licenses-dialog" v-model="licenseDialogVisible" :title="$t('license')" width="50%">
+                <el-dialog
+                    class="licenses-dialog"
+                    v-model="licenseDialogVisible"
+                    :title="$t('license')"
+                    width="50%"
+                >
                     <p>{{ $t('licenses-notices-1') }}</p>
                     <p>{{ $t('licenses-notices-2') }}</p>
                     <p>{{ $t('licenses-notices-3') }}</p>

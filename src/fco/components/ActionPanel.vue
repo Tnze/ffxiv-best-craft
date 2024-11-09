@@ -17,23 +17,31 @@
 -->
 
 <script setup lang="ts">
-import { NPopover } from 'naive-ui'
-import { computed, reactive, watchEffect } from 'vue'
-import Action from '@/components/designer/Action.vue'
-import { Jobs, Actions, Status, allowedList, craftPointsList, Conditions, LimitedActionState } from '@/libs/Craft'
+import { NPopover } from 'naive-ui';
+import { computed, reactive, watchEffect } from 'vue';
+import Action from '@/components/designer/Action.vue';
+import {
+    Jobs,
+    Actions,
+    Status,
+    allowedList,
+    craftPointsList,
+    Conditions,
+    LimitedActionState,
+} from '@/libs/Craft';
 
 const props = defineProps<{
-    job: Jobs,
-    status?: Status,
-    simulatorMode?: boolean,
-    disable?: boolean,
-}>()
+    job: Jobs;
+    status?: Status;
+    simulatorMode?: boolean;
+    disable?: boolean;
+}>();
 
 const emit = defineEmits<{
-    (event: 'clickedAction', action: Actions): void
-    (event: 'mousehoverAction', action: Actions): void
-    (event: 'mouseleaveAction', action: Actions): void
-}>()
+    (event: 'clickedAction', action: Actions): void;
+    (event: 'mousehoverAction', action: Actions): void;
+    (event: 'mouseleaveAction', action: Actions): void;
+}>();
 
 const actions: Actions[][] = [
     [
@@ -78,87 +86,106 @@ const actions: Actions[][] = [
         Actions.ImmaculateMend,
         Actions.TrainedPerfection,
     ],
-    [
-        Actions.DelicateSynthesis,
-        Actions.Observe,
-    ]
-]
+    [Actions.DelicateSynthesis, Actions.Observe],
+];
 
 const usedActions = computed(() =>
     actions.map(actions =>
         actions.map(action => {
-            if (action === Actions.HastyTouch &&
+            if (
+                action === Actions.HastyTouch &&
                 props.status != undefined &&
-                props.status.buffs.expedience > 0) {
+                props.status.buffs.expedience > 0
+            ) {
                 return Actions.DaringTouch;
             }
             return action;
-        })
-    )
-)
+        }),
+    ),
+);
 
 const isActived = (action: Actions) => {
-    if (props.status == undefined)
-        return false;
+    if (props.status == undefined) return false;
     switch (action) {
         case Actions.Reflect:
         case Actions.MuscleMemory:
         case Actions.TrainedEye:
-            return props.status.step == 0
+            return props.status.step == 0;
         case Actions.TricksOfTheTrade:
         case Actions.IntensiveSynthesis:
         case Actions.PreciseTouch:
-            return props.status.condition == Conditions.Good ||
+            return (
+                props.status.condition == Conditions.Good ||
                 props.status.condition == Conditions.Excellent ||
                 props.status.buffs.heart_and_soul == LimitedActionState.Active
+            );
         case Actions.ByregotsBlessing:
-            return props.status.buffs.inner_quiet > 0
+            return props.status.buffs.inner_quiet > 0;
         case Actions.RefinedTouch:
         case Actions.StandardTouch:
-            return props.status.buffs.touch_combo_stage == 1
+            return props.status.buffs.touch_combo_stage == 1;
         case Actions.AdvancedTouch:
-            return props.status.buffs.touch_combo_stage == 2 ||
+            return (
+                props.status.buffs.touch_combo_stage == 2 ||
                 props.status.buffs.observed > 0
+            );
         case Actions.DaringTouch:
-            return props.status.buffs.expedience > 0
+            return props.status.buffs.expedience > 0;
     }
     return false;
-}
+};
 
-const cachedAllowedList = reactive(new Map<Actions, string>())
-const cachedCraftPointsList = reactive(new Map<Actions, number>())
+const cachedAllowedList = reactive(new Map<Actions, string>());
+const cachedCraftPointsList = reactive(new Map<Actions, number>());
 
 watchEffect(() => {
     if (props.status == undefined) {
-        cachedAllowedList.clear()
-        return
+        cachedAllowedList.clear();
+        return;
     }
-    const actions = Object.values(Actions)
+    const actions = Object.values(Actions);
     allowedList(props.status, actions).then(result => {
         actions.forEach((i, v) => {
-            cachedAllowedList.set(i, result[v])
-        })
-    })
+            cachedAllowedList.set(i, result[v]);
+        });
+    });
     craftPointsList(props.status, actions).then(result => {
         actions.forEach((i, v) => {
-            cachedCraftPointsList.set(i, result[v])
-        })
-    })
-})
-
+            cachedCraftPointsList.set(i, result[v]);
+        });
+    });
+});
 </script>
 
 <template>
     <div class="container" @click.stop.prevent.right>
         <div v-for="group in usedActions" class="group">
-            <n-popover v-for="action in group" :delay="100" :duration="0" :offset="30">
-                <template #header>{{ $t(action.replaceAll('_', '-')) }}</template>
+            <n-popover
+                v-for="action in group"
+                :delay="100"
+                :duration="0"
+                :offset="30"
+            >
+                <template #header>{{
+                    $t(action.replaceAll('_', '-'))
+                }}</template>
                 <template #trigger>
-                    <Action :job="job" class="item" @click="emit('clickedAction', action)"
-                        @mouseover="emit('mousehoverAction', action)" @mouseleave="emit('mouseleaveAction', action)"
-                        :action="action" :active="isActived(action)"
-                        :effect="!status || !disable && cachedAllowedList.get(action) == 'ok' ? 'normal' : 'black'"
-                        :cp="cachedCraftPointsList.get(action) || undefined" />
+                    <Action
+                        :job="job"
+                        class="item"
+                        @click="emit('clickedAction', action)"
+                        @mouseover="emit('mousehoverAction', action)"
+                        @mouseleave="emit('mouseleaveAction', action)"
+                        :action="action"
+                        :active="isActived(action)"
+                        :effect="
+                            !status ||
+                            (!disable && cachedAllowedList.get(action) == 'ok')
+                                ? 'normal'
+                                : 'black'
+                        "
+                        :cp="cachedCraftPointsList.get(action) || undefined"
+                    />
                 </template>
                 {{ $t('desc-' + action.replaceAll('_', '-')) }}
             </n-popover>

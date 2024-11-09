@@ -17,70 +17,92 @@
 -->
 
 <script setup lang="ts">
-import { ElButton, ElSpace, ElText, ElTag, ElIcon, ElButtonGroup } from "element-plus";
-import { Delete, Upload, SuccessFilled, WarningFilled, CircleCloseFilled } from "@element-plus/icons-vue";
+import {
+    ElButton,
+    ElSpace,
+    ElText,
+    ElTag,
+    ElIcon,
+    ElButtonGroup,
+} from 'element-plus';
+import {
+    Delete,
+    Upload,
+    SuccessFilled,
+    WarningFilled,
+    CircleCloseFilled,
+} from '@element-plus/icons-vue';
 import { Sequence, SequenceSource } from './types';
-import ActionQueue from "./ActionQueue.vue";
-import { calcPostCastTime, calcWaitTime, Jobs, simulate, SimulateResult, Status } from "@/libs/Craft";
-import { formatDuration } from "@/libs/Utils";
-import { ref, computed, watchEffect } from "vue";
+import ActionQueue from './ActionQueue.vue';
+import {
+    calcPostCastTime,
+    calcWaitTime,
+    Jobs,
+    simulate,
+    SimulateResult,
+    Status,
+} from '@/libs/Craft';
+import { formatDuration } from '@/libs/Utils';
+import { ref, computed, watchEffect } from 'vue';
 
 const props = defineProps<{
-    seq: Sequence,
-    status?: Status,
-    displayJob: Jobs,
+    seq: Sequence;
+    status?: Status;
+    displayJob: Jobs;
 }>();
 
 const emit = defineEmits<{
-    (event: 'load'): void
-    (event: 'delete'): void
+    (event: 'load'): void;
+    (event: 'delete'): void;
 }>();
 
 const simulateResult = ref<SimulateResult>();
 watchEffect(() => {
     if (props.status) {
-        simulate(props.status, props.seq.slots.map(v => v.action))
-            .then(rst => simulateResult.value = rst);
+        simulate(
+            props.status,
+            props.seq.slots.map(v => v.action),
+        ).then(rst => (simulateResult.value = rst));
     }
-})
+});
 const color = computed(() => {
     const status = simulateResult.value?.status;
-    if (!status)
-        return
-    else if (status.progress < status.recipe.difficulty)
-        return '#F56C6C'
-    else if (status.quality < status.recipe.quality)
-        return '#E6A23C'
-    else
-        return '#67C23A'
-})
+    if (!status) return;
+    else if (status.progress < status.recipe.difficulty) return '#F56C6C';
+    else if (status.quality < status.recipe.quality) return '#E6A23C';
+    else return '#67C23A';
+});
 
-const tagType = computed<"success" | "warning" | "info" | "danger" | undefined>(() => {
-    const status = simulateResult.value?.status;
-    if (!status)
-        return
-    if (status.progress < status.recipe.difficulty)
-        return 'danger'
-    else if (status.quality < status.recipe.quality)
-        return 'warning'
-    else
-        return 'success'
-})
+const tagType = computed<'success' | 'warning' | 'info' | 'danger' | undefined>(
+    () => {
+        const status = simulateResult.value?.status;
+        if (!status) return;
+        if (status.progress < status.recipe.difficulty) return 'danger';
+        else if (status.quality < status.recipe.quality) return 'warning';
+        else return 'success';
+    },
+);
 
 const waitTime = computed(() => {
-    const actions = props.seq.slots.map(v => v.action)
+    const actions = props.seq.slots.map(v => v.action);
     return {
         macro: calcWaitTime(...actions),
-        manual: calcPostCastTime(...actions)
-    }
-})
+        manual: calcPostCastTime(...actions),
+    };
+});
 </script>
 
 <template>
     <div class="savedqueue-item">
         <div class="savedqueue-item-right">
             <div class="savedqueue-item-actions">
-                <ActionQueue :job="displayJob" :list="seq.slots" :err-list="simulateResult?.errors" disabled no-hover />
+                <ActionQueue
+                    :job="displayJob"
+                    :list="seq.slots"
+                    :err-list="simulateResult?.errors"
+                    disabled
+                    no-hover
+                />
             </div>
             <div class="savedqueue-item-above">
                 <el-text size="small">
@@ -91,31 +113,85 @@ const waitTime = computed(() => {
                             <circle-close-filled v-else />
                         </el-icon>
                         <el-tag round v-if="simulateResult" :type="tagType">
-                            {{ $t('quality-tag', { quality: simulateResult?.status.quality }) }}
+                            {{
+                                $t('quality-tag', {
+                                    quality: simulateResult?.status.quality,
+                                })
+                            }}
                         </el-tag>
                         <el-tag round v-if="simulateResult" type="info">
-                            {{ $t('steps-tag', { steps: simulateResult.status.step ?? seq.slots.length }) }}
+                            {{
+                                $t('steps-tag', {
+                                    steps:
+                                        simulateResult.status.step ??
+                                        seq.slots.length,
+                                })
+                            }}
                         </el-tag>
                         <el-tag round type="info">
-                            {{ $t('macro-duration-tag', { duration: formatDuration(waitTime.macro * 1e3, 0) }) }}
+                            {{
+                                $t('macro-duration-tag', {
+                                    duration: formatDuration(
+                                        waitTime.macro * 1e3,
+                                        0,
+                                    ),
+                                })
+                            }}
                         </el-tag>
                         <el-tag round type="info">
-                            {{ $t('manual-duration-tag', { duration: formatDuration(waitTime.manual * 1e3, 1) }) }}
+                            {{
+                                $t('manual-duration-tag', {
+                                    duration: formatDuration(
+                                        waitTime.manual * 1e3,
+                                        1,
+                                    ),
+                                })
+                            }}
                         </el-tag>
-                        <el-tag round v-if="seq.source !== undefined"
-                            :type="seq.source.includes('solver') ? 'success' : 'warning'">
-                            {{ $t('source-tag', { typ: String(seq.source), source: $t(String(seq.source)) }) }}
+                        <el-tag
+                            round
+                            v-if="seq.source !== undefined"
+                            :type="
+                                seq.source.includes('solver')
+                                    ? 'success'
+                                    : 'warning'
+                            "
+                        >
+                            {{
+                                $t('source-tag', {
+                                    typ: String(seq.source),
+                                    source: $t(String(seq.source)),
+                                })
+                            }}
                         </el-tag>
-                        <el-tag round type="info" v-if="seq.itemName !== undefined">
-                            {{ $t('itemname-tag', { itemName: String(seq.itemName) }) }}
+                        <el-tag
+                            round
+                            type="info"
+                            v-if="seq.itemName !== undefined"
+                        >
+                            {{
+                                $t('itemname-tag', {
+                                    itemName: String(seq.itemName),
+                                })
+                            }}
                         </el-tag>
                         <el-button-group>
-                            <el-button :icon="Upload" size="small" round class="savedqueue-item-button"
-                                @click="emit('load')">
+                            <el-button
+                                :icon="Upload"
+                                size="small"
+                                round
+                                class="savedqueue-item-button"
+                                @click="emit('load')"
+                            >
                                 {{ $t('load') }}
                             </el-button>
-                            <el-button :icon="Delete" size="small" round class="savedqueue-item-button"
-                                @click="emit('delete')">
+                            <el-button
+                                :icon="Delete"
+                                size="small"
+                                round
+                                class="savedqueue-item-button"
+                                @click="emit('delete')"
+                            >
                                 {{ $t('delete') }}
                             </el-button>
                         </el-button-group>

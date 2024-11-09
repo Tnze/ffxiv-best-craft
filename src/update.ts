@@ -14,24 +14,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { check, Update } from '@tauri-apps/plugin-updater'
-import { relaunch } from '@tauri-apps/plugin-process'
-import { ElButton, ElMessage, ElMessageBox, ElNotification, NotificationHandle, MessageHandler } from 'element-plus'
+import { check, Update } from '@tauri-apps/plugin-updater';
+import { relaunch } from '@tauri-apps/plugin-process';
+import {
+    ElButton,
+    ElMessage,
+    ElMessageBox,
+    ElNotification,
+    NotificationHandle,
+    MessageHandler,
+} from 'element-plus';
 import { FluentVariable } from '@fluent/bundle';
-import { h, ref } from 'vue'
+import { h, ref } from 'vue';
 
-
-async function updateNow($t: (key: string, value?: Record<string, FluentVariable>) => string, update: Update) {
+async function updateNow(
+    $t: (key: string, value?: Record<string, FluentVariable>) => string,
+    update: Update,
+) {
     let totalLength = 0;
-    const downloadedLength = ref<number>()
+    const downloadedLength = ref<number>();
     try {
         let messageHandler: MessageHandler | undefined = undefined;
-        await update.downloadAndInstall((downloadEvent) => {
+        await update.downloadAndInstall(downloadEvent => {
             switch (downloadEvent.event) {
                 case 'Started':
-                    totalLength = downloadEvent.data.contentLength || 0
+                    totalLength = downloadEvent.data.contentLength || 0;
                     if (messageHandler) {
-                        messageHandler.close()
+                        messageHandler.close();
                     }
                     messageHandler = ElMessage({
                         showClose: true,
@@ -39,46 +48,53 @@ async function updateNow($t: (key: string, value?: Record<string, FluentVariable
                         type: 'info',
                         message: h(() => {
                             if (downloadedLength.value === undefined) {
-                                return $t('update-started')
+                                return $t('update-started');
                             } else {
-                                const percentage = downloadedLength.value / totalLength * 100;
+                                const percentage =
+                                    (downloadedLength.value / totalLength) *
+                                    100;
                                 return $t('update-progress', {
-                                    progress: `${percentage.toFixed(2)}%`
-                                })
+                                    progress: `${percentage.toFixed(2)}%`,
+                                });
                             }
                         }),
-                    })
+                    });
                     break;
                 case 'Progress':
-                    downloadedLength.value = (downloadedLength.value || 0) + downloadEvent.data.chunkLength;
+                    downloadedLength.value =
+                        (downloadedLength.value || 0) +
+                        downloadEvent.data.chunkLength;
                     break;
                 case 'Finished':
                     if (messageHandler) {
-                        messageHandler.close()
+                        messageHandler.close();
                     }
                     ElMessage({
                         type: 'success',
                         message: $t('update-done'),
-                    })
+                    });
                     break;
             }
-        })
+        });
         // On macOS and Linux, restart the app manually.
         // (And we add another confirmation dialog)
-        await ElMessageBox.confirm($t('update-ask-relaunch'))
+        await ElMessageBox.confirm($t('update-ask-relaunch'));
         // await relaunch()
     } catch (e) {
         // do nothing
         ElMessage({
             type: 'error',
             message: $t('update-error', { error: e as string }),
-        })
+        });
     }
 }
 
-export async function checkUpdate($t: (key: string, value?: Record<string, FluentVariable>) => string, silent: boolean) {
+export async function checkUpdate(
+    $t: (key: string, value?: Record<string, FluentVariable>) => string,
+    silent: boolean,
+) {
     try {
-        const update = await check()
+        const update = await check();
 
         if (update?.available) {
             // Show a dialog asking the user if they want to install the update here.
@@ -86,34 +102,51 @@ export async function checkUpdate($t: (key: string, value?: Record<string, Fluen
                 type: 'info',
                 position: 'bottom-right',
                 duration: 0,
-                title: $t('update-available', { version: update.version || 'Unknown' }),
+                title: $t('update-available', {
+                    version: update.version || 'Unknown',
+                }),
                 message: h('div', [
-                    h('div', { style: 'white-space: pre-wrap;', innerHTML: update.body || '' }),
                     h('div', {
-                        style: 'margin-top: 5px; text-align: right',
-                    }, [
-                        h(ElButton, {
-                            size: 'small',
-                            type: 'primary',
-                            onClick: () => {
-                                notification.close()
-                                updateNow($t, update)
-                            }
-                        }, () => $t('update-now')),
-                        h(ElButton, {
-                            size: 'small',
-                            onClick: () => notification.close()
-                        }, () => $t('update-not-now'))
-                    ]),
-                ])
-            })
+                        style: 'white-space: pre-wrap;',
+                        innerHTML: update.body || '',
+                    }),
+                    h(
+                        'div',
+                        {
+                            style: 'margin-top: 5px; text-align: right',
+                        },
+                        [
+                            h(
+                                ElButton,
+                                {
+                                    size: 'small',
+                                    type: 'primary',
+                                    onClick: () => {
+                                        notification.close();
+                                        updateNow($t, update);
+                                    },
+                                },
+                                () => $t('update-now'),
+                            ),
+                            h(
+                                ElButton,
+                                {
+                                    size: 'small',
+                                    onClick: () => notification.close(),
+                                },
+                                () => $t('update-not-now'),
+                            ),
+                        ],
+                    ),
+                ]),
+            });
         } else if (!silent) {
             ElMessage({
                 type: 'success',
                 message: $t('update-uptodate'),
-            })
+            });
         }
     } catch (error) {
-        console.error(error)
+        console.error(error);
     }
 }

@@ -18,14 +18,31 @@
 
 <script setup lang="ts">
 import { ref, reactive, markRaw, watchEffect } from 'vue';
-import { NGrid, NGi, NMessageProvider, NCard, NTabs, NTabPane, NButton, NFlex, NModalProvider } from 'naive-ui';
+import {
+    NGrid,
+    NGi,
+    NMessageProvider,
+    NCard,
+    NTabs,
+    NTabPane,
+    NButton,
+    NFlex,
+    NModalProvider,
+} from 'naive-ui';
 import ActionQueue from '@/components/designer/ActionQueue.vue';
 import Buffs from '@/components/designer/Buffs.vue';
-import { Actions, Attributes, newStatus, simulate, SimulateResult, Status } from '@/libs/Craft';
+import {
+    Actions,
+    Attributes,
+    newStatus,
+    simulate,
+    SimulateResult,
+    Status,
+} from '@/libs/Craft';
 import { Sequence } from '@/components/designer/types';
 
 import useFcoSimulatorStore from '../stores/simulator';
-import useGearsetsStore from '@/stores/gearsets'
+import useGearsetsStore from '@/stores/gearsets';
 
 import ActionPanel from '../components/ActionPanel.vue';
 import AttributesVue from '../components/Attributes.vue';
@@ -35,19 +52,19 @@ import Analyzer from '../components/Analyzer.vue';
 import SolveModal from '../components/SolveModal.vue';
 import Macros from '../components/Macros.vue';
 
-const gearsetsStore = useGearsetsStore()
+const gearsetsStore = useGearsetsStore();
 const store = useFcoSimulatorStore();
 
 // 持久化 Store
 store.$subscribe((_mutation, state) => {
-    localStorage.setItem('fco-simulator', JSON.stringify(state))
-})
+    localStorage.setItem('fco-simulator', JSON.stringify(state));
+});
 
 const rotation = reactive<Sequence>({
     slots: store.rotation.map((action, id) => ({ id, action })),
     maxid: store.rotation.length,
 });
-const attributs = ref<Attributes>(gearsetsStore.attributes(store.job))
+const attributs = ref<Attributes>(gearsetsStore.attributes(store.job));
 const initStatus = ref<Status>();
 const simulateResult = ref<SimulateResult>();
 const editMode = ref(false);
@@ -64,22 +81,25 @@ watchEffect(async () => {
         initStatus.value = await newStatus(
             attributs.value,
             store.recipe.recipe,
-            store.recipe.recipeLevel
+            store.recipe.recipeLevel,
         );
     } catch (e: any) {
-        console.error(e)
+        console.error(e);
         initStatus.value = undefined;
     }
-})
+});
 
 // 计算模拟结果
 watchEffect(async () => {
     if (!initStatus.value) {
-        simulateResult.value = undefined
+        simulateResult.value = undefined;
         return;
     }
-    simulateResult.value = await simulate(initStatus.value, rotation.slots.map(slot => slot.action));
-})
+    simulateResult.value = await simulate(
+        initStatus.value,
+        rotation.slots.map(slot => slot.action),
+    );
+});
 
 function pushAction(action: Actions) {
     rotation.slots.push(markRaw({ id: rotation.maxid++, action }));
@@ -89,20 +109,29 @@ function save() {
     editMode.value = false;
     store.rotation = rotation.slots.map(v => v.action);
 }
-
-
 </script>
 
 <template>
     <n-message-provider>
-        <n-grid x-gap="20px" y-gap="20px" :cols="12" item-responsive responsive="screen">
+        <n-grid
+            x-gap="20px"
+            y-gap="20px"
+            :cols="12"
+            item-responsive
+            responsive="screen"
+        >
             <n-gi span="12">
                 <RecipeSelect v-model:show="selectRecipe" />
-                <n-button @click="selectRecipe = true">{{ '选择配方' }}</n-button>
+                <n-button @click="selectRecipe = true">{{
+                    '选择配方'
+                }}</n-button>
             </n-gi>
 
             <n-gi span="12 m:6">
-                <CraftingState :job="store.job" :status="simulateResult?.status" />
+                <CraftingState
+                    :job="store.job"
+                    :status="simulateResult?.status"
+                />
             </n-gi>
             <n-gi span="12 m:6">
                 <AttributesVue v-model:attributs="attributs" />
@@ -110,24 +139,43 @@ function save() {
 
             <n-gi v-if="editMode" :span="12">
                 <n-card>
-                    <Buffs v-if="simulateResult" :buffs="simulateResult.status.buffs" />
+                    <Buffs
+                        v-if="simulateResult"
+                        :buffs="simulateResult.status.buffs"
+                    />
                 </n-card>
             </n-gi>
             <n-gi :span="12">
                 <n-card>
-                    <ActionQueue v-model:list="rotation.slots" :job="store.job" :err-list="simulateResult?.errors"
-                        :disabled="!editMode" />
+                    <ActionQueue
+                        v-model:list="rotation.slots"
+                        :job="store.job"
+                        :err-list="simulateResult?.errors"
+                        :disabled="!editMode"
+                    />
                 </n-card>
             </n-gi>
             <n-gi :span="12">
                 <n-flex>
                     <template v-if="!editMode">
-                        <n-button type="primary" @click="editMode = true">{{ $t('edit') }}</n-button>
-                        <n-button type="primary" @click="solverModalShow = true">{{ $t('solve') }}</n-button>
+                        <n-button type="primary" @click="editMode = true">{{
+                            $t('edit')
+                        }}</n-button>
+                        <n-button
+                            type="primary"
+                            @click="solverModalShow = true"
+                            >{{ $t('solve') }}</n-button
+                        >
                     </template>
                     <template v-else>
-                        <n-button type="primary" @click="save">{{ $t('save') }}</n-button>
-                        <n-button type="warning" @click="rotation.slots.splice(0)">{{ $t('clear') }}</n-button>
+                        <n-button type="primary" @click="save">{{
+                            $t('save')
+                        }}</n-button>
+                        <n-button
+                            type="warning"
+                            @click="rotation.slots.splice(0)"
+                            >{{ $t('clear') }}</n-button
+                        >
                     </template>
                 </n-flex>
                 <n-modal-provider>
@@ -135,13 +183,19 @@ function save() {
                 </n-modal-provider>
             </n-gi>
             <n-gi v-if="editMode" :span="12">
-                <ActionPanel :job="store.job" :status="simulateResult?.status ?? initStatus"
-                    @clicked-action="pushAction" />
+                <ActionPanel
+                    :job="store.job"
+                    :status="simulateResult?.status ?? initStatus"
+                    @clicked-action="pushAction"
+                />
             </n-gi>
             <n-gi v-if="initStatus" :span="12">
                 <n-tabs>
                     <n-tab-pane name="random" :tab="$t('random')">
-                        <Analyzer :init-status="initStatus" :actions="rotation.slots.map(s => s.action)" />
+                        <Analyzer
+                            :init-status="initStatus"
+                            :actions="rotation.slots.map(s => s.action)"
+                        />
                     </n-tab-pane>
                     <n-tab-pane name="macro" :tab="$t('macro')">
                         <Macros :actions="rotation.slots.map(s => s.action)" />

@@ -17,45 +17,78 @@
 -->
 
 <script setup lang="ts">
-import { ElScrollbar, ElTabs, ElTabPane, ElForm, ElFormItem, ElInputNumber } from 'element-plus'
-import { onActivated, ref } from 'vue'
-import useGearsetsStore from '@/stores/gearsets'
-import Gearset from '@/components/Gearset.vue'
+import {
+    ElScrollbar,
+    ElTabs,
+    ElTabPane,
+    ElForm,
+    ElFormItem,
+    ElInputNumber,
+} from 'element-plus';
+import { onActivated, ref } from 'vue';
+import useGearsetsStore from '@/stores/gearsets';
+import Gearset from '@/components/Gearset.vue';
 
 const emit = defineEmits<{
-    (e: 'setTitle', title: string): void
-}>()
-onActivated(() => emit('setTitle', 'attributes'))
+    (e: 'setTitle', title: string): void;
+}>();
+onActivated(() => emit('setTitle', 'attributes'));
 
-const store = useGearsetsStore()
-const jobPage = ref('default')
-
+const store = useGearsetsStore();
+const jobPage = ref('default');
 </script>
 
 <template>
     <el-scrollbar>
         <el-tabs class="page" v-model="jobPage" tab-position="left">
             <el-tab-pane name="default" :label="$t('default')">
-                <el-form label-position="right" label-width="auto" :model="store.default">
+                <el-form
+                    label-position="right"
+                    label-width="auto"
+                    :model="store.default"
+                >
                     <el-form-item :label="$t('level')">
-                        <el-input-number :model-value="store.default.level" :min="1" :max="100"
-                            :step-strictly="true" @change="x => store.default.level = x || 1" />
+                        <el-input-number
+                            :model-value="store.default.level"
+                            :min="1"
+                            :max="100"
+                            :step-strictly="true"
+                            @change="x => (store.default.level = x || 1)"
+                        />
                     </el-form-item>
                     <el-form-item :label="$t('craftsmanship')">
-                        <el-input-number :model-value="store.default.craftsmanship" :min="0"
-                            :step-strictly="true" @change="x => store.default.craftsmanship = x || 0" />
+                        <el-input-number
+                            :model-value="store.default.craftsmanship"
+                            :min="0"
+                            :step-strictly="true"
+                            @change="
+                                x => (store.default.craftsmanship = x || 0)
+                            "
+                        />
                     </el-form-item>
                     <el-form-item :label="$t('control')">
-                        <el-input-number :model-value="store.default.control" :min="0"
-                            :step-strictly="true" @change="x => store.default.control = x || 0" />
+                        <el-input-number
+                            :model-value="store.default.control"
+                            :min="0"
+                            :step-strictly="true"
+                            @change="x => (store.default.control = x || 0)"
+                        />
                     </el-form-item>
                     <el-form-item :label="$t('craft-point')">
-                        <el-input-number :model-value="store.default.craft_points" :min="0"
-                            :step-strictly="true" @change="x => store.default.craft_points = x || 0" />
+                        <el-input-number
+                            :model-value="store.default.craft_points"
+                            :min="0"
+                            :step-strictly="true"
+                            @change="x => (store.default.craft_points = x || 0)"
+                        />
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane v-for="v in store.special" :name="v.name" :label="$t(v.name)">
+            <el-tab-pane
+                v-for="v in store.special"
+                :name="v.name"
+                :label="$t(v.name)"
+            >
                 <Gearset :job="v.name" />
             </el-tab-pane>
         </el-tabs>

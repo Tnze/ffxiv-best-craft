@@ -18,9 +18,9 @@
 
 <script setup lang="ts">
 import { NTabs, NTabPane, NForm, NFormItem, NInputNumber } from 'naive-ui';
-import useGearsetsStore from '@/stores/gearsets'
+import useGearsetsStore from '@/stores/gearsets';
 
-const store = useGearsetsStore()
+const store = useGearsetsStore();
 </script>
 
 <template>
@@ -28,16 +28,28 @@ const store = useGearsetsStore()
         <n-tab-pane v-for="v in store.special" :name="v.name" :tab="$t(v.name)">
             <n-form :model="v" label-placement="left" label-width="auto">
                 <n-form-item :label="$t('level')">
-                    <n-input-number v-model:value="(v.value || store.default).level" :disable="!v.value" />
+                    <n-input-number
+                        v-model:value="(v.value || store.default).level"
+                        :disable="!v.value"
+                    />
                 </n-form-item>
                 <n-form-item :label="$t('craftsmanship')">
-                    <n-input-number v-model:value="(v.value || store.default).craftsmanship" :disable="!v.value" />
+                    <n-input-number
+                        v-model:value="(v.value || store.default).craftsmanship"
+                        :disable="!v.value"
+                    />
                 </n-form-item>
                 <n-form-item :label="$t('control')">
-                    <n-input-number v-model:value="(v.value || store.default).control" :disable="!v.value" />
+                    <n-input-number
+                        v-model:value="(v.value || store.default).control"
+                        :disable="!v.value"
+                    />
                 </n-form-item>
                 <n-form-item :label="$t('craft-point')">
-                    <n-input-number v-model:value="(v.value || store.default).craft_points" :disable="!v.value" />
+                    <n-input-number
+                        v-model:value="(v.value || store.default).craft_points"
+                        :disable="!v.value"
+                    />
                 </n-form-item>
             </n-form>
         </n-tab-pane>

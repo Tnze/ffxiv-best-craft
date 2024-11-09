@@ -24,27 +24,23 @@ import { clarityReport } from '@/libs/Utils';
 import { isWebsite, isYYYYGames } from '@/libs/Consts';
 
 const emit = defineEmits<{
-    (e: 'setTitle', title: string): void
-}>()
-onActivated(() => emit('setTitle', ''))
+    (e: 'setTitle', title: string): void;
+}>();
+onActivated(() => emit('setTitle', ''));
 
-const { $t } = useFluent()
+const { $t } = useFluent();
 
-const time = computed<'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'beforedawn'>(() => {
+const time = computed<
+    'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'beforedawn'
+>(() => {
     const hour = new Date().getHours();
-    if (hour >= 4 && hour < 6)
-        return 'beforedawn'
-    else if (hour >= 6 && hour < 11)
-        return 'morning'
-    else if (hour >= 11 && hour < 14)
-        return 'noon'
-    else if (hour >= 14 && hour < 19)
-        return 'afternoon'
-    else if (hour >= 19 && hour < 21)
-        return 'evening'
-    else
-        return 'night'
-})
+    if (hour >= 4 && hour < 6) return 'beforedawn';
+    else if (hour >= 6 && hour < 11) return 'morning';
+    else if (hour >= 11 && hour < 14) return 'noon';
+    else if (hour >= 14 && hour < 19) return 'afternoon';
+    else if (hour >= 19 && hour < 21) return 'evening';
+    else return 'night';
+});
 
 function feedback() {
     window.open('https://pd.qq.com/s/al6b5xo69', '_blank');
@@ -55,7 +51,6 @@ function goFco() {
     window.open('https://yyyy.games/fco/', '_blank');
     clarityReport('goFco');
 }
-
 </script>
 
 <template>
@@ -66,7 +61,11 @@ function goFco() {
             </el-text>
         </div>
         <div class="confirm-button">
-            <el-button type="primary" size="large" @click="$router.push('/recipe')">
+            <el-button
+                type="primary"
+                size="large"
+                @click="$router.push('/recipe')"
+            >
                 {{ $t('select-recipe') }}
             </el-button>
             <el-button type="info" size="large" @click="feedback">
@@ -76,7 +75,12 @@ function goFco() {
                 {{ $t('go-back') }}
             </el-button>
         </div>
-        <el-link v-if="isWebsite && isYYYYGames" target="_blank" href="https://beian.miit.gov.cn/" type="info">
+        <el-link
+            v-if="isWebsite && isYYYYGames"
+            target="_blank"
+            href="https://beian.miit.gov.cn/"
+            type="info"
+        >
             粤ICP备2021156196号-1
         </el-link>
         <el-text class="info-text" type="info">

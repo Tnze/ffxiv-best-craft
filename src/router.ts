@@ -16,12 +16,14 @@
 
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-const Welcome = () => import('./components/guide/Welcome.vue')
-const GearsetsVue = () => import('./components/Gearsets.vue')
-const RecipePanelVue = () => import('./components/recipe-manager/RecipePanel.vue')
-const CustomizeRecipe = () => import('./components/recipe-manager/CustomizeRecipe.vue')
-const DesignerVue = () => import('./components/designer/Page.vue')
-const SettingsVue = () => import('./components/Settings.vue')
+const Welcome = () => import('./components/guide/Welcome.vue');
+const GearsetsVue = () => import('./components/Gearsets.vue');
+const RecipePanelVue = () =>
+    import('./components/recipe-manager/RecipePanel.vue');
+const CustomizeRecipe = () =>
+    import('./components/recipe-manager/CustomizeRecipe.vue');
+const DesignerVue = () => import('./components/designer/Page.vue');
+const SettingsVue = () => import('./components/Settings.vue');
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -30,10 +32,14 @@ const router = createRouter({
         { path: '/welcome', component: Welcome },
         { path: '/gearsets', name: 'gearsets', component: GearsetsVue },
         { path: '/recipe', name: 'recipe', component: RecipePanelVue },
-        { path: '/recipe/customize', name: 'customize-recipe', component: CustomizeRecipe },
+        {
+            path: '/recipe/customize',
+            name: 'customize-recipe',
+            component: CustomizeRecipe,
+        },
         { path: '/designer', name: 'designer', component: DesignerVue },
         { path: '/settings', name: 'settings', component: SettingsVue },
-    ]
-})
+    ],
+});
 
-export { router }
+export { router };

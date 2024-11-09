@@ -14,13 +14,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
-import { Enhancer } from "@/libs/Enhancer";
-import { CraftType, DataSourceResult, DataSourceType, RecipesSourceResult } from "./source";
+import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from '@/libs/Craft';
+import { Enhancer } from '@/libs/Enhancer';
+import {
+    CraftType,
+    DataSourceResult,
+    DataSourceType,
+    RecipesSourceResult,
+} from './source';
 
 export class LocalRecipeSource {
-    public sourceType = DataSourceType.Realtime
-    invoke = import("@tauri-apps/api/core").then(pkg => pkg.invoke);
+    public sourceType = DataSourceType.Realtime;
+    invoke = import('@tauri-apps/api/core').then(pkg => pkg.invoke);
 
     async recipeTable(
         page: number,
@@ -31,51 +36,59 @@ export class LocalRecipeSource {
         jobLevelMax?: number,
     ): Promise<RecipesSourceResult> {
         if (searchName === undefined) {
-            searchName = ""
+            searchName = '';
         }
-        let [results, totalPages]: [RecipeInfo[], number] = await (await this.invoke)("recipe_table", {
+        let [results, totalPages]: [RecipeInfo[], number] = await (
+            await this.invoke
+        )('recipe_table', {
             pageId: page - 1,
-            searchName: "%" + searchName + "%",
+            searchName: '%' + searchName + '%',
             craftTypeId,
             recipeLevel: rlv,
             jobLevelMin,
             jobLevelMax,
         });
-        return { results, totalPages }
+        return { results, totalPages };
     }
 
     async recipesIngredients(recipeId: number): Promise<ItemWithAmount[]> {
-        const ings: [number, number][] = await (await this.invoke)("recipes_ingredientions", { recipeId });
-        return ings.map(x => ({ ingredient_id: x[0], amount: x[1] }))
+        const ings: [number, number][] = await (
+            await this.invoke
+        )('recipes_ingredientions', { recipeId });
+        return ings.map(x => ({ ingredient_id: x[0], amount: x[1] }));
     }
 
     async recipeLevelTable(rlv: number): Promise<RecipeLevel> {
         let result: RecipeLevel = {
-            ...await (await this.invoke)("recipe_level_table", { rlv }),
+            ...(await (await this.invoke)('recipe_level_table', { rlv })),
             stars: 0,
-        }
-        return result
+        };
+        return result;
     }
 
     async itemInfo(itemId: number): Promise<Item> {
-        const { id, name, level, can_be_hq, category_id } = await (await this.invoke)("item_info", { itemId }) as {
-            id: number,
-            name: string,
-            level: number,
-            can_be_hq: number,
-            category_id?: number,
+        const { id, name, level, can_be_hq, category_id } = (await (
+            await this.invoke
+        )('item_info', { itemId })) as {
+            id: number;
+            name: string;
+            level: number;
+            can_be_hq: number;
+            category_id?: number;
         };
         return { id, name, level, can_be_hq: can_be_hq != 0, category_id };
     }
     async craftTypeList(): Promise<CraftType[]> {
-        return await (await this.invoke)("craft_type");
+        return await (
+            await this.invoke
+        )('craft_type');
     }
     async medicineTable(_page: number): Promise<DataSourceResult<Enhancer>> {
-        const results: Enhancer[] = await (await this.invoke)("medicine_table");
+        const results: Enhancer[] = await (await this.invoke)('medicine_table');
         return { results, totalPages: 1 };
     }
     async mealsTable(_page: number): Promise<DataSourceResult<Enhancer>> {
-        const results: Enhancer[] = await (await this.invoke)("meals_table");
+        const results: Enhancer[] = await (await this.invoke)('meals_table');
         return { results, totalPages: 1 };
     }
 }

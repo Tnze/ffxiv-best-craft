@@ -18,19 +18,18 @@
 
 <script setup lang="ts">
 import { useDark } from '@vueuse/core';
-import { Conditions } from '@/libs/Craft'
+import { Conditions } from '@/libs/Craft';
 
 const props = defineProps<{
-    cond: Conditions
+    cond: Conditions;
 }>();
 
-const dark = useDark()
-
+const dark = useDark();
 </script>
 
 <template>
     <span id="icon" :class="props.cond.toLowerCase()">
-        {{ cond == Conditions.Normal && !dark ? "○" : "●" }}
+        {{ cond == Conditions.Normal && !dark ? '○' : '●' }}
     </span>
     &nbsp;
     <span id="text">{{ $t(cond.toLowerCase()) }}</span>
@@ -129,7 +128,6 @@ const dark = useDark()
     color: pink;
 }
 </style>
-
 
 <fluent locale="zh-CN">
 condition = 制作状态

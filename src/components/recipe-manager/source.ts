@@ -14,11 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from "@/libs/Craft";
-import { Enhancer } from "@/libs/Enhancer";
+import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from '@/libs/Craft';
+import { Enhancer } from '@/libs/Enhancer';
 
 export interface DataSource {
-    sourceType: DataSourceType
+    sourceType: DataSourceType;
     recipeTable(
         page: number,
         searchName?: string,
@@ -26,30 +26,32 @@ export interface DataSource {
         craftTypeId?: number,
         jobLevelMin?: number,
         jobLevelMax?: number,
-    ): Promise<RecipesSourceResult>
-    recipesIngredients(recipeId: number): Promise<ItemWithAmount[]>
-    recipeLevelTable(rlv: number): Promise<RecipeLevel>
-    recipeInfo?(recipeId: number): Promise<RecipeInfo>
-    itemInfo(id: number): Promise<Item>
-    craftTypeList(): Promise<CraftType[]>
+    ): Promise<RecipesSourceResult>;
+    recipesIngredients(recipeId: number): Promise<ItemWithAmount[]>;
+    recipeLevelTable(rlv: number): Promise<RecipeLevel>;
+    recipeInfo?(recipeId: number): Promise<RecipeInfo>;
+    itemInfo(id: number): Promise<Item>;
+    craftTypeList(): Promise<CraftType[]>;
 
-    medicineTable(page: number): Promise<DataSourceResult<Enhancer>>
-    mealsTable(page: number): Promise<DataSourceResult<Enhancer>>
+    medicineTable(page: number): Promise<DataSourceResult<Enhancer>>;
+    mealsTable(page: number): Promise<DataSourceResult<Enhancer>>;
 }
 
 export interface CraftType {
-    id: number,
-    name: string,
+    id: number;
+    name: string;
 }
 
 export enum DataSourceType {
-    Realtime, RemoteRealtime, SingleShot
+    Realtime,
+    RemoteRealtime,
+    SingleShot,
 }
 
 export interface DataSourceResult<T> {
-    results: T[],
-    totalPages: number,
-    next?(): Promise<DataSourceResult<T>>
+    results: T[];
+    totalPages: number;
+    next?(): Promise<DataSourceResult<T>>;
 }
 
-export type RecipesSourceResult = DataSourceResult<RecipeInfo>
+export type RecipesSourceResult = DataSourceResult<RecipeInfo>;
