@@ -58,17 +58,18 @@ import { read_solver } from '@/libs/Solver';
 import { Enhancer } from '@/libs/Enhancer';
 import useDesignerStore from '@/stores/designer';
 
+import AttrEnhSelector from './tabs/AttrEnhSelector.vue';
+import InitialQualitySetting from './tabs/InitialQualitySetting.vue';
+import MacroExporter from './tabs/MacroExporter.vue';
+import MacroImporter from './tabs/MacroImporter.vue';
+import StagedActionQueueItem from './tabs/StagedActionQueueItem.vue';
+
 import ActionPanel from './ActionPanel.vue';
 import ActionQueue from './ActionQueue.vue';
 import StatusBar from './StatusBar.vue';
 import SolverList from './solvers/List.vue';
-import MacroExporter from './MacroExporter.vue';
-import MacroImporter from './MacroImporter.vue';
-import InitialQualitySetting from './InitialQualitySetting.vue';
-import AttrEnhSelector from '../attr-enhancer/AttrEnhSelector.vue';
 import { useFluent } from 'fluent-vue';
-import StagedActionQueueItem from './StagedActionQueueItem.vue';
-import Analyzers from './Analyzers.vue';
+import Analyzers from './tabs/Analyzers.vue';
 import { activeSeqKey, displayJobKey } from './injectionkeys';
 import { Slot, Sequence, SequenceSource } from './types';
 

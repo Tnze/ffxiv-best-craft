@@ -32,8 +32,8 @@ import {
     WarningFilled,
     CircleCloseFilled,
 } from '@element-plus/icons-vue';
-import { Sequence, SequenceSource } from './types';
-import ActionQueue from './ActionQueue.vue';
+import { Sequence } from '../types';
+import ActionQueue from '../ActionQueue.vue';
 import {
     calcPostCastTime,
     calcWaitTime,
