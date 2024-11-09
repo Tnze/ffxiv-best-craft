@@ -301,6 +301,7 @@ async function handleSolverResult(
         slots,
         maxid: actions.length,
         source: solverName,
+        itemName: store.content?.item.name,
     };
     loadSeq(seq);
     store.pushRotation(seq);
