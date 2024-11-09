@@ -238,6 +238,9 @@ struct ItemFoodAction {
 #[derive(Default, Serialize)]
 struct Enhancer {
     name: String,
+    level: u32,
+    is_hq: bool,
+
     cm: Option<i32>,
     cm_max: Option<i32>,
     ct: Option<i32>,
@@ -320,11 +323,15 @@ async fn query_enhancers(
         .into_iter()
         .flat_map(|item| {
             let mut enh = Enhancer {
-                name: format!("Lv.{} {}", item.level, item.name),
+                name: item.name.clone(),
+                level: item.level,
+                is_hq: false,
                 ..Enhancer::default()
             };
             let mut enh_hq = Enhancer {
-                name: format!("Lv.{} {} HQ", item.level, item.name),
+                name: item.name.clone(),
+                level: item.level,
+                is_hq: true,
                 ..Enhancer::default()
             };
             for item_food in crafting_item_food
