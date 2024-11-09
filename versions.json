@@ -1,19 +1,19 @@
 {
-    "version": "0.18.6",
-    "notes": "功能更新：\n- 配方选择界面添加等级筛选器\n- 导出宏时默认自动选择是否开启【添加完成提示】选项\n- 优化导出宏时【长度平均化】效果\n- 导入宏界面添加英文翻译\n- 更新依赖库\n\n问题修复：\n- 修复手搓时间计算错误\n- 导出宏时将 /ac 冒进 替换为 /ac 仓促\n- 修复玩家属性等配置文件无法保存的问题",
-    "pub_date": "2024-10-30T12:21:16.074Z",
+    "version": "0.18.8",
+    "notes": "- 改善文本翻译\n- 导出宏功能添加提示音与等待时间配置选项\n- 优化导出宏功能选项布局\n- 修复在初期品质输入框回车时刷新页面的Bug\n- 修复求解器自动保存时不显示配方名称的问题\n- 更新自定义配方默认属性\n- 优化食药属性选择UI界面\n\n- 修改配色\n- 修复使用”工匠的神技“会错误地消耗掉“工匠的绝技”BUFF的问题",
+    "pub_date": "2024-11-09T08:28:09.561Z",
     "platforms": {
         "darwin-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smc4aFdUR1pURHA2Y0lRRmF6VEVzUUI4UXRSc2V6ZXF4b2NhQUgxcVFwV2JpSEt4MHZ0VGxPN1BXTUtVeEZHVk5IUnlIbWVRSEIyT2ZRZ3JkVmxrdmdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzMwMjkwNjQ2CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKZG1XVmU4dVo3WW91T05FVDVkcWFsNUxqdHJkVlBLZHhhZW8rYkpSd1VnVE5FamhzL2RnRmUyWkNQejcwRmZaL3RCaWE4NVJLYTc4TXMrM1NrUEZpQkE9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v0.18.6/BestCraft_aarch64.app.tar.gz"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmpkYkJEc1NXVmJRUXFpRUYyaTRRSGhmNkcrRGw5WlpqbXpHR2ZwUEZCNlhqSmFsVGVnODBmMWtCOExBdVZQN1dXaU9RTnpiUVhZdkhGV3FuZWUyMndzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzMxMTQwNTA3CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKaFRzeEJMbXNOM1ZCZGdQZzVRWHliWEYrb0pMQXA3bnRKSTNDWllReWhNeEFOU1h0azcxYnZsQ0RJN2l3OXV5S0Y3V3g5NjkrYS9YQlpLZ0lPVXVUQWc9PQo=",
+            "url": "https://tnze.yyyy.games/releases/v0.18.8/BestCraft_aarch64.app.tar.gz"
         },
         "linux-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnFudzhBczI4STI0TmNCL3B6WDU5WVNLUVI2ZnAxUEtYK2QvSENRWlZ5SlRseVR1V3N2bjA4YUtKZzdiWC9Fa01WMk5QYjlUd25YZ01QakczSDlEUVFNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzMwMjkwNzYxCWZpbGU6QmVzdENyYWZ0XzAuMTguNl9hbWQ2NC5BcHBJbWFnZQpwZ3MyTmRCZmg5OHIrektVaTBrbWdsYmk2eVVKUys1VXhLd055YWxaZ3BVUjBEMzNGS3VBVEduL21zdzZYeE5NL3FFRlptZmFFQlUwZHdvcklvQVNDUT09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v0.18.6/BestCraft_0.18.6_amd64.AppImage"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm13VlBYYzRSUGx3RG1jUDNGV2k5TDBLVzNzSVpDZGZycG1ZdStoWjhvUjB2L0NISkN6cFVrWHhka2cvcHdGL2szNnhXQ09RYmVINTYyRW5ZWFdMNlE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzMxMTQwNzI5CWZpbGU6QmVzdENyYWZ0XzAuMTguOF9hbWQ2NC5BcHBJbWFnZQpNSlE3U0JvWEVpcGpqWHQ3SEdINXl6THVTaUJkVytEeXBaVVM3NUIxUXpMbTdYK3V0eGdTUVM0aHpXUDliUVVkclRmU0pNbjFmSGo0YWVYTVpTRXlEUT09Cg==",
+            "url": "https://tnze.yyyy.games/releases/v0.18.8/BestCraft_0.18.8_amd64.AppImage"
         },
         "windows-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnRUWlRMaTNHekhVLzdSNExFcExmaE1aZG5QVjFPVnVJNUNaV2FySStVRFJvZzZUQkJBQURDeEZjVzdSQThidVhleExNdUVtMS8yQzNTMDRrbkRkcXdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzMwMjkwODcxCWZpbGU6QmVzdENyYWZ0XzAuMTguNl94NjRfemgtQ04ubXNpLnppcApIaW9seHl0bEcxM1lMK0NrdHB1NFk0MmdEVXNIZmZmU2xzNFFvRWFkVTFnOEZ2Z2l3UDh0b2pIZlQ2eWoxZE1NQWNqMzhSUE90T2xST3lkWWRQMDNDZz09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v0.18.6/BestCraft_0.18.6_x64_zh-CN.msi.zip"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnJYTDd2VmdWYWpiaGt0aG81Vko3NzU1N2tZUmEwSnJ6YXJKQzJZbThmOGpEb1B5TnVQTzQyN08vcmlVZXRobDVxZGFJZEFBVktUS09iZnI5Vm9vckFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzMxMTQwODg0CWZpbGU6QmVzdENyYWZ0XzAuMTguOF94NjRfemgtQ04ubXNpLnppcApjNXZNTUJQY2lPWTR2WUpyQU5LUU44WkNCNkhrL1dJaG9ueWduU2tKVHgwZWdDQ2poRjZESXRWY0RQaVczQjZIbGtRbndZNHRGc2dCY3RycGdnSVVBZz09Cg==",
+            "url": "https://tnze.yyyy.games/releases/v0.18.8/BestCraft_0.18.8_x64_zh-CN.msi.zip"
         }
     }
 }
