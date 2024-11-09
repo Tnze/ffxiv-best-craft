@@ -1177,9 +1177,9 @@ dependencies = [
 
 [[package]]
 name = "embed-resource"
-version = "2.5.0"
+version = "2.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4e24052d7be71f0efb50c201557f6fe7d237cfd5a64fd5bcd7fd8fe32dbbffa"
+checksum = "b68b6f9f63a0b6a38bc447d4ce84e2b388f3ec95c99c641c8ff0dd3ef89a6379"
 dependencies = [
  "cc",
  "memchr",
@@ -1305,9 +1305,9 @@ dependencies = [
 
 [[package]]
 name = "ffxiv-crafting"
-version = "7.0.8"
+version = "7.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2be1db8c4c5fcdcf06e9af1e5a92d060257ece23110f0247918443b8c5e46f97"
+checksum = "b83e3bc75bcbb741603b4524ca974a299d6eb638c8c640950c16848492c2bb64"
 dependencies = [
  "serde",
 ]
