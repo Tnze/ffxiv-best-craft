@@ -51,7 +51,11 @@ export default defineStore('settings', {
         async getDataSource(): Promise<DataSource> {
             let dataSources: Record<string, () => DataSource> = {
                 'yyyy.games': () => new WebSource(YYYYGamesApiBase),
-                'yyyy.games-beta': () => new WebSource(YYYYGamesApiBaseBeta, this.dataSourceLang),
+                'yyyy.games-beta': () =>
+                    new WebSource(
+                        YYYYGamesApiBaseBeta,
+                        this.dataSourceLang ?? 'en',
+                    ),
                 cafe: () => new XivApiRecipeSource(CafeMakerApiBase),
                 xivapi: () =>
                     new BetaXivApiRecipeSource(
