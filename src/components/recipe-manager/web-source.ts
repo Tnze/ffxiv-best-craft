@@ -27,8 +27,10 @@ export class WebSource {
     public sourceType = DataSourceType.RemoteRealtime;
     base: string;
 
-    constructor(base: string) {
-        this.base = base;
+    constructor(base: string, lang?: string) {
+        if (lang !== undefined)
+            this.base = new URL(lang + '/', base).toString();
+        else this.base = base;
     }
 
     async recipeTable(
@@ -168,3 +170,4 @@ export class WebSource {
 }
 
 export const YYYYGamesApiBase = 'https://bc-api.yyyy.games/';
+export const YYYYGamesApiBaseBeta = 'https://bc-api-beta.yyyy.games/';

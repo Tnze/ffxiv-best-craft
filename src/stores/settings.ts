@@ -22,8 +22,9 @@ import {
 } from '@/components/recipe-manager/remote-source';
 import { DataSource } from '@/components/recipe-manager/source';
 import {
-    YYYYGamesApiBase,
     WebSource,
+    YYYYGamesApiBase,
+    YYYYGamesApiBaseBeta,
 } from '@/components/recipe-manager/web-source';
 import {
     BetaXivApiRecipeSource,
@@ -34,9 +35,9 @@ import { isTauri, isWebsite } from '@/libs/Consts';
 export default defineStore('settings', {
     state: () => ({
         language: 'system',
-        dataSource: <'local' | 'yyyy.games' | 'cafe' | 'xivapi'>(
-            (isTauri ? 'local' : 'yyyy.games')
-        ),
+        dataSource: <
+            'local' | 'yyyy.games' | 'yyyy.games-beta' | 'cafe' | 'xivapi'
+        >(isTauri ? 'local' : 'yyyy.games'),
         dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined,
     }),
     getters: {
@@ -50,6 +51,7 @@ export default defineStore('settings', {
         async getDataSource(): Promise<DataSource> {
             let dataSources: Record<string, () => DataSource> = {
                 'yyyy.games': () => new WebSource(YYYYGamesApiBase),
+                'yyyy.games-beta': () => new WebSource(YYYYGamesApiBaseBeta, this.dataSourceLang),
                 cafe: () => new XivApiRecipeSource(CafeMakerApiBase),
                 xivapi: () =>
                     new BetaXivApiRecipeSource(
@@ -89,6 +91,7 @@ export default defineStore('settings', {
             this.$patch(JSON.parse(json));
             if (
                 this.dataSource !== 'xivapi' &&
+                this.dataSource !== 'yyyy.games-beta' &&
                 (isWebsite || this.dataSource !== 'local')
             ) {
                 this.dataSource = 'yyyy.games';

@@ -106,17 +106,25 @@ if (isTauri) {
                         value="local"
                     />
                     <el-option :label="$t('ds-yyyygames')" value="yyyy.games">
-                        <span style="float: left">{{
-                            $t('ds-yyyygames')
-                        }}</span>
-                        <span class="data-source-option-note">{{
-                            $t('ds-yyyygames-desc')
-                        }}</span>
+                        <span style="float: left">
+                            {{ $t('ds-yyyygames') }}
+                        </span>
+                        <span class="data-source-option-note">
+                            {{ $t('ds-yyyygames-desc') }}
+                        </span>
+                    </el-option>
+                    <el-option :label="$t('ds-yyyygames-beta')" value="yyyy.games-beta">
+                        <span style="float: left">
+                            {{ $t('ds-yyyygames-beta') }}
+                        </span>
+                        <span class="data-source-option-note">
+                            {{ $t('ds-yyyygames-beta-desc') }}
+                        </span>
                     </el-option>
                     <el-option :label="$t('ds-beta-xivapi')" value="xivapi">
-                        <span style="float: left">{{
-                            $t('ds-beta-xivapi')
-                        }}</span>
+                        <span style="float: left">
+                            {{ $t('ds-beta-xivapi') }}
+                        </span>
                         <span class="data-source-option-note"
                             >{{ $t('ds-beta-xivapi-desc') }}
                         </span>
@@ -131,10 +139,18 @@ if (isTauri) {
                     <el-option :label="$t('dslang-fr')" value="fr" />
                 </el-select>
             </el-form-item>
+            <el-form-item v-else-if="store.dataSource == 'yyyy.games-beta'">
+                <el-select v-model="store.dataSourceLang">
+                    <el-option :label="$t('dslang-en')" value="en" />
+                    <!-- <el-option :label="$t('dslang-ja')" value="ja" /> -->
+                    <!-- <el-option :label="$t('dslang-de')" value="de" /> -->
+                    <!-- <el-option :label="$t('dslang-fr')" value="fr" /> -->
+                </el-select>
+            </el-form-item>
             <el-form-item v-if="isWebsite" :label="$t('switch-lines')">
-                <el-button @click="switchLinesDialogVisible = true">{{
-                    $t('detail')
-                }}</el-button>
+                <el-button @click="switchLinesDialogVisible = true">
+                    {{ $t('detail') }}
+                </el-button>
                 <el-dialog
                     v-model="switchLinesDialogVisible"
                     :title="$t('switch-lines')"
@@ -267,9 +283,11 @@ data-source = 数据源
 ds-local = 本地
 # ds-xivapi =
 ds-yyyygames-desc = 国服数据
+ds-yyyygames-beta-desc = 国际服数据
 # ds-cafe =
 ds-beta-xivapi-desc = 国际服数据
 switch-lines = 切换线路
+dslang-cn = 汉语
 dslang-en = 英语
 dslang-ja = 日语
 dslang-de = 德语
@@ -298,11 +316,14 @@ data-source = Data Source
 ds-local = Local
 ds-yyyygames = YYYY.GAMES
 ds-yyyygames-desc = Chinese
+ds-yyyygames-beta = YYYY.GAMES (Beta)
+ds-yyyygames-beta-desc = Latest
 ds-xivapi = Xivapi
 ds-cafe = Cafe Maker
 ds-beta-xivapi = Xivapi (Beta)
 ds-beta-xivapi-desc = Latest
 switch-lines = Switch Lines
+dslang-cn = Chinese
 dslang-en = English
 dslang-ja = Japanese
 dslang-de = German
@@ -328,6 +349,7 @@ ds-local = ローカル
 # ds-xivapi =
 # ds-cafe =
 switch-lines = サーバの切り替え
+dslang-cn = 中国語
 dslang-en = 英語
 dslang-ja = 日本語
 dslang-de = ドイツ語
