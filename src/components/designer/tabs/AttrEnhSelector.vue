@@ -123,11 +123,13 @@ watch(enhancers, e => {
 function EnhIncComponent(props: {
     inc: { cm: number; ct: number; cp: number };
 }) {
-    const list = [];
-    if (props.inc.cm) list.push($t('craftsmanship') + ` +${props.inc.cm}`);
-    if (props.inc.ct) list.push($t('control') + ` +${props.inc.ct}`);
-    if (props.inc.cp) list.push($t('craft-point') + ` +${props.inc.cp}`);
-    return h(ElSpace, list);
+    return h(ElSpace, () => {
+        const list = [];
+        if (props.inc.cm) list.push($t('craftsmanship') + ` +${props.inc.cm}`);
+        if (props.inc.ct) list.push($t('control') + ` +${props.inc.ct}`);
+        if (props.inc.cp) list.push($t('craft-point') + ` +${props.inc.cp}`);
+        return list;
+    });
 }
 </script>
 
