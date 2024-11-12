@@ -192,8 +192,8 @@ onMounted(async () => {
 
 // 数据源切换时更新
 watch(
-    () => settingStore.getDataSource,
-    source => {
+    () => settingStore.dataSource,
+    () => {
         triggerSearch();
         craftTypeRemoteMethod();
     },
