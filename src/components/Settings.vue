@@ -37,6 +37,7 @@ import { languages } from '../lang';
 import { useColorMode } from '@vueuse/core';
 import { isTauri, isWebsite, isYYYYGames } from '@/libs/Consts';
 import SupportUs from './SupportUs.vue';
+import E1 from '@/eastereggs/e1';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
@@ -216,7 +217,9 @@ if (isTauri) {
                     </el-button>
                 </el-form-item>
             </template>
-            <el-form-item :label="$t('developer')"> Tnze </el-form-item>
+            <el-form-item :label="$t('developer')">
+                {{ E1.c() ? E1.t3 : 'Tnze' }}
+            </el-form-item>
             <el-form-item :label="$t('feedback')">
                 <el-link href="https://pd.qq.com/s/al6b5xo69" target="_blank">
                     QQ频道

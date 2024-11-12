@@ -18,10 +18,11 @@
 
 <script setup lang="ts">
 import { ElText, ElButton, ElLink } from 'element-plus';
-import { computed, onActivated } from 'vue';
+import { computed, onActivated, ref } from 'vue';
 import { useFluent } from 'fluent-vue';
 import { clarityReport } from '@/libs/Utils';
 import { isWebsite, isYYYYGames } from '@/libs/Consts';
+import E1 from '@/eastereggs/e1';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
@@ -30,6 +31,7 @@ onActivated(() => emit('setTitle', ''));
 
 const { $t } = useFluent();
 
+const cks = ref<string>('');
 const time = computed<
     'morning' | 'noon' | 'afternoon' | 'evening' | 'night' | 'beforedawn'
 >(() => {
@@ -57,7 +59,7 @@ function goFco() {
     <div class="container">
         <div class="greeting-box">
             <el-text class="greeting">
-                {{ $t('welcome', { time }) }}
+                {{ cks ? cks : $t('welcome', { time }) }}
             </el-text>
         </div>
         <div class="confirm-button">
@@ -68,8 +70,11 @@ function goFco() {
             >
                 {{ $t('select-recipe') }}
             </el-button>
-            <el-button type="info" size="large" @click="feedback">
+            <el-button v-if="!E1.c()" type="info" size="large" @click="feedback">
                 {{ $t('feedback') }}
+            </el-button>
+            <el-button v-else type="warning" size="large" @click="cks += E1.t0">
+                {{ E1.t1 }}
             </el-button>
             <el-button v-if="isWebsite" size="large" @click="goFco">
                 {{ $t('go-back') }}
