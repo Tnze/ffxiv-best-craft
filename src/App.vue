@@ -152,7 +152,7 @@ watchEffect(async () => {
     }
     if (shouldBeTransparent) {
         bgColor.value = 'transparent';
-        bgMainColor.value = isDark ? '#2e2e2e80' : '#FFFFFF80';
+        bgMainColor.value = isDark ? '#2e2e2e' : '#FFFFFF';
     } else {
         bgColor.value = 'var(--el-bg-color)';
         bgMainColor.value = isDark ? '#242424' : 'var(--el-bg-color-page)';
@@ -360,13 +360,13 @@ watchEffect(async () => {
     height: 100%;
     padding: 0 10px;
     /* background-color: rgba(246, 246, 246, 0.5); */
+    background-color: var(--tnze-main-bg-color);
     flex: auto;
 
     transition: margin-left 0.5s;
 }
 
 :root.dark .main {
-    background-color: var(--tnze-main-bg-color);
 }
 
 @media screen and (min-width: 760px) {
