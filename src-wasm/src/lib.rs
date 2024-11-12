@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use app_libs::{
-    ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status},
+    ffxiv_crafting::{Actions, Attributes, Recipe, Status},
     SimulateOneStepResult,
 };
 
@@ -31,12 +31,10 @@ fn err_to_string<T: ToString>(v: T) -> String {
 pub fn new_status(
     attrs: JsValue,
     recipe: JsValue,
-    recipe_level: JsValue,
 ) -> Result<JsValue, JsValue> {
     let attrs: Attributes = from_value(attrs)?;
     let recipe: Recipe = from_value(recipe)?;
-    let recipe_level: RecipeLevel = from_value(recipe_level)?;
-    let result = app_libs::new_status(attrs, recipe, recipe_level).map_err(err_to_string)?;
+    let result = app_libs::new_status(attrs, recipe).map_err(err_to_string)?;
     Ok(to_value(&result)?)
 }
 

@@ -25,7 +25,7 @@ use std::sync::Arc;
 use app_libs::analyzer::scope_of_application::Scope;
 use app_libs::{
     analyzer::rand_simulations::Statistics,
-    ffxiv_crafting::{Actions, Attributes, Recipe, RecipeLevel, Status},
+    ffxiv_crafting::{Actions, Attributes, Recipe, Status},
     solver::{
         depth_first_search_solver, normal_progress_solver, raphael, reflect_solver, rika_solver,
         Solver, SolverHash,
@@ -72,9 +72,8 @@ async fn recipe_level_table(
 fn new_status(
     attrs: Attributes,
     recipe: Recipe,
-    recipe_level: RecipeLevel,
 ) -> Result<Status, String> {
-    app_libs::new_status(attrs, recipe, recipe_level)
+    app_libs::new_status(attrs, recipe)
 }
 
 #[tauri::command(async)]

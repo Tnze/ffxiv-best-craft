@@ -236,7 +236,7 @@ mod test {
 
     fn init() -> Status {
         let r = Recipe {
-            rlv: 620,
+            rlv: recipe_level_table(620),
             job_level: 90,
             difficulty: 5720,
             quality: 12900,
@@ -249,7 +249,7 @@ mod test {
             control: 3528,
             craft_points: 691,
         };
-        Status::new(a, r, recipe_level_table(r.rlv))
+        Status::new(a, r)
     }
 
     #[test]

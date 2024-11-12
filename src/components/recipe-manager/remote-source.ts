@@ -201,6 +201,7 @@ export class XivApiRecipeSource {
         const data = await resp.json();
         this.checkRespError(data);
         return {
+            id: rlv,
             stars: data.Stars,
             class_job_level: data.ClassJobLevel,
 

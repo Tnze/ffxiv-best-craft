@@ -30,12 +30,12 @@ const props = defineProps<{
 }>();
 
 const durability = computed<number>(() =>
-    props.status === undefined
+    props.status === undefined || props.status.recipe.durability == 0
         ? 100
         : (props.status.durability / props.status.recipe.durability) * 100,
 );
 const progress = computed<number>(() =>
-    props.status === undefined
+    props.status === undefined || props.status.recipe.difficulty == 0
         ? 100
         : (props.status.progress / props.status.recipe.difficulty) * 100,
 );
@@ -43,7 +43,7 @@ const remainingProgress = computed(
     () => props.status.recipe.difficulty - props.status.progress,
 );
 const quality = computed<number>(() =>
-    props.status === undefined
+    props.status === undefined || props.status.recipe.quality == 0
         ? 100
         : (props.status.quality / props.status.recipe.quality) * 100,
 );
@@ -76,10 +76,10 @@ const craftPointPercentage = computed(
         <div id="durability-and-condition">
             <div id="durability">
                 <span class="bar-title">{{ $t('durability') }} &nbsp;</span>
-                <span
-                    >{{ status?.durability }} /
-                    {{ status?.recipe.durability }}</span
-                >
+                <span>
+                    {{ status?.durability }} /
+                    {{ status?.recipe.durability }}
+                </span>
 
                 <el-progress
                     :stroke-width="14"
@@ -90,10 +90,10 @@ const craftPointPercentage = computed(
                 />
                 <div id="craft-point"></div>
                 <span class="bar-title">{{ $t('craft-point') }} &nbsp;</span>
-                <span
-                    >{{ status?.craft_points }} /
-                    {{ status?.attributes.craft_points }}</span
-                >
+                <span>
+                    {{ status?.craft_points }} /
+                    {{ status?.attributes.craft_points }}
+                </span>
 
                 <el-progress
                     :stroke-width="12"
@@ -107,13 +107,13 @@ const craftPointPercentage = computed(
         </div>
         <div id="progress-and-buffs">
             <span class="bar-title">{{ $t('progress') }} &nbsp;</span>
-            <span
-                >{{ status?.progress }} / {{ status?.recipe.difficulty }}</span
-            >
+            <span>
+                {{ status?.progress }} / {{ status?.recipe.difficulty }}
+            </span>
             <template v-if="remainingProgress > 0">
-                <span class="bar-title"
-                    >&nbsp; {{ $t('remaining') }} &nbsp;</span
-                >
+                <span class="bar-title">
+                    &nbsp; {{ $t('remaining') }} &nbsp;
+                </span>
                 <span>{{ remainingProgress }}</span>
             </template>
             <el-progress
@@ -135,32 +135,40 @@ const craftPointPercentage = computed(
         </div>
         <div id="attributes">
             <div class="attr-block">
-                <span class="attr-label">{{
-                    $t('display-attrs-label', { label: $t('level') })
-                }}</span>
-                <span class="attr-value">{{ status?.attributes.level }}</span>
+                <span class="attr-label">
+                    {{ $t('display-attrs-label', { label: $t('level') }) }}
+                </span>
+                <span class="attr-value"> {{ status?.attributes.level }}</span>
             </div>
             <div class="attr-block">
-                <span class="attr-label">{{
-                    $t('display-attrs-label', { label: $t('craftsmanship') })
-                }}</span>
-                <span class="attr-value">{{
-                    status?.attributes.craftsmanship
-                }}</span>
+                <span class="attr-label">
+                    {{
+                        $t('display-attrs-label', {
+                            label: $t('craftsmanship'),
+                        })
+                    }}
+                </span>
+                <span class="attr-value">
+                    {{ status?.attributes.craftsmanship }}
+                </span>
             </div>
             <div class="attr-block">
-                <span class="attr-label">{{
-                    $t('display-attrs-label', { label: $t('control') })
-                }}</span>
-                <span class="attr-value">{{ status?.attributes.control }}</span>
+                <span class="attr-label">
+                    {{ $t('display-attrs-label', { label: $t('control') }) }}
+                </span>
+                <span class="attr-value">
+                    {{ status?.attributes.control }}
+                </span>
             </div>
             <div class="attr-block">
-                <span class="attr-label">{{
-                    $t('display-attrs-label', { label: $t('craft-point') })
-                }}</span>
-                <span class="attr-value">{{
-                    status?.attributes.craft_points
-                }}</span>
+                <span class="attr-label">
+                    {{
+                        $t('display-attrs-label', { label: $t('craft-point') })
+                    }}
+                </span>
+                <span class="attr-value">
+                    {{ status?.attributes.craft_points }}
+                </span>
             </div>
         </div>
     </div>

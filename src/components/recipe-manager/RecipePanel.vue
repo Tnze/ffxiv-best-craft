@@ -230,7 +230,6 @@ async function selectRecipeRow(row: RecipeInfo) {
         isRecipeTableLoading.value = false;
     }
     const recipe = await newRecipe(
-        row.rlv,
         recipeLevel,
         row.difficulty_factor,
         row.quality_factor,
@@ -286,12 +285,12 @@ async function selectRecipeById(recipeId: number) {
                 <el-descriptions-item :label="$t('name')" :span="3">
                     {{ selectedRecipe?.[1].item_name }}
                 </el-descriptions-item>
-                <el-descriptions-item :label="$t('recipe-level')">{{
-                    selectedRecipe?.[0].rlv
-                }}</el-descriptions-item>
-                <el-descriptions-item :label="$t('type')">{{
-                    selectedRecipe?.[1].job
-                }}</el-descriptions-item>
+                <el-descriptions-item :label="$t('recipe-level')">
+                    {{ selectedRecipe?.[0].rlv.id }}
+                </el-descriptions-item>
+                <el-descriptions-item :label="$t('type')">
+                    {{ selectedRecipe?.[1].job }}
+                </el-descriptions-item>
                 <el-descriptions-item :label="$t('level')">
                     {{ selectedRecipe?.[0].job_level }}
                 </el-descriptions-item>

@@ -216,27 +216,34 @@ export class BetaXivApiRecipeSource {
         if (!resp.ok) {
             this.checkRespError(data);
         }
-        data = data.fields;
+        const fields = data.fields;
         return {
-            stars: assert(data.Stars, 'starts'),
-            class_job_level: assert(data.ClassJobLevel, 'class_job_level'),
+            id: assert(data.row_id, 'id'),
+            stars: assert(fields.Stars, 'starts'),
+            class_job_level: assert(fields.ClassJobLevel, 'class_job_level'),
 
-            suggested_craftsmanship: data.SuggestedCraftsmanship,
-            suggested_control: data.SuggestedControl,
+            suggested_craftsmanship: fields.SuggestedCraftsmanship,
+            suggested_control: fields.SuggestedControl,
 
-            difficulty: assert(data.Difficulty, 'difficulty'),
-            quality: assert(data.Quality, 'quality'),
-            durability: assert(data.Durability, 'durability'),
+            difficulty: assert(fields.Difficulty, 'difficulty'),
+            quality: assert(fields.Quality, 'quality'),
+            durability: assert(fields.Durability, 'durability'),
 
-            progress_divider: assert(data.ProgressDivider, 'progress_divider'),
-            quality_divider: assert(data.QualityDivider, 'quality_divider'),
+            progress_divider: assert(
+                fields.ProgressDivider,
+                'progress_divider',
+            ),
+            quality_divider: assert(fields.QualityDivider, 'quality_divider'),
             progress_modifier: assert(
-                data.ProgressModifier,
+                fields.ProgressModifier,
                 'progress_modifier',
             ),
-            quality_modifier: assert(data.QualityModifier, 'quality_modifier'),
+            quality_modifier: assert(
+                fields.QualityModifier,
+                'quality_modifier',
+            ),
 
-            conditions_flag: assert(data.ConditionsFlag, 'conditions_flag'),
+            conditions_flag: assert(fields.ConditionsFlag, 'conditions_flag'),
         };
     }
 

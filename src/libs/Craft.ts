@@ -38,7 +38,7 @@ export interface Item {
 }
 
 export interface Recipe {
-    rlv: number;
+    rlv: RecipeLevel;
     job_level: number;
     difficulty: number;
     quality: number;
@@ -47,6 +47,7 @@ export interface Recipe {
 }
 
 export interface RecipeLevel {
+    id: number;
     class_job_level: number;
     stars: number;
     suggested_craftsmanship: number | null;
@@ -224,33 +225,31 @@ const waitTimes = new Map([
 ]);
 
 export const newRecipe = async (
-    rlv: number,
-    rt: RecipeLevel,
+    rlv: RecipeLevel,
     difficultyFactor: number,
     qualityFactor: number,
     durabilityFactor: number,
 ): Promise<Recipe> => {
     return {
         rlv,
-        job_level: rt.class_job_level,
-        difficulty: Math.floor((rt.difficulty * difficultyFactor) / 100),
-        quality: Math.floor((rt.quality * qualityFactor) / 100),
-        durability: Math.floor((rt.durability * durabilityFactor) / 100),
-        conditions_flag: rt.conditions_flag,
+        job_level: rlv.class_job_level,
+        difficulty: Math.floor((rlv.difficulty * difficultyFactor) / 100),
+        quality: Math.floor((rlv.quality * qualityFactor) / 100),
+        durability: Math.floor((rlv.durability * durabilityFactor) / 100),
+        conditions_flag: rlv.conditions_flag,
     };
 };
 
 export async function newStatus(
     attrs: Attributes,
     recipe: Recipe,
-    recipeLevel: RecipeLevel,
 ): Promise<Status> {
     if (isTauri) {
         let { invoke } = await pkgTauri;
-        return invoke('new_status', { attrs, recipe, recipeLevel });
+        return invoke('new_status', { attrs, recipe });
     } else {
         let { new_status } = await pkgWasm;
-        return new_status(attrs, recipe, recipeLevel);
+        return new_status(attrs, recipe);
     }
 }
 

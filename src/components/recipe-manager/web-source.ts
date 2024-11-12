@@ -78,10 +78,8 @@ export class WebSource {
 
     async recipesIngredients(recipeId: number): Promise<ItemWithAmount[]> {
         const query = new URLSearchParams({ recipe_id: String(recipeId) });
-        const url =
-            new URL('recipes_ingredientions', this.base).toString() +
-            '?' +
-            query.toString();
+        const url = new URL('recipes_ingredientions', this.base);
+        url.search = query.toString();
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors',
@@ -92,17 +90,16 @@ export class WebSource {
 
     async recipeLevelTable(rlv: number): Promise<RecipeLevel> {
         const query = new URLSearchParams({ rlv: String(rlv) });
-        const url =
-            new URL('recipe_level_table', this.base).toString() +
-            '?' +
-            query.toString();
+        const url = new URL('recipe_level_table', this.base);
+        url.search = query.toString();
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors',
         });
         let result: RecipeLevel = {
-            ...(await resp.json()),
+            id: rlv,
             stars: 0, // TODO
+            ...(await resp.json()),
         };
         return result;
     }
@@ -122,8 +119,8 @@ export class WebSource {
 
     async itemInfo(itemId: number): Promise<Item> {
         const query = new URLSearchParams({ item_id: String(itemId) });
-        const url =
-            new URL('item_info', this.base).toString() + '?' + query.toString();
+        const url = new URL('item_info', this.base);
+        url.search = query.toString();
         const resp = await fetch(url, {
             method: 'GET',
             mode: 'cors',

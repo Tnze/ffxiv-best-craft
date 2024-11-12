@@ -19,7 +19,7 @@ pub mod solver;
 
 pub use ffxiv_crafting;
 use ffxiv_crafting::{
-    Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, RecipeLevel, Status,
+    Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, Status,
 };
 use rand::{seq::SliceRandom, Rng};
 use serde::Serialize;
@@ -40,12 +40,11 @@ pub struct SimulateResult {
 pub fn new_status(
     attrs: Attributes,
     recipe: Recipe,
-    recipe_level: RecipeLevel,
 ) -> Result<Status, String> {
     if recipe.job_level > attrs.level + 5 {
         Err("player-level-lower-than-recipe-requirement".to_string())
     } else {
-        Ok(Status::new(attrs, recipe, recipe_level))
+        Ok(Status::new(attrs, recipe))
     }
 }
 

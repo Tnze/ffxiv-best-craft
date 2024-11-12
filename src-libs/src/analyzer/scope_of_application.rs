@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use ffxiv_crafting::{data::recipe_level_table, Actions, Caches, Status};
+use ffxiv_crafting::{Actions, Caches, Status};
 use serde::Serialize;
 
 #[derive(Default, Serialize)]
@@ -100,9 +100,5 @@ fn find_control_range(
 }
 
 fn refrash_caches(status: &mut Status) {
-    status.caches = Caches::new(
-        &status.attributes,
-        &status.recipe,
-        &recipe_level_table(status.recipe.rlv),
-    );
+    status.caches = Caches::new(&status.attributes, &status.recipe);
 }
