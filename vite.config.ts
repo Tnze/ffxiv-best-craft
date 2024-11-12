@@ -77,5 +77,7 @@ export default defineConfig({
                 fco: resolve(__dirname, 'fco.html'),
             },
         },
+        // Disable sourcemap for Tauri target
+        sourcemap: process.env.VITE_BESTCRAFT_TARGET != 'tauri',
     },
 });
