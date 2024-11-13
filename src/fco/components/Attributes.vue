@@ -47,7 +47,6 @@ const craftPointAddons = ref(0);
 watch(
     [attributes, meal, medicine],
     ([{ level, craftsmanship, control, craft_points }, meal, medecine]) => {
-        console.log(meal, medecine);
         const enhancers = [];
         if (meal) enhancers.push(meal);
         if (medecine) enhancers.push(medecine);

@@ -127,7 +127,6 @@ function confirm(simulatorMode: boolean) {
         required_craftsmanship: 0,
         required_control: 0,
     };
-    console.log(customRecipe.value);
     selectRecipe(
         customRecipe.value,
         undefined,

@@ -137,7 +137,6 @@ function parseMacroStrict(input: string): Actions[] {
         })
         .map((v, i) => {
             const cmdBody = v.trim(); // "ACTIONNAME <wait.n>"
-            console.log(cmdBody);
             const matchResult =
                 /^(?<action>"[^"]+"|\S+)(?:\s+<wait\.\d+>)?$/g.exec(cmdBody);
             if (matchResult == null || matchResult.groups == undefined) {

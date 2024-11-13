@@ -25,7 +25,6 @@ onmessage = async e => {
     try {
         switch (name) {
             case 'rand_simulation':
-                console.log(args);
                 postMessage(
                     rand_simulation(
                         args.status,
