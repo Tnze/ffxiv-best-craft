@@ -34,12 +34,15 @@ const defineTarget = () => {
         configResolved(resolvedConfig) {
             config = resolvedConfig;
         },
-        transform(code: string, _id: any) {
+        transform(code: string, _id: string) {
             const beReplaced = 'import.meta.env.VITE_BESTCRAFT_TARGET';
             if (code.includes(beReplaced)) {
                 const target = config.env.VITE_BESTCRAFT_TARGET;
                 const replacement = JSON.stringify(target);
-                return code.replace(beReplaced, replacement);
+                return {
+                    code: code.replace(beReplaced, replacement),
+                    map: this.getCombinedSourcemap(),
+                };
             }
             return undefined;
         },
@@ -78,6 +81,6 @@ export default defineConfig({
             },
         },
         // Disable sourcemap for Tauri target
-        sourcemap: true,
+        sourcemap: process.env.VITE_BESTCRAFT_TARGET != 'tauri',
     },
 });
