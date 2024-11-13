@@ -103,7 +103,6 @@ function reload() {
                 :material-quality-factor="
                     designerStore.content.materialQualityFactor
                 "
-                :recipe-level="designerStore.content.recipeLevel"
                 :requirements="designerStore.content.requirements"
                 :attributes="attributes"
                 :is-custom-recipe="isCustomRecipe"
@@ -112,7 +111,6 @@ function reload() {
                 v-else
                 :item="designerStore.content.item"
                 :recipe="designerStore.content.recipe"
-                :recipe-level="designerStore.content.recipeLevel"
                 :attributes="attributes"
             />
         </template>

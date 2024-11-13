@@ -240,7 +240,6 @@ async function selectRecipeRow(row: RecipeInfo) {
         selectRecipe(
             recipe,
             row.id,
-            recipeLevel,
             row.material_quality_factor,
             row,
             info,

@@ -50,7 +50,7 @@ export interface RecipeLevel {
     id: number;
     class_job_level: number;
     stars: number;
-    suggested_craftsmanship: number | null;
+    suggested_craftsmanship: number;
     suggested_control: number | null;
     difficulty: number;
     quality: number;

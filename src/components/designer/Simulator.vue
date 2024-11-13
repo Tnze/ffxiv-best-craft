@@ -48,7 +48,6 @@ import { displayJobKey } from './injectionkeys';
 
 const props = defineProps<{
     recipe: Recipe;
-    recipeLevel: RecipeLevel;
     item: Item;
     attributes: Attributes;
 }>();
@@ -84,16 +83,12 @@ const enhancedAttributes = computed<Attributes>(() => {
     };
 });
 const initStatus = ref<Status>({
-    ...(await newStatus(
-        enhancedAttributes.value,
-        props.recipe,
-        props.recipeLevel,
-    )),
+    ...(await newStatus(enhancedAttributes.value, props.recipe)),
     quality: 0,
 });
 watch([props, enhancedAttributes], async ([p, attr]) => {
     initStatus.value = {
-        ...(await newStatus(attr, p.recipe, p.recipeLevel)),
+        ...(await newStatus(attr, p.recipe)),
         quality: 0,
     };
 });

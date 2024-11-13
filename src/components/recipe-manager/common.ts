@@ -89,7 +89,6 @@ export function craftTypeTojobs(craftType: string): Jobs | undefined {
 export const selectRecipe = (
     recipe: Recipe,
     recipeId: number | undefined,
-    recipeLevel: RecipeLevel,
     materialQualityFactor: number,
     requirements: RecipeRequirements,
     item: Item,
@@ -102,7 +101,6 @@ export const selectRecipe = (
         recipe,
         recipeId,
         materialQualityFactor,
-        recipeLevel,
         requirements,
         simulatorMode,
     });

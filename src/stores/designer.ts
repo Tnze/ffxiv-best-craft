@@ -37,7 +37,6 @@ export default defineStore('designer', {
             job?: Jobs;
             recipe: Recipe;
             recipeId?: number;
-            recipeLevel: RecipeLevel;
             materialQualityFactor: number;
             requirements: RecipeRequirements;
             simulatorMode: boolean;
@@ -60,7 +59,6 @@ export default defineStore('designer', {
             item: Item;
             recipe: Recipe;
             recipeId?: number;
-            recipeLevel: RecipeLevel;
             materialQualityFactor: number;
             requirements: RecipeRequirements;
             simulatorMode: boolean;

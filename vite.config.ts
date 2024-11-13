@@ -78,6 +78,6 @@ export default defineConfig({
             },
         },
         // Disable sourcemap for Tauri target
-        sourcemap: process.env.VITE_BESTCRAFT_TARGET != 'tauri',
+        sourcemap: true,
     },
 });

@@ -49,24 +49,17 @@ const router = useRouter();
 const { $t } = useFluent();
 const settingStore = useSettingsStore();
 
-const autoLoad = ref(true);
+const autoLoad = ref(false);
 const autoLoadLoading = ref(false);
 
-const defaultRecipe = {
-    rlv: 710,
-    job_level: 100,
-    difficulty: 7500,
-    quality: 16500,
-    durability: 70,
-    conditions_flag: 15,
-};
-const defaultRecipeLevel = {
+const defaultRecipeLevel: RecipeLevel = {
+    id: 720,
     class_job_level: 100,
     stars: 0,
-    suggested_craftsmanship: 4740,
+    suggested_craftsmanship: 4780,
     suggested_control: null,
-    difficulty: 7500,
-    quality: 15000,
+    difficulty: 8050,
+    quality: 17600,
     progress_divider: 170,
     quality_divider: 150,
     progress_modifier: 90,
@@ -74,9 +67,20 @@ const defaultRecipeLevel = {
     durability: 70,
     conditions_flag: 15,
 };
+const defaultRecipe: Recipe = {
+    rlv: defaultRecipeLevel,
+    job_level: 100,
+    difficulty: 8050,
+    quality: 17600,
+    durability: 70,
+    conditions_flag: 15,
+};
 
-const customRecipe = ref<Recipe>({ ...defaultRecipe });
-const recipeLevel = ref<RecipeLevel>({ ...defaultRecipeLevel });
+const rlv = ref(defaultRecipeLevel.id);
+const customRecipe = ref<Recipe>({
+    ...defaultRecipe,
+    rlv: { ...defaultRecipeLevel },
+});
 const conditionsFlag = computed<Conditions[]>({
     get: () => {
         const flag = customRecipe.value.conditions_flag;
@@ -94,19 +98,18 @@ const conditionsFlag = computed<Conditions[]>({
 
 let recipeLevelPromise: Promise<RecipeLevel> | null = null;
 watch(
-    [autoLoad, () => settingStore.dataSource, () => customRecipe.value.rlv],
-    async ([autoLoad, dataSource, rlv]) => {
-        if (!autoLoad) return;
+    [autoLoad, () => settingStore.dataSource, rlv],
+    async ([autoLoadValue, _, rlv]) => {
+        if (!autoLoadValue) return;
         try {
             autoLoadLoading.value = true;
             if (recipeLevelPromise != null) await recipeLevelPromise;
-            recipeLevelPromise = (
-                await settingStore.getDataSource
-            ).recipeLevelTable(rlv ?? 0);
-            recipeLevel.value = await recipeLevelPromise;
+            const ds = await settingStore.getDataSource;
+            recipeLevelPromise = ds.recipeLevelTable(rlv);
+            customRecipe.value.rlv = await recipeLevelPromise;
             recipeLevelPromise = null;
         } catch {
-            recipeLevel.value = { ...defaultRecipeLevel };
+            autoLoad.value = false;
         } finally {
             autoLoadLoading.value = false;
         }
@@ -124,10 +127,10 @@ function confirm(simulatorMode: boolean) {
         required_craftsmanship: 0,
         required_control: 0,
     };
+    console.log(customRecipe.value);
     selectRecipe(
         customRecipe.value,
         undefined,
-        recipeLevel.value,
         0,
         requirements,
         itemInfo,
@@ -190,42 +193,36 @@ function confirm(simulatorMode: boolean) {
             </el-form>
             <el-form :inline="true" label-position="right" label-width="100px">
                 <el-form-item :label="$t('recipe-level')">
-                    <el-input-number
-                        v-model="customRecipe.rlv"
-                        :min="1"
-                    ></el-input-number>
+                    <el-input-number v-model="rlv" :min="1"></el-input-number>
                 </el-form-item>
                 <el-form-item :label="$t('auto-load')">
-                    <el-switch
-                        v-model="autoLoad"
-                        :loading="autoLoadLoading"
-                    ></el-switch>
+                    <el-switch v-model="autoLoad" :loading="autoLoadLoading" />
                 </el-form-item>
             </el-form>
             <el-form :inline="true" label-position="right" label-width="100px">
                 <el-form-item :label="$t('progress-divider')">
                     <el-input-number
                         :disabled="autoLoad"
-                        v-model="recipeLevel.progress_divider"
-                    ></el-input-number>
+                        v-model="customRecipe.rlv.progress_divider"
+                    />
                 </el-form-item>
                 <el-form-item :label="$t('progress-modifier')">
                     <el-input-number
                         :disabled="autoLoad"
-                        v-model="recipeLevel.progress_modifier"
-                    ></el-input-number>
+                        v-model="customRecipe.rlv.progress_modifier"
+                    />
                 </el-form-item>
                 <el-form-item :label="$t('quality-divider')">
                     <el-input-number
                         :disabled="autoLoad"
-                        v-model="recipeLevel.quality_divider"
-                    ></el-input-number>
+                        v-model="customRecipe.rlv.quality_divider"
+                    />
                 </el-form-item>
                 <el-form-item :label="$t('quality-modifier')">
                     <el-input-number
                         :disabled="autoLoad"
-                        v-model="recipeLevel.quality_modifier"
-                    ></el-input-number>
+                        v-model="customRecipe.rlv.quality_modifier"
+                    />
                 </el-form-item>
             </el-form>
             <span>

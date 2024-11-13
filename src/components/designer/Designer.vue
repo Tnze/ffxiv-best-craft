@@ -76,7 +76,6 @@ import { Slot, Sequence, SequenceSource } from './types';
 const props = defineProps<{
     recipe: Recipe;
     recipeId?: number;
-    recipeLevel: RecipeLevel;
     requirements: RecipeRequirements;
     item: Item;
     materialQualityFactor: number;
@@ -160,16 +159,12 @@ watch(isReadingSolver, (irs, irsPrev) => {
 // Simulation Input
 const initQuality = ref(0);
 const initStatus = ref<Status>({
-    ...(await newStatus(
-        enhancedAttributes.value,
-        props.recipe,
-        props.recipeLevel,
-    )),
+    ...(await newStatus(enhancedAttributes.value, props.recipe)),
     quality: initQuality.value,
 });
 watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
     initStatus.value = {
-        ...(await newStatus(ea, p.recipe, p.recipeLevel)),
+        ...(await newStatus(ea, p.recipe)),
         quality: iq,
     };
 });
