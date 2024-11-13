@@ -37,8 +37,8 @@ onmessage = async e => {
             case 'calc_attributes_scope':
                 postMessage(calc_attributes_scope(args.status, args.actions));
         }
-    } catch (e) {
-        throw e;
+    } catch (e: any) {
+        postMessage({ error: String(e) });
     }
     close();
 };

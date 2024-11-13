@@ -90,6 +90,8 @@ async function runSimpleSolver(
             emits('solverResult', result, solverId);
         } else {
             ElMessage({
+                showClose: true,
+                duration: 0,
                 type: 'error',
                 message: $t('simple-solver-finished-no-result', msgArgs),
             });
@@ -112,7 +114,7 @@ const rikaIsSolving = ref(false);
 
 async function runRikaSolver() {
     if (
-        props.initStatus.recipe.rlv < 560 ||
+        props.initStatus.recipe.rlv.id < 560 ||
         props.initStatus.recipe.difficulty < 70
     ) {
         try {

@@ -51,7 +51,10 @@ export async function rand_simulation(
                 new URL('./AnalyzerWorker.ts', import.meta.url),
                 { type: 'module' },
             );
-            worker.onmessage = ev => resolve(ev.data);
+            worker.onmessage = ev => {
+                if (ev.data.error == undefined) resolve(ev.data);
+                else reject(ev.data.error);
+            };
             worker.onerror = ev => reject(ev);
             worker.postMessage({
                 name: 'rand_simulation',
@@ -81,7 +84,10 @@ export async function calc_attributes_scope(
                 new URL('./AnalyzerWorker.ts', import.meta.url),
                 { type: 'module' },
             );
-            worker.onmessage = ev => resolve(ev.data);
+            worker.onmessage = ev => {
+                if (ev.data.error == undefined) resolve(ev.data);
+                else reject(ev.data.error);
+            };
             worker.onerror = ev => reject(ev);
             worker.postMessage({
                 name: 'calc_attributes_scope',

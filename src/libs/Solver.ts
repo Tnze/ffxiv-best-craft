@@ -35,7 +35,11 @@ if (isTauri) {
                     type: 'module',
                 },
             );
-            worker.onmessage = ev => resolve(ev.data);
+            worker.onmessage = ev => {
+                console.log(ev);
+                if (ev.data.error == undefined) resolve(ev.data);
+                else reject(ev.data.error);
+            };
             worker.onerror = ev => reject(ev);
             worker.postMessage({ name, args: JSON.stringify(args) });
         });
