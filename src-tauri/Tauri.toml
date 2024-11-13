@@ -1,6 +1,6 @@
 productName = "BestCraft"
 mainBinaryName = "BestCraft"
-version = "0.18.9"
+version = "0.18.10"
 identifier = "me.tnze.fbc"
 
 [build]
@@ -59,4 +59,4 @@ resizable = true
 fullscreen = false
 transparent = true
 decorations = false
-dragDropEnabled = true
+dragDropEnabled = false
