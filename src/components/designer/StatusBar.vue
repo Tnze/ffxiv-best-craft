@@ -178,7 +178,7 @@ const craftPointPercentage = computed(
 .conatiner {
     width: 100%;
     display: flex;
-    /* flex-wrap: wrap; */
+    flex-wrap: wrap;
     font-size: 14px;
     color: var(--el-text-color-regular);
 }
@@ -234,7 +234,7 @@ const craftPointPercentage = computed(
 
 @media screen and (max-width: 480px) {
     #progress-and-buffs {
-        flex: 1 1 100%;
+        flex: 1 0 100%;
         padding: 5px;
     }
 
