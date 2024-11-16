@@ -264,7 +264,7 @@ async function selectRecipeById(recipeId: number) {
         var recipeInfo = await source.recipeInfo(recipeId);
         // isRecipeTableLoading.value = false; // Done by selectRecipeRow()
     } catch (e: any) {
-        ElMessage.error(String(e));
+        ElMessage.error($t('select-recipe-by-id-error', { err: String(e) }));
         isRecipeTableLoading.value = false;
         return;
     }
@@ -465,6 +465,7 @@ async function selectRecipeById(recipeId: number) {
 
 <fluent locale="zh-CN">
 datasource-unsupport-recipe-info = 当前数据源不支持从外部选择配方
+select-recipe-by-id-error = 获取配方信息失败：{ $err }，请尝试切换数据源
 confirm-select = 开始制作“{ $itemName }”吗？
 confirm-select2 = 这是一个高难度配方，请选择模式。
 please-confirm = 请确认
@@ -490,6 +491,7 @@ required-control = 最低{ control }
 
 <fluent locale="en-US">
 datasource-unsupport-recipe-info = Current data-source doesn't support choice recipe from external pages
+select-recipe-by-id-error = Error fetching recipe data: { $err }. Please try choosing another DataSource
 confirm-select = Start crafting "{ $itemName }"?
 confirm-select2 = This is a 高难度配方. Please make a choice.
 please-confirm = Please confirm

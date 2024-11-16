@@ -114,6 +114,9 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
+        if (!resp.ok) {
+            throw resp.statusText;
+        }
         return resp.json();
     }
 
