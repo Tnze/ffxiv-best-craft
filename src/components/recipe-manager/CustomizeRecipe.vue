@@ -272,6 +272,10 @@ simulator-mode = 模拟器模式
 back = Back
 custom-recipe = Custom Recipe
 conditions-flag = Cond. Flag
+progress-divider = Progress Divider
+progress-modifier = Progress Modifier
+quality-divider = Quality Divider
+quality-modifier = Quality Modifier
 auto-load = Auto Fill
 
 cancel = Cancel
