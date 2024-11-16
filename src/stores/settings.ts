@@ -18,7 +18,6 @@ import { defineStore } from 'pinia';
 import {
     CafeMakerApiBase,
     XivApiRecipeSource,
-    XivapiBase,
 } from '@/components/recipe-manager/remote-source';
 import { DataSource } from '@/components/recipe-manager/source';
 import {
@@ -32,13 +31,32 @@ import {
 } from '@/components/recipe-manager/beta-xivapi-source';
 import { isTauri, isWebsite } from '@/libs/Consts';
 
+export type DataSourceID =
+    | 'local'
+    | 'yyyy.games'
+    | 'yyyy.games-beta'
+    | 'cafe'
+    | 'xivapi';
+export type DataSourceLangID = 'zh' | 'en' | 'de' | 'fr' | 'ja';
+
+export const dataSourceList: Map<string, (DataSourceLangID | undefined)[]> =
+    new Map([
+        ['local', [undefined]],
+        ['yyyy.games', [undefined]],
+        ['yyyy.games-beta', ['en', 'de', 'fr', 'ja']],
+        ['xivapi', ['en', 'de', 'fr', 'ja']],
+    ]);
+if (!isTauri) {
+    dataSourceList.delete('local');
+}
+
 export default defineStore('settings', {
     state: () => ({
         language: 'system',
-        dataSource: <
-            'local' | 'yyyy.games' | 'yyyy.games-beta' | 'cafe' | 'xivapi'
-        >(isTauri ? 'local' : 'yyyy.games'),
-        dataSourceLang: <'en' | 'ja' | 'de' | 'fr' | undefined>undefined,
+        dataSource: <DataSourceID>dataSourceList.keys().next().value,
+        dataSourceLang: <DataSourceLangID | undefined>(
+            dataSourceList.values().next().value
+        ),
     }),
     getters: {
         toJson(): string {
@@ -52,15 +70,12 @@ export default defineStore('settings', {
             let dataSources: Record<string, () => DataSource> = {
                 'yyyy.games': () => new WebSource(YYYYGamesApiBase),
                 'yyyy.games-beta': () =>
-                    new WebSource(
-                        YYYYGamesApiBaseBeta,
-                        this.dataSourceLang ?? 'en',
-                    ),
+                    new WebSource(YYYYGamesApiBaseBeta, this.dataSourceLang),
                 cafe: () => new XivApiRecipeSource(CafeMakerApiBase),
                 xivapi: () =>
                     new BetaXivApiRecipeSource(
                         BetaXivapiBase,
-                        this.dataSourceLang,
+                        <'en' | 'ja' | 'de' | 'fr'>this.dataSourceLang,
                     ),
             };
             let defaultSource: () => DataSource = dataSources['yyyy.games'];
@@ -79,8 +94,23 @@ export default defineStore('settings', {
     actions: {
         loadSettings(localSettings: any) {
             this.$patch(localSettings);
-            this.language = localSettings.language;
-            this.dataSource = localSettings.dataSource;
+            // this.language = localSettings.language;
+            // this.dataSource = localSettings.dataSource;
+            let allowedLangs = dataSourceList.get(this.dataSource);
+            if (allowedLangs == undefined) {
+                const [defaultSource, langs] = dataSourceList
+                    .entries()
+                    .next().value!;
+                this.dataSource = <DataSourceID>defaultSource;
+                allowedLangs = langs;
+            }
+            if (allowedLangs.indexOf(this.dataSourceLang) == -1) {
+                this.dataSourceLang =
+                    allowedLangs.find(
+                        lang =>
+                            lang != undefined && this.language.startsWith(lang),
+                    ) ?? allowedLangs[0];
+            }
             if (localSettings.dataSourceLang)
                 this.dataSourceLang = localSettings.dataSourceLang;
             else {
