@@ -42,7 +42,7 @@ const oneclickCopy = ref(true); // 一键复制
 
 const genOptions = reactive({
     hasNotify: true, // 宏执行完成是否提示
-    notifySound: '<se.1>', // 宏完成提示音
+    notifySound: ' <se.1>', // 宏完成提示音
     hasNotifyIndeterminate: true, // 自动确定是否添加完成提示
     hasLock: false, // 添加锁定宏语句
     avgSize: true, // 让每个宏的长度尽量相同
@@ -50,10 +50,15 @@ const genOptions = reactive({
 });
 
 const notifySoundOptions = Array.from({ length: 16 }).map((_, i) => ({
-    value: `<se.${i + 1}>`,
-    label: `<se.${i + 1}>`,
+    value: ` <se.${i + 1}>`,
+    label: ` <se.${i + 1}>`,
 }));
-notifySoundOptions.splice(0, 0, { value: `<se>`, label: `<se>` });
+notifySoundOptions.splice(
+    0,
+    0,
+    { value: '', label: $t('no-sound') },
+    { value: ` <se>`, label: $t('random-sound') },
+);
 
 // 自动确认是否添加完成提示
 watchEffect(() => {
@@ -246,6 +251,9 @@ avg-size = 长度平均化
 oneclick-copy = 一键复制
 notify-sound = 提示音
 wait-time-inc = 增加等待时间
+
+random-sound = 随机提示音
+no-sound = 无提示音
 
 copied-json = 已复制 JSON 表达式 到系统剪切板
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
