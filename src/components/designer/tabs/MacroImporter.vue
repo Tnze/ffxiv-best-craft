@@ -28,12 +28,14 @@ import {
     ElSwitch,
 } from 'element-plus';
 import { useFluent } from 'fluent-vue';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
+import useStore from '@/stores/designer';
 
 const emits = defineEmits<{
     onRecognized: [actions: Actions[]];
 }>();
 const fluent = useFluent();
+const store = useStore();
 
 // Create a map converts action names to std Action enum
 const namesToAction: Map<string, Actions> = new Map();
@@ -47,7 +49,7 @@ for (const bundle of fluent.bundles.value) {
 
 // Textarea input
 const inputText = ref('');
-const strictMode = ref(false);
+const options = reactive(store.options.importOptions);
 
 // Start parcing user input text
 function confirm() {
@@ -67,7 +69,7 @@ function confirm() {
             });
             return;
         }
-    } else if (strictMode.value) {
+    } else if (options.strictMode) {
         try {
             result = parseMacroStrict(input);
             clarityReport('importMacroStrictSuccess');
@@ -176,8 +178,8 @@ function trimQuotation(v: string): string {
         >
             {{ $t('confirm') }}
         </el-button>
-        <el-checkbox v-model="strictMode" :label="$t('strict-mode')" />
-        <el-switch v-model="strictMode" />
+        <el-checkbox v-model="options.strictMode" :label="$t('strict-mode')" />
+        <el-switch v-model="options.strictMode" />
     </el-space>
 </template>
 

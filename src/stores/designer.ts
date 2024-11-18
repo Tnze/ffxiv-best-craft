@@ -54,6 +54,9 @@ export default defineStore('designer', {
                 waitTimeInc: 0, // 增加等待时间(秒)
                 oneclickCopy: true, // 一键复制
             },
+            importOptions: {
+                strictMode: false,
+            },
         },
     }),
     getters: {
@@ -110,7 +113,9 @@ export default defineStore('designer', {
             try {
                 const v = JSON.parse(json);
                 if (v.rotations) this.rotations = v.rotations;
-                if (v.options) this.options = v.options;
+                if (v.options) {
+                    this.$patch({ options: v.options });
+                }
             } catch (e: any) {
                 console.error(e);
             }

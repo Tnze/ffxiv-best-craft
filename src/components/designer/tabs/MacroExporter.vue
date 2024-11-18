@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { computed, reactive, ref, watchEffect } from 'vue';
+import { computed, reactive } from 'vue';
 import {
     ElSpace,
     ElCard,
