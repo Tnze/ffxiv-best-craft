@@ -73,15 +73,24 @@ const color = computed(() => {
     else return '#67C23A';
 });
 
-const tagType = computed<'success' | 'warning' | 'info' | 'danger' | undefined>(
-    () => {
-        const status = simulateResult.value?.status;
-        if (!status) return;
-        if (status.progress < status.recipe.difficulty) return 'danger';
-        else if (status.quality < status.recipe.quality) return 'warning';
-        else return 'success';
-    },
-);
+const qualityTagType = computed<
+    'success' | 'warning' | 'info' | 'danger' | undefined
+>(() => {
+    const status = simulateResult.value?.status;
+    if (!status) return;
+    if (status.progress < status.recipe.difficulty) return 'danger';
+    else if (status.quality < status.recipe.quality) return 'warning';
+    else return 'success';
+});
+
+const lengthTagType = computed<
+    'success' | 'warning' | 'info' | 'danger' | undefined
+>(() => {
+    const length = props.seq.slots.length;
+    if (length <= 15) return 'success';
+    else if (length <= 30) return 'warning';
+    else return 'danger';
+});
 
 const waitTime = computed(() => {
     const actions = props.seq.slots.map(v => v.action);
@@ -112,19 +121,28 @@ const waitTime = computed(() => {
                             <warning-filled v-else-if="color == '#E6A23C'" />
                             <circle-close-filled v-else />
                         </el-icon>
-                        <el-tag round v-if="simulateResult" :type="tagType">
+                        <el-tag
+                            round
+                            v-if="simulateResult"
+                            :type="qualityTagType"
+                        >
                             {{
                                 $t('quality-tag', {
                                     quality: simulateResult?.status.quality,
                                 })
                             }}
                         </el-tag>
+                        <el-tag round :type="lengthTagType">
+                            {{
+                                $t('macro-length-tag', {
+                                    length: seq.slots.length,
+                                })
+                            }}
+                        </el-tag>
                         <el-tag round v-if="simulateResult" type="info">
                             {{
                                 $t('steps-tag', {
-                                    steps:
-                                        simulateResult.status.step ??
-                                        seq.slots.length,
+                                    steps: simulateResult.status.step,
                                 })
                             }}
                         </el-tag>
@@ -233,6 +251,7 @@ const waitTime = computed(() => {
 load = 加载
 delete = 删除
 quality-tag = { quality }：{ $quality }
+macro-length-tag = 宏长度：{ $length }
 steps-tag = { steps }：{ $steps }
 macro-duration-tag = 宏耗时：{ $duration }
 manual-duration-tag = 手搓耗时：{ $duration }
@@ -252,6 +271,7 @@ source-tag = 来源：{ $typ ->
 load = Load
 delete = Delete
 quality-tag = { quality }: { $quality }
+macro-length-tag = Macro Length: { $length }
 steps-tag = { steps }: { $steps }
 macro-duration-tag = Macro Duration: { $duration }
 manual-duration-tag = Manual Duration: { $duration }
