@@ -45,11 +45,22 @@ export default defineStore('designer', {
             staged: <StagedSequence[]>[],
             maxid: 0,
         },
+        options: {
+            exportOptions: {
+                addNotification: <boolean | 'auto'>'auto', // 宏执行完成是否提示
+                notifySound: ' <se.1>', // 宏完成提示音
+                hasLock: false, // 添加锁定宏语句
+                avgSize: true, // 让每个宏的长度尽量相同
+                waitTimeInc: 0, // 增加等待时间(秒)
+                oneclickCopy: true, // 一键复制
+            },
+        },
     }),
     getters: {
         toJson(): string {
             return JSON.stringify({
                 rotations: this.rotations,
+                options: this.options,
             });
         },
     },
@@ -98,7 +109,8 @@ export default defineStore('designer', {
         fromJson(json: string) {
             try {
                 const v = JSON.parse(json);
-                this.rotations = v.rotations;
+                if (v.rotations) this.rotations = v.rotations;
+                if (v.options) this.options = v.options;
             } catch (e: any) {
                 console.error(e);
             }

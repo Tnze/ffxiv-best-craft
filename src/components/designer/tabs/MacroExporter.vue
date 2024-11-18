@@ -28,26 +28,20 @@ import {
     ElInputNumber,
     ElForm,
     ElFormItem,
+    ElRadioGroup,
+    ElRadio,
 } from 'element-plus';
 import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { isTauri, isWebsite } from '@/libs/Consts';
+import useStore from '@/stores/designer';
 
 const props = defineProps<{
     actions: Actions[];
 }>();
 const { $t } = useFluent();
-
-const oneclickCopy = ref(true); // 一键复制
-
-const genOptions = reactive({
-    hasNotify: true, // 宏执行完成是否提示
-    notifySound: ' <se.1>', // 宏完成提示音
-    hasNotifyIndeterminate: true, // 自动确定是否添加完成提示
-    hasLock: false, // 添加锁定宏语句
-    avgSize: true, // 让每个宏的长度尽量相同
-    waitTimeInc: 0, // 增加等待时间(秒)
-});
+const store = useStore();
+const genOptions = reactive(store.options.exportOptions);
 
 const notifySoundOptions = Array.from({ length: 16 }).map((_, i) => ({
     value: ` <se.${i + 1}>`,
@@ -61,8 +55,10 @@ notifySoundOptions.splice(
 );
 
 // 自动确认是否添加完成提示
-watchEffect(() => {
-    if (genOptions.hasNotifyIndeterminate) {
+const hasNotify = computed(() => {
+    if (genOptions.addNotification != 'auto') {
+        return genOptions.addNotification;
+    } else {
         let maxLinesPerChunk = 15;
         if (genOptions.hasLock) maxLinesPerChunk--;
         // hasNotify == 0
@@ -70,14 +66,14 @@ watchEffect(() => {
         // hasNotify == 1
         maxLinesPerChunk--;
         const minChunks2 = Math.ceil(props.actions.length / maxLinesPerChunk);
-        genOptions.hasNotify = minChunks1 == minChunks2;
+        return minChunks1 == minChunks2;
     }
 });
 
 const chunkedActions = computed(() => {
     const macros = [];
     let maxLinesPerChunk = 15;
-    if (genOptions.hasNotify) maxLinesPerChunk--;
+    if (hasNotify.value) maxLinesPerChunk--;
     if (genOptions.hasLock) maxLinesPerChunk--;
     const minChunks = Math.ceil(props.actions.length / maxLinesPerChunk);
     const size = Math.ceil(props.actions.length / minChunks);
@@ -110,7 +106,7 @@ const chunkedActions = computed(() => {
                 `/ac ${actionName} <wait.${calcWaitTime(action) + genOptions.waitTimeInc}>`,
             );
         }
-        if (genOptions.hasNotify) {
+        if (hasNotify.value) {
             lines.push(
                 `/e ${$t('marco-finished', { id: sec + 1 })}${genOptions.notifySound}`,
             );
@@ -156,25 +152,32 @@ async function copy(macroText: string, macroInfo: string) {
 <template>
     <div style="margin-left: 10px">
         <div>
-            <el-checkbox
-                v-model="genOptions.hasNotify"
-                :indeterminate="genOptions.hasNotifyIndeterminate"
-                @change="genOptions.hasNotifyIndeterminate = false"
-                :label="$t('has-notify')"
-            />
             <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
             <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
             <el-checkbox
                 v-if="isWebsite"
-                v-model="oneclickCopy"
+                v-model="genOptions.oneclickCopy"
                 :label="$t('oneclick-copy')"
             />
         </div>
-        <el-form :inline="true">
+        <el-form label-width="auto" :inline="true">
+            <el-form-item :label="$t('has-notify')">
+                <el-radio-group v-model="genOptions.addNotification">
+                    <el-radio value="auto" size="small">
+                        {{ $t('has-notify-auto') }}
+                    </el-radio>
+                    <el-radio :value="true" size="small">
+                        {{ $t('has-notify-true') }}
+                    </el-radio>
+                    <el-radio :value="false" size="small">
+                        {{ $t('has-notify-false') }}
+                    </el-radio>
+                </el-radio-group>
+            </el-form-item>
             <el-form-item :label="$t('notify-sound')">
                 <el-select-v2
                     v-model="genOptions.notifySound"
-                    :disabled="!genOptions.hasNotify"
+                    :disabled="!hasNotify"
                     :options="notifySoundOptions"
                     size="small"
                     style="width: 200px"
@@ -183,8 +186,8 @@ async function copy(macroText: string, macroInfo: string) {
             <el-form-item :label="$t('wait-time-inc')">
                 <el-input-number
                     v-model="genOptions.waitTimeInc"
-                    size="small"
                     controls-position="right"
+                    size="small"
                     :min="0"
                     :step-strictly="true"
                 />
@@ -193,9 +196,13 @@ async function copy(macroText: string, macroInfo: string) {
         <el-space wrap alignment="flex-start">
             <el-card
                 v-for="(marco, i) in chunkedActions"
-                :class="oneclickCopy ? 'box-card-oneclick' : 'box-card'"
+                :class="
+                    genOptions.oneclickCopy ? 'box-card-oneclick' : 'box-card'
+                "
                 shadow="hover"
-                @click="oneclickCopy ? copyChunk(i, marco) : undefined"
+                @click="
+                    genOptions.oneclickCopy ? copyChunk(i, marco) : undefined
+                "
             >
                 <code class="box-body">
                     {{ marco.join('\n') }}
@@ -205,11 +212,11 @@ async function copy(macroText: string, macroInfo: string) {
         <el-divider />
         <el-card
             v-if="actions.length > 0"
-            :class="oneclickCopy ? 'box-card-oneclick' : 'box-card'"
+            :class="genOptions.oneclickCopy ? 'box-card-oneclick' : 'box-card'"
             shadow="hover"
             style="width: 300px"
             @click="
-                oneclickCopy
+                genOptions.oneclickCopy
                     ? copy(JSON.stringify(actions), $t('copied-json'))
                     : undefined
             "
@@ -246,6 +253,9 @@ async function copy(macroText: string, macroInfo: string) {
 
 <fluent locale="zh-CN">
 has-notify = 添加完成提示
+has-notify-auto = 自动确定
+has-notify-true = 总是提示
+has-notify-false = 不提示
 has-lock = 锁定宏指令
 avg-size = 长度平均化
 oneclick-copy = 一键复制
@@ -263,6 +273,9 @@ copy-failed = 复制失败：{ $err }
 
 <fluent locale="en-US">
 has-notify = Notification
+has-notify-auto = Auto
+has-notify-true = Always
+has-notify-false = Never
 has-lock = Macro Lock
 avg-size = Equalize
 oneclick-copy = Oneclick Copy
