@@ -35,18 +35,20 @@ import {
 } from '@/libs/Analyzer';
 import { Actions, Status } from '@/libs/Craft';
 import * as d3 from 'd3';
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, reactive } from 'vue';
+import useStore from '@/stores/designer';
 
 const props = defineProps<{
     initStatus: Status;
     actions: Actions[];
 }>();
+const store = useStore();
 const defaultSimulationCounts = 1000;
 const maximiumSimulatonPow = 5;
 
 const simulationResult = ref<Statistics>();
 const simulationButtonDisabled = ref(false);
-const ignoreErrors = ref(true);
+const options = reactive(store.options.analyzerOptions);
 
 const attributesScope = ref<Scope>();
 
@@ -58,7 +60,7 @@ async function runSimulatios(n: number) {
             props.initStatus,
             props.actions,
             n,
-            ignoreErrors.value,
+            options.ignoreErrors,
         );
     } finally {
         simulationButtonDisabled.value = false;
@@ -127,7 +129,7 @@ const arcLabel = d3
 <template>
     <el-form>
         <el-form-item :label="$t('ignore-errors')">
-            <el-switch v-model="ignoreErrors" />
+            <el-switch v-model="options.ignoreErrors" />
         </el-form-item>
         <el-form-item>
             <el-dropdown

@@ -57,6 +57,9 @@ export default defineStore('designer', {
             importOptions: {
                 strictMode: false,
             },
+            analyzerOptions: {
+                ignoreErrors: true,
+            }
         },
     }),
     getters: {
