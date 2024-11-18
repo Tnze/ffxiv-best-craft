@@ -89,7 +89,7 @@ watchEffect(async () => {
 });
 
 watchEffect(() => {
-    if (items.value == null) return;
+    if (items.value == null || !manullyInput.value) return;
     const [totalLvCount, hqLvCount] = items.value
         .filter(item => item.item.can_be_hq)
         .map(v => [v.amount * v.item.level, v.hqAmount * v.item.level])
