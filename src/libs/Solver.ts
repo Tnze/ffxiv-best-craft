@@ -36,7 +36,6 @@ if (isTauri) {
                 },
             );
             worker.onmessage = ev => {
-                console.log(ev);
                 if (ev.data.error == undefined) resolve(ev.data);
                 else reject(ev.data.error);
             };
