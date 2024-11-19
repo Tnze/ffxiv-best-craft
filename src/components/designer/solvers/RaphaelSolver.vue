@@ -76,7 +76,12 @@ function runRaphaelSolver() {
                 backloadProgress.value,
                 adversarial.value,
                 unsoundBranchPruning.value,
-            ),
+            ).catch(e => {
+                const err = String(e);
+                if (err == 'RuntimeError: unreachable')
+                    throw $t('error-probably-out-of-memory', { err });
+                else throw e;
+            }),
     );
 }
 </script>
@@ -109,63 +114,63 @@ function runRaphaelSolver() {
                 v-model="useManipulation"
                 :label="$t('enable-action', { action: $t('manipulation') })"
             />
-            <el-tag v-if="useManipulation" type="warning">{{
-                $t('need-learn-manipulation')
-            }}</el-tag>
+            <el-tag v-if="useManipulation" type="warning">
+                {{ $t('need-learn-manipulation') }}
+            </el-tag>
         </el-space>
         <el-space>
             <el-checkbox
                 v-model="useHeartAndSoul"
                 :label="$t('enable-action', { action: $t('heart-and-soul') })"
             />
-            <el-tag v-if="useHeartAndSoul" type="warning">{{
-                $t('consume-crafters-delineation')
-            }}</el-tag>
+            <el-tag v-if="useHeartAndSoul" type="warning">
+                {{ $t('consume-crafters-delineation') }}
+            </el-tag>
         </el-space>
         <el-space>
             <el-checkbox
                 v-model="useQuickInnovation"
                 :label="$t('enable-action', { action: $t('quick-innovation') })"
             />
-            <el-tag v-if="useQuickInnovation" type="warning">{{
-                $t('consume-crafters-delineation')
-            }}</el-tag>
+            <el-tag v-if="useQuickInnovation" type="warning">
+                {{ $t('consume-crafters-delineation') }}
+            </el-tag>
         </el-space>
         <el-space>
             <el-checkbox
                 v-model="backloadProgress"
                 :label="$t('backload-progress')"
             />
-            <el-tag v-if="backloadProgress" type="success">{{
-                $t('speed-up')
-            }}</el-tag>
-            <el-tag v-if="backloadProgress" type="danger">{{
-                $t('quality-down')
-            }}</el-tag>
-            <el-tag v-if="backloadProgress" type="danger">{{
-                $t('increase-duration')
-            }}</el-tag>
+            <el-tag v-if="backloadProgress" type="success">
+                {{ $t('speed-up') }}
+            </el-tag>
+            <el-tag v-if="backloadProgress" type="danger">
+                {{ $t('quality-down') }}
+            </el-tag>
+            <el-tag v-if="backloadProgress" type="danger">
+                {{ $t('increase-duration') }}
+            </el-tag>
         </el-space>
         <el-space>
             <el-checkbox
                 v-model="unsoundBranchPruning"
                 :label="$t('unsound-branch-pruning')"
             />
-            <el-tag v-if="unsoundBranchPruning" type="success">{{
-                $t('speed-up')
-            }}</el-tag>
-            <el-tag v-if="unsoundBranchPruning" type="danger">{{
-                $t('increase-duration')
-            }}</el-tag>
+            <el-tag v-if="unsoundBranchPruning" type="success">
+                {{ $t('speed-up') }}
+            </el-tag>
+            <el-tag v-if="unsoundBranchPruning" type="danger">
+                {{ $t('increase-duration') }}
+            </el-tag>
         </el-space>
         <el-space>
             <el-checkbox v-model="adversarial" :label="$t('adversarial')" />
-            <el-tag v-if="adversarial" type="danger">{{
-                $t('quality-down')
-            }}</el-tag>
-            <el-tag v-if="adversarial" type="danger">{{
-                $t('increase-duration')
-            }}</el-tag>
+            <el-tag v-if="adversarial" type="danger">
+                {{ $t('quality-down') }}
+            </el-tag>
+            <el-tag v-if="adversarial" type="danger">
+                {{ $t('increase-duration') }}
+            </el-tag>
         </el-space>
     </el-space>
     <div style="margin-top: 10px">
@@ -193,7 +198,7 @@ function runRaphaelSolver() {
 <fluent locale="zh-CN">
 solver-start = 开始求解
 simple-solver-solving = 正在求解中
-error-with = 错误：{ $err }
+error-probably-out-of-memory = { $err }（可能是内存不足，请尝试使用桌面端）
 
 enable-action = 使用技能：{ $action }
 backload-progress = 后置作业技能（快速求解）
@@ -223,7 +228,7 @@ solver-info =
 <fluent locale="en-US">
 solver-start = Start
 simple-solver-solving = Solving
-error-with = Error: { $err }
+error-probably-out-of-memory = { $err } (Probably out of memory, please use the desktop edition)
 
 enable-action = Enable { $action }
 backload-progress = Backload progress (Quick solve)

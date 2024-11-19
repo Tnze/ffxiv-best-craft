@@ -101,7 +101,7 @@ async function runSimpleSolver(
             showClose: true,
             duration: 0,
             type: 'error',
-            message: $t('error-with', { err: $t(err as string) }),
+            message: $t('error-with', { err: $t(String(err)) }),
         });
         console.error(err);
     } finally {
@@ -218,23 +218,6 @@ async function runTnzeVerRikaSolver() {
                     </template>
                 </i18n>
             </el-tab-pane>
-            <!-- <el-tab-pane :label="$t('tnzever-rika-solver')" name="bfs-dp">
-                <el-space v-if="platform != 'tauri'" direction="vertical" alignment="flex-start">
-                    <el-alert type="error" :title="$t('solver-not-avaliable')" show-icon :closable="false">
-                        <DesktopEditionDownload />
-                    </el-alert>
-                </el-space>
-                <i18n v-else path="tnzever-rika-solver-info" tag="span" class="solver-info">
-                    <template #startButton>
-                        <el-checkbox v-model="tnzeVerRikaUseManipulation" :label="$t('manipulation')" /><br />
-                        <el-checkbox v-model="tnzeVerRikaUseObserve" :label="$t('observe')" /><br />
-                        <el-checkbox v-model="tnzeVerRikaReduceSteps" :label="$t('reduce-steps-info')" /><br />
-                        <el-button type="primary" @click="runTnzeVerRikaSolver" :loading="tnzeVerRikaIsSolving">
-                            {{ tnzeVerRikaIsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
-                        </el-button>
-                    </template>
-                </i18n>
-            </el-tab-pane> -->
         </el-tabs>
     </el-scrollbar>
 </template>
@@ -269,7 +252,6 @@ span {
 </style>
 
 <fluent locale="zh-CN">
-solver-not-avaliable = 该求解器尚未适配网页版 BestCraft。如需使用，请点击下方链接下载客户端。
 web-worker-not-avaliable = 您正在使用的浏览器不支持 Web Worker 功能，无法运行求解器。
 
 do-not-touch = 不推品质
@@ -312,10 +294,7 @@ tnzever-rika-solver-info =
 </fluent>
 
 <fluent locale="en-US">
-solver-not-avaliable = The Web edition of BestCraft doesn't support this solver. Please download the Desktop edition if needed.
 web-worker-not-avaliable = Your browser doesn't support Web Worker, which is required to running solvers.
-    
-solver-not-avaliable = Developments of web-based BestCraft haven't done yet. Downloading the Desktop version is required to run these solvers.
 
 do-not-touch = Do not "touching"
 reduce-steps-info = Minimum resource
