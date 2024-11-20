@@ -239,7 +239,6 @@ watchEffect(async () => {
 }
 
 .el-menu:not(.el-menu--collapse) {
-    width: var(--tnze-sidebar-width);
 }
 
 .el-form-item__label {
@@ -355,6 +354,7 @@ watchEffect(async () => {
 
     display: flex;
     flex-direction: column;
+    width: var(--tnze-sidebar-width);
 }
 
 .sidebar.show-menu {
