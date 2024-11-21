@@ -22,14 +22,13 @@ import {
     SFCFluentPlugin,
 } from 'unplugin-fluent-vue/vite';
 import wasm from 'vite-plugin-wasm';
-import topLevelAwait from 'vite-plugin-top-level-await';
 import { resolve } from 'path';
 
 const projectRootDir = resolve(__dirname);
 
-const defineTarget = () => {
+const defineTarget = (): PluginOption => {
     let config: { env: any };
-    return <PluginOption>{
+    return {
         name: 'define target',
         configResolved(resolvedConfig) {
             config = resolvedConfig;
@@ -55,7 +54,6 @@ export default defineConfig({
     plugins: [
         defineTarget(),
         wasm(),
-        topLevelAwait(),
         vue(),
         ElementPlus({}),
         SFCFluentPlugin(),
@@ -70,9 +68,8 @@ export default defineConfig({
     },
     worker: {
         format: 'es',
-        plugins: () => [defineTarget(), wasm(), topLevelAwait()],
+        plugins: () => [defineTarget(), wasm()],
     },
-    // base: '/dawntrail/',
     build: {
         rollupOptions: {
             input: {
@@ -82,5 +79,6 @@ export default defineConfig({
         },
         // Disable sourcemap for Tauri target
         sourcemap: process.env.VITE_BESTCRAFT_TARGET != 'tauri',
+        target: 'esnext',
     },
 });
