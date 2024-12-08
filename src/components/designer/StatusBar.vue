@@ -18,11 +18,13 @@
 
 <script setup lang="ts">
 import { ElProgress } from 'element-plus';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { useElementSize } from '@vueuse/core';
 import { Attributes, Collectability, Status } from '@/libs/Craft';
 import Buffs from './Buffs.vue';
 import Condition from './Condition.vue';
 import DurabilityProgressBar from './DurabilityProgressBar.vue';
+import CollectabilityRefineMark from './CollectabilityRefineMark.vue';
 
 const props = defineProps<{
     status: Status;
@@ -31,8 +33,11 @@ const props = defineProps<{
     collectability?: Collectability;
 }>();
 
+const qualityProgressBar = ref();
+const { width: qualityProgressBarWidth } = useElementSize(qualityProgressBar);
+
 const progress = computed<number>(() =>
-    props.status === undefined || props.status.recipe.difficulty == 0
+    props.status.recipe.difficulty == 0
         ? 100
         : (props.status.progress / props.status.recipe.difficulty) * 100,
 );
@@ -40,7 +45,7 @@ const remainingProgress = computed(
     () => props.status.recipe.difficulty - props.status.progress,
 );
 const quality = computed<number>(() =>
-    props.status === undefined || props.status.recipe.quality == 0
+    props.status.recipe.quality == 0
         ? 100
         : (props.status.quality / props.status.recipe.quality) * 100,
 );
@@ -56,10 +61,11 @@ const qualityColor = computed<string>(() =>
     props.status.quality >= props.status.recipe.quality ? '#13CE66' : '#409EFF',
 );
 
-const craftPointPercentage = computed(
-    () =>
-        (props.status?.craft_points / props.status?.attributes.craft_points) *
-        100,
+const craftPointPercentage = computed(() =>
+    props.status.attributes.craft_points == 0
+        ? 100
+        : (props.status.craft_points / props.status.attributes.craft_points) *
+          100,
 );
 
 const collectabilityLevel = computed(() => {
@@ -68,14 +74,14 @@ const collectabilityLevel = computed(() => {
     }
     const { low_collectability, mid_collectability, high_collectability } =
         props.collectability;
-    const quality = props.status.quality;
-    if (quality < low_collectability) {
+    const collectability = props.status.quality / 10;
+    if (collectability < low_collectability) {
         return 0;
     }
-    if (quality < mid_collectability) {
+    if (collectability < mid_collectability) {
         return 1;
     }
-    if (quality < high_collectability) {
+    if (collectability < high_collectability) {
         return 2;
     }
     return 3;
@@ -88,8 +94,8 @@ const collectabilityLevel = computed(() => {
             <div id="durability">
                 <span class="bar-title">{{ $t('durability') }} &nbsp;</span>
                 <span>
-                    {{ status?.durability }} /
-                    {{ status?.recipe.durability }}
+                    {{ status.durability }} /
+                    {{ status.recipe.durability }}
                 </span>
                 <DurabilityProgressBar
                     v-model="status.durability"
@@ -98,8 +104,8 @@ const collectabilityLevel = computed(() => {
 
                 <span class="bar-title">{{ $t('craft-point') }} &nbsp;</span>
                 <span>
-                    {{ status?.craft_points }} /
-                    {{ status?.attributes.craft_points }}
+                    {{ status.craft_points }} /
+                    {{ status.attributes.craft_points }}
                 </span>
                 <el-progress
                     :stroke-width="12"
@@ -115,7 +121,7 @@ const collectabilityLevel = computed(() => {
         <div id="progress-and-buffs">
             <span class="bar-title">{{ $t('progress') }} &nbsp;</span>
             <span>
-                {{ status?.progress }} / {{ status?.recipe.difficulty }}
+                {{ status.progress }} / {{ status.recipe.difficulty }}
             </span>
             <template v-if="remainingProgress > 0">
                 <span class="bar-title">
@@ -132,17 +138,24 @@ const collectabilityLevel = computed(() => {
             <br />
             <span class="bar-title">{{ $t('quality') }} &nbsp;</span>
             <span>
-                {{ status?.quality }} / {{ status?.recipe.quality }}
+                {{ status.quality }} / {{ status.recipe.quality }}
                 <span v-if="collectability != undefined">
                     &nbsp;
                     {{ $t('collectability-level', { v: collectabilityLevel }) }}
                 </span>
             </span>
             <el-progress
+                ref="qualityProgressBar"
                 :percentage="quality"
                 :color="qualityColor"
                 :show-text="false"
                 :stroke-width="10"
+            />
+            <CollectabilityRefineMark
+                v-if="collectability != undefined"
+                :collectability="collectability"
+                :max-collectability="status.recipe.quality / 10"
+                :progres-bar-width="qualityProgressBarWidth"
             />
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
@@ -151,7 +164,7 @@ const collectabilityLevel = computed(() => {
                 <span class="attr-label">
                     {{ $t('display-attrs-label', { label: $t('level') }) }}
                 </span>
-                <span class="attr-value"> {{ status?.attributes.level }}</span>
+                <span class="attr-value"> {{ status.attributes.level }}</span>
             </div>
             <div class="attr-block">
                 <span class="attr-label">
@@ -162,7 +175,7 @@ const collectabilityLevel = computed(() => {
                     }}
                 </span>
                 <span class="attr-value">
-                    {{ status?.attributes.craftsmanship }}
+                    {{ status.attributes.craftsmanship }}
                 </span>
             </div>
             <div class="attr-block">
@@ -170,7 +183,7 @@ const collectabilityLevel = computed(() => {
                     {{ $t('display-attrs-label', { label: $t('control') }) }}
                 </span>
                 <span class="attr-value">
-                    {{ status?.attributes.control }}
+                    {{ status.attributes.control }}
                 </span>
             </div>
             <div class="attr-block">
@@ -180,7 +193,7 @@ const collectabilityLevel = computed(() => {
                     }}
                 </span>
                 <span class="attr-value">
-                    {{ status?.attributes.craft_points }}
+                    {{ status.attributes.craft_points }}
                 </span>
             </div>
         </div>
@@ -191,7 +204,6 @@ const collectabilityLevel = computed(() => {
 .conatiner {
     width: 100%;
     display: flex;
-    flex-wrap: wrap;
     font-size: 14px;
     color: var(--el-text-color-regular);
 }
@@ -246,6 +258,10 @@ const collectabilityLevel = computed(() => {
 }
 
 @media screen and (max-width: 480px) {
+    .conatiner {
+        flex-wrap: wrap;
+    }
+
     #progress-and-buffs {
         flex: 1 0 100%;
         padding: 5px;
