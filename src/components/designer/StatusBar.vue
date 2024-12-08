@@ -22,6 +22,7 @@ import { computed } from 'vue';
 import { Attributes, Collectability, Status } from '@/libs/Craft';
 import Buffs from './Buffs.vue';
 import Condition from './Condition.vue';
+import DurabilityProgressBar from './DurabilityProgressBar.vue';
 
 const props = defineProps<{
     status: Status;
@@ -30,11 +31,6 @@ const props = defineProps<{
     collectability?: Collectability;
 }>();
 
-const durability = computed<number>(() =>
-    props.status === undefined || props.status.recipe.durability == 0
-        ? 100
-        : (props.status.durability / props.status.recipe.durability) * 100,
-);
 const progress = computed<number>(() =>
     props.status === undefined || props.status.recipe.difficulty == 0
         ? 100
@@ -100,21 +96,16 @@ const collectabilityLevel = computed(() => {
                     {{ status?.durability }} /
                     {{ status?.recipe.durability }}
                 </span>
-
-                <el-progress
-                    :stroke-width="14"
-                    :show-text="false"
-                    :percentage="durability"
-                    :color="durabilityColor"
-                    striped
+                <DurabilityProgressBar
+                    v-model="status.durability"
+                    :max="status.recipe.durability"
                 />
-                <div id="craft-point"></div>
+
                 <span class="bar-title">{{ $t('craft-point') }} &nbsp;</span>
                 <span>
                     {{ status?.craft_points }} /
                     {{ status?.attributes.craft_points }}
                 </span>
-
                 <el-progress
                     :stroke-width="12"
                     :percentage="craftPointPercentage"
@@ -122,6 +113,7 @@ const collectabilityLevel = computed(() => {
                     color="#FF9999"
                     striped
                 />
+
                 <Condition v-if="showCondition" :cond="status.condition" />
             </div>
         </div>
