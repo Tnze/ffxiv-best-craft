@@ -152,7 +152,7 @@ const collectabilityLevel = computed(() => {
                 :stroke-width="10"
             />
             <CollectabilityRefineMark
-                v-if="collectability != undefined"
+                v-if="collectability != undefined && status.recipe.quality > 0"
                 :collectability="collectability"
                 :max-collectability="status.recipe.quality / 10"
                 :progres-bar-width="qualityProgressBarWidth"

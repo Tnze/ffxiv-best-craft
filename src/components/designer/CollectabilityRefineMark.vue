@@ -17,8 +17,8 @@
 -->
 
 <script setup lang="ts">
-import { Collectability } from '@/libs/Craft';
 import { computed } from 'vue';
+import { Collectability } from '@/libs/Craft';
 
 const props = defineProps<{
     collectability: Collectability;
@@ -43,6 +43,7 @@ const lowPos = computed(() => {
 });
 
 function calcMark(collectability: number) {
+    if (collectability == 0) return undefined;
     const pers = collectability / props.maxCollectability;
     const absPos = pers * props.progresBarWidth;
     return absPos - lowPos.value;
@@ -65,6 +66,22 @@ const highMark = computed(() =>
         height="25"
         xmlns="http://www.w3.org/2000/svg"
     >
+        <title>
+            {{
+                $t('required-collectability') +
+                [
+                    collectability.low_collectability,
+                    collectability.mid_collectability,
+                    collectability.high_collectability,
+                ]
+                    .flatMap((v, i) =>
+                        v != 0
+                            ? '\n' + $t('collectability-' + (i + 1), { v })
+                            : undefined,
+                    )
+                    .join('')
+            }}
+        </title>
         <defs>
             <g id="Mark">
                 <circle cx="0" cy="7" r="3" />
@@ -85,6 +102,7 @@ const highMark = computed(() =>
             <g stroke="black">
                 <rect y="5" :width="midMark" height="4" :fill="palette[0]" />
                 <rect
+                    v-if="midMark"
                     :x="midMark"
                     y="5"
                     :width="highMark - midMark"
@@ -92,6 +110,7 @@ const highMark = computed(() =>
                     :fill="palette[1]"
                 />
                 <rect
+                    v-if="highMark"
                     :x="highMark"
                     y="5"
                     :width="markWidth - highMark"
@@ -101,8 +120,18 @@ const highMark = computed(() =>
             </g>
             <g stroke="black">
                 <use xlink:href="#Mark" :fill="palette[0]" />
-                <use :x="midMark" xlink:href="#Mark" :fill="palette[1]" />
-                <use :x="highMark" xlink:href="#Mark" :fill="palette[2]" />
+                <use
+                    v-if="midMark"
+                    :x="midMark"
+                    xlink:href="#Mark"
+                    :fill="palette[1]"
+                />
+                <use
+                    v-if="highMark"
+                    :x="highMark"
+                    xlink:href="#Mark"
+                    :fill="palette[2]"
+                />
             </g>
         </g>
     </svg>
@@ -113,3 +142,10 @@ const highMark = computed(() =>
     float: right;
 }
 </style>
+
+<fluent locale="zh-CN">
+required-collectability = 所需收藏价值
+collectability-1 = 一档：{ $v } ~
+collectability-2 = 二档：{ $v } ~
+collectability-3 = 三档：{ $v } ~
+</fluent>
