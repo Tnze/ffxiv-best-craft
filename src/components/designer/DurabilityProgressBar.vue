@@ -34,7 +34,7 @@ const blockHeight = 13;
         <svg
             version="1.1"
             baseProfile="full"
-            :width="blockTotal * (max / 10) + 3"
+            :width="blockTotal * Math.ceil(max / 10) + 3"
             :height="blockHeight + 3"
             xmlns="http://www.w3.org/2000/svg"
         >
@@ -60,14 +60,14 @@ const blockHeight = 13;
                 transform="translate(1.5, 1.5)"
             >
                 <rect
-                    v-for="i in max / 10"
+                    v-for="i in Math.ceil(max / 10)"
                     :x="(i - 1) * blockTotal"
                     :width="blockWidth"
                     :height="blockHeight"
                     fill="#424242"
                 />
                 <rect
-                    v-for="i in max / 10"
+                    v-for="i in Math.ceil(max / 10)"
                     :x="(i - 1) * blockTotal"
                     :width="blockWidth"
                     :height="blockHeight"
