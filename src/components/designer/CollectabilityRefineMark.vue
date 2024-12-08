@@ -69,17 +69,17 @@ const highMark = computed(() =>
         <title>
             {{
                 $t('required-collectability') +
+                '\n' +
                 [
                     collectability.low_collectability,
                     collectability.mid_collectability,
                     collectability.high_collectability,
                 ]
-                    .flatMap((v, i) =>
-                        v != 0
-                            ? '\n' + $t('collectability-' + (i + 1), { v })
-                            : undefined,
-                    )
-                    .join('')
+                    .flatMap((v, i) => {
+                        if (v == 0) return undefined;
+                        return $t('collectability-stage', { v, lv: i + 1 });
+                    })
+                    .join('\n')
             }}
         </title>
         <defs>
@@ -145,7 +145,22 @@ const highMark = computed(() =>
 
 <fluent locale="zh-CN">
 required-collectability = 所需收藏价值
-collectability-1 = 一档：{ $v } ~
-collectability-2 = 二档：{ $v } ~
-collectability-3 = 三档：{ $v } ~
+collectability-stage =
+    { $lv ->
+        [1] 一档：{ $v } ~
+        [2] 二档：{ $v } ~
+        [3] 三档：{ $v } ~
+       *[other] 未知
+    }
+</fluent>
+
+<fluent locale="en-US">
+required-collectability = Required Collectability
+collectability-stage =
+    { $lv ->
+        [1] First: { $v } ~
+        [2] Second: { $v } ~
+        [3] Third: { $v } ~
+       *[other] Unknown
+    }
 </fluent>
