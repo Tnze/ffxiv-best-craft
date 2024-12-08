@@ -51,15 +51,10 @@ const progressColor = computed<string>(() => {
     if (props.status.durability <= 0) return '#F56C6C';
     return '#409EFF';
 });
+
 const qualityColor = computed<string>(() =>
     props.status.quality >= props.status.recipe.quality ? '#13CE66' : '#409EFF',
 );
-
-const durabilityColor = [
-    { color: '#FF999E', percentage: 20 },
-    { color: '#FFD470', percentage: 50 },
-    { color: '#62C3FF', percentage: 100 },
-];
 
 const craftPointPercentage = computed(
     () =>

@@ -17,6 +17,8 @@
 -->
 
 <script setup lang="ts">
+import { computed } from 'vue';
+
 const props = defineProps<{
     modelValue: number;
     max: number;
@@ -27,6 +29,17 @@ const blockMargin = 2;
 const blockTotal = blockWidth + blockMargin;
 
 const blockHeight = 13;
+
+const durabilityColor = [
+    { color: '#FF5757', colorMid: '#FF7C7C', percentage: 20 },
+    { color: '#FFE957', colorMid: '#FFF67C', percentage: 50 },
+    { color: '#57bbff', colorMid: '#7ce0ff', percentage: 100 },
+];
+
+const color = computed(() => {
+    const percentage = Math.floor((props.modelValue / props.max) * 100);
+    return durabilityColor.find(p => p.percentage >= percentage)!;
+});
 </script>
 
 <template>
@@ -40,9 +53,9 @@ const blockHeight = 13;
         >
             <defs>
                 <linearGradient id="Gradient1" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stop-color="#57bbff" />
-                    <stop offset="50%" stop-color="#7ce0ff" />
-                    <stop offset="100%" stop-color="#57bbff" />
+                    <stop offset="0%" :stop-color="color?.color" />
+                    <stop offset="50%" :stop-color="color.colorMid" />
+                    <stop offset="100%" :stop-color="color?.color" />
                 </linearGradient>
                 <clipPath id="cut-off">
                     <rect
@@ -50,7 +63,7 @@ const blockHeight = 13;
                             (modelValue / 10) * blockTotal - blockMargin / 2
                         "
                         :height="blockHeight"
-                        style="transition: 0.1s width ease"
+                        style="transition: 0.1s width ease;"
                     />
                 </clipPath>
             </defs>
