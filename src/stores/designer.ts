@@ -15,11 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
+    Collectability,
     compareStatus,
     Item,
     Jobs,
     Recipe,
-    RecipeLevel,
     RecipeRequirements,
     simulate,
     SimulateResult,
@@ -39,6 +39,7 @@ export default defineStore('designer', {
             recipeId?: number;
             materialQualityFactor: number;
             requirements: RecipeRequirements;
+            collectability?: Collectability;
             simulatorMode: boolean;
         } | null,
         rotations: {
@@ -78,6 +79,7 @@ export default defineStore('designer', {
             recipeId?: number;
             materialQualityFactor: number;
             requirements: RecipeRequirements;
+            collectability?: Collectability;
             simulatorMode: boolean;
         }) {
             this.content = payload;

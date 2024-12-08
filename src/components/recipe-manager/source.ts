@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from '@/libs/Craft';
+import { Collectability, Item, ItemWithAmount, RecipeInfo, RecipeLevel } from '@/libs/Craft';
 import { Enhancer } from '@/libs/Enhancer';
 
 export interface DataSource {
@@ -29,6 +29,7 @@ export interface DataSource {
     ): Promise<RecipesSourceResult>;
     recipesIngredients(recipeId: number): Promise<ItemWithAmount[]>;
     recipeLevelTable(rlv: number): Promise<RecipeLevel>;
+    recipeCollectability?(rlv: number): Promise<Collectability>;
     recipeInfo?(recipeId: number): Promise<RecipeInfo>;
     itemInfo(id: number): Promise<Item>;
     craftTypeList(): Promise<CraftType[]>;

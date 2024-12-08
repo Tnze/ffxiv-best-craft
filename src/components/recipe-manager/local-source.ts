@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Item, ItemWithAmount, RecipeInfo, RecipeLevel } from '@/libs/Craft';
+import { Collectability, Item, ItemWithAmount, RecipeInfo, RecipeLevel } from '@/libs/Craft';
 import { Enhancer } from '@/libs/Enhancer';
 import {
     CraftType,
@@ -56,6 +56,14 @@ export class LocalRecipeSource {
             await this.invoke
         )('recipes_ingredientions', { recipeId });
         return ings.map(x => ({ ingredient_id: x[0], amount: x[1] }));
+    }
+
+    async recipeCollectability(
+        recipeId: number,
+    ): Promise<Collectability> {
+        return await (
+            await this.invoke
+        )('recipe_collectability', { recipeId });
     }
 
     async recipeLevelTable(rlv: number): Promise<RecipeLevel> {

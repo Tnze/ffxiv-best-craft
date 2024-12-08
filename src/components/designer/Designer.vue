@@ -50,9 +50,9 @@ import {
     Recipe,
     Jobs,
     Item,
-    RecipeLevel,
     RecipeRequirements,
     SimulateResult,
+    Collectability,
 } from '@/libs/Craft';
 import { read_solver } from '@/libs/Solver';
 import { calculateEnhancedAttributs, Enhancer } from '@/libs/Enhancer';
@@ -77,6 +77,7 @@ const props = defineProps<{
     recipe: Recipe;
     recipeId?: number;
     requirements: RecipeRequirements;
+    collectability?: Collectability;
     item: Item;
     materialQualityFactor: number;
     attributes: Attributes;
@@ -313,6 +314,7 @@ async function handleSolverResult(
             :attributes="enhancedAttributes"
             :status="displayedStatus"
             :show-condition="false"
+            :collectability="collectability"
         />
         <div class="above-panel">
             <el-scrollbar

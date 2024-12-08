@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
+    Collectability,
     Item,
     Jobs,
     Recipe,
@@ -91,6 +92,7 @@ export const selectRecipe = (
     recipeId: number | undefined,
     materialQualityFactor: number,
     requirements: RecipeRequirements,
+    collectability: Collectability | undefined,
     item: Item,
     craftType: string,
     simulatorMode: boolean,
@@ -102,6 +104,7 @@ export const selectRecipe = (
         recipeId,
         materialQualityFactor,
         requirements,
+        collectability,
         simulatorMode,
     });
 };

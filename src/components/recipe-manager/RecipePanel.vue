@@ -219,9 +219,12 @@ async function selectRecipeRow(row: RecipeInfo) {
     try {
         isRecipeTableLoading.value = true;
         const source = await settingStore.getDataSource;
-        var [recipeLevel, info] = await Promise.all([
+        var [recipeLevel, itemInfo, collectability] = await Promise.all([
             source.recipeLevelTable(row.rlv),
             source.itemInfo(row.item_id),
+            source.recipeCollectability != undefined
+                ? source.recipeCollectability(row.id)
+                : undefined,
         ]);
     } catch (e: any) {
         ElMessage.error(String(e));
@@ -242,7 +245,8 @@ async function selectRecipeRow(row: RecipeInfo) {
             row.id,
             row.material_quality_factor,
             row,
-            info,
+            collectability,
+            itemInfo,
             row.job,
             mode == 'simulator',
         );

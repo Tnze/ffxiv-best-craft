@@ -104,6 +104,7 @@ function reload() {
                     designerStore.content.materialQualityFactor
                 "
                 :requirements="designerStore.content.requirements"
+                :collectability="designerStore.content.collectability"
                 :attributes="attributes"
                 :is-custom-recipe="isCustomRecipe"
             />

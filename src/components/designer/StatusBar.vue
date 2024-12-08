@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { ElProgress } from 'element-plus';
 import { computed } from 'vue';
-import { Attributes, Status } from '@/libs/Craft';
+import { Attributes, Collectability, Status } from '@/libs/Craft';
 import Buffs from './Buffs.vue';
 import Condition from './Condition.vue';
 
@@ -27,6 +27,7 @@ const props = defineProps<{
     status: Status;
     attributes: Attributes;
     showCondition: boolean;
+    collectability?: Collectability;
 }>();
 
 const durability = computed<number>(() =>
@@ -69,6 +70,25 @@ const craftPointPercentage = computed(
         (props.status?.craft_points / props.status?.attributes.craft_points) *
         100,
 );
+
+const collectabilityLevel = computed(() => {
+    if (props.collectability == undefined) {
+        return undefined;
+    }
+    const { low_collectability, mid_collectability, high_collectability } =
+        props.collectability;
+    const quality = props.status.quality;
+    if (quality < low_collectability) {
+        return 0;
+    }
+    if (quality < mid_collectability) {
+        return 1;
+    }
+    if (quality < high_collectability) {
+        return 2;
+    }
+    return 3;
+});
 </script>
 
 <template>
@@ -124,7 +144,13 @@ const craftPointPercentage = computed(
             />
             <br />
             <span class="bar-title">{{ $t('quality') }} &nbsp;</span>
-            <span>{{ status?.quality }} / {{ status?.recipe.quality }}</span>
+            <span>
+                {{ status?.quality }} / {{ status?.recipe.quality }}
+                <span v-if="collectability != undefined">
+                    &nbsp;
+                    {{ $t('collectability-level', { v: collectabilityLevel }) }}
+                </span>
+            </span>
             <el-progress
                 :percentage="quality"
                 :color="qualityColor"
@@ -252,6 +278,7 @@ const craftPointPercentage = computed(
 <fluent locale="zh-CN">
 display-attrs-label = { $label }：
 remaining = 剩余
+collectability-level = 收藏价值等级：{ $v }
 </fluent>
 
 <fluent locale="en-US">

@@ -119,7 +119,6 @@ async function updateValue(value: number) {
             dataSource.itemInfo(recipeInfo.item_id),
         ]);
         const recipe = await newRecipe(
-            recipeInfo.rlv,
             recipeLevel,
             recipeInfo.difficulty_factor,
             recipeInfo.quality_factor,

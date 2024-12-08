@@ -132,6 +132,7 @@ function confirm(simulatorMode: boolean) {
         undefined,
         0,
         requirements,
+        undefined,
         itemInfo,
         '',
         simulatorMode,

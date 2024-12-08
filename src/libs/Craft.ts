@@ -370,3 +370,10 @@ export interface ItemWithAmount {
     ingredient_id: number;
     amount: number;
 }
+
+export interface Collectability {
+    id: number;
+    low_collectability: number;
+    mid_collectability: number;
+    high_collectability: number;
+}
