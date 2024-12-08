@@ -25,8 +25,8 @@ use serde::Serialize;
 
 mod db;
 use db::{
-    craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*,
-    recipe_level_tables, recipes,
+    collectables_shop_refine, craft_types, item_action, item_food, item_food_effect,
+    item_with_amount, items, prelude::*, recipe_level_tables, recipes,
 };
 
 type Result<T> = std::result::Result<T, StatusError>;
@@ -67,6 +67,7 @@ async fn main() {
         .push(Router::with_path("recipe_table").get(recipe_table))
         .push(Router::with_path("recipe_info").get(recipe_info))
         .push(Router::with_path("recipes_ingredientions").get(recipes_ingredientions))
+        .push(Router::with_path("recipe_collectability").get(recipe_collectability))
         .push(Router::with_path("item_info").get(item_info))
         .push(Router::with_path("craft_type").get(craft_type))
         .push(Router::with_path("medicine_table").get(medicine_table))
@@ -287,6 +288,28 @@ async fn recipe_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -
         .await
         .map_err(|_| StatusError::internal_server_error())?
         .ok_or_else(|| StatusError::bad_request().detail("Recipe not found"))?;
+    res.render(Json(result));
+    Ok(())
+}
+
+#[handler]
+async fn recipe_collectability(
+    req: &mut Request,
+    depot: &mut Depot,
+    res: &mut Response,
+) -> Result<()> {
+    let state = depot
+        .obtain::<AppState>()
+        .map_err(|_| StatusError::internal_server_error().detail("Obtain AppState error"))?;
+    let recipe_id = req
+        .query::<u32>("recipe_id")
+        .ok_or_else(|| StatusError::bad_request().detail("Need 'recipe_id'"))?;
+    let result = CollectablesShopRefine::find()
+        .reverse_join(Recipes)
+        .filter(recipes::Column::Id.eq(recipe_id))
+        .one(&state.conn)
+        .await
+        .map_err(|_| StatusError::internal_server_error())?;
     res.render(Json(result));
     Ok(())
 }

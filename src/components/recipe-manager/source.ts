@@ -29,7 +29,7 @@ export interface DataSource {
     ): Promise<RecipesSourceResult>;
     recipesIngredients(recipeId: number): Promise<ItemWithAmount[]>;
     recipeLevelTable(rlv: number): Promise<RecipeLevel>;
-    recipeCollectability?(rlv: number): Promise<Collectability>;
+    recipeCollectability?(recipeId: number): Promise<Collectability>;
     recipeInfo?(recipeId: number): Promise<RecipeInfo>;
     itemInfo(id: number): Promise<Item>;
     craftTypeList(): Promise<CraftType[]>;

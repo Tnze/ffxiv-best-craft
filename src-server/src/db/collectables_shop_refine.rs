@@ -4,24 +4,19 @@ use sea_orm::entity::prelude::*;
 use serde::Serialize;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize)]
-#[sea_orm(table_name = "CraftTypes")]
+#[sea_orm(table_name = "CollectablesShopRefine")]
 pub struct Model {
     #[sea_orm(column_name = "Id", primary_key)]
     pub id: u32,
-    #[sea_orm(column_name = "Name", column_type = "custom(\"LONGTEXT\")")]
-    pub name: String,
+    #[sea_orm(column_name = "LowCollectability")]
+    pub low_collectability: u16,
+    #[sea_orm(column_name = "MidCollectability")]
+    pub mid_collectability: u16,
+    #[sea_orm(column_name = "HighCollectability")]
+    pub high_collectability: u16,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(has_many = "super::recipes::Entity")]
-    Recipes,
-}
-
-impl Related<super::recipes::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Recipes.def()
-    }
-}
+pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}

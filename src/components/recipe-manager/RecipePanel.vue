@@ -222,9 +222,17 @@ async function selectRecipeRow(row: RecipeInfo) {
         var [recipeLevel, itemInfo, collectability] = await Promise.all([
             source.recipeLevelTable(row.rlv),
             source.itemInfo(row.item_id),
-            source.recipeCollectability != undefined
-                ? source.recipeCollectability(row.id)
-                : undefined,
+            (async () => {
+                if (source.recipeCollectability == undefined) {
+                    return undefined;
+                }
+                try {
+                    return await source.recipeCollectability(row.id);
+                } catch (e: any) {
+                    console.error('Failed to fatch recipe collectability', e);
+                    return undefined; // in case the server doesn't support or any other situation;
+                }
+            })(),
         ]);
     } catch (e: any) {
         ElMessage.error(String(e));
