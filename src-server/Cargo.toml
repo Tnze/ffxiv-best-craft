@@ -7,7 +7,7 @@ license = "AGPL-3.0-or-later"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1.41", features = ["tokio-macros"] }
+tokio = { version = "1.42", features = ["tokio-macros"] }
 sea-orm = { version = "1.1", features = [
   "sqlx-mysql",
   "runtime-tokio-native-tls",
