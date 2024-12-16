@@ -1,19 +1,19 @@
 {
-    "version": "0.18.12",
-    "notes": "修复工匠的神速技巧没有提供一层内静的问题",
-    "pub_date": "2024-11-27T12:26:40.646Z",
+    "version": "0.18.13",
+    "notes": "- 添加收藏品配方显示收藏等级提示线的功能\n- 更新模拟器界面中耐久条的显示效果",
+    "pub_date": "2024-12-16T15:52:31.832Z",
     "platforms": {
         "darwin-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmdjSDJoSlFkOEZ1ZDRUem9iQkRjZXpKeWJnZjF1aUJNbHhMWlorZjVTc3NaQnhzSXBwT2N5Y1R1WlBsTXFYL3V0cWxCN0MxSmViblU4Tjh1RVRmbEF3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzMyNzEwMDk5CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKc3JvSWlQQmZrejJhR1JIZmhWZDFiT0xzMWd3SmtvWmhkeW5QV0JLNUp3ak1ZVzlGeGNHeDJYZGhoR0NPWWxFTGdDRnhVbkR4bTl0aFRZa1RzN0xRRGc9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v0.18.12/BestCraft_aarch64.app.tar.gz"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnRQMFpzNDd1OXNMZi9SVG9tM2JiaWFQTG1mRnZYZTAzRGE1bXZnQXVDeXV6MHROcmI2NWlac3lKR0RDZW0vOFFUNzJXZERvNW81SDZjZlNZYm5rV2dzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM0MzY0MTc4CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKT3A2ZnJNeHorTkZKTU80dHJWVXRLRU13dGs4TEo4UysvTXkzZEFWd1ZzR2NwaXFwdjhzZzg1cnJibkd3VjFwbVpiVHN6ZmFQUG0rUHNiejM1MTZBQUE9PQo=",
+            "url": "https://tnze.yyyy.games/releases/v0.18.13/BestCraft_aarch64.app.tar.gz"
         },
         "linux-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5OR1J3VHNFWmdGdXVBcG5DUnZOakIzSEcvaE9OUDgvMG1JY0w4ek52VGNqYjFRaGRWME1OeHY1QWZBZElHVHl2NHFtMTJqcDVuZUJERDNvYW5wOHdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzMyNzEwMjUyCWZpbGU6QmVzdENyYWZ0XzAuMTguMTJfYW1kNjQuQXBwSW1hZ2UKNGltTmhDaG12Q1p4b0psTHgwKzZacUo5OU8xNjhXdzlmQlNPOTU5RXBPTXZIMjJBdUpkeVlIVkJrWHBzdzNpUXdhYzF1aVpiVTlLaHNjbFF6bi9zQ3c9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v0.18.12/BestCraft_0.18.12_amd64.AppImage"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmhVbnJ3Ynp6am5RUTZrTVE1M01wSEdOM1ltN1FyQW1jak5aelVPS2FwbnVHVUJoK0w5SzNNenJQYzMzMEpLRm05czdWamNKclVXUWZLV3JZZStqSndBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM0MzY0MjUxCWZpbGU6QmVzdENyYWZ0XzAuMTguMTNfYW1kNjQuQXBwSW1hZ2UKOVJNcENjRFY2R015S1BQbkFQOUdHTm52VkFlbk9YQUpHSDRmMWw1d253OEpBaDNvUmVWaVAzTHVmN1FNaU8xZTNZMUdWUnpTWG5EMklPWUdudGtuRFE9PQo=",
+            "url": "https://tnze.yyyy.games/releases/v0.18.13/BestCraft_0.18.13_amd64.AppImage"
         },
         "windows-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmpBbi9ISDNBQ1BnbTN4R1VFc01wam11L2ZIMTFCVHBrWFl0TUMyczRzdUF0NXRCRkwyYkJ2NzYrWlQvTnFJNU03Tkt5NnpubWcyeDhkbWVnMEY1ZlFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzMyNzEwMzk2CWZpbGU6QmVzdENyYWZ0XzAuMTguMTJfeDY0X3poLUNOLm1zaS56aXAKRWUzNmFNRDc5MkdnYTZCSkk1RVg3U0IwNkJuSFRKNnJFRndYN1U4eGxZenZGS2lxcENBWEhMYmpkQUwyVUh0Q081Y3BqVXRwUGlTUzNUY3NybXNZQ0E9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v0.18.12/BestCraft_0.18.12_x64_zh-CN.msi.zip"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmxpTUZlWVBLbE1tWUVFdFJ6L0FjMmxWY1o5YytSdTJjd1ZOVlRLVytuSTlUUWxFaXJidGcyNFpYdm9QdUlUSFNiUkl3UnVKZmJRYnZNbXMwNzJuU1EwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM0MzY0MzQ1CWZpbGU6QmVzdENyYWZ0XzAuMTguMTNfeDY0X3poLUNOLm1zaS56aXAKOWF1TGYxck1kbVBrVC94QjdYVVlVd25NTURNSlp5ekNDeVRwVGd6N0d3WVhzbHkrSHZSVFV0Y1ZuekU5UFVnRllEN2xDMXk0OUhnd1piS1VLcFJ4Q1E9PQo=",
+            "url": "https://tnze.yyyy.games/releases/v0.18.13/BestCraft_0.18.13_x64_zh-CN.msi.zip"
         }
     }
 }
