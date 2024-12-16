@@ -135,15 +135,15 @@ const collectabilityLevel = computed(() => {
                 :show-text="false"
                 :stroke-width="10"
             />
-            <br />
+            <div style="height: 1em"></div>
             <span class="bar-title">{{ $t('quality') }} &nbsp;</span>
-            <span>
-                {{ status.quality }} / {{ status.recipe.quality }}
-                <span v-if="collectability != undefined">
-                    &nbsp;
-                    {{ $t('collectability-stage', { v: collectabilityLevel }) }}
+            <span> {{ status.quality }} / {{ status.recipe.quality }} </span>
+            <template v-if="collectability != undefined">
+                <span class="bar-title">
+                    &nbsp; {{ $t('collectability-stage') }} &nbsp;
                 </span>
-            </span>
+                <span>{{ collectabilityLevel }}</span>
+            </template>
             <el-progress
                 ref="qualityProgressBar"
                 :percentage="quality"
@@ -281,11 +281,11 @@ const collectabilityLevel = computed(() => {
 <fluent locale="zh-CN">
 display-attrs-label = { $label }：
 remaining = 剩余
-collectability-stage = 收藏价值等级 { $v }
+collectability-stage = 收藏价值等级
 </fluent>
 
 <fluent locale="en-US">
 display-attrs-label = { $label }: 
 remaining = Remaining
-collectability-stage = Collectability Stage { $v }
+collectability-stage = Collectability Stage
 </fluent>
