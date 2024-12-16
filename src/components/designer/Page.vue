@@ -112,6 +112,7 @@ function reload() {
                 v-else
                 :item="designerStore.content.item"
                 :recipe="designerStore.content.recipe"
+                :collectability="designerStore.content.collectability"
                 :attributes="attributes"
             />
         </template>

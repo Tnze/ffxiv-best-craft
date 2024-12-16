@@ -44,11 +44,6 @@ const time = computed<
     else return 'night';
 });
 
-function feedback() {
-    window.open('https://pd.qq.com/s/al6b5xo69', '_blank');
-    clarityReport('goFeedback');
-}
-
 function goFco() {
     window.open('https://yyyy.games/fco/', '_blank');
     clarityReport('goFco');
@@ -70,10 +65,7 @@ function goFco() {
             >
                 {{ $t('select-recipe') }}
             </el-button>
-            <el-button v-if="!E1.c()" type="info" size="large" @click="feedback">
-                {{ $t('feedback') }}
-            </el-button>
-            <el-button v-else type="warning" size="large" @click="cks += E1.t0">
+            <el-button v-if="E1.c()" type="warning" size="large" @click="cks += E1.t0">
                 {{ E1.t1 }}
             </el-button>
             <el-button v-if="isWebsite" size="large" @click="goFco">
@@ -151,7 +143,6 @@ no-data = 无配方
 confirm = 确认
 select-recipe = 选择配方
 go-back = 回到 FCO
-feedback = 反馈问题
 </fluent>
 
 <fluent locale="en-US">
@@ -174,5 +165,4 @@ no-data = No recipe
 confirm = Confirm
 select-recipe = Select recipe
 go-back = Back to FCO
-feedback = Feedback
 </fluent>
