@@ -310,6 +310,11 @@ fails = Fails
 normal = Normal
 highqual = High-quality
 
+no_collectability = No Collectability
+low_collectability = Low Collectability
+middle_collectability = Middle Collectability
+high_collectability = High Collectability
+
 calc-scope = Calculate the range of adaptive gearsets
 craftsmanship-range = { craftsmanship } range
 control-range = { control } range
