@@ -49,7 +49,7 @@ const store = useStore();
 const defaultSimulationCounts = 1000;
 const maximiumSimulatonPow = 5;
 
-const simulationResult = ref<Statistics>();
+const simulationResult = ref<Statistics | CollectableStatistics>();
 const simulationButtonDisabled = ref(false);
 const options = reactive(store.options.analyzerOptions);
 
@@ -67,14 +67,13 @@ async function runSimulatios(n: number) {
                 options.ignoreErrors,
             );
         } else {
-            const result = await rand_collectables_simulation(
+            simulationResult.value = await rand_collectables_simulation(
                 props.initStatus,
                 props.actions,
                 n,
                 options.ignoreErrors,
                 props.collectableShopRefine,
             );
-            console.log(result);
         }
     } finally {
         simulationButtonDisabled.value = false;
@@ -120,8 +119,18 @@ const pie = d3
 
 const color = d3
     .scaleOrdinal()
-    .domain(['errors', 'unfinished', 'fails', 'normal', 'highqual'])
-    .range(d3.schemeSpectral[5])
+    .domain([
+        'errors',
+        'unfinished',
+        'fails',
+        'normal',
+        'highqual',
+        'no_collectability',
+        'low_collectability',
+        'middle_collectability',
+        'high_collectability',
+    ])
+    .range(d3.schemeSpectral[9])
     .unknown('#ccc');
 
 const arcs = computed(() => {
@@ -264,6 +273,11 @@ unfinished = 未完成
 fails = 失败
 normal = 普通品质
 highqual = 高品质
+
+no_collectability = 无收藏价值
+low_collectability = 收藏价值一档
+middle_collectability = 收藏价值二档
+high_collectability = 收藏价值三档
 
 calc-scope = 计算装备属性适配范围
 craftsmanship-range = { craftsmanship }范围
