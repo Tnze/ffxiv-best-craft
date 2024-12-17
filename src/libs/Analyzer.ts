@@ -93,22 +93,21 @@ export async function rand_collectables_simulation(
         let { invoke } = await pkgTauri;
         return invoke('rand_collectables_simulation', args);
     } else {
-        throw 'unsupported';
-        // return new Promise((resolve, reject) => {
-        //     const worker = new Worker(
-        //         new URL('./AnalyzerWorker.ts', import.meta.url),
-        //         { type: 'module' },
-        //     );
-        //     worker.onmessage = ev => {
-        //         if (ev.data.error == undefined) resolve(ev.data);
-        //         else reject(ev.data.error);
-        //     };
-        //     worker.onerror = ev => reject(ev);
-        //     worker.postMessage({
-        //         name: 'rand_simulation',
-        //         args: JSON.stringify(args),
-        //     });
-        // });
+        return new Promise((resolve, reject) => {
+            const worker = new Worker(
+                new URL('./AnalyzerWorker.ts', import.meta.url),
+                { type: 'module' },
+            );
+            worker.onmessage = ev => {
+                if (ev.data.error == undefined) resolve(ev.data);
+                else reject(ev.data.error);
+            };
+            worker.onerror = ev => reject(ev);
+            worker.postMessage({
+                name: 'rand_collectables_simulation',
+                args: JSON.stringify(args),
+            });
+        });
     }
 }
 

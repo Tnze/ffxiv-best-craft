@@ -16,9 +16,11 @@
 
 onmessage = async e => {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == 'web') {
-        var { rand_simulation, calc_attributes_scope } = await import(
-            '../../pkg-wasm/app_wasm'
-        );
+        var {
+            rand_simulation,
+            rand_collectables_simulation,
+            calc_attributes_scope,
+        } = await import('../../pkg-wasm/app_wasm');
     } else return;
     const { name, args: argsJson } = e.data;
     const args = JSON.parse(argsJson);
@@ -34,6 +36,16 @@ onmessage = async e => {
                     ),
                 );
                 break;
+            case 'rand_collectables_simulation':
+                postMessage(
+                    rand_collectables_simulation(
+                        args.status,
+                        args.actions,
+                        args.n,
+                        args.ignoreErrors,
+                        args.collectablesShopRefine,
+                    ),
+                );
             case 'calc_attributes_scope':
                 postMessage(calc_attributes_scope(args.status, args.actions));
         }

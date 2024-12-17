@@ -28,10 +28,7 @@ fn err_to_string<T: ToString>(v: T) -> String {
 }
 
 #[wasm_bindgen]
-pub fn new_status(
-    attrs: JsValue,
-    recipe: JsValue,
-) -> Result<JsValue, JsValue> {
+pub fn new_status(attrs: JsValue, recipe: JsValue) -> Result<JsValue, JsValue> {
     let attrs: Attributes = from_value(attrs)?;
     let recipe: Recipe = from_value(recipe)?;
     let result = app_libs::new_status(attrs, recipe).map_err(err_to_string)?;
@@ -148,6 +145,22 @@ pub fn rand_simulation(
     let status: Status = from_value(status)?;
     let actions: Vec<Actions> = from_value(actions)?;
     let result = app_libs::analyzer::rand_simulations::stat(status, &actions, n, ignore_errors);
+    Ok(to_value(&result)?)
+}
+
+#[wasm_bindgen]
+pub fn rand_collectables_simulation(
+    status: JsValue,
+    actions: JsValue,
+    n: usize,
+    ignore_errors: bool,
+    collectables_shop_refine: JsValue,
+) -> Result<JsValue, JsValue> {
+    use app_libs::analyzer::rand_simulations::{stat_collectables, CollectablesShopRefine};
+    let status: Status = from_value(status)?;
+    let actions: Vec<Actions> = from_value(actions)?;
+    let collectables_shop_refine: CollectablesShopRefine = from_value(collectables_shop_refine)?;
+    let result = stat_collectables(status, &actions, n, ignore_errors, collectables_shop_refine);
     Ok(to_value(&result)?)
 }
 
