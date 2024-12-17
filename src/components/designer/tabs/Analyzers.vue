@@ -26,6 +26,8 @@ import {
     ElFormItem,
     ElButton,
     ElDivider,
+    ElDescriptions,
+    ElDescriptionsItem,
 } from 'element-plus';
 import {
     Statistics,
@@ -185,7 +187,7 @@ const arcLabel = d3
                         max-width: 100%;
                         height: auto;
                         font: 10px sans-serif;
-                        margin-top: 15px;
+                        margin: 15px;
                     "
                 >
                     <g>
@@ -217,6 +219,16 @@ const arcLabel = d3
                         </text>
                     </g>
                 </svg>
+                <el-descriptions v-if="simulationResult" :column="1" border>
+                    <el-descriptions-item
+                        v-for="[key, val] in Object.entries(
+                            simulationResult,
+                        ).sort((a, b) => b[1] - a[1])"
+                        :label="$t(key)"
+                    >
+                        {{ val }}
+                    </el-descriptions-item>
+                </el-descriptions>
             </el-form-item>
         </Transition>
         <el-divider />
