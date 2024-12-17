@@ -20,7 +20,7 @@
 import { ElProgress } from 'element-plus';
 import { computed, ref } from 'vue';
 import { useElementSize } from '@vueuse/core';
-import { Attributes, Collectability, Status } from '@/libs/Craft';
+import { Attributes, CollectablesShopRefine, Status } from '@/libs/Craft';
 import Buffs from './Buffs.vue';
 import Condition from './Condition.vue';
 import DurabilityProgressBar from './DurabilityProgressBar.vue';
@@ -30,7 +30,7 @@ const props = defineProps<{
     status: Status;
     attributes: Attributes;
     showCondition: boolean;
-    collectability?: Collectability;
+    collectableShopRefine?: CollectablesShopRefine;
 }>();
 
 const qualityProgressBar = ref();
@@ -69,11 +69,11 @@ const craftPointPercentage = computed(() =>
 );
 
 const collectabilityLevel = computed(() => {
-    if (props.collectability == undefined) {
+    if (props.collectableShopRefine == undefined) {
         return undefined;
     }
     const { low_collectability, mid_collectability, high_collectability } =
-        props.collectability;
+        props.collectableShopRefine;
     const collectability = props.status.quality / 10;
     if (collectability < low_collectability) {
         return 0;
@@ -138,7 +138,7 @@ const collectabilityLevel = computed(() => {
             <div style="height: 1em"></div>
             <span class="bar-title">{{ $t('quality') }} &nbsp;</span>
             <span> {{ status.quality }} / {{ status.recipe.quality }} </span>
-            <template v-if="collectability != undefined">
+            <template v-if="collectableShopRefine != undefined">
                 <span class="bar-title">
                     &nbsp; {{ $t('collectability-stage') }} &nbsp;
                 </span>
@@ -152,8 +152,11 @@ const collectabilityLevel = computed(() => {
                 :stroke-width="10"
             />
             <CollectabilityRefineMark
-                v-if="collectability != undefined && status.recipe.quality > 0"
-                :collectability="collectability"
+                v-if="
+                    collectableShopRefine != undefined &&
+                    status.recipe.quality > 0
+                "
+                :collectableShopRefine="collectableShopRefine"
                 :max-collectability="status.recipe.quality / 10"
                 :progres-bar-width="qualityProgressBarWidth"
             />

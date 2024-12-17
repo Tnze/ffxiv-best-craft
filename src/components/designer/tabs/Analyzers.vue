@@ -29,11 +29,13 @@ import {
 } from 'element-plus';
 import {
     Statistics,
+    CollectableStatistics,
     rand_simulation,
+    rand_collectables_simulation,
     calc_attributes_scope,
     Scope,
 } from '@/libs/Analyzer';
-import { Actions, Status } from '@/libs/Craft';
+import { Actions, CollectablesShopRefine, Status } from '@/libs/Craft';
 import * as d3 from 'd3';
 import { ref, computed, watch, reactive } from 'vue';
 import useStore from '@/stores/designer';
@@ -41,6 +43,7 @@ import useStore from '@/stores/designer';
 const props = defineProps<{
     initStatus: Status;
     actions: Actions[];
+    collectableShopRefine?: CollectablesShopRefine;
 }>();
 const store = useStore();
 const defaultSimulationCounts = 1000;
@@ -56,12 +59,23 @@ async function runSimulatios(n: number) {
     simulationResult.value = undefined;
     simulationButtonDisabled.value = true;
     try {
-        simulationResult.value = await rand_simulation(
-            props.initStatus,
-            props.actions,
-            n,
-            options.ignoreErrors,
-        );
+        if (props.collectableShopRefine == undefined) {
+            simulationResult.value = await rand_simulation(
+                props.initStatus,
+                props.actions,
+                n,
+                options.ignoreErrors,
+            );
+        } else {
+            const result = await rand_collectables_simulation(
+                props.initStatus,
+                props.actions,
+                n,
+                options.ignoreErrors,
+                props.collectableShopRefine,
+            );
+            console.log(result);
+        }
     } finally {
         simulationButtonDisabled.value = false;
     }

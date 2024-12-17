@@ -15,11 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
-    Collectability,
+    CollectablesShopRefine,
     Item,
     Jobs,
     Recipe,
-    RecipeLevel,
     RecipeRequirements,
 } from '@/libs/Craft';
 import useDesignerStore from '@/stores/designer';
@@ -92,7 +91,7 @@ export const selectRecipe = (
     recipeId: number | undefined,
     materialQualityFactor: number,
     requirements: RecipeRequirements,
-    collectability: Collectability | undefined,
+    collectability: CollectablesShopRefine | undefined,
     item: Item,
     craftType: string,
     simulatorMode: boolean,

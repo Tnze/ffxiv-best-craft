@@ -223,11 +223,11 @@ async function selectRecipeRow(row: RecipeInfo) {
             source.recipeLevelTable(row.rlv),
             source.itemInfo(row.item_id),
             (async () => {
-                if (source.recipeCollectability == undefined) {
+                if (source.recipeCollectableShopRefine == undefined) {
                     return undefined;
                 }
                 try {
-                    return await source.recipeCollectability(row.id);
+                    return await source.recipeCollectableShopRefine(row.id);
                 } catch (e: any) {
                     console.error('Failed to fatch recipe collectability', e);
                     return undefined; // in case the server doesn't support or any other situation;

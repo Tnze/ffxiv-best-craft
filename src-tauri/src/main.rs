@@ -19,12 +19,13 @@
     windows_subsystem = "windows"
 )]
 
-use std::collections::{hash_map::Entry, BTreeMap, HashMap};
-use std::sync::Arc;
+use std::{
+    collections::{hash_map::Entry, BTreeMap, HashMap},
+    sync::Arc,
+};
 
-use app_libs::analyzer::scope_of_application::Scope;
 use app_libs::{
-    analyzer::rand_simulations::Statistics,
+    analyzer::{rand_simulations, scope_of_application::Scope},
     ffxiv_crafting::{Actions, Attributes, Recipe, Status},
     solver::{
         depth_first_search_solver, normal_progress_solver, raphael, reflect_solver, rika_solver,
@@ -36,8 +37,7 @@ use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use rand::thread_rng;
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::Serialize;
-use tauri::path::BaseDirectory;
-use tauri::Manager;
+use tauri::{path::BaseDirectory, Manager};
 use tokio::sync::{Mutex, OnceCell};
 
 mod db;
@@ -598,8 +598,25 @@ fn rand_simulation(
     actions: Vec<Actions>,
     n: usize,
     ignore_errors: bool,
-) -> Statistics {
-    app_libs::analyzer::rand_simulations::stat(status, &actions, n, ignore_errors)
+) -> rand_simulations::Statistics {
+    rand_simulations::stat(status, &actions, n, ignore_errors)
+}
+
+#[tauri::command(async)]
+fn rand_collectables_simulation(
+    status: Status,
+    actions: Vec<Actions>,
+    n: usize,
+    ignore_errors: bool,
+    collectables_shop_refine: rand_simulations::CollectablesShopRefine,
+) -> rand_simulations::CollectableStatistics {
+    rand_simulations::stat_collectables(
+        status,
+        &actions,
+        n,
+        ignore_errors,
+        collectables_shop_refine,
+    )
 }
 
 #[tauri::command(async)]
@@ -640,6 +657,7 @@ fn main() {
             raphael_solve,
             set_theme,
             rand_simulation,
+            rand_collectables_simulation,
             calc_attributes_scope,
         ])
         .setup(|app| {

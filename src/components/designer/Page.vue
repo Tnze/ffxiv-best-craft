@@ -104,7 +104,7 @@ function reload() {
                     designerStore.content.materialQualityFactor
                 "
                 :requirements="designerStore.content.requirements"
-                :collectability="designerStore.content.collectability"
+                :collectable-shop-refine="designerStore.content.collectability"
                 :attributes="attributes"
                 :is-custom-recipe="isCustomRecipe"
             />
@@ -112,7 +112,7 @@ function reload() {
                 v-else
                 :item="designerStore.content.item"
                 :recipe="designerStore.content.recipe"
-                :collectability="designerStore.content.collectability"
+                :collectable-shop-refine="designerStore.content.collectability"
                 :attributes="attributes"
             />
         </template>

@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import {
-    Collectability,
+    CollectablesShopRefine,
     compareStatus,
     Item,
     Jobs,
@@ -39,7 +39,7 @@ export default defineStore('designer', {
             recipeId?: number;
             materialQualityFactor: number;
             requirements: RecipeRequirements;
-            collectability?: Collectability;
+            collectability?: CollectablesShopRefine;
             simulatorMode: boolean;
         } | null,
         rotations: {
@@ -60,7 +60,7 @@ export default defineStore('designer', {
             },
             analyzerOptions: {
                 ignoreErrors: true,
-            }
+            },
         },
     }),
     getters: {
@@ -79,7 +79,7 @@ export default defineStore('designer', {
             recipeId?: number;
             materialQualityFactor: number;
             requirements: RecipeRequirements;
-            collectability?: Collectability;
+            collectability?: CollectablesShopRefine;
             simulatorMode: boolean;
         }) {
             this.content = payload;

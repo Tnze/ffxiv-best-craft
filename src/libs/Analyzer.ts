@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { isTauri } from './Consts';
-import { Actions, Status } from './Craft';
+import { Actions, CollectablesShopRefine, Status } from './Craft';
 
 if (isTauri) {
     // Good, the user is using our Desktop edition. Use the native solvers.
@@ -33,6 +33,23 @@ export interface Statistics {
     normal: number;
     // 进展推满，品质也推满的模拟频数
     highqual: number;
+}
+
+export interface CollectableStatistics {
+    // 发生技能错误的模拟频数
+    errors: number;
+    // 技能模拟完成后仍处于制作状态的模拟频数
+    unfinished: number;
+    // 进展未推满的模拟频数
+    fails: number;
+    // 无收藏价值
+    no_collectability: number;
+    // 收藏价值第一档
+    low_collectability: number;
+    // 收藏价值第二档
+    middle_collectability: number;
+    // 收藏价值第三档
+    high_collectability: number;
 }
 
 export async function rand_simulation(
@@ -61,6 +78,37 @@ export async function rand_simulation(
                 args: JSON.stringify(args),
             });
         });
+    }
+}
+
+export async function rand_collectables_simulation(
+    status: Status,
+    actions: Actions[],
+    n: number,
+    ignoreErrors: boolean,
+    collectablesShopRefine: CollectablesShopRefine,
+): Promise<CollectableStatistics> {
+    const args = { status, actions, n, ignoreErrors, collectablesShopRefine };
+    if (isTauri) {
+        let { invoke } = await pkgTauri;
+        return invoke('rand_collectables_simulation', args);
+    } else {
+        throw 'unsupported';
+        // return new Promise((resolve, reject) => {
+        //     const worker = new Worker(
+        //         new URL('./AnalyzerWorker.ts', import.meta.url),
+        //         { type: 'module' },
+        //     );
+        //     worker.onmessage = ev => {
+        //         if (ev.data.error == undefined) resolve(ev.data);
+        //         else reject(ev.data.error);
+        //     };
+        //     worker.onerror = ev => reject(ev);
+        //     worker.postMessage({
+        //         name: 'rand_simulation',
+        //         args: JSON.stringify(args),
+        //     });
+        // });
     }
 }
 

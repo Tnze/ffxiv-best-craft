@@ -37,7 +37,7 @@ import {
     Actions,
     Conditions,
     simulateOneStep,
-    Collectability,
+    CollectablesShopRefine,
 } from '@/libs/Craft';
 import { Enhancer } from '@/libs/Enhancer';
 import StatusBarVue from './StatusBar.vue';
@@ -50,7 +50,7 @@ const props = defineProps<{
     recipe: Recipe;
     item: Item;
     attributes: Attributes;
-    collectability?: Collectability;
+    collectableShopRefine?: CollectablesShopRefine;
 }>();
 const displayJob = inject(displayJobKey) as Ref<Jobs>;
 
@@ -181,7 +181,7 @@ function leaveAction() {
             :enhancers="attributesEnhancers"
             :status="preview ?? currentStatus"
             :show-condition="true"
-            :collectability="collectability"
+            :collectableShopRefine="collectableShopRefine"
             @click-attributes="openAttrEnhSelector = true"
         />
         <el-scrollbar class="action-queue">

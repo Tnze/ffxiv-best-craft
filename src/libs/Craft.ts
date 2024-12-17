@@ -371,7 +371,7 @@ export interface ItemWithAmount {
     amount: number;
 }
 
-export interface Collectability {
+export interface CollectablesShopRefine {
     id: number;
     low_collectability: number;
     mid_collectability: number;

@@ -52,7 +52,7 @@ import {
     Item,
     RecipeRequirements,
     SimulateResult,
-    Collectability,
+    CollectablesShopRefine,
 } from '@/libs/Craft';
 import { read_solver } from '@/libs/Solver';
 import { calculateEnhancedAttributs, Enhancer } from '@/libs/Enhancer';
@@ -77,7 +77,7 @@ const props = defineProps<{
     recipe: Recipe;
     recipeId?: number;
     requirements: RecipeRequirements;
-    collectability?: Collectability;
+    collectableShopRefine?: CollectablesShopRefine;
     item: Item;
     materialQualityFactor: number;
     attributes: Attributes;
@@ -314,7 +314,7 @@ async function handleSolverResult(
             :attributes="enhancedAttributes"
             :status="displayedStatus"
             :show-condition="false"
-            :collectability="collectability"
+            :collectable-shop-refine="collectableShopRefine"
         />
         <div class="above-panel">
             <el-scrollbar
@@ -474,6 +474,7 @@ async function handleSolverResult(
                             <Analyzers
                                 :init-status="initStatus"
                                 :actions="displayActions"
+                                :collectable-shop-refine="collectableShopRefine"
                             />
                         </el-scrollbar>
                     </el-tab-pane>

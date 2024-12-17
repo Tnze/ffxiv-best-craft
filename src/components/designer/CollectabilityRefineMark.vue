@@ -18,10 +18,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Collectability } from '@/libs/Craft';
+import { CollectablesShopRefine } from '@/libs/Craft';
 
 const props = defineProps<{
-    collectability: Collectability;
+    collectableShopRefine: CollectablesShopRefine;
     maxCollectability: number;
     progresBarWidth: number;
 }>();
@@ -31,13 +31,15 @@ const marginLeft = 8;
 
 const markWidth = computed(() => {
     const pers =
-        props.collectability.low_collectability / props.maxCollectability;
+        props.collectableShopRefine.low_collectability /
+        props.maxCollectability;
     return props.progresBarWidth * (1 - pers);
 });
 
 const lowPos = computed(() => {
     return (
-        (props.collectability.low_collectability / props.maxCollectability) *
+        (props.collectableShopRefine.low_collectability /
+            props.maxCollectability) *
         props.progresBarWidth
     );
 });
@@ -50,10 +52,10 @@ function calcMark(collectability: number) {
 }
 
 const midMark = computed(() =>
-    calcMark(props.collectability.mid_collectability),
+    calcMark(props.collectableShopRefine.mid_collectability),
 );
 const highMark = computed(() =>
-    calcMark(props.collectability.high_collectability),
+    calcMark(props.collectableShopRefine.high_collectability),
 );
 </script>
 
@@ -71,9 +73,9 @@ const highMark = computed(() =>
                 $t('required-collectability') +
                 '\n' +
                 [
-                    collectability.low_collectability,
-                    collectability.mid_collectability,
-                    collectability.high_collectability,
+                    collectableShopRefine.low_collectability,
+                    collectableShopRefine.mid_collectability,
+                    collectableShopRefine.high_collectability,
                 ]
                     .flatMap((v, i) => {
                         if (v == 0) return undefined;

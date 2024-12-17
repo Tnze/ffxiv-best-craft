@@ -14,7 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Collectability, Item, ItemWithAmount, RecipeInfo, RecipeLevel } from '@/libs/Craft';
+import {
+    CollectablesShopRefine,
+    Item,
+    ItemWithAmount,
+    RecipeInfo,
+    RecipeLevel,
+} from '@/libs/Craft';
 import {
     CraftType,
     DataSourceResult,
@@ -104,7 +110,9 @@ export class WebSource {
         return result;
     }
 
-    async recipeCollectability(recipeId: number): Promise<Collectability> {
+    async recipeCollectableShopRefine(
+        recipeId: number,
+    ): Promise<CollectablesShopRefine> {
         const query = new URLSearchParams({ recipe_id: String(recipeId) });
         const url = new URL('recipe_collectability', this.base);
         url.search = query.toString();
