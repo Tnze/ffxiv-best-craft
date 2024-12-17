@@ -153,7 +153,13 @@ function hoverAction(action: Actions) {
     if (timer != null) clearTimeout(timer);
     timer = setTimeout(() => {
         simulateOneStep(currentStatus.value, action, true)
-            .then(v => (preview.value = v.status))
+            .then(
+                v =>
+                    (preview.value = {
+                        ...v.status,
+                        condition: Conditions.Normal,
+                    }),
+            )
             .catch(_e => {});
     }, 1000);
 }
