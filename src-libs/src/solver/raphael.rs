@@ -17,7 +17,7 @@
 use ffxiv_crafting::{Actions, Status};
 
 use raphael_simulator::{Action, ActionMask, Settings, SimulationState};
-use raphael_solvers::MacroSolver;
+use raphael_solvers::{AtomicFlag, MacroSolver};
 
 pub fn solve(
     status: Status,
@@ -29,7 +29,7 @@ pub fn solve(
     adversarial: bool,
     unsound_branch_pruning: bool,
 ) -> Vec<Actions> {
-    let mut allowed_actions = ActionMask::from_level(status.attributes.level);
+    let mut allowed_actions = ActionMask::all();
     if !use_heart_and_soul {
         allowed_actions = allowed_actions.remove(Action::HeartAndSoul)
     }
@@ -60,6 +60,7 @@ pub fn solve(
         unsound_branch_pruning,
         Box::new(|_| {}),
         Box::new(|_| {}),
+        AtomicFlag::new(),
     );
     solver
         .solve(state)
@@ -99,9 +100,8 @@ fn map_action(action: Action) -> Actions {
         Action::TrainedPerfection => Actions::TrainedPerfection,
         Action::TrainedEye => Actions::TrainedEye,
 
-        Action::ComboAdvancedTouch => Actions::AdvancedTouch,
-        Action::ComboRefinedTouch => Actions::RefinedTouch,
-        Action::ComboStandardTouch => Actions::StandardTouch,
+        Action::TricksOfTheTrade => Actions::TricksOfTheTrade,
+        Action::RefinedTouch => Actions::RefinedTouch,
 
         Action::HeartAndSoul => Actions::HeartAndSoul,
         Action::QuickInnovation => Actions::QuickInnovation,
