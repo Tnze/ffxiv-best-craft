@@ -1,19 +1,19 @@
 {
-    "version": "0.18.13",
-    "notes": "- 添加收藏品配方显示收藏等级提示线的功能\n- 更新模拟器界面中耐久条的显示效果",
-    "pub_date": "2024-12-16T15:52:31.832Z",
+    "version": "0.18.14",
+    "notes": "- 收藏品配方在品质条下方添加收藏价值阶段提示条\n- 配方分析器现在会统计各收藏价值阶段的结果数\n- 配方分析器现在会以表格的形式显示各结果的数量\n- 更新Raphael求解器等依赖库\n- 高难模拟器鼠标悬浮预览不再显示随机的球色",
+    "pub_date": "2024-12-24T16:45:13.639Z",
     "platforms": {
         "darwin-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnRQMFpzNDd1OXNMZi9SVG9tM2JiaWFQTG1mRnZYZTAzRGE1bXZnQXVDeXV6MHROcmI2NWlac3lKR0RDZW0vOFFUNzJXZERvNW81SDZjZlNZYm5rV2dzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM0MzY0MTc4CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKT3A2ZnJNeHorTkZKTU80dHJWVXRLRU13dGs4TEo4UysvTXkzZEFWd1ZzR2NwaXFwdjhzZzg1cnJibkd3VjFwbVpiVHN6ZmFQUG0rUHNiejM1MTZBQUE9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v0.18.13/BestCraft_aarch64.app.tar.gz"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smd3WFdoL1g0Yk14aldhK09YZStXYXAwNkc5VzBVL25vQk8rVSt1MTJCc0NWN3g4NjlIeFEzUGxwT1QvTzVOR0NtVmNHaERPTlZCVnA5TGtFRzdVWmc0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM1MDU4MzQwCWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKa3pMK0o1dE9jZ0dpWjU5YW9wVmZDMDJLd3FYYWNscElpUEE2ZEpsUzZiYzB0YnVOYnllMEZreTdxQllxSElmTUFOall0aHdYN1YwV0QxVE00YmxyQlE9PQo=",
+            "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.18.14/BestCraft_aarch64.app.tar.gz"
         },
         "linux-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmhVbnJ3Ynp6am5RUTZrTVE1M01wSEdOM1ltN1FyQW1jak5aelVPS2FwbnVHVUJoK0w5SzNNenJQYzMzMEpLRm05czdWamNKclVXUWZLV3JZZStqSndBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM0MzY0MjUxCWZpbGU6QmVzdENyYWZ0XzAuMTguMTNfYW1kNjQuQXBwSW1hZ2UKOVJNcENjRFY2R015S1BQbkFQOUdHTm52VkFlbk9YQUpHSDRmMWw1d253OEpBaDNvUmVWaVAzTHVmN1FNaU8xZTNZMUdWUnpTWG5EMklPWUdudGtuRFE9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v0.18.13/BestCraft_0.18.13_amd64.AppImage"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnB3TWxtQnBKZHZOcy9Sdy9jOGxKRTg0TGNHdW1WRThqWEF1TlQyN3hWTDVUTzUrL0ZDSTg3ZEVVRTgxT3U3WE9NVHhPOFo1akF1N1hBbUFPZkhOWGdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM1MDU4NTE4CWZpbGU6QmVzdENyYWZ0XzAuMTguMTRfYW1kNjQuQXBwSW1hZ2UKd3pDRGYyYXBYZDMydDVZa0pueG03QWMvelBCVU9teEVkQ3crakFKQXE0YkJhQzRhNG5pMHFuR1RSZXpRb0NueFYzVElUd0ZzMWFPTEluVnA3RkNKQVE9PQo=",
+            "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.18.14/BestCraft_0.18.14_amd64.AppImage"
         },
         "windows-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmxpTUZlWVBLbE1tWUVFdFJ6L0FjMmxWY1o5YytSdTJjd1ZOVlRLVytuSTlUUWxFaXJidGcyNFpYdm9QdUlUSFNiUkl3UnVKZmJRYnZNbXMwNzJuU1EwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM0MzY0MzQ1CWZpbGU6QmVzdENyYWZ0XzAuMTguMTNfeDY0X3poLUNOLm1zaS56aXAKOWF1TGYxck1kbVBrVC94QjdYVVlVd25NTURNSlp5ekNDeVRwVGd6N0d3WVhzbHkrSHZSVFV0Y1ZuekU5UFVnRllEN2xDMXk0OUhnd1piS1VLcFJ4Q1E9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v0.18.13/BestCraft_0.18.13_x64_zh-CN.msi.zip"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnB0cVpkL0VjSm9pMGtBZEhCdkY0SENjSTk3MnpVZnFyZzA5WndraTRzVkN1THZ3VHRhdjF3UzNoMXV0Q2dVaE9nTUNHbTQ5STFZT3pmNHViUytXRFFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM1MDU4NzA3CWZpbGU6QmVzdENyYWZ0XzAuMTguMTRfeDY0X3poLUNOLm1zaS56aXAKU2szK0RJV1FzZVlQTFdrMGVwejVkcmdWRUVYRHFRejVoeDRCVVpidmlUUnE2Z2ZlRFNCWVlxcFRDWTJOSjlyQStZU3kxSytUeEpFdU1KaDNEQmNCQlE9PQo=",
+            "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.18.14/BestCraft_0.18.14_x64_zh-CN.msi.zip"
         }
     }
 }
