@@ -19,6 +19,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { CollectablesShopRefine } from '@/libs/Craft';
+import { collectabilityPalette as palette } from './consts';
 
 const props = defineProps<{
     collectableShopRefine: CollectablesShopRefine;
@@ -26,7 +27,6 @@ const props = defineProps<{
     progresBarWidth: number;
 }>();
 
-const palette = ['#79c7ec', '#fbc800', '#c0ffc0'];
 const marginLeft = 8;
 
 const markWidth = computed(() => {

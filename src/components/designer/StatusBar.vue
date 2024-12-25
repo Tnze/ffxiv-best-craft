@@ -25,6 +25,7 @@ import Buffs from './Buffs.vue';
 import Condition from './Condition.vue';
 import DurabilityProgressBar from './DurabilityProgressBar.vue';
 import CollectabilityRefineMark from './CollectabilityRefineMark.vue';
+import { collectabilityPalette } from './consts';
 
 const props = defineProps<{
     status: Status;
@@ -85,6 +86,13 @@ const collectabilityLevel = computed(() => {
         return 2;
     }
     return 3;
+});
+const collectabilityColor = computed(() => {
+    const i = collectabilityLevel.value;
+    if (i === undefined || i === 0 || i > collectabilityPalette.length) {
+        return undefined;
+    }
+    return collectabilityPalette[i - 1];
 });
 </script>
 
@@ -147,7 +155,7 @@ const collectabilityLevel = computed(() => {
             <el-progress
                 ref="qualityProgressBar"
                 :percentage="quality"
-                :color="qualityColor"
+                :color="collectabilityColor ?? qualityColor"
                 :show-text="false"
                 :stroke-width="10"
             />
