@@ -18,6 +18,9 @@
 
 <script setup lang="ts">
 import { onActivated } from 'vue';
+import { ElScrollbar, ElDivider } from 'element-plus';
+
+import Item from '@/components/bom/Item.vue';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
@@ -25,4 +28,31 @@ const emit = defineEmits<{
 onActivated(() => emit('setTitle', 'bill-of-material'));
 </script>
 
-<template>123</template>
+<template>
+    <el-scrollbar>
+        <div class="page">
+            <el-scrollbar>
+                <div class="row">
+                    <Item class="item" v-for="j in 3" :name="'item' + j" />
+                </div>
+            </el-scrollbar>
+            <el-divider />
+        </div>
+    </el-scrollbar>
+</template>
+
+<style scoped>
+.page {
+    padding: 10px;
+}
+
+.row {
+    display: flex;
+    padding-bottom: 5px;
+}
+
+.item {
+    flex: none;
+    margin: 5px;
+}
+</style>
