@@ -36,7 +36,7 @@ import useSettingsStore, { dataSourceList } from '@/stores/settings';
 import { languages } from '../lang';
 import { useColorMode } from '@vueuse/core';
 import { isTauri, isWebsite, isYYYYGames } from '@/libs/Consts';
-import SupportUs from './SupportUs.vue';
+import SupportUs from '@/components/SupportUs.vue';
 import E1 from '@/eastereggs/e1';
 
 const emit = defineEmits<{

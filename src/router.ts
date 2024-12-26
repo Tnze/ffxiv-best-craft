@@ -16,14 +16,15 @@
 
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-const Welcome = () => import('./components/guide/Welcome.vue');
-const GearsetsVue = () => import('./components/Gearsets.vue');
+const Welcome = () => import('./pages/Welcome.vue');
+const GearsetsVue = () => import('./pages/Gearsets.vue');
 const RecipePanelVue = () =>
     import('./components/recipe-manager/RecipePanel.vue');
 const CustomizeRecipe = () =>
     import('./components/recipe-manager/CustomizeRecipe.vue');
 const DesignerVue = () => import('./components/designer/Page.vue');
-const SettingsVue = () => import('./components/Settings.vue');
+const BOMVue = () => import('./pages/Bom.vue');
+const SettingsVue = () => import('./pages/Settings.vue');
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -38,6 +39,7 @@ const router = createRouter({
             component: CustomizeRecipe,
         },
         { path: '/designer', name: 'designer', component: DesignerVue },
+        { path: '/bom', name: 'bom', component: BOMVue },
         { path: '/settings', name: 'settings', component: SettingsVue },
     ],
 });

@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2024  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -19,11 +19,12 @@
 <script setup lang="ts">
 import { ElMenu, ElMenuItem, ElIcon } from 'element-plus';
 import {
-    Notebook,
-    Suitcase,
-    Edit,
+    Collection,
+    User,
+    EditPen,
     Setting,
     Guide,
+    Box,
 } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 
@@ -44,21 +45,27 @@ const router = useRouter();
         </el-menu-item>
         <el-menu-item index="/gearsets">
             <el-icon>
-                <suitcase />
+                <user />
             </el-icon>
             <template #title>{{ $t('gearsets') }}</template>
         </el-menu-item>
         <el-menu-item index="/recipe">
             <el-icon>
-                <notebook />
+                <collection />
             </el-icon>
             <template #title>{{ $t('recipe') }}</template>
         </el-menu-item>
         <el-menu-item index="/designer">
             <el-icon>
-                <edit />
+                <edit-pen />
             </el-icon>
             <template #title>{{ $t('simulator') }}</template>
+        </el-menu-item>
+        <el-menu-item index="/bom">
+            <el-icon>
+                <box />
+            </el-icon>
+            <template #title>{{ $t('bom') }}</template>
         </el-menu-item>
         <el-menu-item index="/settings">
             <el-icon>
@@ -88,6 +95,7 @@ gearsets = 配装
 recipe = 配方
 bom = 物料
 simulator = 模拟
+bom = 清单
 settings = 设置
 </fluent>
 

@@ -115,6 +115,7 @@ solver-isn-t-prepared = Solver isn't prepared
 attributes = Crafter Attributes
 select-recipe = Select Recipe
 custom-recipe = Custom Recipe
+bill-of-material = Bill of Material
 settings = Settings
 title = { $recipe } (Simulator Mode)
 

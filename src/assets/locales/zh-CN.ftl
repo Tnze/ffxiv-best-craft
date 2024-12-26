@@ -154,4 +154,6 @@ solver-isn-t-prepared = 求解器未准备完成
 attributes = 装备属性
 select-recipe = 选择配方
 custom-recipe = 自定义配方
+bill-of-material = 物料清单
+
 settings = 设置
