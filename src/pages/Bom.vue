@@ -17,27 +17,54 @@
 -->
 
 <script setup lang="ts">
-import { onActivated } from 'vue';
-import { ElScrollbar, ElDivider } from 'element-plus';
+import { onActivated, ref } from 'vue';
+import { ElScrollbar, ElDivider, ElDialog, ElButton } from 'element-plus';
 
-import Item from '@/components/bom/Item.vue';
+import BomItem from '@/components/bom/Item.vue';
+import Selector from '@/components/bom/Selector.vue';
+import useStore, { Item } from '@/stores/bom';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
 }>();
 onActivated(() => emit('setTitle', 'bill-of-material'));
+
+const store = useStore();
+const selectorOpen = ref(false);
+
+function addTarget(item: Item) {
+    selectorOpen.value = false;
+    store.addTarget(item);
+}
 </script>
 
 <template>
     <el-scrollbar>
+        <el-dialog v-model="selectorOpen" :title="$t('select-recipe')">
+            <Selector @click-item="addTarget" />
+        </el-dialog>
         <div class="page">
             <el-scrollbar>
                 <div class="row">
-                    <Item class="item" v-for="j in 3" :name="'item' + j" />
+                    <BomItem
+                        class="item"
+                        v-for="item in store.targetItems"
+                        :name="item.item.name"
+                        v-model:required-number="item.requiredNummber"
+                        v-model:holding-number="item.holdingNumber"
+                    />
+                    <el-button
+                        class="item"
+                        @click="selectorOpen = true"
+                        style="height: 166px; width: 147px"
+                    >
+                        Add
+                    </el-button>
                 </div>
             </el-scrollbar>
             <el-divider />
         </div>
+        <el-button @click="store.updateBom()"> Test </el-button>
     </el-scrollbar>
 </template>
 

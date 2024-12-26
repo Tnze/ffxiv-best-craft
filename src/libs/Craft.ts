@@ -348,6 +348,7 @@ export interface RecipeInfo {
     rlv: number;
     item_id: number;
     item_name: string;
+    item_amount?: number;
     job: string;
 
     difficulty_factor: number;
