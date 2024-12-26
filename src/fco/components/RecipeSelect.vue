@@ -31,8 +31,8 @@ import useFcoSimulatorStore from '../stores/simulator';
 import {
     WebSource,
     YYYYGamesApiBase,
-} from '@/components/recipe-manager/web-source';
-import { RecipesSourceResult } from '@/components/recipe-manager/source';
+} from '@/datasource/web-source';
+import { RecipesSourceResult } from '@/datasource/source';
 import { newRecipe, RecipeInfo } from '@/libs/Craft';
 import JobSelect from './JobSelect.vue';
 

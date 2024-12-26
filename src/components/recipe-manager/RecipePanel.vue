@@ -52,7 +52,7 @@ import {
     DataSource,
     DataSourceType,
     RecipesSourceResult,
-} from './source';
+} from '@/datasource/source';
 import useSettingsStore from '@/stores/settings';
 import { useMediaQuery } from '@vueuse/core';
 

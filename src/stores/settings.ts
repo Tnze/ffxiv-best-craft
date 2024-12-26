@@ -18,17 +18,17 @@ import { defineStore } from 'pinia';
 import {
     CafeMakerApiBase,
     XivApiRecipeSource,
-} from '@/components/recipe-manager/remote-source';
-import { DataSource } from '@/components/recipe-manager/source';
+} from '@/datasource/remote-source';
+import { DataSource } from '@/datasource/source';
 import {
     WebSource,
     YYYYGamesApiBase,
     YYYYGamesApiBaseBeta,
-} from '@/components/recipe-manager/web-source';
+} from '@/datasource/web-source';
 import {
     BetaXivApiRecipeSource,
     BetaXivapiBase,
-} from '@/components/recipe-manager/beta-xivapi-source';
+} from '@/datasource/beta-xivapi-source';
 import { isTauri, isWebsite } from '@/libs/Consts';
 
 export type DataSourceID =
@@ -81,7 +81,7 @@ export default defineStore('settings', {
             let defaultSource: () => DataSource = dataSources['yyyy.games'];
             if (isTauri) {
                 var { LocalRecipeSource } = await import(
-                    '../components/recipe-manager/local-source'
+                    '../datasource/local-source'
                 );
                 let localSource = () => new LocalRecipeSource();
                 dataSources['local'] = localSource;

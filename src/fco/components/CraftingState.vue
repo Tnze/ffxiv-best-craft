@@ -20,7 +20,7 @@
 import { watchEffect, ref } from 'vue';
 import { NCard, NProgress, NDivider, NFlex } from 'naive-ui';
 
-import { Jobs, Status, high_quality_probability } from '@/libs/Craft';
+import { Jobs, Status, highQualityProbability } from '@/libs/Craft';
 
 const props = defineProps<{
     job?: Jobs;
@@ -31,8 +31,8 @@ const props = defineProps<{
 const hqRate = ref<number>();
 watchEffect(async () => {
     if (props.status) {
-        hqRate.value =
-            (await high_quality_probability(props.status)) ?? undefined;
+        const v = await highQualityProbability(props.status);
+        hqRate.value = v ?? undefined;
     }
 });
 </script>

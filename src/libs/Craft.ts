@@ -293,7 +293,7 @@ export async function simulateOneStep(
     }
 }
 
-export async function high_quality_probability(
+export async function highQualityProbability(
     status: Status,
 ): Promise<number | null> {
     if (isTauri) {

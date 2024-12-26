@@ -23,7 +23,7 @@ import { NSelect } from 'naive-ui';
 import {
     WebSource,
     YYYYGamesApiBase,
-} from '@/components/recipe-manager/web-source';
+} from '@/datasource/web-source';
 import { Enhancer } from '@/libs/Enhancer';
 
 const dataSource = new WebSource(YYYYGamesApiBase);

@@ -30,7 +30,7 @@ import { Enhancer, calculateEnhancedAttributs } from '@/libs/Enhancer';
 import { useFluent } from 'fluent-vue';
 import { Attributes, Jobs } from '@/libs/Craft';
 import settingStore from '@/stores/settings';
-import { DataSource } from '../../recipe-manager/source';
+import { DataSource } from '../../../datasource/source';
 import AttrEnhSelectorOption from './AttrEnhSelectorOption.vue';
 
 const Gearset = defineAsyncComponent(() => import('@/components/Gearset.vue'));
