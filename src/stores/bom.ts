@@ -27,146 +27,125 @@ export interface Item {
     name: string;
 }
 
-export interface Slot {
-    item: Item;
-    requiredNumber(): number;
-}
-
-export interface RequiredBy {
-    amount: number;
-    depth: number;
-}
-
-class TargetSlot implements Slot {
+class Slot {
     item: Item;
     required: number = 1;
+    requiredBy: Map<ItemID, number>; // itemID, amount
+    depth: number;
 
-    constructor(item: Item) {
+    constructor(item: Item, depth: number) {
         this.item = item;
+        this.depth = depth;
+        this.requiredBy = new Map();
     }
 
-    requiredNumber(): number {
-        return this.required;
-    }
-
-    setRequiredNumber(n: number) {
+    setFixRequiredNumber(n: number) {
         this.required = n;
     }
-}
 
-class IngredientSlot implements Slot {
-    item: Item;
-    requiredBy: Map<ItemID, RequiredBy>;
-
-    constructor(item: Item) {
-        this.item = item;
-        this.requiredBy = new Map();
+    getFixRequiredNumber() {
+        return this.required;
     }
 
     requiredNumber(): number {
         let sum = 0;
-        for (const req of this.requiredBy.values()) {
-            sum += req.amount;
+        for (const amount of this.requiredBy.values()) {
+            sum += amount;
         }
         return sum;
     }
 
     addRequiredBy(item: ItemID, amount: number, depth: number) {
-        const rb = this.requiredBy.get(item);
-        if (rb != undefined) {
-            rb.amount += amount;
-            rb.depth = Math.max(rb.depth, depth);
-            return;
-        }
-
-        this.requiredBy.set(item, {
-            amount,
-            depth,
-        });
+        const oldAmount = this.requiredBy.get(item) ?? 0;
+        this.requiredBy.set(item, oldAmount + amount);
+        this.depth = Math.max(this.depth, depth);
     }
 }
 
 export default defineStore('bom', {
     state: () => ({
-        targetItems: <TargetSlot[]>[],
+        targetItems: <Slot[]>[],
         holdingItems: new Map<ItemID, number>(), // item -> amount
 
         recipeCache: new Map<ItemID, RecipeInfo[]>(),
-        ingredients: <IngredientSlot[]>[],
+        ingredients: <Slot[]>[],
     }),
 
     actions: {
         addTarget(item: Item) {
-            this.targetItems.push(new TargetSlot(item));
+            this.targetItems.push(new Slot(item, 0));
         },
 
         async updateBom() {
             const settingStore = useSettingStore();
             const ds = await settingStore.getDataSource;
 
-            // 由于计算每种物品的需求数量需要先对整颗依赖树进行拓扑排序
-            // 因此需要先在不考虑数量的情况下求出整颗依赖树
-            const queue: Slot[] = [...this.targetItems];
-            const ingredients = new Map<ItemID, IngredientSlot>();
-            const holdings = new Map(this.holdingItems);
+            const ings = new Map<ItemID, Slot>();
+            const queue = [...this.targetItems];
+            const indegrees = new Map<ItemID, number>();
+            const successors = new Map<ItemID, ItemID[]>();
             while (queue.length > 0) {
                 const v = queue.shift()!;
-                let n = v.requiredNumber();
-
-                const h = holdings.get(v.item.id);
-                if (h != undefined && h > 0) {
-                    const s = Math.min(n, h);
-                    holdings.set(v.item.id, h - s);
-                    n -= s;
-                }
+                ings.set(v.item.id, v);
 
                 const recipes = await this.findRecipe(
                     ds,
                     v.item.id,
                     v.item.name,
                 );
-                if (recipes.length == 0) {
-                    // target item 是用户选择的目标物品，必须存在对应的配方
-                    // TODO: 妥善处理没有对应配方的 target item
-                    console.warn(`Cannot find a recipe for: ${v.item.name}`);
-                    continue;
-                }
+                if (recipes.length == 0) continue;
 
-                // TODO: 当存在多个配方时，允许用户选择使用哪个配方
                 const r = recipes[0];
                 const subIngs = await ds.recipesIngredients(r.id);
 
-                const unknownIngs: ItemWithAmount[] = [];
                 for (const subIng of subIngs) {
-                    const slot = ingredients.get(subIng.ingredient_id);
+                    indegrees.set(
+                        subIng.ingredient_id,
+                        (indegrees.get(subIng.ingredient_id) ?? 0) + 1,
+                    );
+
+                    let slot = ings.get(subIng.ingredient_id);
                     if (slot != undefined) {
-                        slot.addRequiredBy(v.item.id, n * subIng.amount, 0);
+                        slot.addRequiredBy(v.item.id, 0, v.depth + 1);
                     } else {
-                        unknownIngs.push(subIng);
+                        const itemInfo = await ds.itemInfo(
+                            subIng.ingredient_id,
+                        );
+                        slot = new Slot(itemInfo, v.depth + 1);
+                        slot.addRequiredBy(v.item.id, 0, v.depth + 1);
+                        ings.set(itemInfo.id, slot);
+                    }
+                    queue.push(slot);
+                }
+                successors.set(
+                    v.item.id,
+                    subIngs.map(v => v.ingredient_id),
+                );
+            }
+
+            for (const ing of ings.values()) {
+                if ((indegrees.get(ing.item.id) ?? 0) == 0) {
+                    queue.push(ing);
+                }
+            }
+            const sorted = [];
+            while (queue.length > 0) {
+                const v = queue.shift()!;
+                sorted.push(v);
+
+                const ss = successors.get(v.item.id);
+                if (ss != undefined) {
+                    for (const successor of ss!) {
+                        const newIndegree = indegrees.get(successor)! - 1;
+                        indegrees.set(successor, newIndegree);
+                        if (newIndegree == 0) {
+                            queue.push(ings.get(successor)!);
+                        }
                     }
                 }
-                const fetched = await Promise.all(
-                    unknownIngs.map(async v => ({
-                        item: await ds.itemInfo(v.ingredient_id),
-                        amount: v.amount,
-                    })),
-                );
-                for (const { item, amount } of fetched) {
-                    const slot = new IngredientSlot(item);
-                    slot.addRequiredBy(v.item.id, n * amount, 0);
-                    // fetched ings are promised not exist
-                    ingredients.set(item.id, slot);
-                }
             }
 
-            // 基于目标物品的直接依赖物品扩展出整颗依赖树
-            const queue2: IngredientSlot[] = [...ingredients.values()];
-            while (queue2.length > 0) {
-                const v = queue2.shift()!;
-                
-            }
-
-            this.ingredients = ingredients.values().toArray();
+            this.ingredients = sorted;
         },
 
         async findRecipe(

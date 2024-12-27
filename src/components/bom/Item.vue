@@ -20,6 +20,7 @@
 import { ElText, ElCard, ElInputNumber, ElTooltip } from 'element-plus';
 
 const props = defineProps<{
+    id?: number;
     name: string;
     requiredInputDisabled?: boolean;
     holdingInputDisabled?: boolean;
@@ -31,6 +32,7 @@ const holdingNumber = defineModel<number>('holdingNumber');
 
 <template>
     <el-card :body-class="$style.item" shadow="never">
+        <el-text v-if="id">#{{ id }}</el-text>
         <el-text :class="$style.elem">{{ name }}</el-text>
         <div :class="$style.icon"></div>
         <el-tooltip

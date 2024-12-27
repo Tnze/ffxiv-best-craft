@@ -49,9 +49,12 @@ function addTarget(item: Item) {
                     <BomItem
                         class="item"
                         v-for="item in store.targetItems"
+                        :id="item.item.id"
                         :name="item.item.name"
-                        :required-number="item.requiredNumber()"
-                        @update:required-number="v => item.setRequiredNumber(v)"
+                        :required-number="item.getFixRequiredNumber()"
+                        @update:required-number="
+                            v => item.setFixRequiredNumber(v)
+                        "
                         :holding-number="
                             store.holdingItems.get(item.item.id) ?? 0
                         "
@@ -71,7 +74,7 @@ function addTarget(item: Item) {
             </el-scrollbar>
             <el-divider />
             <el-scrollbar>
-                <div class="row" style="flex-wrap: wrap;">
+                <div class="row" style="flex-wrap: wrap">
                     <BomItem
                         class="item"
                         v-for="item in store.ingredients"
