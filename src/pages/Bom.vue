@@ -50,8 +50,14 @@ function addTarget(item: Item) {
                         class="item"
                         v-for="item in store.targetItems"
                         :name="item.item.name"
-                        v-model:required-number="item.requiredNummber"
-                        v-model:holding-number="item.holdingNumber"
+                        :required-number="item.requiredNumber()"
+                        @update:required-number="v => item.setRequiredNumber(v)"
+                        :holding-number="
+                            store.holdingItems.get(item.item.id) ?? 0
+                        "
+                        @update:holding-number="
+                            v => store.holdingItems.set(item.item.id, v)
+                        "
                     />
                     <el-button
                         class="item"
@@ -60,11 +66,28 @@ function addTarget(item: Item) {
                     >
                         Add
                     </el-button>
+                    <el-button @click="store.updateBom()">Test</el-button>
                 </div>
             </el-scrollbar>
             <el-divider />
+            <el-scrollbar>
+                <div class="row" style="flex-wrap: wrap;">
+                    <BomItem
+                        class="item"
+                        v-for="item in store.ingredients"
+                        :name="item.item.name"
+                        :required-number="item.requiredNumber()"
+                        requiredInputDisabled
+                        :holding-number="
+                            store.holdingItems.get(item.item.id) ?? 0
+                        "
+                        @update:holding-number="
+                            v => store.holdingItems.set(item.item.id, v)
+                        "
+                    />
+                </div>
+            </el-scrollbar>
         </div>
-        <el-button @click="store.updateBom()"> Test </el-button>
     </el-scrollbar>
 </template>
 

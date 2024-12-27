@@ -17,7 +17,7 @@
 import { defineStore } from 'pinia';
 import useSettingStore from '@/stores/settings';
 import { DataSource } from '@/datasource/source';
-import { RecipeInfo } from '@/libs/Craft';
+import { ItemWithAmount, RecipeInfo } from '@/libs/Craft';
 
 export type ItemID = number;
 export type RecipeID = number;
@@ -29,79 +29,144 @@ export interface Item {
 
 export interface Slot {
     item: Item;
-    requiredNummber: number;
-    holdingNumber: number;
+    requiredNumber(): number;
+}
+
+export interface RequiredBy {
+    amount: number;
+    depth: number;
+}
+
+class TargetSlot implements Slot {
+    item: Item;
+    required: number = 1;
+
+    constructor(item: Item) {
+        this.item = item;
+    }
+
+    requiredNumber(): number {
+        return this.required;
+    }
+
+    setRequiredNumber(n: number) {
+        this.required = n;
+    }
+}
+
+class IngredientSlot implements Slot {
+    item: Item;
+    requiredBy: Map<ItemID, RequiredBy>;
+
+    constructor(item: Item) {
+        this.item = item;
+        this.requiredBy = new Map();
+    }
+
+    requiredNumber(): number {
+        let sum = 0;
+        for (const req of this.requiredBy.values()) {
+            sum += req.amount;
+        }
+        return sum;
+    }
+
+    addRequiredBy(item: ItemID, amount: number, depth: number) {
+        const rb = this.requiredBy.get(item);
+        if (rb != undefined) {
+            rb.amount += amount;
+            rb.depth = Math.max(rb.depth, depth);
+            return;
+        }
+
+        this.requiredBy.set(item, {
+            amount,
+            depth,
+        });
+    }
 }
 
 export default defineStore('bom', {
     state: () => ({
-        targetItems: <Slot[]>[],
+        targetItems: <TargetSlot[]>[],
         holdingItems: new Map<ItemID, number>(), // item -> amount
 
         recipeCache: new Map<ItemID, RecipeInfo[]>(),
+        ingredients: <IngredientSlot[]>[],
     }),
 
     actions: {
         addTarget(item: Item) {
-            this.targetItems.push({
-                item,
-                requiredNummber: 1,
-                holdingNumber: 0,
-            });
+            this.targetItems.push(new TargetSlot(item));
         },
 
         async updateBom() {
             const settingStore = useSettingStore();
-            const dataSource = await settingStore.getDataSource;
+            const ds = await settingStore.getDataSource;
 
-            const targets: { id: number; name: string; demanded: number }[] =
-                [];
-            for (const target of this.targetItems) {
-                const demanded = target.requiredNummber - target.holdingNumber;
-                if (demanded > 0) {
-                    targets.push({
-                        id: target.item.id,
-                        name: target.item.name,
-                        demanded,
-                    });
+            // 由于计算每种物品的需求数量需要先对整颗依赖树进行拓扑排序
+            // 因此需要先在不考虑数量的情况下求出整颗依赖树
+            const queue: Slot[] = [...this.targetItems];
+            const ingredients = new Map<ItemID, IngredientSlot>();
+            const holdings = new Map(this.holdingItems);
+            while (queue.length > 0) {
+                const v = queue.shift()!;
+                let n = v.requiredNumber();
+
+                const h = holdings.get(v.item.id);
+                if (h != undefined && h > 0) {
+                    const s = Math.min(n, h);
+                    holdings.set(v.item.id, h - s);
+                    n -= s;
                 }
-            }
 
-            const ingredients = new Map<ItemID, number>();
-            for (const required of targets) {
                 const recipes = await this.findRecipe(
-                    dataSource,
-                    required.id,
-                    required.name,
+                    ds,
+                    v.item.id,
+                    v.item.name,
                 );
                 if (recipes.length == 0) {
-                    // Final Item
-                    console.log(
-                        `Final Item: "${required.name}" ×${required.demanded}`,
-                    );
+                    // target item 是用户选择的目标物品，必须存在对应的配方
+                    // TODO: 妥善处理没有对应配方的 target item
+                    console.warn(`Cannot find a recipe for: ${v.item.name}`);
                     continue;
                 }
 
-                const selectedRecipe = recipes[0];
-                // Calculate how many times is required crafting this item.
-                const resultAmount = selectedRecipe.item_amount;
-                if (resultAmount == undefined)
-                    throw 'data source does not support item_amount';
-                const n = Math.ceil(required.demanded / resultAmount);
+                // TODO: 当存在多个配方时，允许用户选择使用哪个配方
+                const r = recipes[0];
+                const subIngs = await ds.recipesIngredients(r.id);
 
-                const result = await dataSource.recipesIngredients(
-                    selectedRecipe.id,
+                const unknownIngs: ItemWithAmount[] = [];
+                for (const subIng of subIngs) {
+                    const slot = ingredients.get(subIng.ingredient_id);
+                    if (slot != undefined) {
+                        slot.addRequiredBy(v.item.id, n * subIng.amount, 0);
+                    } else {
+                        unknownIngs.push(subIng);
+                    }
+                }
+                const fetched = await Promise.all(
+                    unknownIngs.map(async v => ({
+                        item: await ds.itemInfo(v.ingredient_id),
+                        amount: v.amount,
+                    })),
                 );
-                for (const ingredient of result) {
-                    const count =
-                        ingredients.get(ingredient.ingredient_id) ?? 0;
-                    ingredients.set(
-                        ingredient.ingredient_id,
-                        count + ingredient.amount * n,
-                    );
+                for (const { item, amount } of fetched) {
+                    const slot = new IngredientSlot(item);
+                    slot.addRequiredBy(v.item.id, n * amount, 0);
+                    // fetched ings are promised not exist
+                    ingredients.set(item.id, slot);
                 }
             }
-            console.log(ingredients);
+
+            // 基于目标物品的直接依赖物品扩展出整颗依赖树
+            const queue2: IngredientSlot[] = [...ingredients.values()];
+            while (queue2.length > 0) {
+                const v = queue2.shift()!;
+                
+            }
+
+            this.ingredients = ingredients.values().toArray();
         },
 
         async findRecipe(
