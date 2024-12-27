@@ -29,13 +29,14 @@ export interface Item {
 
 class Slot {
     item: Item;
-    required: number = 1;
+    required: number;
     requiredBy: Map<ItemID, number>; // itemID, amount
     depth: number;
 
     constructor(item: Item, depth: number) {
         this.item = item;
         this.depth = depth;
+        this.required = 0;
         this.requiredBy = new Map();
     }
 
@@ -48,17 +49,16 @@ class Slot {
     }
 
     requiredNumber(): number {
-        let sum = 0;
+        let sum = this.required;
         for (const amount of this.requiredBy.values()) {
             sum += amount;
         }
         return sum;
     }
 
-    addRequiredBy(item: ItemID, amount: number, depth: number) {
+    addRequiredBy(item: ItemID, amount: number) {
         const oldAmount = this.requiredBy.get(item) ?? 0;
         this.requiredBy.set(item, oldAmount + amount);
-        this.depth = Math.max(this.depth, depth);
     }
 }
 
@@ -73,16 +73,22 @@ export default defineStore('bom', {
 
     actions: {
         addTarget(item: Item) {
-            this.targetItems.push(new Slot(item, 0));
+            const slot = new Slot(item, 0);
+            slot.setFixRequiredNumber(1);
+            this.targetItems.push(slot);
         },
 
         async updateBom() {
             const settingStore = useSettingStore();
             const ds = await settingStore.getDataSource;
 
+            for (const slot of this.targetItems) {
+                slot.requiredBy.clear();
+            }
+
+            // Discovering crafting DAG
             const ings = new Map<ItemID, Slot>();
             const queue = [...this.targetItems];
-            const indegrees = new Map<ItemID, number>();
             const successors = new Map<ItemID, ItemID[]>();
             while (queue.length > 0) {
                 const v = queue.shift()!;
@@ -99,20 +105,12 @@ export default defineStore('bom', {
                 const subIngs = await ds.recipesIngredients(r.id);
 
                 for (const subIng of subIngs) {
-                    indegrees.set(
-                        subIng.ingredient_id,
-                        (indegrees.get(subIng.ingredient_id) ?? 0) + 1,
-                    );
-
                     let slot = ings.get(subIng.ingredient_id);
-                    if (slot != undefined) {
-                        slot.addRequiredBy(v.item.id, 0, v.depth + 1);
-                    } else {
+                    if (slot == undefined) {
                         const itemInfo = await ds.itemInfo(
                             subIng.ingredient_id,
                         );
                         slot = new Slot(itemInfo, v.depth + 1);
-                        slot.addRequiredBy(v.item.id, 0, v.depth + 1);
                         ings.set(itemInfo.id, slot);
                     }
                     queue.push(slot);
@@ -123,6 +121,16 @@ export default defineStore('bom', {
                 );
             }
 
+            // Sorting with Kahn's algorithm
+            const indegrees = new Map<ItemID, number>();
+            for (const v of successors.values()) {
+                v.forEach(successor => {
+                    indegrees.set(
+                        successor,
+                        (indegrees.get(successor) ?? 0) + 1,
+                    );
+                });
+            }
             for (const ing of ings.values()) {
                 if ((indegrees.get(ing.item.id) ?? 0) == 0) {
                     queue.push(ing);
@@ -142,6 +150,39 @@ export default defineStore('bom', {
                             queue.push(ings.get(successor)!);
                         }
                     }
+                }
+            }
+            console.assert(sorted.length == ings.size, 'Sorting failed');
+
+            // Calculate numbers
+            const holdings = new Map(this.holdingItems);
+            for (const slot of sorted) {
+                // calculate needs
+                const r = slot.requiredNumber(); // required
+                const h = holdings.get(slot.item.id) ?? 0; // holding
+                const use = Math.min(r, h);
+                holdings.set(slot.item.id, h - use);
+                const n = r - use; // needs
+
+                // find recipe
+                const recipes = await this.findRecipe(
+                    ds,
+                    slot.item.id,
+                    slot.item.name,
+                );
+                if (recipes.length == 0) continue;
+                const recipe = recipes[0];
+                if (recipe.item_amount == undefined)
+                    throw 'unsupported data source';
+                const crafts = Math.ceil(n / recipe.item_amount);
+                const wasted = recipe.item_amount * crafts - n;
+                if (wasted > 0) {
+                    console.warn(`${slot.item.name} ×${wasted} will be wasted`);
+                }
+
+                for (const ing of await ds.recipesIngredients(recipe.id)) {
+                    const slot = ings.get(ing.ingredient_id)!;
+                    slot.addRequiredBy(slot.item.id, crafts * ing.amount);
                 }
             }
 

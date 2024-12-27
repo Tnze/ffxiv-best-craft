@@ -77,7 +77,10 @@ function addTarget(item: Item) {
                 <div class="row" style="flex-wrap: wrap">
                     <BomItem
                         class="item"
-                        v-for="item in store.ingredients"
+                        v-for="item in store.ingredients.filter(
+                            v => v.requiredNumber() > v.getFixRequiredNumber(),
+                        )"
+                        :key="item.item.id"
                         :name="item.item.name"
                         :required-number="item.requiredNumber()"
                         requiredInputDisabled
