@@ -83,7 +83,7 @@ struct RecipeInfo {
     rlv: u32,
     item_id: u32,
     item_name: String,
-    item_amount: u32,
+    item_amount: i32,
     job: String,
 
     difficulty_factor: u16,
