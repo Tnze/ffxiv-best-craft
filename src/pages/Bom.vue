@@ -35,6 +35,7 @@ const selectorOpen = ref(false);
 function addTarget(item: Item) {
     selectorOpen.value = false;
     store.addTarget(item);
+    store.updateBom();
 }
 </script>
 
@@ -82,7 +83,9 @@ function addTarget(item: Item) {
                         )"
                         :key="item.item.id"
                         :name="item.item.name"
-                        :required-number="item.requiredNumber()"
+                        :required-number="
+                            item.requiredNumber() - item.getFixRequiredNumber()
+                        "
                         requiredInputDisabled
                         :holding-number="
                             store.holdingItems.get(item.item.id) ?? 0
