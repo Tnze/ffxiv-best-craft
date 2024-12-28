@@ -24,7 +24,6 @@ const props = defineProps<{
     name: string;
     requiredInputDisabled?: boolean;
     holdingInputDisabled?: boolean;
-    removable?: boolean;
 
     type?: 'required' | 'crafted' | 'completed' | 'not-required';
 }>();
@@ -51,7 +50,7 @@ const elemUiTypeMapping = new Map<
         <el-text :class="$style.elem" :type="elemUiTypeMapping.get(type)">
             {{ name }}
         </el-text>
-        <div :class="$style.icon">假装这有图标</div>
+        <div v-if="false" :class="$style.icon">假装这有图标</div>
         <el-tooltip
             :class="$style.elem"
             :content="$t('required-number')"
@@ -119,6 +118,7 @@ const elemUiTypeMapping = new Map<
     flex: auto;
     align-self: flex-start;
     margin-bottom: 0;
+    user-select: none;
 }
 
 .elem {

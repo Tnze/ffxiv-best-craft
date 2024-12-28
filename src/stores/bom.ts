@@ -159,9 +159,11 @@ export default defineStore('bom', {
                     }
                 }
             }
-            console.assert(sorted.length == ings.size, 'Sorting failed');
-            console.log(
-                'Sorting result',
+            if (sorted.length != ings.size) {
+                throw new Error('Topology sorting failed');
+            }
+            console.debug(
+                'Topology sorting result',
                 sorted.map(v => v.item.name).join(' -> '),
             );
 

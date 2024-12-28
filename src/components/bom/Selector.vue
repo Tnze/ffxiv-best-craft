@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { ElTable, ElTableColumn, ElInput, ElSpace } from 'element-plus';
 import { Search } from '@element-plus/icons-vue';
 
@@ -40,7 +40,8 @@ async function update() {
     const recipeTable = await source.recipeTable(1, search.value);
     recipeList.value = recipeTable.results;
 }
-update();
+
+watch(search, () => update(), { immediate: true });
 
 async function selectItem(recipe: RecipeInfo) {
     emits('clickItem', { id: recipe.item_id, name: recipe.item_name });
@@ -48,7 +49,6 @@ async function selectItem(recipe: RecipeInfo) {
 </script>
 
 <template>
-    <!-- <div v-for="item in recipeList">{{ item.id }} {{ item.item_name }}</div> -->
     <el-table :data="recipeList" @row-click="selectItem" max-height="300">
         <el-table-column prop="job" :label="$t('craft-type')" width="150" />
         <el-table-column prop="item_name" :label="$t('name')">

@@ -18,7 +18,14 @@
 
 <script setup lang="ts">
 import { computed, onActivated, ref } from 'vue';
-import { ElScrollbar, ElDivider, ElDialog, ElButton } from 'element-plus';
+import {
+    ElScrollbar,
+    ElDivider,
+    ElDialog,
+    ElButton,
+    ElAlert,
+} from 'element-plus';
+import { Plus, Delete } from '@element-plus/icons-vue';
 
 import BomItem from '@/components/bom/Item.vue';
 import Selector from '@/components/bom/Selector.vue';
@@ -31,6 +38,7 @@ onActivated(() => emit('setTitle', 'bill-of-material'));
 
 const store = useStore();
 const selectorOpen = ref(false);
+const errorMsg = ref<string>();
 
 const groupedIngs = computed(() => {
     if (store.ingredients.length == 0) {
@@ -42,13 +50,18 @@ const groupedIngs = computed(() => {
         if (groups[ing.depth] == undefined) groups[ing.depth] = [ing];
         else groups[ing.depth].push(ing);
     }
-    return groups;
+    return groups.slice(1);
 });
 
 function addTarget(item: Item) {
     selectorOpen.value = false;
     store.addTarget(item);
-    store.updateBom();
+    store.updateBom().catch(e => (errorMsg.value = e));
+}
+
+function clearSelection() {
+    store.targetItems.splice(0);
+    store.updateBom().catch(e => (errorMsg.value = e));
 }
 </script>
 
@@ -58,6 +71,13 @@ function addTarget(item: Item) {
             <Selector @click-item="addTarget" />
         </el-dialog>
         <div class="page">
+            <el-alert
+                v-if="errorMsg"
+                :title="errorMsg"
+                type="error"
+                show-icon
+                :closable="false"
+            />
             <el-scrollbar>
                 <TransitionGroup class="row" tag="div">
                     <BomItem
@@ -84,14 +104,23 @@ function addTarget(item: Item) {
                         "
                         :type="item.type"
                     />
-                    <el-button
-                        class="item"
-                        key="add-button"
-                        @click="selectorOpen = true"
-                        style="height: 166px; width: 147px"
-                    >
-                        Add
-                    </el-button>
+                    <div class="item button-group" key="button-group">
+                        <el-button
+                            @click="selectorOpen = true"
+                            style="width: 100%; flex: auto"
+                            type="primary"
+                            :icon="Plus"
+                        >
+                            {{ $t('add') }}
+                        </el-button>
+                        <el-button
+                            @click="clearSelection"
+                            style="width: 100%; margin: 10px 0 0 0; flex: auto"
+                            :icon="Delete"
+                        >
+                            {{ $t('clear') }}
+                        </el-button>
+                    </div>
                 </TransitionGroup>
             </el-scrollbar>
             <el-divider content-position="left">{{ $t('ings') }}</el-divider>
@@ -129,12 +158,19 @@ function addTarget(item: Item) {
 
 .row {
     display: flex;
-    padding-bottom: 5px;
+    padding-bottom: 20px;
 }
 
 .item {
     flex: none;
     margin: 5px;
+}
+
+.button-group {
+    height: auto;
+    width: 147px;
+    display: flex;
+    flex-direction: column;
 }
 
 .v-move,
@@ -162,6 +198,8 @@ function addTarget(item: Item) {
 
 <fluent locale="zh-CN">
 ings = 材料
+add = 添加
+clear = 清空
 </fluent>
 
 <fluent locale="en-US">
