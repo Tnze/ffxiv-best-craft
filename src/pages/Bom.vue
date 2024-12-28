@@ -31,6 +31,7 @@ import { Plus, Delete, Loading, Refresh } from '@element-plus/icons-vue';
 
 import BomItem from '@/components/bom/Item.vue';
 import Selector from '@/components/bom/Selector.vue';
+import Curves from '@/components/bom/Curves.vue';
 import useStore, { Item, Slot as BomSlot } from '@/stores/bom';
 import { useFluent } from 'fluent-vue';
 
@@ -44,6 +45,8 @@ const store = useStore();
 const selectorOpen = ref(false);
 const errMsg = ref<string>();
 const calculating = ref(false);
+
+const ingElems = ref<HTMLElement[]>();
 
 const groupedIngs = computed(() => {
     if (store.ingredients.length == 0) {
@@ -70,7 +73,6 @@ function clearSelection() {
 }
 
 let runningProcess: Promise<void> | undefined = undefined;
-let outdated = false;
 async function updateBom() {
     let p;
     try {
@@ -168,6 +170,7 @@ async function updateBom() {
                     <BomItem
                         class="item"
                         v-for="item in group"
+                        ref="ingElems"
                         :key="item.item.id"
                         :id="item.item.id"
                         :name="item.item.name"
@@ -186,6 +189,7 @@ async function updateBom() {
                     />
                 </TransitionGroup>
             </el-scrollbar>
+            <Curves :items="[]" />
         </div>
     </el-scrollbar>
 </template>
