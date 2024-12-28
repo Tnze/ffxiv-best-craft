@@ -71,6 +71,7 @@ export default defineStore('bom', {
 
         recipeCache: new Map<ItemID, RecipeInfo[]>(),
         ingredientsCache: new Map<RecipeID, ItemWithAmount[]>(),
+        itemInfoCache: new Map<ItemID, Item>(),
         ingredients: <Slot[]>[],
     }),
 
@@ -114,7 +115,8 @@ export default defineStore('bom', {
                 for (const subIng of subIngs) {
                     let slot = ings.get(subIng.ingredient_id);
                     if (slot == undefined) {
-                        const itemInfo = await ds.itemInfo(
+                        const itemInfo = await this.fetchItemInfo(
+                            ds,
                             subIng.ingredient_id,
                         );
                         slot = new Slot(itemInfo);
@@ -255,6 +257,18 @@ export default defineStore('bom', {
                 this.ingredientsCache.set(recipeId, result);
             }
             return result.filter(v => v.ingredient_id >= 20); // 过滤偏属性水晶
+        },
+
+        async fetchItemInfo(
+            dataSource: DataSource,
+            itemId: ItemID,
+        ): Promise<Item> {
+            let result = this.itemInfoCache.get(itemId);
+            if (result == undefined) {
+                result = await dataSource.itemInfo(itemId);
+                this.itemInfoCache.set(itemId, result);
+            }
+            return result;
         },
     },
 });

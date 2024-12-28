@@ -47,7 +47,7 @@ export class BetaXivApiRecipeSource {
         jobLevelMax?: number,
     ): Promise<RecipesSourceResult> {
         const params: Record<string, string> = {
-            fields: 'Icon,ItemResult.Name,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq',
+            fields: 'Icon,ItemResult.Name,AmountResult,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq',
             // 'limit': "100",
         };
         const query = new URLSearchParams(params);
@@ -130,6 +130,7 @@ export class BetaXivApiRecipeSource {
             rlv: assert(v?.fields['RecipeLevelTable@as(raw)'], 'rlv'),
             item_id: assert(v?.fields?.ItemResult.row_id, 'item_id'),
             item_name: assert(v?.fields?.ItemResult?.fields.Name, 'item_name'),
+            item_amount: v?.fields?.AmountResult,
             job: assert(v?.fields?.CraftType?.fields?.Name, 'job'),
 
             difficulty_factor: assert(

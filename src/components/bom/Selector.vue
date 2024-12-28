@@ -34,11 +34,17 @@ const settingStore = useSettingStore();
 
 const search = ref('');
 const recipeList = ref<RecipeInfo[]>([]);
+const isLoading = ref(false);
 
 async function update() {
-    const source = await settingStore.getDataSource;
-    const recipeTable = await source.recipeTable(1, search.value);
-    recipeList.value = recipeTable.results;
+    try {
+        isLoading.value = true;
+        const source = await settingStore.getDataSource;
+        const recipeTable = await source.recipeTable(1, search.value);
+        recipeList.value = recipeTable.results;
+    } finally {
+        isLoading.value = false;
+    }
 }
 
 watch(search, () => update(), { immediate: true });
@@ -49,7 +55,12 @@ async function selectItem(recipe: RecipeInfo) {
 </script>
 
 <template>
-    <el-table :data="recipeList" @row-click="selectItem" max-height="300">
+    <el-table
+        :data="recipeList"
+        @row-click="selectItem"
+        max-height="300"
+        v-tnze-loading="isLoading"
+    >
         <el-table-column prop="job" :label="$t('craft-type')" width="150" />
         <el-table-column prop="item_name" :label="$t('name')">
             <template #header>

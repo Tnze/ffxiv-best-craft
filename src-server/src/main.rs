@@ -25,8 +25,8 @@ use serde::Serialize;
 
 mod db;
 use db::{
-    collectables_shop_refine, craft_types, item_action, item_food, item_food_effect,
-    item_with_amount, items, prelude::*, recipe_level_tables, recipes,
+    craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*,
+    recipe_level_tables, recipes,
 };
 
 type Result<T> = std::result::Result<T, StatusError>;

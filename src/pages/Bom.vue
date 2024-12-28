@@ -24,10 +24,10 @@ import {
     ElDialog,
     ElButton,
     ElAlert,
-    ElMessage,
-    MessageHandler,
+    ElIcon,
+    ElText,
 } from 'element-plus';
-import { Plus, Delete } from '@element-plus/icons-vue';
+import { Plus, Delete, Loading, Refresh } from '@element-plus/icons-vue';
 
 import BomItem from '@/components/bom/Item.vue';
 import Selector from '@/components/bom/Selector.vue';
@@ -43,6 +43,7 @@ const { $t } = useFluent();
 const store = useStore();
 const selectorOpen = ref(false);
 const errMsg = ref<string>();
+const calculating = ref(false);
 
 const groupedIngs = computed(() => {
     if (store.ingredients.length == 0) {
@@ -68,13 +69,24 @@ function clearSelection() {
     updateBom();
 }
 
-let alertHandle: MessageHandler | undefined = undefined;
+let runningProcess: Promise<void> | undefined = undefined;
+let outdated = false;
 async function updateBom() {
+    let p;
     try {
         errMsg.value = undefined;
-        await store.updateBom();
+        calculating.value = true;
+
+        p = store.updateBom();
+        runningProcess = p;
+        await p;
     } catch (e: any) {
         errMsg.value = String(e);
+    } finally {
+        if (p == runningProcess) {
+            runningProcess = undefined;
+            calculating.value = false;
+        }
     }
 }
 </script>
@@ -130,7 +142,24 @@ async function updateBom() {
                     </div>
                 </TransitionGroup>
             </el-scrollbar>
-            <el-divider content-position="left">{{ $t('ings') }}</el-divider>
+            <el-divider content-position="left">
+                <el-text>
+                    <template v-if="calculating">
+                        {{ $t('calculating') }}
+                        <el-icon class="is-loading">
+                            <Loading />
+                        </el-icon>
+                    </template>
+                    <template v-else>
+                        {{ $t('ings') }}
+                        <el-button link @click="updateBom()">
+                            <el-icon>
+                                <Refresh />
+                            </el-icon>
+                        </el-button>
+                    </template>
+                </el-text>
+            </el-divider>
             <el-alert v-if="errMsg" type="error" show-icon :closable="false">
                 {{ errMsg }}
             </el-alert>
@@ -208,6 +237,7 @@ async function updateBom() {
 
 <fluent locale="zh-CN">
 ings = 材料
+calculating = 计算中
 add = 添加
 clear = 清空
 </fluent>
