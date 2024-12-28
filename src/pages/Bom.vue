@@ -24,21 +24,25 @@ import {
     ElDialog,
     ElButton,
     ElAlert,
+    ElMessage,
+    MessageHandler,
 } from 'element-plus';
 import { Plus, Delete } from '@element-plus/icons-vue';
 
 import BomItem from '@/components/bom/Item.vue';
 import Selector from '@/components/bom/Selector.vue';
 import useStore, { Item, Slot as BomSlot } from '@/stores/bom';
+import { useFluent } from 'fluent-vue';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
 }>();
 onActivated(() => emit('setTitle', 'bill-of-material'));
 
+const { $t } = useFluent();
 const store = useStore();
 const selectorOpen = ref(false);
-const errorMsg = ref<string>();
+const errMsg = ref<string>();
 
 const groupedIngs = computed(() => {
     if (store.ingredients.length == 0) {
@@ -56,12 +60,22 @@ const groupedIngs = computed(() => {
 function addTarget(item: Item) {
     selectorOpen.value = false;
     store.addTarget(item);
-    store.updateBom().catch(e => (errorMsg.value = e));
+    updateBom();
 }
 
 function clearSelection() {
     store.targetItems.splice(0);
-    store.updateBom().catch(e => (errorMsg.value = e));
+    updateBom();
+}
+
+let alertHandle: MessageHandler | undefined = undefined;
+async function updateBom() {
+    try {
+        errMsg.value = undefined;
+        await store.updateBom();
+    } catch (e: any) {
+        errMsg.value = String(e);
+    }
 }
 </script>
 
@@ -71,13 +85,6 @@ function clearSelection() {
             <Selector @click-item="addTarget" />
         </el-dialog>
         <div class="page">
-            <el-alert
-                v-if="errorMsg"
-                :title="errorMsg"
-                type="error"
-                show-icon
-                :closable="false"
-            />
             <el-scrollbar>
                 <TransitionGroup class="row" tag="div">
                     <BomItem
@@ -124,6 +131,9 @@ function clearSelection() {
                 </TransitionGroup>
             </el-scrollbar>
             <el-divider content-position="left">{{ $t('ings') }}</el-divider>
+            <el-alert v-if="errMsg" type="error" show-icon :closable="false">
+                {{ errMsg }}
+            </el-alert>
             <el-scrollbar v-for="group in groupedIngs">
                 <TransitionGroup class="row" tag="div">
                     <BomItem
