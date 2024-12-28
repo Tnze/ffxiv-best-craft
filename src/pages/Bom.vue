@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { onActivated, ref } from 'vue';
+import { computed, onActivated, ref } from 'vue';
 import { ElScrollbar, ElDivider, ElDialog, ElButton } from 'element-plus';
 
 import BomItem from '@/components/bom/Item.vue';
@@ -32,17 +32,23 @@ onActivated(() => emit('setTitle', 'bill-of-material'));
 const store = useStore();
 const selectorOpen = ref(false);
 
+const groupedIngs = computed(() => {
+    if (store.ingredients.length == 0) {
+        return [];
+    }
+    const maxDepth = store.ingredients[store.ingredients.length - 1].depth;
+    const groups: BomSlot[][] = new Array(maxDepth);
+    for (const ing of store.ingredients) {
+        if (groups[ing.depth] == undefined) groups[ing.depth] = [ing];
+        else groups[ing.depth].push(ing);
+    }
+    return groups;
+});
+
 function addTarget(item: Item) {
     selectorOpen.value = false;
     store.addTarget(item);
     store.updateBom();
-}
-
-function targetItemDisplayType(slot: BomSlot): 'normal' | 'complete' {
-    // const h = store.holdingItems.get(slot.item.id) ?? 0;
-    // const r = slot.requiredNumber();
-    // return r <= h ? 'complete' : 'normal';
-    return slot.type == 'completed' ? 'complete' : 'normal';
 }
 </script>
 
@@ -76,7 +82,7 @@ function targetItemDisplayType(slot: BomSlot): 'normal' | 'complete' {
                                 store.updateBom();
                             }
                         "
-                        :type="targetItemDisplayType(item)"
+                        :type="item.type"
                     />
                     <el-button
                         class="item"
@@ -89,11 +95,11 @@ function targetItemDisplayType(slot: BomSlot): 'normal' | 'complete' {
                 </TransitionGroup>
             </el-scrollbar>
             <el-divider content-position="left">{{ $t('ings') }}</el-divider>
-            <el-scrollbar>
-                <TransitionGroup class="row" tag="div" style="flex-wrap: wrap">
+            <el-scrollbar v-for="group in groupedIngs">
+                <TransitionGroup class="row" tag="div">
                     <BomItem
                         class="item"
-                        v-for="item in store.ingredients"
+                        v-for="item in group"
                         :key="item.item.id"
                         :id="item.item.id"
                         :name="item.item.name"
@@ -108,7 +114,7 @@ function targetItemDisplayType(slot: BomSlot): 'normal' | 'complete' {
                                 store.updateBom();
                             }
                         "
-                        :type="targetItemDisplayType(item)"
+                        :type="item.type"
                     />
                 </TransitionGroup>
             </el-scrollbar>

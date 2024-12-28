@@ -33,12 +33,11 @@ export class Slot {
     item: Item;
     required: number;
     requiredBy: Map<ItemID, number>; // itemID, amount
-    depth: number;
-    type?: 'completed' | 'required';
+    depth: number = 0;
+    type?: 'completed' | 'crafted' | 'required' | 'not-required';
 
-    constructor(item: Item, depth: number) {
+    constructor(item: Item) {
         this.item = item;
-        this.depth = depth;
         this.required = 0;
         this.requiredBy = markRaw(new Map());
     }
@@ -77,9 +76,13 @@ export default defineStore('bom', {
 
     actions: {
         addTarget(item: Item) {
-            const slot = new Slot(item, 0);
+            const slot = new Slot(item);
             slot.setFixRequiredNumber(1);
             this.targetItems.push(slot);
+        },
+
+        removeTarget(i: number) {
+            this.targetItems.splice(i, 1);
         },
 
         async updateBom() {
@@ -91,8 +94,8 @@ export default defineStore('bom', {
             }
 
             // Discovering crafting DAG
-            const ings = new Map<ItemID, Slot>();
             const queue = [...this.targetItems];
+            const ings = new Map<ItemID, Slot>(queue.map(v => [v.item.id, v]));
             const successors = new Map<ItemID, ItemID[]>();
             while (queue.length > 0) {
                 const v = queue.shift()!;
@@ -114,7 +117,7 @@ export default defineStore('bom', {
                         const itemInfo = await ds.itemInfo(
                             subIng.ingredient_id,
                         );
-                        slot = new Slot(itemInfo, v.depth + 1);
+                        slot = new Slot(itemInfo);
                         ings.set(itemInfo.id, slot);
                     }
                     queue.push(slot);
@@ -157,9 +160,14 @@ export default defineStore('bom', {
                 }
             }
             console.assert(sorted.length == ings.size, 'Sorting failed');
+            console.log(
+                'Sorting result',
+                sorted.map(v => v.item.name).join(' -> '),
+            );
 
             // Calculate amounts
             const holdings = new Map(this.holdingItems);
+            const depths = new Map<ItemID, number>();
             for (const slot of sorted) {
                 // calculate needs
                 const r = slot.requiredNumber(); // required
@@ -167,7 +175,8 @@ export default defineStore('bom', {
                 const use = Math.min(r, h);
                 holdings.set(slot.item.id, h - use);
                 const n = r - use; // needs
-                slot.type = n > 0 ? 'required' : 'completed';
+                slot.type =
+                    r > 0 ? (n > 0 ? 'required' : 'completed') : 'not-required';
 
                 // find recipe
                 const recipes = await this.findRecipe(
@@ -187,19 +196,32 @@ export default defineStore('bom', {
 
                 // TODO: cache the recipe ingredients
                 for (const ing of await this.findIngredients(ds, recipe.id)) {
-                    const slot = ings.get(ing.ingredient_id)!;
-                    slot.addRequiredBy(slot.item.id, crafts * ing.amount);
+                    const subSlot = ings.get(ing.ingredient_id)!;
+                    subSlot.addRequiredBy(slot.item.id, crafts * ing.amount);
+
+                    depths.set(
+                        subSlot.item.id,
+                        Math.max(
+                            depths.get(subSlot.item.id) ?? 0,
+                            (depths.get(slot.item.id) ?? 0) + 1,
+                        ),
+                    );
                 }
             }
 
-            // Coloring
+            // Coloring / Depthing
             for (const slot of sorted.toReversed()) {
+                slot.depth = depths.get(slot.item.id) ?? 0;
+                if (slot.type != 'required') {
+                    continue;
+                }
                 const ss = successors.get(slot.item.id);
-                if (
-                    ss != undefined &&
-                    ss.every(s => ings.get(s)?.type == 'completed')
-                ) {
-                    slot.type = 'completed';
+                const isEnough = (s: number) => {
+                    const typ = ings.get(s)?.type;
+                    return typ == 'completed' || typ == 'crafted';
+                };
+                if (ss != undefined && ss.every(isEnough)) {
+                    slot.type = 'crafted';
                 }
             }
 

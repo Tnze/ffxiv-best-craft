@@ -20,23 +20,38 @@
 import { ElText, ElCard, ElInputNumber, ElTooltip } from 'element-plus';
 
 const props = defineProps<{
-    id?: number;
+    id: number;
     name: string;
     requiredInputDisabled?: boolean;
     holdingInputDisabled?: boolean;
+    removable?: boolean;
 
-    type?: 'normal' | 'complete';
+    type?: 'required' | 'crafted' | 'completed' | 'not-required';
 }>();
 
 const requiredNumber = defineModel<number>('requiredNumber');
 const holdingNumber = defineModel<number>('holdingNumber');
+const elemUiTypeMapping = new Map<
+    'required' | 'crafted' | 'completed' | 'not-required' | undefined,
+    'warning' | 'success' | 'info' | undefined
+>([
+    [undefined, undefined],
+    ['required', 'warning'],
+    ['crafted', undefined],
+    ['completed', 'success'],
+    ['not-required', 'info'],
+]);
 </script>
 
 <template>
-    <el-card :class="type ?? 'normal'" :body-class="$style.item" shadow="never">
-        <el-text v-if="id">#{{ id }}</el-text>
-        <el-text :class="$style.elem">{{ name }}</el-text>
-        <div :class="$style.icon"></div>
+    <el-card :class="type" :body-class="$style.item" shadow="never">
+        <el-text :class="$style['id-badget']" size="small" type="info">
+            #{{ id }}
+        </el-text>
+        <el-text :class="$style.elem" :type="elemUiTypeMapping.get(type)">
+            {{ name }}
+        </el-text>
+        <div :class="$style.icon">假装这有图标</div>
         <el-tooltip
             :class="$style.elem"
             :content="$t('required-number')"
@@ -74,20 +89,36 @@ const holdingNumber = defineModel<number>('holdingNumber');
 </template>
 
 <style>
-.complete {
+.completed {
     background-color: var(--el-color-success-light-9);
     border-color: var(--el-color-success);
+}
+
+.required {
+    background-color: var(--el-color-warning-light-9);
+    border-color: var(--el-color-warning);
+}
+
+.not-required {
+    background-color: var(--el-color-info-light-9);
+    /* border-color: var(--el-color-info); */
 }
 </style>
 
 <style module>
 .item {
-    margin: 5px;
-    padding: 3px 5px;
+    margin: 3px 5px;
+    padding: 0;
 
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.id-badget {
+    flex: auto;
+    align-self: flex-start;
+    margin-bottom: 0;
 }
 
 .elem {
@@ -95,11 +126,14 @@ const holdingNumber = defineModel<number>('holdingNumber');
 }
 
 .icon {
-    margin: 10px;
+    margin: 8px;
     height: 48px;
     width: 48px;
     border: 1px solid white;
     border-radius: 5px;
+    overflow: hidden;
+    user-select: none;
+    color: var(--el-color-info);
 }
 </style>
 
