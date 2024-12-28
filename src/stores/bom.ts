@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { markRaw } from 'vue';
 import { defineStore } from 'pinia';
+
 import useSettingStore from '@/stores/settings';
 import { DataSource } from '@/datasource/source';
 import { ItemWithAmount, RecipeInfo } from '@/libs/Craft';
@@ -27,17 +29,18 @@ export interface Item {
     name: string;
 }
 
-class Slot {
+export class Slot {
     item: Item;
     required: number;
     requiredBy: Map<ItemID, number>; // itemID, amount
     depth: number;
+    type?: 'completed' | 'required';
 
     constructor(item: Item, depth: number) {
         this.item = item;
         this.depth = depth;
         this.required = 0;
-        this.requiredBy = new Map();
+        this.requiredBy = markRaw(new Map());
     }
 
     setFixRequiredNumber(n: number) {
@@ -68,6 +71,7 @@ export default defineStore('bom', {
         holdingItems: new Map<ItemID, number>(), // item -> amount
 
         recipeCache: new Map<ItemID, RecipeInfo[]>(),
+        ingredientsCache: new Map<RecipeID, ItemWithAmount[]>(),
         ingredients: <Slot[]>[],
     }),
 
@@ -102,7 +106,7 @@ export default defineStore('bom', {
                 if (recipes.length == 0) continue;
 
                 const r = recipes[0];
-                const subIngs = await ds.recipesIngredients(r.id);
+                const subIngs = await this.findIngredients(ds, r.id);
 
                 for (const subIng of subIngs) {
                     let slot = ings.get(subIng.ingredient_id);
@@ -154,7 +158,7 @@ export default defineStore('bom', {
             }
             console.assert(sorted.length == ings.size, 'Sorting failed');
 
-            // Calculate numbers
+            // Calculate amounts
             const holdings = new Map(this.holdingItems);
             for (const slot of sorted) {
                 // calculate needs
@@ -163,6 +167,7 @@ export default defineStore('bom', {
                 const use = Math.min(r, h);
                 holdings.set(slot.item.id, h - use);
                 const n = r - use; // needs
+                slot.type = n > 0 ? 'required' : 'completed';
 
                 // find recipe
                 const recipes = await this.findRecipe(
@@ -180,9 +185,21 @@ export default defineStore('bom', {
                     console.warn(`${slot.item.name} ×${wasted} will be wasted`);
                 }
 
-                for (const ing of await ds.recipesIngredients(recipe.id)) {
+                // TODO: cache the recipe ingredients
+                for (const ing of await this.findIngredients(ds, recipe.id)) {
                     const slot = ings.get(ing.ingredient_id)!;
                     slot.addRequiredBy(slot.item.id, crafts * ing.amount);
+                }
+            }
+
+            // Coloring
+            for (const slot of sorted.toReversed()) {
+                const ss = successors.get(slot.item.id);
+                if (
+                    ss != undefined &&
+                    ss.every(s => ings.get(s)?.type == 'completed')
+                ) {
+                    slot.type = 'completed';
                 }
             }
 
@@ -205,6 +222,15 @@ export default defineStore('bom', {
 
             this.recipeCache.set(itemId, result); // write cache
             return result;
+        },
+
+        async findIngredients(dataSource: DataSource, recipeId: RecipeID) {
+            let result = this.ingredientsCache.get(recipeId);
+            if (result == undefined) {
+                result = await dataSource.recipesIngredients(recipeId);
+                this.ingredientsCache.set(recipeId, result);
+            }
+            return result.filter(v => v.ingredient_id >= 20); // 过滤偏属性水晶
         },
     },
 });

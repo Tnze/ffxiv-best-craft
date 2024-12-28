@@ -24,6 +24,8 @@ const props = defineProps<{
     name: string;
     requiredInputDisabled?: boolean;
     holdingInputDisabled?: boolean;
+
+    type?: 'normal' | 'complete';
 }>();
 
 const requiredNumber = defineModel<number>('requiredNumber');
@@ -31,7 +33,7 @@ const holdingNumber = defineModel<number>('holdingNumber');
 </script>
 
 <template>
-    <el-card :body-class="$style.item" shadow="never">
+    <el-card :class="type ?? 'normal'" :body-class="$style.item" shadow="never">
         <el-text v-if="id">#{{ id }}</el-text>
         <el-text :class="$style.elem">{{ name }}</el-text>
         <div :class="$style.icon"></div>
@@ -70,6 +72,13 @@ const holdingNumber = defineModel<number>('holdingNumber');
         </el-tooltip>
     </el-card>
 </template>
+
+<style>
+.complete {
+    background-color: var(--el-color-success-light-9);
+    border-color: var(--el-color-success);
+}
+</style>
 
 <style module>
 .item {

@@ -22,7 +22,7 @@ import { ElScrollbar, ElDivider, ElDialog, ElButton } from 'element-plus';
 
 import BomItem from '@/components/bom/Item.vue';
 import Selector from '@/components/bom/Selector.vue';
-import useStore, { Item } from '@/stores/bom';
+import useStore, { Item, Slot as BomSlot } from '@/stores/bom';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
@@ -37,6 +37,13 @@ function addTarget(item: Item) {
     store.addTarget(item);
     store.updateBom();
 }
+
+function targetItemDisplayType(slot: BomSlot): 'normal' | 'complete' {
+    // const h = store.holdingItems.get(slot.item.id) ?? 0;
+    // const r = slot.requiredNumber();
+    // return r <= h ? 'complete' : 'normal';
+    return slot.type == 'completed' ? 'complete' : 'normal';
+}
 </script>
 
 <template>
@@ -46,55 +53,64 @@ function addTarget(item: Item) {
         </el-dialog>
         <div class="page">
             <el-scrollbar>
-                <div class="row">
+                <TransitionGroup class="row" tag="div">
                     <BomItem
                         class="item"
                         v-for="item in store.targetItems"
                         :id="item.item.id"
                         :name="item.item.name"
+                        :key="item.item.id"
                         :required-number="item.getFixRequiredNumber()"
                         @update:required-number="
-                            v => item.setFixRequiredNumber(v)
+                            v => {
+                                item.setFixRequiredNumber(v);
+                                store.updateBom();
+                            }
                         "
                         :holding-number="
                             store.holdingItems.get(item.item.id) ?? 0
                         "
                         @update:holding-number="
-                            v => store.holdingItems.set(item.item.id, v)
+                            v => {
+                                store.holdingItems.set(item.item.id, v);
+                                store.updateBom();
+                            }
                         "
+                        :type="targetItemDisplayType(item)"
                     />
                     <el-button
                         class="item"
+                        key="add-button"
                         @click="selectorOpen = true"
                         style="height: 166px; width: 147px"
                     >
                         Add
                     </el-button>
-                    <el-button @click="store.updateBom()">Test</el-button>
-                </div>
+                </TransitionGroup>
             </el-scrollbar>
-            <el-divider />
+            <el-divider content-position="left">{{ $t('ings') }}</el-divider>
             <el-scrollbar>
-                <div class="row" style="flex-wrap: wrap">
+                <TransitionGroup class="row" tag="div" style="flex-wrap: wrap">
                     <BomItem
                         class="item"
-                        v-for="item in store.ingredients.filter(
-                            v => v.requiredNumber() > v.getFixRequiredNumber(),
-                        )"
+                        v-for="item in store.ingredients"
                         :key="item.item.id"
+                        :id="item.item.id"
                         :name="item.item.name"
-                        :required-number="
-                            item.requiredNumber() - item.getFixRequiredNumber()
-                        "
+                        :required-number="item.requiredNumber()"
                         requiredInputDisabled
                         :holding-number="
                             store.holdingItems.get(item.item.id) ?? 0
                         "
                         @update:holding-number="
-                            v => store.holdingItems.set(item.item.id, v)
+                            v => {
+                                store.holdingItems.set(item.item.id, v);
+                                store.updateBom();
+                            }
                         "
+                        :type="targetItemDisplayType(item)"
                     />
-                </div>
+                </TransitionGroup>
             </el-scrollbar>
         </div>
     </el-scrollbar>
@@ -114,4 +130,36 @@ function addTarget(item: Item) {
     flex: none;
     margin: 5px;
 }
+
+.v-move,
+.v-enter-active,
+.v-leave-active {
+    transition: all 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+.v-leave-active {
+    position: absolute;
+}
 </style>
+
+<style>
+.el-divider__text {
+    background-color: var(--tnze-main-bg-color);
+}
+</style>
+
+<fluent locale="zh-CN">
+ings = 材料
+</fluent>
+
+<fluent locale="en-US">
+</fluent>
+
+<fluent locale="ja-JP">
+</fluent>
