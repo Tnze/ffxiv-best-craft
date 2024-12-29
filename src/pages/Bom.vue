@@ -28,13 +28,13 @@ import {
     ElText,
 } from 'element-plus';
 import { Plus, Delete, Loading, Refresh } from '@element-plus/icons-vue';
+import { useElementBounding, UseElementBoundingReturn } from '@vueuse/core';
 import { useFluent } from 'fluent-vue';
 
 import BomItem from '@/components/bom/Item.vue';
 import Selector from '@/components/bom/Selector.vue';
-import Curves from '@/components/bom/Curves.vue';
+import Curves, { Point, Relation } from '@/components/bom/Curves.vue';
 import useStore, { Item, Slot as BomSlot, ItemID } from '@/stores/bom';
-import { useElementBounding, UseElementBoundingReturn } from '@vueuse/core';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
@@ -100,30 +100,30 @@ async function updateBom() {
     }
 }
 
-type Point = { x: number; y: number };
 const slots = computed(
     () => new Map(store.ingredients.map(v => [v.item.id, v])),
 );
 let itemsElems = ref(new Map<ItemID, UseElementBoundingReturn>());
-const lines = computed(calcLines);
+const relations = computed(calcLines);
 function calcLines() {
-    const lines: [Point, Point][] = [];
+    const lines: Relation[] = [];
     for (const [itemId1, elem1] of itemsElems.value) {
         const slot = slots.value.get(itemId1);
         if (slot == undefined) continue;
-        for (const itemId2 of slot.requiredBy.keys()) {
+        for (const [itemId2, amount] of slot.requiredBy) {
             const elem2 = itemsElems.value.get(itemId2);
             if (elem2 == undefined) continue;
-            lines.push([
-                {
+            lines.push({
+                p1: {
                     x: elem1.x + elem1.width / 2,
                     y: elem1.top,
                 },
-                {
+                p2: {
                     x: elem2.x + elem2.width / 2,
                     y: elem2?.bottom,
                 },
-            ]);
+                type: amount == 0 ? 'not-required' : slot.type,
+            });
         }
     }
     return lines;
@@ -228,7 +228,7 @@ function calcLines() {
                     />
                 </TransitionGroup>
             </el-scrollbar>
-            <Curves :items="lines" />
+            <Curves :relations="relations" />
         </div>
     </el-scrollbar>
 </template>

@@ -17,26 +17,41 @@
 -->
 
 <script setup lang="ts">
-import { h, Ref } from 'vue';
+import { useCssVar } from '@vueuse/core';
+import { h } from 'vue';
 
-type Point = { x: number; y: number };
+export interface Point {
+    x: number;
+    y: number;
+}
+
+export interface Relation {
+    p1: Point;
+    p2: Point;
+    type?: 'completed' | 'crafted' | 'required' | 'not-required';
+}
+
 const props = defineProps<{
-    items: [Point, Point][];
+    relations: Relation[];
 }>();
 
-function ingLines(props: { rects: [Point, Point] }) {
-    const [p1, p2] = props.rects;
-    // return h('path', {
-    //     d: `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`,
-    //     stroke: 'white',
-    // });
+const palette = new Map([
+    ['completed', useCssVar('--el-color-success')],
+    ['required', useCssVar('--el-color-warning')],
+    ['not-required', useCssVar('--el-color-info')],
+]);
+
+function ingLines(props: { rects: Relation }) {
+    const { p1, p2, type } = props.rects;
     const d = (p1.y - p2.y) / 2;
     return h('path', {
         d: `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y - d} ${p2.x} ${p2.y + d} ${p2.x} ${p2.y}`,
-        stroke: 'white',
+        stroke: palette.get(type ?? '')?.value ?? 'white',
         fill: 'transparent',
     });
 }
+
+defineExpose({});
 </script>
 
 <template>
@@ -48,7 +63,7 @@ function ingLines(props: { rects: [Point, Point] }) {
             height="100%"
             xmlns="http://www.w3.org/2000/svg"
         >
-            <ing-lines v-for="v of items" :rects="v" />
+            <ing-lines v-for="v of relations" :rects="v" />
         </svg>
     </div>
 </template>
