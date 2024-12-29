@@ -159,7 +159,11 @@ holding-number = 持有数量
 </fluent>
 
 <fluent locale="en-US">
+required-number = Required number
+holding-number = Holding number
 </fluent>
 
 <fluent locale="ja-JP">
+required-number = 需要数量
+holding-number = 保有数量
 </fluent>
