@@ -39,7 +39,7 @@ export class Slot {
     constructor(item: Item) {
         this.item = item;
         this.required = 0;
-        this.requiredBy = markRaw(new Map());
+        this.requiredBy = new Map();
     }
 
     setFixRequiredNumber(n: number) {

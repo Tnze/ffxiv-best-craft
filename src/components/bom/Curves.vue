@@ -17,22 +17,25 @@
 -->
 
 <script setup lang="ts">
-import { h } from 'vue';
+import { h, Ref } from 'vue';
 
+type Point = { x: number; y: number };
 const props = defineProps<{
-    items: [DOMRect, DOMRect][];
+    items: [Point, Point][];
 }>();
 
-function ingLines(rects: [DOMRect, DOMRect]) {
-    const p1 = {
-        x: rects[0].x + rects[0].width / 2,
-        y: rects[0].top,
-    };
-    const p2 = {
-        x: rects[1].x + rects[1].width / 2,
-        y: rects[1].bottom,
-    };
-    return () => h('path', { d: `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}` });
+function ingLines(props: { rects: [Point, Point] }) {
+    const [p1, p2] = props.rects;
+    // return h('path', {
+    //     d: `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`,
+    //     stroke: 'white',
+    // });
+    const d = (p1.y - p2.y) / 2;
+    return h('path', {
+        d: `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y - d} ${p2.x} ${p2.y + d} ${p2.x} ${p2.y}`,
+        stroke: 'white',
+        fill: 'transparent',
+    });
 }
 </script>
 
@@ -45,7 +48,7 @@ function ingLines(rects: [DOMRect, DOMRect]) {
             height="100%"
             xmlns="http://www.w3.org/2000/svg"
         >
-            <ingLines v-for="v of items" :rects="v" />
+            <ing-lines v-for="v of items" :rects="v" />
         </svg>
     </div>
 </template>

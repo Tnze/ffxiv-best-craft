@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { ElText, ElCard, ElInputNumber, ElTooltip } from 'element-plus';
+import { toRef } from 'vue';
 
 const props = defineProps<{
     id: number;
@@ -40,10 +41,12 @@ const elemUiTypeMapping = new Map<
     ['completed', 'success'],
     ['not-required', 'info'],
 ]);
+
+defineExpose({ id: toRef(() => props.id) });
 </script>
 
 <template>
-    <el-card :class="type" :body-class="$style.item" shadow="never">
+    <el-card :class="type" :body-class="$style.item" shadow="hover">
         <el-text :class="$style['id-badget']" size="small" type="info">
             #{{ id }}
         </el-text>

@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { computed, onActivated, ref } from 'vue';
+import { computed, onActivated, Ref, ref, useTemplateRef, watch } from 'vue';
 import {
     ElScrollbar,
     ElDivider,
@@ -28,12 +28,13 @@ import {
     ElText,
 } from 'element-plus';
 import { Plus, Delete, Loading, Refresh } from '@element-plus/icons-vue';
+import { useFluent } from 'fluent-vue';
 
 import BomItem from '@/components/bom/Item.vue';
 import Selector from '@/components/bom/Selector.vue';
 import Curves from '@/components/bom/Curves.vue';
-import useStore, { Item, Slot as BomSlot } from '@/stores/bom';
-import { useFluent } from 'fluent-vue';
+import useStore, { Item, Slot as BomSlot, ItemID } from '@/stores/bom';
+import { useElementBounding, UseElementBoundingReturn } from '@vueuse/core';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
@@ -46,7 +47,8 @@ const selectorOpen = ref(false);
 const errMsg = ref<string>();
 const calculating = ref(false);
 
-const ingElems = ref<HTMLElement[]>();
+type BomItemType = InstanceType<typeof BomItem>;
+const ingItems = useTemplateRef<BomItemType[]>('ing-items');
 
 const groupedIngs = computed(() => {
     if (store.ingredients.length == 0) {
@@ -58,7 +60,7 @@ const groupedIngs = computed(() => {
         if (groups[ing.depth] == undefined) groups[ing.depth] = [ing];
         else groups[ing.depth].push(ing);
     }
-    return groups.slice(1);
+    return groups.splice(1);
 });
 
 function addTarget(item: Item) {
@@ -67,7 +69,7 @@ function addTarget(item: Item) {
     updateBom();
 }
 
-function clearSelection() {
+function clearTargets() {
     store.targetItems.splice(0);
     updateBom();
 }
@@ -82,6 +84,12 @@ async function updateBom() {
         p = store.updateBom();
         runningProcess = p;
         await p;
+        itemsElems.value = new Map(
+            ingItems.value
+                ?.filter(v => v.$el != undefined)
+                ?.map(v => [v.id, useElementBounding(v.$el)]),
+        );
+        // updateLines();
     } catch (e: any) {
         errMsg.value = String(e);
     } finally {
@@ -91,6 +99,36 @@ async function updateBom() {
         }
     }
 }
+
+type Point = { x: number; y: number };
+const slots = computed(
+    () => new Map(store.ingredients.map(v => [v.item.id, v])),
+);
+let itemsElems = ref(new Map<ItemID, UseElementBoundingReturn>());
+const lines = computed(calcLines);
+function calcLines() {
+    const lines: [Point, Point][] = [];
+    for (const [itemId1, elem1] of itemsElems.value) {
+        const slot = slots.value.get(itemId1);
+        if (slot == undefined) continue;
+        for (const itemId2 of slot.requiredBy.keys()) {
+            const elem2 = itemsElems.value.get(itemId2);
+            if (elem2 == undefined) continue;
+            lines.push([
+                {
+                    x: elem1.x + elem1.width / 2,
+                    y: elem1.top,
+                },
+                {
+                    x: elem2.x + elem2.width / 2,
+                    y: elem2?.bottom,
+                },
+            ]);
+        }
+    }
+    return lines;
+}
+// watch(store.ingredients, updateLines);
 </script>
 
 <template>
@@ -104,6 +142,7 @@ async function updateBom() {
                     <BomItem
                         class="item"
                         v-for="item in store.targetItems"
+                        ref="ing-items"
                         :id="item.item.id"
                         :name="item.item.name"
                         :key="item.item.id"
@@ -135,7 +174,7 @@ async function updateBom() {
                             {{ $t('add') }}
                         </el-button>
                         <el-button
-                            @click="clearSelection"
+                            @click="clearTargets"
                             style="width: 100%; margin: 10px 0 0 0; flex: auto"
                             :icon="Delete"
                         >
@@ -166,11 +205,11 @@ async function updateBom() {
                 {{ errMsg }}
             </el-alert>
             <el-scrollbar v-for="group in groupedIngs">
-                <TransitionGroup class="row" tag="div">
+                <TransitionGroup class="row ings-row" tag="div">
                     <BomItem
                         class="item"
                         v-for="item in group"
-                        ref="ingElems"
+                        ref="ing-items"
                         :key="item.item.id"
                         :id="item.item.id"
                         :name="item.item.name"
@@ -189,7 +228,7 @@ async function updateBom() {
                     />
                 </TransitionGroup>
             </el-scrollbar>
-            <Curves :items="[]" />
+            <Curves :items="lines" />
         </div>
     </el-scrollbar>
 </template>
@@ -201,7 +240,10 @@ async function updateBom() {
 
 .row {
     display: flex;
-    padding-bottom: 20px;
+}
+
+.ings-row {
+    padding-bottom: 30px;
 }
 
 .item {
