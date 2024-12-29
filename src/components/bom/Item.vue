@@ -17,12 +17,19 @@
 -->
 
 <script setup lang="ts">
-import { ElText, ElCard, ElInputNumber, ElTooltip } from 'element-plus';
+import {
+    ElText,
+    ElCard,
+    ElInputNumber,
+    ElTooltip,
+    ElBadge,
+} from 'element-plus';
 import { toRef } from 'vue';
 
 const props = defineProps<{
     id: number;
     name: string;
+    wasted: number;
     requiredInputDisabled?: boolean;
     holdingInputDisabled?: boolean;
 
@@ -54,22 +61,24 @@ defineExpose({ id: toRef(() => props.id) });
             {{ name }}
         </el-text>
         <div v-if="false" :class="$style.icon">假装这有图标</div>
-        <el-tooltip
-            :class="$style.elem"
-            :content="$t('required-number')"
-            effect="light"
-            :enterable="false"
-        >
-            <el-input-number
-                size="small"
-                v-model="requiredNumber"
-                step-strictly
-                :min="0"
-                :disabled="requiredInputDisabled"
+        <el-badge :value="wasted" :hidden="wasted == 0" type="info">
+            <el-tooltip
+                :class="$style.elem"
+                :content="$t('required-number')"
+                effect="light"
+                :enterable="false"
             >
-                <template #suffix>pcs</template>
-            </el-input-number>
-        </el-tooltip>
+                <el-input-number
+                    size="small"
+                    v-model="requiredNumber"
+                    step-strictly
+                    :min="0"
+                    :disabled="requiredInputDisabled"
+                >
+                    <template #suffix>pcs</template>
+                </el-input-number>
+            </el-tooltip>
+        </el-badge>
         <el-tooltip
             :class="$style.elem"
             :content="$t('holding-number')"

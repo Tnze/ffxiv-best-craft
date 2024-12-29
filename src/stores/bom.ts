@@ -34,6 +34,7 @@ export class Slot {
     required: number;
     requiredBy: Map<ItemID, number>; // itemID, amount
     depth: number = 0;
+    wasted: number = 0;
     type?: 'completed' | 'crafted' | 'required' | 'not-required';
 
     constructor(item: Item) {
@@ -188,15 +189,15 @@ export default defineStore('bom', {
                     slot.item.id,
                     slot.item.name,
                 );
-                if (recipes.length == 0) continue;
+                if (recipes.length == 0) {
+                    slot.wasted = 0;
+                    continue;
+                }
                 const recipe = recipes[0];
                 if (recipe.item_amount == undefined)
                     throw 'unsupported data source';
                 const crafts = Math.ceil(n / recipe.item_amount);
-                const wasted = recipe.item_amount * crafts - n;
-                if (wasted > 0) {
-                    console.warn(`${slot.item.name} ×${wasted} will be wasted`);
-                }
+                slot.wasted = recipe.item_amount * crafts - n;
 
                 // TODO: cache the recipe ingredients
                 for (const ing of await this.findIngredients(ds, recipe.id)) {

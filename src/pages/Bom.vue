@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { computed, onActivated, Ref, ref, useTemplateRef, watch } from 'vue';
+import { computed, onActivated, ref, useTemplateRef } from 'vue';
 import {
     ElScrollbar,
     ElDivider,
@@ -213,6 +213,7 @@ function calcLines() {
                         :key="item.item.id"
                         :id="item.item.id"
                         :name="item.item.name"
+                        :wasted="item.wasted"
                         :required-number="item.requiredNumber()"
                         requiredInputDisabled
                         :holding-number="
