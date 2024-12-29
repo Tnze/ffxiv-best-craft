@@ -29,7 +29,7 @@ import { toRef } from 'vue';
 const props = defineProps<{
     id: number;
     name: string;
-    wasted: number;
+    wasted?: number;
     requiredInputDisabled?: boolean;
     holdingInputDisabled?: boolean;
 
@@ -61,7 +61,11 @@ defineExpose({ id: toRef(() => props.id) });
             {{ name }}
         </el-text>
         <div v-if="false" :class="$style.icon">假装这有图标</div>
-        <el-badge :value="wasted" :hidden="wasted == 0" type="info">
+        <el-badge
+            :value="wasted ?? 0"
+            :hidden="wasted == undefined || wasted == 0"
+            type="info"
+        >
             <el-tooltip
                 :class="$style.elem"
                 :content="$t('required-number')"
