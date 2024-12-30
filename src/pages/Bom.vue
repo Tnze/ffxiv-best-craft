@@ -48,6 +48,7 @@ const errMsg = ref<string>();
 const calculating = ref(false);
 
 type BomItemType = InstanceType<typeof BomItem>;
+const targetItems = useTemplateRef<BomItemType[]>('target-items');
 const ingItems = useTemplateRef<BomItemType[]>('ing-items');
 
 const groupedIngs = computed(() => {
@@ -84,12 +85,20 @@ async function updateBom() {
         p = store.updateBom();
         runningProcess = p;
         await p;
+
+        // 由于不知为何 vue 提供的 useTemplateRef 不会响应式更新，
+        // 因此在此处手动从 targetItems 和 ingItems 中构造 itemsElems
         itemsElems.value = new Map(
-            ingItems.value
-                ?.filter(v => v.$el != undefined)
-                ?.map(v => [v.id, useElementBounding(v.$el)]),
+            // 当存在重复键值时 new Map() 会用后面的覆盖前面的。
+            // 因此当一个物品同时作为目标与素材时，我们的连线会连在素材上。
+            [targetItems.value, ingItems.value]
+                .filter(v => v != null)
+                .flatMap(items =>
+                    items
+                        .filter(v => v.$el != undefined)
+                        .map(v => [v.id, useElementBounding(v.$el)]),
+                ),
         );
-        // updateLines();
     } catch (e: any) {
         errMsg.value = String(e);
     } finally {
@@ -128,7 +137,6 @@ function calcLines() {
     }
     return lines;
 }
-// watch(store.ingredients, updateLines);
 </script>
 
 <template>
@@ -142,7 +150,7 @@ function calcLines() {
                     <BomItem
                         class="item"
                         v-for="item in store.targetItems"
-                        ref="ing-items"
+                        ref="target-items"
                         :id="item.item.id"
                         :name="item.item.name"
                         :key="item.item.id"
