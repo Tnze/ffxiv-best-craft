@@ -194,7 +194,15 @@ function calcLines() {
             <el-divider content-position="left">
                 <el-text>
                     <template v-if="calculating">
-                        {{ $t('calculating') }}
+                        <el-text v-if="store.fetchingItem" type="info">
+                            {{
+                                store.fetchingItem != undefined
+                                    ? $t('fetching-item', {
+                                          itemName: store.fetchingItem,
+                                      })
+                                    : $t('calculating')
+                            }}
+                        </el-text>
                         <el-icon class="is-loading">
                             <Loading />
                         </el-icon>
@@ -293,12 +301,23 @@ function calcLines() {
 <fluent locale="zh-CN">
 ings = 材料
 calculating = 计算中
+fetching-item = 正在查询 { $itemName }
 add = 添加
 clear = 清空
 </fluent>
 
 <fluent locale="en-US">
+ings = Ingredients
+calculating = Calculating
+fetching-item = Fetching { $itemName }
+add = Add
+clear = Clear
 </fluent>
 
 <fluent locale="ja-JP">
+ings = コンポーネント
+calculating = ずるい
+fetching-item = つかむ { $itemName }
+add = 追加
+clear = パージ
 </fluent>

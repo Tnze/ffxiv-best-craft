@@ -101,3 +101,4 @@ update-done = 更新ダウンロード終了
 attributes = 属性
 settings = 設定
 title = { $recipe } （模拟器模式）
+bill-of-material = 材料リスト

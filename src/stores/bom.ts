@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { markRaw } from 'vue';
 import { defineStore } from 'pinia';
 
 import useSettingStore from '@/stores/settings';
@@ -74,6 +73,8 @@ export default defineStore('bom', {
         ingredientsCache: new Map<RecipeID, ItemWithAmount[]>(),
         itemInfoCache: new Map<ItemID, Item>(),
         ingredients: <Slot[]>[],
+
+        fetchingItem: <string | undefined>undefined,
     }),
 
     actions: {
@@ -103,6 +104,8 @@ export default defineStore('bom', {
                 const v = queue.shift()!;
                 ings.set(v.item.id, v);
 
+                this.fetchingItem = v.item.name;
+
                 const recipes = await this.findRecipe(
                     ds,
                     v.item.id,
@@ -111,7 +114,7 @@ export default defineStore('bom', {
                 if (recipes.length == 0) continue;
 
                 const r = recipes[0];
-                const subIngs = await this.findIngredients(ds, r.id);
+                const subIngs = await this.fetchIngredients(ds, r.id);
 
                 for (const subIng of subIngs) {
                     let slot = ings.get(subIng.ingredient_id);
@@ -130,6 +133,7 @@ export default defineStore('bom', {
                     subIngs.map(v => v.ingredient_id),
                 );
             }
+            this.fetchingItem = undefined;
 
             // Sorting with Kahn's algorithm
             const indegrees = new Map<ItemID, number>();
@@ -165,10 +169,6 @@ export default defineStore('bom', {
             if (sorted.length != ings.size) {
                 throw new Error('Topology sorting failed');
             }
-            console.debug(
-                'Topology sorting result',
-                sorted.map(v => v.item.name).join(' -> '),
-            );
 
             // Calculate amounts
             const holdings = new Map(this.holdingItems);
@@ -182,7 +182,6 @@ export default defineStore('bom', {
                 const n = r - use; // needs
                 slot.type =
                     r > 0 ? (n > 0 ? 'required' : 'completed') : 'not-required';
-
                 // find recipe
                 const recipes = await this.findRecipe(
                     ds,
@@ -199,8 +198,7 @@ export default defineStore('bom', {
                 const crafts = Math.ceil(n / recipe.item_amount);
                 slot.wasted = recipe.item_amount * crafts - n;
 
-                // TODO: cache the recipe ingredients
-                for (const ing of await this.findIngredients(ds, recipe.id)) {
+                for (const ing of await this.fetchIngredients(ds, recipe.id)) {
                     const subSlot = ings.get(ing.ingredient_id)!;
                     subSlot.addRequiredBy(slot.item.id, crafts * ing.amount);
 
@@ -251,7 +249,7 @@ export default defineStore('bom', {
             return result;
         },
 
-        async findIngredients(dataSource: DataSource, recipeId: RecipeID) {
+        async fetchIngredients(dataSource: DataSource, recipeId: RecipeID) {
             let result = this.ingredientsCache.get(recipeId);
             if (result == undefined) {
                 result = await dataSource.recipesIngredients(recipeId);
