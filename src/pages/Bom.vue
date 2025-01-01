@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -33,7 +33,7 @@ import { useFluent } from 'fluent-vue';
 
 import BomItem from '@/components/bom/Item.vue';
 import Selector from '@/components/bom/Selector.vue';
-import Curves, { Point, Relation } from '@/components/bom/Curves.vue';
+import Curves, { Relation } from '@/components/bom/Curves.vue';
 import useStore, { Item, Slot as BomSlot, ItemID } from '@/stores/bom';
 
 const emit = defineEmits<{
@@ -48,8 +48,11 @@ const errMsg = ref<string>();
 const calculating = ref(false);
 
 type BomItemType = InstanceType<typeof BomItem>;
+const page = useTemplateRef<HTMLDivElement>('page');
 const targetItems = useTemplateRef<BomItemType[]>('target-items');
 const ingItems = useTemplateRef<BomItemType[]>('ing-items');
+
+const pageBound = useElementBounding(page);
 
 const groupedIngs = computed(() => {
     if (store.ingredients.length == 0) {
@@ -113,8 +116,7 @@ const slots = computed(
     () => new Map(store.ingredients.map(v => [v.item.id, v])),
 );
 let itemsElems = ref(new Map<ItemID, UseElementBoundingReturn>());
-const relations = computed(calcLines);
-function calcLines() {
+const relations = computed(() => {
     const lines: Relation[] = [];
     for (const [itemId1, elem1] of itemsElems.value) {
         const slot = slots.value.get(itemId1);
@@ -136,11 +138,11 @@ function calcLines() {
         }
     }
     return lines;
-}
+});
 </script>
 
 <template>
-    <el-scrollbar>
+    <el-scrollbar ref="page">
         <el-dialog v-model="selectorOpen" :title="$t('select-recipe')">
             <Selector @click-item="addTarget" />
         </el-dialog>
@@ -149,7 +151,7 @@ function calcLines() {
                 <TransitionGroup class="row" tag="div">
                     <BomItem
                         class="item"
-                        v-for="item in store.targetItems"
+                        v-for="item of store.targetItems"
                         ref="target-items"
                         :id="item.item.id"
                         :name="item.item.name"
@@ -209,7 +211,7 @@ function calcLines() {
                     </template>
                     <template v-else>
                         {{ $t('ings') }}
-                        <el-button link @click="updateBom()">
+                        <el-button @click="updateBom()" text>
                             <el-icon>
                                 <Refresh />
                             </el-icon>
@@ -220,11 +222,11 @@ function calcLines() {
             <el-alert v-if="errMsg" type="error" show-icon :closable="false">
                 {{ errMsg }}
             </el-alert>
-            <el-scrollbar v-for="group in groupedIngs">
+            <el-scrollbar v-for="group of groupedIngs">
                 <TransitionGroup class="row ings-row" tag="div">
                     <BomItem
                         class="item"
-                        v-for="item in group"
+                        v-for="item of group"
                         ref="ing-items"
                         :key="item.item.id"
                         :id="item.item.id"
@@ -245,7 +247,7 @@ function calcLines() {
                     />
                 </TransitionGroup>
             </el-scrollbar>
-            <Curves :relations="relations" />
+            <Curves :relations="relations" :clip-zone="pageBound" />
         </div>
     </el-scrollbar>
 </template>

@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { useCssVar } from '@vueuse/core';
+import { useCssVar, UseElementBoundingReturn } from '@vueuse/core';
 import { h } from 'vue';
 
 export interface Point {
@@ -33,6 +33,7 @@ export interface Relation {
 
 const props = defineProps<{
     relations: Relation[];
+    clipZone: UseElementBoundingReturn;
 }>();
 
 const palette = new Map([
@@ -63,7 +64,19 @@ defineExpose({});
             height="100%"
             xmlns="http://www.w3.org/2000/svg"
         >
-            <ing-lines v-for="v of relations" :rects="v" />
+            <defs>
+                <clipPath id="cut-off">
+                    <rect
+                        :x="clipZone.x.value"
+                        :y="clipZone.y.value"
+                        :width="clipZone.width.value"
+                        :height="clipZone.height.value"
+                    />
+                </clipPath>
+            </defs>
+            <g clip-path="url(#cut-off)">
+                <ing-lines v-for="v of relations" :rects="v" />
+            </g>
         </svg>
     </div>
 </template>
