@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -238,9 +238,6 @@ watchEffect(async () => {
     background: var(--app-bg-color);
 }
 
-.el-menu:not(.el-menu--collapse) {
-}
-
 .el-form-item__label {
     user-select: none;
 }
@@ -388,7 +385,7 @@ watchEffect(async () => {
 
 .main {
     height: 100%;
-    padding: 0 10px;
+    padding: 0 0 0 10px;
     /* background-color: rgba(246, 246, 246, 0.5); */
     background-color: var(--tnze-main-bg-color);
     flex: auto;
