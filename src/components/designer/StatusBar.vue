@@ -26,6 +26,7 @@ import Condition from './Condition.vue';
 import DurabilityProgressBar from './DurabilityProgressBar.vue';
 import CollectabilityRefineMark from './CollectabilityRefineMark.vue';
 import { collectabilityPalette } from './consts';
+import { getHQPercentage } from './hqPercentage';
 
 const props = defineProps<{
     status: Status;
@@ -94,6 +95,7 @@ const collectabilityColor = computed(() => {
     }
     return collectabilityPalette[i - 1];
 });
+const hqPercentage = computed(() => getHQPercentage(props.status.quality, props.status.recipe.quality));
 </script>
 
 <template>
@@ -168,6 +170,9 @@ const collectabilityColor = computed(() => {
                 :max-collectability="status.recipe.quality / 10"
                 :progres-bar-width="qualityProgressBarWidth"
             />
+            <div style="height: 1em"></div>
+            <span class="bar-title">{{ $t('hq-percentage') }} &nbsp;</span>
+            <span> {{ hqPercentage }} </span>
             <Buffs id="buffs" :buffs="status.buffs" />
         </div>
         <div id="attributes">
@@ -293,10 +298,12 @@ const collectabilityColor = computed(() => {
 display-attrs-label = { $label }：
 remaining = 剩余
 collectability-stage = 收藏价值等级
+hq-percentage = 优质率
 </fluent>
 
 <fluent locale="en-US">
 display-attrs-label = { $label }: 
 remaining = Remaining
 collectability-stage = Collectability Stage
+hq-percentage = HQ
 </fluent>
