@@ -67,9 +67,9 @@ const groupedIngs = computed(() => {
     return groups.splice(1);
 });
 
-function addTarget(item: Item) {
+function addTarget(...items: Item[]) {
     selectorOpen.value = false;
-    store.addTarget(item);
+    store.addTarget(...items);
     updateBom();
 }
 
@@ -144,7 +144,10 @@ const relations = computed(() => {
 <template>
     <el-scrollbar ref="page">
         <el-dialog v-model="selectorOpen" :title="$t('select-recipe')">
-            <Selector @click-item="addTarget" />
+            <Selector
+                @click-item="addTarget"
+                @select-items="v => addTarget(...v)"
+            />
         </el-dialog>
         <div class="page">
             <el-scrollbar>
@@ -259,10 +262,11 @@ const relations = computed(() => {
 
 .row {
     display: flex;
+    padding-bottom: 10px;
 }
 
 .ings-row {
-    padding-bottom: 30px;
+    padding-bottom: 20px;
 }
 
 .item {

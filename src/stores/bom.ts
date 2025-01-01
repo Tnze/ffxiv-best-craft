@@ -78,10 +78,12 @@ export default defineStore('bom', {
     }),
 
     actions: {
-        addTarget(item: Item) {
-            const slot = new Slot(item);
-            slot.setFixRequiredNumber(1);
-            this.targetItems.push(slot);
+        addTarget(...items: Item[]) {
+            for (const item of items) {
+                const slot = new Slot(item);
+                slot.setFixRequiredNumber(1);
+                this.targetItems.push(slot);
+            }
         },
 
         removeTarget(i: number) {

@@ -17,8 +17,15 @@
 -->
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { ElTable, ElTableColumn, ElInput, ElSpace } from 'element-plus';
+import { ref, useTemplateRef, watch } from 'vue';
+import {
+    ElTable,
+    ElTableColumn,
+    ElInput,
+    ElSpace,
+    ElButton,
+} from 'element-plus';
+import type { TableInstance } from 'element-plus';
 import { Search } from '@element-plus/icons-vue';
 
 import useStore, { Item } from '@/stores/bom';
@@ -27,6 +34,7 @@ import { RecipeInfo } from '@/libs/Craft';
 
 const emits = defineEmits<{
     clickItem: [item: Item];
+    selectItems: [items: Item[]];
 }>();
 
 const store = useStore();
@@ -35,6 +43,7 @@ const settingStore = useSettingStore();
 const search = ref('');
 const recipeList = ref<RecipeInfo[]>([]);
 const isLoading = ref(false);
+const tableInstance = useTemplateRef<TableInstance>('table');
 
 async function update() {
     try {
@@ -46,21 +55,42 @@ async function update() {
         isLoading.value = false;
     }
 }
-
 watch(search, () => update(), { immediate: true });
+
+const selected = ref<RecipeInfo[]>([]);
+function selectionChanged(rows: RecipeInfo[]) {
+    selected.value = rows;
+}
+function selectionConfirmed() {
+    const items = selected.value.map(v => ({
+        id: v.item_id,
+        name: v.item_name,
+    }));
+    emits('selectItems', items);
+    clearSelections();
+}
 
 async function selectItem(recipe: RecipeInfo) {
     emits('clickItem', { id: recipe.item_id, name: recipe.item_name });
+    clearSelections();
+}
+
+function clearSelections() {
+    selected.value.splice(0);
+    tableInstance.value!.clearSelection();
 }
 </script>
 
 <template>
     <el-table
+        ref="table"
         :data="recipeList"
         @row-click="selectItem"
         max-height="300"
         v-tnze-loading="isLoading"
+        @selection-change="selectionChanged"
     >
+        <el-table-column type="selection" width="55" />
         <el-table-column prop="job" :label="$t('craft-type')" width="150" />
         <el-table-column prop="item_name" :label="$t('name')">
             <template #header>
@@ -77,6 +107,11 @@ async function selectItem(recipe: RecipeInfo) {
             </template>
         </el-table-column>
     </el-table>
+    <div class="buttons" v-if="selected.length > 0">
+        <el-button type="primary" @click="selectionConfirmed">
+            {{ $t('confirm') }}
+        </el-button>
+    </div>
 </template>
 
 <style scoped>
@@ -86,6 +121,13 @@ async function selectItem(recipe: RecipeInfo) {
     --el-table-header-bg-color: transparent;
     --el-table-tr-bg-color: transparent;
 }
+
+.buttons {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>
 
 <fluent locale="zh-CN">
@@ -93,6 +135,7 @@ craft-type = 制作类型
 name = 名称
 
 type-to-search = 输入以搜索
+confirm = 确认
 </fluent>
 
 <fluent locale="en-US">
@@ -100,4 +143,5 @@ craft-type = Craft Type
 name = Name
 
 type-to-search = Type to search
+confirm = Confirm
 </fluent>
