@@ -26,6 +26,7 @@ import {
     ElAlert,
     ElIcon,
     ElText,
+    ElSwitch,
 } from 'element-plus';
 import { Plus, Delete, Loading, Refresh } from '@element-plus/icons-vue';
 import { useElementBounding, UseElementBoundingReturn } from '@vueuse/core';
@@ -46,6 +47,7 @@ const store = useStore();
 const selectorOpen = ref(false);
 const errMsg = ref<string>();
 const calculating = ref(false);
+const showRelations = ref(true);
 
 type BomItemType = InstanceType<typeof BomItem>;
 const page = useTemplateRef<HTMLDivElement>('page');
@@ -118,6 +120,7 @@ const slots = computed(
 let itemsElems = ref(new Map<ItemID, UseElementBoundingReturn>());
 const relations = computed(() => {
     const lines: Relation[] = [];
+    if (!showRelations.value) return [];
     for (const [itemId1, elem1] of itemsElems.value) {
         const slot = slots.value.get(itemId1);
         if (slot == undefined) continue;
@@ -193,6 +196,7 @@ const relations = computed(() => {
                         >
                             {{ $t('clear') }}
                         </el-button>
+                        <el-switch v-model="showRelations" />
                     </div>
                 </TransitionGroup>
             </el-scrollbar>
@@ -250,7 +254,11 @@ const relations = computed(() => {
                     />
                 </TransitionGroup>
             </el-scrollbar>
-            <Curves :relations="relations" :clip-zone="pageBound" />
+            <Curves
+                v-if="showRelations"
+                :relations="relations"
+                :clip-zone="pageBound"
+            />
         </div>
     </el-scrollbar>
 </template>
