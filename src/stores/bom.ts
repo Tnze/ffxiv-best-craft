@@ -28,13 +28,15 @@ export interface Item {
     name: string;
 }
 
+export type SlotType = 'completed' | 'crafted' | 'required' | 'not-required';
+
 export class Slot {
     item: Item;
     required: number;
     requiredBy: Map<ItemID, number>; // itemID, amount
     depth: number = 0;
     wasted: number = 0;
-    type?: 'completed' | 'crafted' | 'required' | 'not-required';
+    type?: SlotType;
 
     constructor(item: Item) {
         this.item = item;

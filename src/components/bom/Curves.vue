@@ -37,8 +37,9 @@ const props = defineProps<{
 }>();
 
 const palette = new Map([
+    ['required', useCssVar('--el-color-danger')],
+    ['crafted', useCssVar('--el-color-warning')],
     ['completed', useCssVar('--el-color-success')],
-    ['required', useCssVar('--el-color-warning')],
     ['not-required', useCssVar('--el-color-info')],
 ]);
 

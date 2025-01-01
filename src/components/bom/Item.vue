@@ -26,6 +26,8 @@ import {
 } from 'element-plus';
 import { toRef } from 'vue';
 
+import { SlotType } from '@/stores/bom';
+
 const props = defineProps<{
     id: number;
     name: string;
@@ -33,18 +35,18 @@ const props = defineProps<{
     requiredInputDisabled?: boolean;
     holdingInputDisabled?: boolean;
 
-    type?: 'required' | 'crafted' | 'completed' | 'not-required';
+    type?: SlotType;
 }>();
 
 const requiredNumber = defineModel<number>('requiredNumber');
 const holdingNumber = defineModel<number>('holdingNumber');
 const elemUiTypeMapping = new Map<
-    'required' | 'crafted' | 'completed' | 'not-required' | undefined,
-    'warning' | 'success' | 'info' | undefined
+    SlotType | undefined,
+    'warning' | 'success' | 'info' | 'danger' | undefined
 >([
     [undefined, undefined],
-    ['required', 'warning'],
-    ['crafted', undefined],
+    ['required', 'danger'],
+    ['crafted', 'warning'],
     ['completed', 'success'],
     ['not-required', 'info'],
 ]);
@@ -104,14 +106,19 @@ defineExpose({ id: toRef(() => props.id) });
 </template>
 
 <style>
+.required {
+    background-color: var(--el-color-danger-light-9);
+    border-color: var(--el-color-danger);
+}
+
+.crafted {
+    background-color: var(--el-color-warning-light-9);
+    border-color: var(--el-color-warning);
+}
+
 .completed {
     background-color: var(--el-color-success-light-9);
     border-color: var(--el-color-success);
-}
-
-.required {
-    background-color: var(--el-color-warning-light-9);
-    border-color: var(--el-color-warning);
 }
 
 .not-required {
