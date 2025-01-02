@@ -109,6 +109,7 @@ const actionsForSimulator: Actions[][] = [
         Actions.BasicTouch,
         Actions.StandardTouch,
         Actions.AdvancedTouch,
+        Actions.RefinedTouch,
         Actions.TrainedFinesse,
         Actions.GreatStrides,
         Actions.QuickInnovation,
