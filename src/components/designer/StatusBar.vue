@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -19,8 +19,13 @@
 <script setup lang="ts">
 import { ElProgress } from 'element-plus';
 import { computed, ref } from 'vue';
-import { useElementSize } from '@vueuse/core';
-import { Attributes, CollectablesShopRefine, Status } from '@/libs/Craft';
+import { asyncComputed, useElementSize } from '@vueuse/core';
+import {
+    Attributes,
+    CollectablesShopRefine,
+    Status,
+    highQualityProbability,
+} from '@/libs/Craft';
 import Buffs from './Buffs.vue';
 import Condition from './Condition.vue';
 import DurabilityProgressBar from './DurabilityProgressBar.vue';
@@ -94,6 +99,8 @@ const collectabilityColor = computed(() => {
     }
     return collectabilityPalette[i - 1];
 });
+
+const hqPerc = asyncComputed(() => highQualityProbability(props.status), null);
 </script>
 
 <template>
@@ -146,6 +153,12 @@ const collectabilityColor = computed(() => {
             <div style="height: 1em"></div>
             <span class="bar-title">{{ $t('quality') }} &nbsp;</span>
             <span> {{ status.quality }} / {{ status.recipe.quality }} </span>
+            <template v-if="hqPerc != null">
+                <span class="bar-title">
+                    &nbsp; {{ $t('hq-probability') }} &nbsp;
+                </span>
+                <span> {{ hqPerc }}% </span>
+            </template>
             <template v-if="collectableShopRefine != undefined">
                 <span class="bar-title">
                     &nbsp; {{ $t('collectability-stage') }} &nbsp;
@@ -293,10 +306,12 @@ const collectabilityColor = computed(() => {
 display-attrs-label = { $label }：
 remaining = 剩余
 collectability-stage = 收藏价值等级
+hq-probability = 优质率
 </fluent>
 
 <fluent locale="en-US">
 display-attrs-label = { $label }: 
 remaining = Remaining
 collectability-stage = Collectability Stage
+hq-probability = HQ
 </fluent>
