@@ -141,6 +141,7 @@ function EnhIncComponent(props: {
                 :options="enhancerToOptions(meals)"
                 value-key="name"
                 clearable
+                filterable
                 remote
                 :loading="!meals"
                 :item-height="50"
@@ -161,6 +162,7 @@ function EnhIncComponent(props: {
                 :options="enhancerToOptions(medicine)"
                 value-key="name"
                 clearable
+                filterable
                 remote
                 :loading="!medicine"
                 :item-height="50"
