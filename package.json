@@ -44,7 +44,7 @@
         "unplugin-fluent-vue": "1.3.2",
         "vite": "^6.1.0",
         "vite-plugin-wasm": "^3.4.1",
-        "vue-tsc": "^2.2.0"
+        "vue-tsc": "^2.2.2"
     },
-    "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf"
+    "packageManager": "pnpm@10.4.0+sha512.6b849d0787d97f8f4e1f03a9b8ff8f038e79e153d6f11ae539ae7c435ff9e796df6a862c991502695c7f9e8fac8aeafc1ac5a8dab47e36148d183832d886dd52"
 }
