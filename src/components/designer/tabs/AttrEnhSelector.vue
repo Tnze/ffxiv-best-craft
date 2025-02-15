@@ -224,7 +224,7 @@ soul-of-the-crafter = 专家之证
 <fluent locale="en-US">
 meal = Meal
 medicine = Potion
-soul-of-the-crafter = 专家之证
+soul-of-the-crafter = Soul of the Crafter
 </fluent>
 
 <fluent locale="ja-JP">
