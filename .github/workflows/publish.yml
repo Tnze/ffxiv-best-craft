@@ -29,8 +29,6 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 22
-                  cache: pnpm
-            - run: corepack enable
             - name: install Rust nightly
               uses: dtolnay/rust-toolchain@stable
               with:
