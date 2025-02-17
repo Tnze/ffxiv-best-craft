@@ -16,7 +16,7 @@
 
 use crate::{simulate_one_step, SimulateOneStepResult};
 use ffxiv_crafting::{Actions, CastActionError, Status};
-use rand::{thread_rng, Rng};
+use rand::{rng, Rng};
 use serde::{Deserialize, Serialize};
 
 fn simulation(
@@ -60,7 +60,7 @@ pub struct Statistics {
 }
 
 pub fn stat(status: Status, actions: &[Actions], n: usize, ignore_errors: bool) -> Statistics {
-    let mut rng = thread_rng();
+    let mut rng: rand::prelude::ThreadRng = rng();
     let results = std::iter::from_fn({
         let mut rng = rng.clone();
         move || {
@@ -82,7 +82,7 @@ pub fn stat(status: Status, actions: &[Actions], n: usize, ignore_errors: bool) 
             }
             Ok((_history, status)) => match status.high_quality_probability() {
                 None => statistics.errors += 1,
-                Some(p) if p > rng.gen_range(0..100) => statistics.highqual += 1,
+                Some(p) if p > rng.random_range(0..100) => statistics.highqual += 1,
                 _ => statistics.normal += 1,
             },
         }
@@ -122,7 +122,7 @@ pub fn stat_collectables(
     ignore_errors: bool,
     collectables_shop_refine: CollectablesShopRefine,
 ) -> CollectableStatistics {
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let results = std::iter::from_fn(|| {
         let mut s = status.clone();
         Some(simulation(&mut rng, &mut s, actions, ignore_errors).map(|res| (res, s)))

@@ -9,7 +9,7 @@ license = "AGPL"
 ffxiv-crafting = { version = '7.1.2', features = ["serde-support"] }
 serde = { version = "1.0", features = ["derive"] }
 micro_ndarray = "0.6"
-rand = "0.8.5"
+rand = "0.9.0"
 
 raphael-solvers = { git = "https://github.com/KonaeAkira/raphael-rs.git", package = "solvers" }
 raphael-simulator = { git = "https://github.com/KonaeAkira/raphael-rs.git", package = "simulator" }

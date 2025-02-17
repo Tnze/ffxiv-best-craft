@@ -131,7 +131,7 @@ dependencies = [
  "native-dialog",
  "num_cpus",
  "percent-encoding",
- "rand 0.8.5",
+ "rand 0.9.0",
  "sea-orm",
  "serde",
  "serde_json",
@@ -152,7 +152,7 @@ dependencies = [
  "ffxiv-crafting",
  "micro_ndarray",
  "num_cpus",
- "rand 0.8.5",
+ "rand 0.9.0",
  "serde",
  "simulator",
  "solvers",
@@ -163,8 +163,8 @@ name = "app-wasm"
 version = "0.0.0"
 dependencies = [
  "app-libs",
- "getrandom 0.2.15",
- "rand 0.8.5",
+ "getrandom 0.3.1",
+ "rand 0.9.0",
  "serde",
  "serde-wasm-bindgen",
  "tsify",
@@ -1721,8 +1721,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "43a49c392881ce6d5c3b8cb70f98717b7c07aabbdff06687b9030dbfbe2725f8"
 dependencies = [
  "cfg-if",
+ "js-sys",
  "libc",
  "wasi 0.13.3+wasi-0.2.2",
+ "wasm-bindgen",
  "windows-targets 0.52.6",
 ]
 
@@ -2125,22 +2127,6 @@ dependencies = [
  "tokio-rustls",
  "tower-service",
  "webpki-roots",
-]
-
-[[package]]
-name = "hyper-tls"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "70206fc6890eaca9fde8a0bf71caa2ddfc9fe045ac9e5c70df101a7dbde866e0"
-dependencies = [
- "bytes",
- "http-body-util",
- "hyper",
- "hyper-util",
- "native-tls",
- "tokio",
- "tokio-native-tls",
- "tower-service",
 ]
 
 [[package]]
@@ -3319,9 +3305,9 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 
 [[package]]
 name = "openssl"
-version = "0.10.70"
+version = "0.10.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61cfb4e166a8bb8c9b55c500bc2308550148ece889be90f609377e58140f42c6"
+checksum = "5e14130c6a98cd258fdcb0fb6d744152343ff729cbfcb28c656a9d12b999fbcd"
 dependencies = [
  "bitflags 2.8.0",
  "cfg-if",
@@ -3351,9 +3337,9 @@ checksum = "d05e27ee213611ffe7d6348b942e8f942b37114c00cc03cec254295a4a17852e"
 
 [[package]]
 name = "openssl-sys"
-version = "0.9.105"
+version = "0.9.106"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b22d5b84be05a8d6947c7cb71f7c849aa0f112acd4bf51c2a7c1c988ac0a9dc"
+checksum = "8bb61ea9811cc39e3c2069f40b8b8e2e70d8569b361f879786cc7ed48b777cdd"
 dependencies = [
  "cc",
  "libc",
@@ -3981,7 +3967,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3779b94aeb87e8bd4e834cee3650289ee9e0d5677f976ecdb6d219e5f4f6cd94"
 dependencies = [
  "rand_chacha 0.9.0",
- "rand_core 0.9.0",
+ "rand_core 0.9.1",
  "zerocopy 0.8.18",
 ]
 
@@ -4012,7 +3998,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d3022b5f1df60f26e1ffddd6c66e8aa15de382ae63b3a0c1bfc0e4d3e3f325cb"
 dependencies = [
  "ppv-lite86",
- "rand_core 0.9.0",
+ "rand_core 0.9.1",
 ]
 
 [[package]]
@@ -4035,9 +4021,9 @@ dependencies = [
 
 [[package]]
 name = "rand_core"
-version = "0.9.0"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b08f3c9802962f7e1b25113931d94f43ed9725bebc59db9d0c3e9a23b67e15ff"
+checksum = "a88e0da7a2c97baa202165137c158d0a2e824ac465d13d81046727b34cb247d3"
 dependencies = [
  "getrandom 0.3.1",
  "zerocopy 0.8.18",
@@ -4159,13 +4145,11 @@ dependencies = [
  "http-body-util",
  "hyper",
  "hyper-rustls",
- "hyper-tls",
  "hyper-util",
  "ipnet",
  "js-sys",
  "log",
  "mime",
- "native-tls",
  "once_cell",
  "percent-encoding",
  "pin-project-lite",
@@ -4179,7 +4163,6 @@ dependencies = [
  "sync_wrapper",
  "system-configuration",
  "tokio",
- "tokio-native-tls",
  "tokio-rustls",
  "tokio-util",
  "tower",
@@ -4382,9 +4365,9 @@ checksum = "6ea1a2d0a644769cc99faa24c3ad26b379b786fe7c36fd3c546254801650e6dd"
 
 [[package]]
 name = "salvo"
-version = "0.74.3"
+version = "0.76.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf71b51a4d651ddf3d660db7ae483baab3f1bd81f1f82f177731bf43f6052c34"
+checksum = "46dc13467cdac5e421cc4b8169c388c709ad08f27e7370161cd85ad17febe223"
 dependencies = [
  "salvo-cors",
  "salvo-jwt-auth",
@@ -4395,9 +4378,9 @@ dependencies = [
 
 [[package]]
 name = "salvo-cors"
-version = "0.74.3"
+version = "0.76.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5751058f858759ef8b29b669ca9a67aa8a9800eb1be43a286ab293a00121d5ec"
+checksum = "1f15af42bcf4411910fbc8273c06a9aceeb3fad2cc042844fb234af530fbd3e0"
 dependencies = [
  "bytes",
  "salvo_core",
@@ -4406,9 +4389,9 @@ dependencies = [
 
 [[package]]
 name = "salvo-jwt-auth"
-version = "0.74.3"
+version = "0.76.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aebdaec653623bf940983c46bd1464569ba9408e0d1a6552feae8f7be7667e85"
+checksum = "0f5def10a4dbc030fcf9aa830ae82c004923a3236f505eb9834b5bfb5cf3b90d"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -4426,9 +4409,9 @@ dependencies = [
 
 [[package]]
 name = "salvo-proxy"
-version = "0.74.3"
+version = "0.76.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ef1f0487e3987c47c2e26d71a9ec696282f0c79203b22f4b9d50afc33273df5f"
+checksum = "4b3ac033974383d6cae2838b50e3ae1dc181eaea1022a10c0301339e1d0c7724"
 dependencies = [
  "fastrand",
  "futures-util",
@@ -4444,9 +4427,9 @@ dependencies = [
 
 [[package]]
 name = "salvo-serde-util"
-version = "0.74.3"
+version = "0.76.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6eb65193f58d9a936a0406625bca806f55886a57f502b3d11adc141618504063"
+checksum = "de3b212dd10678b447232511cc763b25b41dd4d49f1c7822dbdd50480d06f32d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4455,9 +4438,9 @@ dependencies = [
 
 [[package]]
 name = "salvo_core"
-version = "0.74.3"
+version = "0.76.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "447c7ab93300c57c76c95412cc469ef07943c698ef022dc08f743f92c05847a8"
+checksum = "3931c89631c1aa8f2b346f58d5de6be6d69dcdd742a43afc89272afeafb849e7"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -4482,7 +4465,7 @@ dependencies = [
  "parking_lot",
  "percent-encoding",
  "pin-project",
- "rand 0.8.5",
+ "rand 0.9.0",
  "regex",
  "rustls-pemfile",
  "salvo_macros",
@@ -4500,9 +4483,9 @@ dependencies = [
 
 [[package]]
 name = "salvo_extra"
-version = "0.74.3"
+version = "0.76.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "647f414b9f7cefc341b3c445b65d1226f375e51e469199cfd8caf4996e681610"
+checksum = "c8a672e494584051136fe9a61771a93b30d5644e0a4ff65ac1ecde6523875f20"
 dependencies = [
  "base64 0.22.1",
  "etag",
@@ -4522,9 +4505,9 @@ dependencies = [
 
 [[package]]
 name = "salvo_macros"
-version = "0.74.3"
+version = "0.76.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed9373fc8c688757223687cbb5aa0cf30711a34cbfec52243b5ca5d241c3e693"
+checksum = "fa924c2cb7928c83704f19e082942573954307502bbda746a800fc436a66c9d9"
 dependencies = [
  "proc-macro-crate 3.2.0",
  "proc-macro2",
@@ -4990,7 +4973,7 @@ dependencies = [
 [[package]]
 name = "simulator"
 version = "0.0.0"
-source = "git+https://github.com/KonaeAkira/raphael-rs.git#ba47d0dd398c9bf06ed1c695ccd30eb41a296f48"
+source = "git+https://github.com/KonaeAkira/raphael-rs.git#d6b6e6b5d9fb7753998955989b4e3218b8999f34"
 dependencies = [
  "bitfield-struct",
  "log",
@@ -5061,7 +5044,7 @@ dependencies = [
 [[package]]
 name = "solvers"
 version = "0.0.0"
-source = "git+https://github.com/KonaeAkira/raphael-rs.git#ba47d0dd398c9bf06ed1c695ccd30eb41a296f48"
+source = "git+https://github.com/KonaeAkira/raphael-rs.git#d6b6e6b5d9fb7753998955989b4e3218b8999f34"
 dependencies = [
  "bitfield-struct",
  "log",
@@ -5856,9 +5839,9 @@ dependencies = [
 
 [[package]]
 name = "tempfile"
-version = "3.16.0"
+version = "3.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38c246215d7d24f48ae091a2902398798e05d978b24315d6efbc00ede9a8bb91"
+checksum = "22e5a0acb1f3f55f65cc4a866c361b2fb2a0ff6366785ae6fbb5f85df07ba230"
 dependencies = [
  "cfg-if",
  "fastrand",
@@ -6020,16 +6003,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tokio-native-tls"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbae76ab933c85776efabc971569dd6119c580d8f5d448769dec1764bf796ef2"
-dependencies = [
- "native-tls",
- "tokio",
-]
-
-[[package]]
 name = "tokio-rustls"
 version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6052,9 +6025,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-tungstenite"
-version = "0.24.0"
+version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "edc5f74e248dc973e0dbb7b74c7e0d6fcc301c694ff50049504004ef4d0cdcd9"
+checksum = "be4bf6fecd69fcdede0ec680aaf474cdab988f9de6bc73d3758f0160e3b7025a"
 dependencies = [
  "futures-util",
  "log",
@@ -6260,15 +6233,15 @@ dependencies = [
 
 [[package]]
 name = "tungstenite"
-version = "0.24.0"
+version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18e5b8366ee7a95b16d32197d0b2604b43a0be89dc5fac9f8e96ccafbaedda8a"
+checksum = "413083a99c579593656008130e29255e54dcaae495be556cc26888f211648c24"
 dependencies = [
  "byteorder",
  "bytes",
  "log",
  "rand 0.8.5",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "utf-8",
 ]
 

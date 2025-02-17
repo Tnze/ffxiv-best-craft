@@ -19,7 +19,7 @@ use app_libs::{
     SimulateOneStepResult,
 };
 
-use rand::thread_rng;
+use rand::rng;
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
 
@@ -51,9 +51,8 @@ pub fn simulate_one_step(
     let mut status: Status = from_value(status)?;
     let action: Actions = from_value(action)?;
     let force_success: bool = from_value(force_success)?;
-    let is_success =
-        app_libs::simulate_one_step(&mut status, action, force_success, &mut thread_rng())
-            .map_err(err_to_string)?;
+    let is_success = app_libs::simulate_one_step(&mut status, action, force_success, &mut rng())
+        .map_err(err_to_string)?;
     Ok(to_value(&SimulateOneStepResult { status, is_success })?)
 }
 

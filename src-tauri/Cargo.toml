@@ -15,21 +15,21 @@ version = "0.0.0"
 tauri-build = { version = "2", features = ["config-toml"] }
 
 [dependencies]
-crossbeam-channel = "0.5.13"
+crossbeam-channel = "0.5.14"
 futures = "0.3"
 micro_ndarray = "0.6"
 native-dialog = "0.7.0"
 num_cpus = "1.16.0"
 percent-encoding = "2.3.1"
-rand = "0.8.5"
-sea-orm = { version = "1.1.2", features = [
+rand = "0.9.0"
+sea-orm = { version = "1.1.5", features = [
   "sqlx-sqlite",
   "runtime-tokio-native-tls",
   "macros",
 ] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tokio = "1.42"
+tokio = "1.43"
 window-vibrancy = "0.5"
 
 tauri = { version = "2", features = [] }

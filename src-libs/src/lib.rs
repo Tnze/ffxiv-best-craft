@@ -21,7 +21,7 @@ pub use ffxiv_crafting;
 use ffxiv_crafting::{
     Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, Status,
 };
-use rand::{seq::SliceRandom, Rng};
+use rand::{seq::IndexedRandom, Rng};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -37,10 +37,7 @@ pub struct SimulateResult {
 }
 
 /// 初始化一个表示一次制作的初始状态的Status对象，包含玩家属性、配方信息和初期品质
-pub fn new_status(
-    attrs: Attributes,
-    recipe: Recipe,
-) -> Result<Status, String> {
+pub fn new_status(attrs: Attributes, recipe: Recipe) -> Result<Status, String> {
     if recipe.job_level > attrs.level + 5 {
         Err("player-level-lower-than-recipe-requirement".to_string())
     } else {
@@ -78,7 +75,7 @@ pub fn simulate_one_step(
     rng: &mut impl Rng,
 ) -> Result<bool, CastActionError> {
     status.is_action_allowed(action)?;
-    let is_success = force_success || status.success_rate(action) as f32 / 100.0 > rng.gen();
+    let is_success = force_success || status.success_rate(action) as f32 / 100.0 > rng.random();
     if is_success {
         status.cast_action(action);
     } else {
