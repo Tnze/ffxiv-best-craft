@@ -34,7 +34,7 @@ use app_libs::{
     SimulateOneStepResult, SimulateResult,
 };
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
-use rand::thread_rng;
+use rand::rng;
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::Serialize;
 use tauri::{path::BaseDirectory, Manager};
@@ -84,7 +84,7 @@ fn simulate_one_step(
     action: Actions,
     force_success: bool,
 ) -> Result<SimulateOneStepResult, String> {
-    let mut rng = thread_rng();
+    let mut rng = rng();
     app_libs::simulate_one_step(&mut status, action, force_success, &mut rng)
         .map(|is_success| SimulateOneStepResult { status, is_success })
         .map_err(err_to_string)
