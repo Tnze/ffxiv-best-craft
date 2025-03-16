@@ -19,7 +19,6 @@
 <script setup lang="ts">
 import { computed, onActivated, ref, useTemplateRef } from 'vue';
 import {
-    ElScrollbar,
     ElDivider,
     ElDialog,
     ElButton,
@@ -153,8 +152,26 @@ const relations = computed(() => {
             />
         </el-dialog>
         <div class="page">
-            <el-scrollbar>
+            <div>
                 <TransitionGroup class="row" tag="div">
+                    <div class="item button-group" key="button-group">
+                        <el-button
+                            @click="selectorOpen = true"
+                            style="width: 100%; flex: auto"
+                            type="primary"
+                            :icon="Plus"
+                        >
+                            {{ $t('add') }}
+                        </el-button>
+                        <el-button
+                            @click="clearTargets"
+                            style="width: 100%; margin: 10px 0 0 0; flex: auto"
+                            :icon="Delete"
+                        >
+                            {{ $t('clear') }}
+                        </el-button>
+                        <el-switch v-model="showRelations" />
+                    </div>
                     <BomItem
                         class="item"
                         v-for="item of store.targetItems"
@@ -180,26 +197,8 @@ const relations = computed(() => {
                         "
                         :type="item.type"
                     />
-                    <div class="item button-group" key="button-group">
-                        <el-button
-                            @click="selectorOpen = true"
-                            style="width: 100%; flex: auto"
-                            type="primary"
-                            :icon="Plus"
-                        >
-                            {{ $t('add') }}
-                        </el-button>
-                        <el-button
-                            @click="clearTargets"
-                            style="width: 100%; margin: 10px 0 0 0; flex: auto"
-                            :icon="Delete"
-                        >
-                            {{ $t('clear') }}
-                        </el-button>
-                        <el-switch v-model="showRelations" />
-                    </div>
                 </TransitionGroup>
-            </el-scrollbar>
+            </div>
             <el-divider content-position="left">
                 <el-text>
                     <template v-if="calculating">
@@ -229,7 +228,7 @@ const relations = computed(() => {
             <el-alert v-if="errMsg" type="error" show-icon :closable="false">
                 {{ errMsg }}
             </el-alert>
-            <el-scrollbar v-for="group of groupedIngs">
+            <div v-for="group of groupedIngs">
                 <TransitionGroup class="row ings-row" tag="div">
                     <BomItem
                         class="item"
@@ -253,7 +252,7 @@ const relations = computed(() => {
                         :type="item.type"
                     />
                 </TransitionGroup>
-            </el-scrollbar>
+            </div>
             <Curves
                 v-if="showRelations"
                 :relations="relations"
@@ -270,6 +269,7 @@ const relations = computed(() => {
 
 .row {
     display: flex;
+    flex-wrap: wrap;
     padding-bottom: 10px;
 }
 
