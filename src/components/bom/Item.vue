@@ -82,6 +82,7 @@ defineExpose({ id: toRef(() => props.id) });
                     step-strictly
                     :min="0"
                     :disabled="requiredInputDisabled"
+                    :controls="!requiredInputDisabled"
                 >
                     <template #suffix>pcs</template>
                 </el-input-number>

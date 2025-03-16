@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { computed, onActivated, ref, useTemplateRef } from 'vue';
+import { computed, onActivated, reactive, ref, useTemplateRef } from 'vue';
 import {
     ElDivider,
     ElDialog,
@@ -73,7 +73,7 @@ function addTarget(...items: Item[]) {
     selectorOpen.value = false;
     store.addTarget(...items);
     updateBom();
-    
+
     // 当用户添加了较多的目标物品，自动关闭关系线条显示，避免眼花缭乱
     if (store.targetItems.length > 6) {
         showRelations.value = false;
@@ -123,10 +123,12 @@ const slots = computed(
     () => new Map(store.ingredients.map(v => [v.item.id, v])),
 );
 let itemsElems = ref(new Map<ItemID, UseElementBoundingReturn>());
+let itemHoverStates = reactive(new Set<ItemID>());
 const relations = computed(() => {
     const lines: Relation[] = [];
-    if (!showRelations.value) return [];
+    if (!showRelations.value && itemHoverStates.size == 0) return [];
     for (const [itemId1, elem1] of itemsElems.value) {
+        if (!showRelations.value && !itemHoverStates.has(itemId1)) continue;
         const slot = slots.value.get(itemId1);
         if (slot == undefined) continue;
         for (const [itemId2, amount] of slot.requiredBy) {
@@ -199,6 +201,8 @@ const relations = computed(() => {
                         }
                     "
                     :type="item.type"
+                    @mouseenter="itemHoverStates.add(item.item.id)"
+                    @mouseleave="itemHoverStates.delete(item.item.id)"
                 />
             </TransitionGroup>
             <el-divider content-position="left">
@@ -249,13 +253,11 @@ const relations = computed(() => {
                         }
                     "
                     :type="item.type"
+                    @mouseenter="itemHoverStates.add(item.item.id)"
+                    @mouseleave="itemHoverStates.delete(item.item.id)"
                 />
             </div>
-            <Curves
-                v-if="showRelations"
-                :relations="relations"
-                :clip-zone="pageBound"
-            />
+            <Curves :relations="relations" :clip-zone="pageBound" />
         </div>
     </el-scrollbar>
 </template>
