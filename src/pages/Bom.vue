@@ -152,53 +152,49 @@ const relations = computed(() => {
             />
         </el-dialog>
         <div class="page">
-            <div>
-                <TransitionGroup class="row" tag="div">
-                    <div class="item button-group" key="button-group">
-                        <el-button
-                            @click="selectorOpen = true"
-                            style="width: 100%; flex: auto"
-                            type="primary"
-                            :icon="Plus"
-                        >
-                            {{ $t('add') }}
-                        </el-button>
-                        <el-button
-                            @click="clearTargets"
-                            style="width: 100%; margin: 10px 0 0 0; flex: auto"
-                            :icon="Delete"
-                        >
-                            {{ $t('clear') }}
-                        </el-button>
-                        <el-switch v-model="showRelations" />
-                    </div>
-                    <BomItem
-                        class="item"
-                        v-for="item of store.targetItems"
-                        ref="target-items"
-                        :id="item.item.id"
-                        :name="item.item.name"
-                        :key="item.item.id"
-                        :required-number="item.getFixRequiredNumber()"
-                        @update:required-number="
-                            v => {
-                                item.setFixRequiredNumber(v);
-                                store.updateBom();
-                            }
-                        "
-                        :holding-number="
-                            store.holdingItems.get(item.item.id) ?? 0
-                        "
-                        @update:holding-number="
-                            v => {
-                                store.holdingItems.set(item.item.id, v);
-                                store.updateBom();
-                            }
-                        "
-                        :type="item.type"
-                    />
-                </TransitionGroup>
-            </div>
+            <TransitionGroup class="row" tag="div">
+                <div class="item button-group" key="button-group">
+                    <el-button
+                        @click="selectorOpen = true"
+                        style="width: 100%; flex: auto"
+                        type="primary"
+                        :icon="Plus"
+                    >
+                        {{ $t('add') }}
+                    </el-button>
+                    <el-button
+                        @click="clearTargets"
+                        style="width: 100%; margin: 10px 0 0 0; flex: auto"
+                        :icon="Delete"
+                    >
+                        {{ $t('clear') }}
+                    </el-button>
+                    <el-switch v-model="showRelations" />
+                </div>
+                <BomItem
+                    class="item"
+                    v-for="item of store.targetItems"
+                    ref="target-items"
+                    :id="item.item.id"
+                    :name="item.item.name"
+                    :key="item.item.id"
+                    :required-number="item.getFixRequiredNumber()"
+                    @update:required-number="
+                        v => {
+                            item.setFixRequiredNumber(v);
+                            store.updateBom();
+                        }
+                    "
+                    :holding-number="store.holdingItems.get(item.item.id) ?? 0"
+                    @update:holding-number="
+                        v => {
+                            store.holdingItems.set(item.item.id, v);
+                            store.updateBom();
+                        }
+                    "
+                    :type="item.type"
+                />
+            </TransitionGroup>
             <el-divider content-position="left">
                 <el-text>
                     <template v-if="calculating">
@@ -228,30 +224,26 @@ const relations = computed(() => {
             <el-alert v-if="errMsg" type="error" show-icon :closable="false">
                 {{ errMsg }}
             </el-alert>
-            <div v-for="group of groupedIngs">
-                <TransitionGroup class="row ings-row" tag="div">
-                    <BomItem
-                        class="item"
-                        v-for="item of group"
-                        ref="ing-items"
-                        :key="item.item.id"
-                        :id="item.item.id"
-                        :name="item.item.name"
-                        :wasted="item.wasted"
-                        :required-number="item.requiredNumber()"
-                        requiredInputDisabled
-                        :holding-number="
-                            store.holdingItems.get(item.item.id) ?? 0
-                        "
-                        @update:holding-number="
-                            v => {
-                                store.holdingItems.set(item.item.id, v);
-                                store.updateBom();
-                            }
-                        "
-                        :type="item.type"
-                    />
-                </TransitionGroup>
+            <div v-for="group of groupedIngs" class="row ings-row">
+                <BomItem
+                    class="item"
+                    v-for="item of group"
+                    ref="ing-items"
+                    :key="item.item.id"
+                    :id="item.item.id"
+                    :name="item.item.name"
+                    :wasted="item.wasted"
+                    :required-number="item.requiredNumber()"
+                    requiredInputDisabled
+                    :holding-number="store.holdingItems.get(item.item.id) ?? 0"
+                    @update:holding-number="
+                        v => {
+                            store.holdingItems.set(item.item.id, v);
+                            store.updateBom();
+                        }
+                    "
+                    :type="item.type"
+                />
             </div>
             <Curves
                 v-if="showRelations"

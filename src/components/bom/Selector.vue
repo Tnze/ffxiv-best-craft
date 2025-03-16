@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -28,7 +28,7 @@ import {
 import type { TableInstance } from 'element-plus';
 import { Search } from '@element-plus/icons-vue';
 
-import useStore, { Item } from '@/stores/bom';
+import { Item } from '@/stores/bom';
 import useSettingStore from '@/stores/settings';
 import { RecipeInfo } from '@/libs/Craft';
 
@@ -37,7 +37,6 @@ const emits = defineEmits<{
     selectItems: [items: Item[]];
 }>();
 
-const store = useStore();
 const settingStore = useSettingStore();
 
 const search = ref('');
