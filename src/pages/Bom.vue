@@ -72,6 +72,11 @@ function addTarget(...items: Item[]) {
     selectorOpen.value = false;
     store.addTarget(...items);
     updateBom();
+    
+    // 当用户添加了较多的目标物品，自动关闭关系线条显示，避免眼花缭乱
+    if (store.targetItems.length > 6) {
+        showRelations.value = false;
+    }
 }
 
 function clearTargets() {
