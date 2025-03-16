@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { useCssVar, UseElementBoundingReturn } from '@vueuse/core';
-import { h } from 'vue';
+import { h, useTemplateRef } from 'vue';
 
 export interface Point {
     x: number;
@@ -36,11 +36,12 @@ const props = defineProps<{
     clipZone: UseElementBoundingReturn;
 }>();
 
+const canvas = useTemplateRef('canvas')
 const palette = new Map([
-    ['required', useCssVar('--el-color-danger')],
-    ['crafted', useCssVar('--el-color-warning')],
-    ['completed', useCssVar('--el-color-success')],
-    ['not-required', useCssVar('--el-color-info')],
+    ['required', useCssVar('--el-color-danger', canvas)],
+    ['crafted', useCssVar('--el-color-warning', canvas)],
+    ['completed', useCssVar('--el-color-success', canvas)],
+    ['not-required', useCssVar('--el-color-info', canvas)],
 ]);
 
 function ingLines(props: { rects: Relation }) {
@@ -57,7 +58,7 @@ defineExpose({});
 </script>
 
 <template>
-    <div class="canvas">
+    <div class="canvas" ref="canvas">
         <svg
             version="1.1"
             baseProfile="full"
