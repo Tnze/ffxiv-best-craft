@@ -126,12 +126,17 @@ let itemsElems = ref(new Map<ItemID, UseElementBoundingReturn>());
 let itemHoverStates = reactive(new Set<ItemID>());
 const relations = computed(() => {
     const lines: Relation[] = [];
-    if (!showRelations.value && itemHoverStates.size == 0) return [];
+    const hoverOnly = !showRelations.value;
+    if (hoverOnly && itemHoverStates.size == 0) return [];
     for (const [itemId1, elem1] of itemsElems.value) {
-        if (!showRelations.value && !itemHoverStates.has(itemId1)) continue;
         const slot = slots.value.get(itemId1);
         if (slot == undefined) continue;
         for (const [itemId2, amount] of slot.requiredBy) {
+            if (
+                hoverOnly &&
+                !(itemHoverStates.has(itemId1) || itemHoverStates.has(itemId2))
+            )
+                continue;
             const elem2 = itemsElems.value.get(itemId2);
             if (elem2 == undefined) continue;
             lines.push({
