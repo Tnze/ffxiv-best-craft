@@ -38,8 +38,10 @@ const props = defineProps<{
     type?: SlotType;
 }>();
 
-const requiredNumber = defineModel<number>('requiredNumber');
-const holdingNumber = defineModel<number>('holdingNumber');
+const requiredNumber = defineModel<number>('requiredNumber', {
+    required: true,
+});
+const holdingNumber = defineModel<number>('holdingNumber', { required: true });
 const elemUiTypeMapping = new Map<
     SlotType | undefined,
     'warning' | 'success' | 'info' | 'danger' | undefined
