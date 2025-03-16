@@ -26,6 +26,7 @@ import {
     ElIcon,
     ElText,
     ElSwitch,
+    ElScrollbar,
 } from 'element-plus';
 import { Plus, Delete, Loading, Refresh } from '@element-plus/icons-vue';
 import { useElementBounding, UseElementBoundingReturn } from '@vueuse/core';
