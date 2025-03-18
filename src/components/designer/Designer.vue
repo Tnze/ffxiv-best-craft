@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -416,6 +416,7 @@ async function handleSolverResult(
                                 :can-hq="item.can_be_hq"
                                 @solver-load="readSolver()"
                                 @solver-result="handleSolverResult"
+                                :collectable-shop-refine="collectableShopRefine"
                             />
                         </el-scrollbar>
                     </el-tab-pane>

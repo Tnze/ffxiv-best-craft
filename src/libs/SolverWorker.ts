@@ -24,6 +24,7 @@ onmessage = async e => {
             case 'raphael_solve':
                 result = raphael_solve(
                     args.status,
+                    args.targetQuality,
                     args.useManipulation,
                     args.useHeartAndSoul,
                     args.useQuickInnovation,

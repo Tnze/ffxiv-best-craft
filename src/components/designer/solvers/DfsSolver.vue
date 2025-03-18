@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -25,6 +25,8 @@ import {
     ElLink,
     ElSlider,
     ElDialog,
+    ElSpace,
+    ElText,
 } from 'element-plus';
 import { useFluent } from 'fluent-vue';
 import { Ref, ref, watch } from 'vue';
@@ -98,65 +100,62 @@ function runDfsSolver() {
             </template>
         </i18n>
     </el-dialog>
-    <div class="argument-block" style="display: flex">
-        <span class="slider-label">{{ $t('dfs-max-depth') }}</span>
-        <el-slider
-            v-model="maxDepth"
-            :min="1"
-            :max="10"
-            :format-tooltip="dfsFormatTooltip"
-            :aria-label="$t('dfs-max-depth')"
+    <el-space direction="vertical" alignment="normal">
+        <div style="min-width: 300px; display: flex; align-items: center">
+            <el-text style="flex: none">
+                {{ $t('dfs-max-depth') }}
+            </el-text>
+            <el-slider
+                v-model="maxDepth"
+                style="margin-left: 30px"
+                :min="1"
+                :max="10"
+                :format-tooltip="dfsFormatTooltip"
+                :aria-label="$t('dfs-max-depth')"
+                :disabled="dfsSolving"
+            />
+        </div>
+        <el-alert
+            v-if="maxDepth > warningDepth"
+            type="warning"
+            :title="$t('dfs-too-depth')"
+            show-icon
+            :closable="false"
+        />
+        <el-checkbox
+            v-model="doNotTouch"
+            :label="$t('do-not-touch')"
             :disabled="dfsSolving"
         />
-    </div>
-    <el-alert
-        v-if="maxDepth > warningDepth"
-        type="warning"
-        :title="$t('dfs-too-depth')"
-        show-icon
-        :closable="false"
-    />
-    <el-checkbox
-        v-model="doNotTouch"
-        :label="$t('do-not-touch')"
-        :disabled="dfsSolving"
-    />
-    <el-checkbox
-        v-model="useSpecialist"
-        :label="$t('specialist')"
-        :disabled="dfsSolving"
-    />
-    <div>
-        <el-button type="primary" @click="runDfsSolver" :loading="dfsSolving">
-            {{ dfsSolving ? $t('simple-solver-solving') : $t('solver-start') }}
-        </el-button>
-        <el-button :icon="ChatSquare" circle @click="dialogVisible = true" />
-    </div>
+        <el-checkbox
+            v-model="useSpecialist"
+            :label="$t('specialist')"
+            :disabled="dfsSolving"
+        />
+        <div>
+            <el-button
+                type="primary"
+                @click="runDfsSolver"
+                :loading="dfsSolving"
+            >
+                {{
+                    dfsSolving
+                        ? $t('simple-solver-solving')
+                        : $t('solver-start')
+                }}
+            </el-button>
+            <el-button
+                :icon="ChatSquare"
+                circle
+                @click="dialogVisible = true"
+            />
+        </div>
+    </el-space>
 </template>
 
 <style scoped>
 .solver-info {
     white-space: pre-line;
-}
-
-.argument-block {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-}
-
-.argument-block .slider-label {
-    font-size: 14px;
-    color: var(--el-text-color-secondary);
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin-bottom: 0;
-}
-
-.argument-block .slider-label + .el-slider {
-    flex: 0 0 70%;
 }
 </style>
 

@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -28,7 +28,7 @@ import {
     ElTabs,
     ElTabPane,
 } from 'element-plus';
-import { Actions, Status } from '@/libs/Craft';
+import { Actions, CollectablesShopRefine, Status } from '@/libs/Craft';
 import {
     supported as solverSupported,
     rika_solve,
@@ -48,6 +48,7 @@ const props = defineProps<{
     initStatus: Status;
     recipeName: string;
     canHq: boolean;
+    collectableShopRefine?: CollectablesShopRefine;
 }>();
 
 const emits = defineEmits<{
@@ -170,6 +171,7 @@ async function runTnzeVerRikaSolver() {
                     :init-status="initStatus"
                     :recipe-name="recipeName"
                     @run-simple-solver="runSimpleSolver"
+                    :collectable-shop-refine="collectableShopRefine"
                 />
             </el-tab-pane>
             <el-tab-pane :label="$t('dp-solver')" name="dp">

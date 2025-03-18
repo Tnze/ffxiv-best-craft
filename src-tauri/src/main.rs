@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -532,6 +532,7 @@ fn reflect_solve(
 #[tauri::command(async)]
 fn raphael_solve(
     status: Status,
+    target_quality: Option<u32>,
     use_manipulation: bool,
     use_heart_and_soul: bool,
     use_quick_innovation: bool,
@@ -542,6 +543,7 @@ fn raphael_solve(
 ) -> Vec<Actions> {
     raphael::solve(
         status.clone(),
+        target_quality,
         use_manipulation,
         use_heart_and_soul,
         use_quick_innovation,

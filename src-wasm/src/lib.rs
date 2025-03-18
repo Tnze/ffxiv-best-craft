@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -111,6 +111,7 @@ pub fn reflect_solve(status: JsValue, use_observe: bool) -> Result<JsValue, JsVa
 #[wasm_bindgen]
 pub fn raphael_solve(
     status: JsValue,
+    target_quality: Option<u32>,
     use_manipultaion: bool,
     use_heart_and_soul: bool,
     use_quick_innovation: bool,
@@ -123,6 +124,7 @@ pub fn raphael_solve(
     let status: Status = from_value(status)?;
     let result: Vec<Actions> = solve(
         status.clone(),
+        target_quality,
         use_manipultaion,
         use_heart_and_soul,
         use_quick_innovation,

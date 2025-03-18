@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -21,6 +21,7 @@ use raphael_solvers::{AtomicFlag, MacroSolver};
 
 pub fn solve(
     status: Status,
+    target_quality: Option<u32>,
     use_manipultaion: bool,
     use_heart_and_soul: bool,
     use_quick_innovation: bool,
@@ -42,11 +43,12 @@ pub fn solve(
     if !use_trained_eye || status.is_action_allowed(Actions::TrainedEye).is_err() {
         allowed_actions = allowed_actions.remove(Action::TrainedEye);
     }
+    let target_quality = target_quality.unwrap_or(status.recipe.quality) as u16;
     let settings = Settings {
         max_cp: status.attributes.craft_points as i16,
         max_durability: status.recipe.durability as i8,
         max_progress: status.recipe.difficulty as u16,
-        max_quality: status.recipe.quality as u16 - status.quality as u16,
+        max_quality: target_quality - status.quality as u16,
         base_progress: status.caches.base_synth as u16,
         base_quality: status.caches.base_touch as u16,
         job_level: status.attributes.level,

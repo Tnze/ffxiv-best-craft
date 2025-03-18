@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { Ref, ref } from 'vue';
+import { computed, Ref, ref } from 'vue';
 import {
     ElSpace,
     ElDialog,
@@ -25,10 +25,12 @@ import {
     ElCheckbox,
     ElLink,
     ElTag,
+    ElText,
+    ElInputNumber,
 } from 'element-plus';
 import { raphael_solve } from '@/libs/Solver';
 import { ChatSquare } from '@element-plus/icons-vue';
-import { Actions, Status } from '@/libs/Craft';
+import { Actions, CollectablesShopRefine, Status } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { SequenceSource } from '../types';
 
@@ -37,6 +39,7 @@ const { $t } = useFluent();
 const props = defineProps<{
     initStatus: Status;
     recipeName: string;
+    collectableShopRefine?: CollectablesShopRefine;
 }>();
 
 const emits = defineEmits<{
@@ -51,8 +54,46 @@ const emits = defineEmits<{
 // UI states
 const dialogVisible = ref(false);
 const raphaelSolveIsSolving = ref(false);
+const solverTarget = ref<TargetQuality>('full');
+const solverTargetMarks = computed(() => {
+    if (props.collectableShopRefine != undefined) {
+        const marks: { [x: number]: string } = {};
+        const c = props.collectableShopRefine;
+        marks[c.low_collectability * 10] = $t('1st');
+        marks[c.mid_collectability * 10] = $t('2nd');
+        marks[c.high_collectability * 10] = $t('3rd');
+        console.log(marks);
+        return marks;
+    }
+});
+
+type TargetQuality = 'full' | '1st' | '2nd' | '3rd' | number;
 
 // Solver options
+const targetQuality = computed({
+    get: () => {
+        const v = solverTarget.value;
+        if (props.collectableShopRefine != undefined) {
+            const c = props.collectableShopRefine;
+            if (v === '1st') return c.low_collectability * 10;
+            if (v === '2nd') return c.mid_collectability * 10;
+            if (v === '3rd') return c.high_collectability * 10;
+        }
+        if (typeof v === 'number') return v;
+        return props.initStatus.recipe.quality; // full
+    },
+    set: (x: number) => {
+        let v: TargetQuality = x;
+        if (props.collectableShopRefine != undefined) {
+            const c = props.collectableShopRefine;
+            if (x == c.low_collectability * 10) v = '1st';
+            if (x == c.mid_collectability * 10) v = '2nd';
+            if (x == c.high_collectability * 10) v = '3rd';
+        }
+        if (x == props.initStatus.recipe.quality) v = 'full';
+        solverTarget.value = v;
+    },
+});
 const useManipulation = ref(false);
 const useHeartAndSoul = ref(false);
 const useQuickInnovation = ref(false);
@@ -69,6 +110,7 @@ function runRaphaelSolver() {
         initStatus =>
             raphael_solve(
                 initStatus,
+                targetQuality.value,
                 useManipulation.value,
                 useHeartAndSoul.value,
                 useQuickInnovation.value,
@@ -105,6 +147,42 @@ function runRaphaelSolver() {
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
+        <el-space>
+            <el-text style="flex: none">
+                {{ $t('target-quality') }}
+            </el-text>
+            <el-input-number
+                v-model="targetQuality"
+                :min="0"
+                :max="initStatus.recipe.quality"
+                :step="1"
+                step-strictly
+            />
+            <el-button
+                v-if="collectableShopRefine?.low_collectability"
+                @click="solverTarget = '1st'"
+                text
+            >
+                {{ $t('first-stage') }}
+            </el-button>
+            <el-button
+                v-if="collectableShopRefine?.mid_collectability"
+                @click="solverTarget = '2nd'"
+                text
+            >
+                {{ $t('second-stage') }}
+            </el-button>
+            <el-button
+                v-if="collectableShopRefine?.high_collectability"
+                @click="solverTarget = '3rd'"
+                text
+            >
+                {{ $t('third-stage') }}
+            </el-button>
+            <el-button @click="solverTarget = 'full'" text type="primary">
+                {{ $t('maximum') }}
+            </el-button>
+        </el-space>
         <el-checkbox
             v-model="useTrainedEye"
             :label="$t('enable-action', { action: $t('trained-eye') })"
@@ -200,6 +278,12 @@ solver-start = 开始求解
 simple-solver-solving = 正在求解中
 error-probably-out-of-memory = { $err }（可能是内存不足，请尝试使用桌面端）
 
+first-stage = 一档
+second-stage = 二档
+third-stage = 三档
+maximum = 最大
+
+target-quality = 目标品质
 enable-action = 使用技能：{ $action }
 backload-progress = 后置作业技能（快速求解）
 unsound-branch-pruning = 不健全剪枝
@@ -230,6 +314,12 @@ solver-start = Start
 simple-solver-solving = Solving
 error-probably-out-of-memory = { $err } (Probably out of memory, please use the desktop edition)
 
+first-stage = 1st
+second-stage = 2nd
+third-stage = 3rd
+maximum = Maximum
+
+target-quality = Target quality
 enable-action = Enable { $action }
 backload-progress = Backload progress (Quick solve)
 unsound-branch-pruning = Unsound branch pruning
