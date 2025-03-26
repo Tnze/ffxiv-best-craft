@@ -27,6 +27,7 @@ import {
     ElTag,
     ElText,
     ElInputNumber,
+    ElSegmented,
 } from 'element-plus';
 import { raphael_solve } from '@/libs/Solver';
 import { ChatSquare } from '@element-plus/icons-vue';
@@ -55,19 +56,33 @@ const emits = defineEmits<{
 const dialogVisible = ref(false);
 const raphaelSolveIsSolving = ref(false);
 const solverTarget = ref<TargetQuality>('full');
-const solverTargetMarks = computed(() => {
-    if (props.collectableShopRefine != undefined) {
-        const marks: { [x: number]: string } = {};
-        const c = props.collectableShopRefine;
-        marks[c.low_collectability * 10] = $t('1st');
-        marks[c.mid_collectability * 10] = $t('2nd');
-        marks[c.high_collectability * 10] = $t('3rd');
-        console.log(marks);
-        return marks;
-    }
+const solverTargetSegmented = computed({
+    get: () => {
+        const v = solverTarget.value;
+        return typeof v == 'number' ? 'custom' : v;
+    },
+    set: v => {
+        if (v == 'custom')
+            console.warn(
+                "cannot set solverTarget to 'custom' by clicking segmented controller",
+            );
+        else solverTarget.value = v;
+    },
 });
 
 type TargetQuality = 'full' | '1st' | '2nd' | '3rd' | number;
+type TargetQualityOption = {
+    label: string;
+    value: TargetQuality | 'custom';
+    disabled?: boolean;
+};
+const targetQualityOptions: TargetQualityOption[] = [
+    { label: 'custom', value: 'custom', disabled: true },
+    { label: 'first-stage', value: '1st' },
+    { label: 'second-stage', value: '2nd' },
+    { label: 'third-stage', value: '3rd' },
+    { label: 'maximum', value: 'full' },
+];
 
 // Solver options
 const targetQuality = computed({
@@ -79,11 +94,11 @@ const targetQuality = computed({
             if (v === '2nd') return c.mid_collectability * 10;
             if (v === '3rd') return c.high_collectability * 10;
         }
-        if (typeof v === 'number') return v;
-        return props.initStatus.recipe.quality; // full
+        if (typeof v == 'number') return v;
+        /* if (v == 'full') */ return props.initStatus.recipe.quality;
     },
-    set: (x: number) => {
-        let v: TargetQuality = x;
+    set: (x: number | null) => {
+        let v: TargetQuality;
         if (props.collectableShopRefine != undefined) {
             const c = props.collectableShopRefine;
             if (x == c.low_collectability * 10) v = '1st';
@@ -91,6 +106,7 @@ const targetQuality = computed({
             if (x == c.high_collectability * 10) v = '3rd';
         }
         if (x == props.initStatus.recipe.quality) v = 'full';
+        else v = x ?? 0;
         solverTarget.value = v;
     },
 });
@@ -158,30 +174,14 @@ function runRaphaelSolver() {
                 :step="1"
                 step-strictly
             />
-            <el-button
-                v-if="collectableShopRefine?.low_collectability"
-                @click="solverTarget = '1st'"
-                text
+            <el-segmented
+                v-model="solverTargetSegmented"
+                :options="targetQualityOptions"
             >
-                {{ $t('first-stage') }}
-            </el-button>
-            <el-button
-                v-if="collectableShopRefine?.mid_collectability"
-                @click="solverTarget = '2nd'"
-                text
-            >
-                {{ $t('second-stage') }}
-            </el-button>
-            <el-button
-                v-if="collectableShopRefine?.high_collectability"
-                @click="solverTarget = '3rd'"
-                text
-            >
-                {{ $t('third-stage') }}
-            </el-button>
-            <el-button @click="solverTarget = 'full'" text type="primary">
-                {{ $t('maximum') }}
-            </el-button>
+                <template #default="scope">
+                    {{ $t((scope.item as TargetQualityOption).label) }}
+                </template>
+            </el-segmented>
         </el-space>
         <el-checkbox
             v-model="useTrainedEye"
@@ -282,6 +282,7 @@ first-stage = 一档
 second-stage = 二档
 third-stage = 三档
 maximum = 最大
+custom = 自定义
 
 target-quality = 目标品质
 enable-action = 使用技能：{ $action }
@@ -318,6 +319,7 @@ first-stage = 1st
 second-stage = 2nd
 third-stage = 3rd
 maximum = Maximum
+custom = Custom
 
 target-quality = Target quality
 enable-action = Enable { $action }
