@@ -17,7 +17,7 @@
 use ffxiv_crafting::{Actions, Status};
 
 use raphael_simulator::{Action, ActionMask, Settings, SimulationState};
-use raphael_solvers::{AtomicFlag, MacroSolver};
+use raphael_solvers::{AtomicFlag, MacroSolver, SolverSettings};
 
 pub fn solve(
     status: Status,
@@ -28,7 +28,7 @@ pub fn solve(
     use_trained_eye: bool,
     backload_progress: bool,
     adversarial: bool,
-    unsound_branch_pruning: bool,
+    allow_unsound_branch_pruning: bool,
 ) -> Vec<Actions> {
     let mut allowed_actions = ActionMask::all();
     if !use_heart_and_soul {
@@ -44,7 +44,7 @@ pub fn solve(
         allowed_actions = allowed_actions.remove(Action::TrainedEye);
     }
     let target_quality = target_quality.unwrap_or(status.recipe.quality) as u16;
-    let settings = Settings {
+    let simulator_settings = Settings {
         max_cp: status.attributes.craft_points as i16,
         max_durability: status.recipe.durability as i8,
         max_progress: status.recipe.difficulty as u16,
@@ -55,11 +55,14 @@ pub fn solve(
         allowed_actions,
         adversarial,
     };
-    let state = SimulationState::new(&settings);
-    let mut solver = MacroSolver::new(
-        settings,
+    let solver_settings = SolverSettings {
+        simulator_settings,
         backload_progress,
-        unsound_branch_pruning,
+        allow_unsound_branch_pruning,
+    };
+    let state = SimulationState::new(&simulator_settings);
+    let mut solver = MacroSolver::new(
+        solver_settings,
         Box::new(|_| {}),
         Box::new(|_| {}),
         AtomicFlag::new(),
