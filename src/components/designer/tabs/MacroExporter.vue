@@ -28,8 +28,7 @@ import {
     ElInputNumber,
     ElForm,
     ElFormItem,
-    ElRadioGroup,
-    ElRadio,
+    ElSegmented,
 } from 'element-plus';
 import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
@@ -42,7 +41,11 @@ const props = defineProps<{
 const { $t } = useFluent();
 const store = useStore();
 const genOptions = reactive(store.options.exportOptions);
-
+const addNotification = [
+    { label: $t('has-notify-auto'), value: 'auto' },
+    { label: $t('has-notify-true'), value: true },
+    { label: $t('has-notify-false'), value: false },
+];
 const notifySoundOptions = Array.from({ length: 16 }).map((_, i) => ({
     value: ` <se.${i + 1}>`,
     label: ` <se.${i + 1}>`,
@@ -160,26 +163,17 @@ async function copy(macroText: string, macroInfo: string) {
                 :label="$t('oneclick-copy')"
             />
         </div>
-        <el-form label-width="auto" :inline="true">
+        <el-form label-width="auto">
             <el-form-item :label="$t('has-notify')">
-                <el-radio-group v-model="genOptions.addNotification">
-                    <el-radio value="auto" size="small">
-                        {{ $t('has-notify-auto') }}
-                    </el-radio>
-                    <el-radio :value="true" size="small">
-                        {{ $t('has-notify-true') }}
-                    </el-radio>
-                    <el-radio :value="false" size="small">
-                        {{ $t('has-notify-false') }}
-                    </el-radio>
-                </el-radio-group>
+                <el-segmented
+                    v-model="genOptions.addNotification"
+                    :options="addNotification"
+                />
             </el-form-item>
-            <el-form-item :label="$t('notify-sound')">
+            <el-form-item v-if="hasNotify" :label="$t('notify-sound')">
                 <el-select-v2
                     v-model="genOptions.notifySound"
-                    :disabled="!hasNotify"
                     :options="notifySoundOptions"
-                    size="small"
                     style="width: 200px"
                 />
             </el-form-item>
@@ -187,7 +181,6 @@ async function copy(macroText: string, macroInfo: string) {
                 <el-input-number
                     v-model="genOptions.waitTimeInc"
                     controls-position="right"
-                    size="small"
                     :min="0"
                     :step-strictly="true"
                 />
@@ -209,7 +202,9 @@ async function copy(macroText: string, macroInfo: string) {
                 </code>
             </el-card>
         </el-space>
-        <el-divider />
+        <el-divider id="divider" content-position="left">
+            {{ $t('export-json') }}
+        </el-divider>
         <el-card
             v-if="actions.length > 0"
             :class="genOptions.oneclickCopy ? 'box-card-oneclick' : 'box-card'"
@@ -249,6 +244,10 @@ async function copy(macroText: string, macroInfo: string) {
 .box-body {
     white-space: pre-wrap;
 }
+
+:deep(.el-divider__text) {
+    background-color: var(--tnze-main-bg-color);
+}
 </style>
 
 <fluent locale="zh-CN">
@@ -265,6 +264,7 @@ wait-time-inc = 增加等待时间
 random-sound = 随机提示音
 no-sound = 无提示音
 
+export-json = 导出 JSON
 copied-json = 已复制 JSON 表达式 到系统剪切板
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
 marco-finished = 宏#{ $id } 已完成！
@@ -282,6 +282,7 @@ oneclick-copy = Oneclick Copy
 notify-sound = Beep type
 wait-time-inc = Increase waiting time
 
+export-json = Export as JSON
 copied-json = Copied JSON expression to system clipboard!
 copied-marco = Copied M#{ $id } to system clipboard!
 marco-finished = M#{ $id } is finished!
