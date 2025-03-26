@@ -76,13 +76,21 @@ type TargetQualityOption = {
     value: TargetQuality | 'custom';
     disabled?: boolean;
 };
-const targetQualityOptions: TargetQualityOption[] = [
-    { label: 'custom', value: 'custom', disabled: true },
-    { label: 'first-stage', value: '1st' },
-    { label: 'second-stage', value: '2nd' },
-    { label: 'third-stage', value: '3rd' },
-    { label: 'maximum', value: 'full' },
-];
+const targetQualityOptions = computed(() => {
+    const options: TargetQualityOption[] = [];
+    options.push({ label: 'custom', value: 'custom', disabled: true });
+    const v = props.collectableShopRefine;
+    if (v != undefined) {
+        if (v.low_collectability > 0)
+            options.push({ label: 'first-stage', value: '1st' });
+        if (v.mid_collectability > 0)
+            options.push({ label: 'second-stage', value: '2nd' });
+        if (v.high_collectability > 0)
+            options.push({ label: 'third-stage', value: '3rd' });
+    }
+    options.push({ label: 'maximum', value: 'full' });
+    return options;
+});
 
 // Solver options
 const targetQuality = computed({
@@ -98,7 +106,7 @@ const targetQuality = computed({
         /* if (v == 'full') */ return props.initStatus.recipe.quality;
     },
     set: (x: number | null) => {
-        let v: TargetQuality;
+        let v: TargetQuality = x ?? 0;
         if (props.collectableShopRefine != undefined) {
             const c = props.collectableShopRefine;
             if (x == c.low_collectability * 10) v = '1st';
@@ -106,7 +114,6 @@ const targetQuality = computed({
             if (x == c.high_collectability * 10) v = '3rd';
         }
         if (x == props.initStatus.recipe.quality) v = 'full';
-        else v = x ?? 0;
         solverTarget.value = v;
     },
 });
