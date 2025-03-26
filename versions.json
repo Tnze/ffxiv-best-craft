@@ -1,19 +1,23 @@
 {
-    "version": "0.19.1",
-    "notes": "- 更新BOM界面的翻译，添加了配方多选功能，添加临时的连线关闭按钮\n- 优化了一些UI布局\n- 模拟器添加遗漏的 RefindTouch 技能（洗练加工）按钮\n- 更新至2025年\n- 添加HQ率百分比的显示\n- 添加专家之证的英文翻译\n- 更新依赖库、依赖工具的版本",
-    "pub_date": "2025-02-19T12:12:10.389Z",
+    "version": "0.20.1",
+    "notes": "- 更新本地配方至7.11\n- 优化Raphael求解目标品质UI",
+    "pub_date": "2025-03-26T12:41:11.591Z",
     "platforms": {
-        "linux-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5LamZLajFyY2dlZ3RZVVQ3V25nN1VQbC9JdmdOZUxBVkI3VjBZVi9mcWp3aDhCMEhTWitwc1d1WEFtUHdqZnhNZDBzc2wyZjZhQkVhY29rK0YxSEFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM5OTY2OTU1CWZpbGU6QmVzdENyYWZ0XzAuMTkuMV9hbWQ2NC5BcHBJbWFnZQpUTzNWRW1FV1cxdEFVaW16RTlnemVIcUo5S2xHQnNRaU5nNlhYeThldDFGR3NFTENadklucWdaek5yNGdETTJWZUdXamNHdU9ZREFtTVV2QTlkMzFBUT09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v0.19.1/BestCraft_0.19.1_amd64.AppImage"
-        },
-        "darwin-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sml6RWFYVkZhbENYM0liNS9EMDl3S0VFQ1d4ZzhZQjBSN0QvYTFTM0VoeWtJMkRHVHJnczJYUXhVV3RSMWNnS0tKdmdycW4yaS9xS0NQWFlUaXRnZ3cwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM5OTY2OTAxCWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKY2h5cExJRG5kbHdsN3R2T0xVVGxIM3E4MEo0OE9MWHdtZVNTU3haUkJEQ1p2R3dVNjFIbGs5STladDY4dDdTbTJpYXpKUWMwZXIrZ1BxcytnUENsRGc9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v0.19.1/BestCraft_aarch64.app.tar.gz"
-        },
-        "windows-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm91aVZMbGJmUkdnaXovcFRpWWtHODFhMUZxM3paVWVPemZxL2Rra1QyMFQ5TlgzUEVqSUljZTVWZlNDVldWSDQvcUs5TW1CMXl1T2p5cklDRjEya2c4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzM5OTY3MTIyCWZpbGU6QmVzdENyYWZ0XzAuMTkuMV94NjRfemgtQ04ubXNpLnppcAp4dU5YaUZ4SzRESkhCY29CdytNZUxuSFBkdEJ2aVp6SDI1cTFsUTdpR0dUaThoend4YWpzLzNoZW44TE1ISm9tSnlkZW5xTkNTSk9rWEFmVFZvekRCdz09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v0.19.1/BestCraft_0.19.1_x64_zh-CN.msi.zip"
-        }
+      "darwin-aarch64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnROaDkvT1J2MmR5c3R0OHRycWhDc28wYS96eWQxK2E4OHlGclNKY0libURNdlhJT0JrR3AweThlWWltOFNxSGpXaDBrb1JMWGtaa2I0NVJqMmtFSFFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzQyOTkyMTUzCWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKMDJwVTRLRXozZ1ppbGFaSkxOcnkvY01NSEFZTEZuMk1NWlBvNDNmc2c4cjdwMy9ZQldEd0dyWEl6VVBWQWdPTVdaV0ZrdFkxQjFlN3c2eXR5Q3dKQ1E9PQo=",
+        "url": "https://tnze.yyyy.games/releases/v0.20.1/BestCraft_aarch64.app.tar.gz"
+      },
+      "linux-x86_64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnNSWlBWOEhCT09XdTJtUXd6NmZid2daUGM5dm1jRTVsQmFIZDZpQW15dGx0VElNbldaQU4wNEtpWEU4Y0lJRUdPam1JMm8yV3Y3eU81blA1WE1DN2dvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzQyOTkyMzI0CWZpbGU6QmVzdENyYWZ0XzAuMjAuMV9hbWQ2NC5BcHBJbWFnZQp5VSszU01HK3dlZGxqT2dmdTE1aDBoUWlzTC9rTkx5NE1xNXZPYWxEMXhNNzNWM0tXSHVkNGJabEhPdUQwWGlrY3liSTkrT0I1Y1RYeDEwaXJmZHNBUT09Cg==",
+        "url": "https://tnze.yyyy.games/releases/v0.20.1/BestCraft_0.20.1_amd64.AppImage"
+      },
+      "windows-x86_64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnBTbU9hamkyZktVVjJpUjUwQ2dITHZPaDlIUHRwSG1pbjhqM3F4OXVTbnROOHNtc3RyQ1FjU2djZEp4YnFwZnhYSzZWN1Uvb29QSEQ5cnpnS1VQUlFBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzQyOTkyNTQ0CWZpbGU6QmVzdENyYWZ0XzAuMjAuMV94NjRfemgtQ04ubXNpLnppcApzbXVPM0FNTHAyL1lFZThzV3lmUVFiOGtRdHpKUzFXUWhSckNJMDR1M2txbnBEVlhpZmRrajBvYnpXMHpCeUlISlRhaXlOaVdGdXZieVkvUDdodnBCUT09Cg==",
+        "url": "https://tnze.yyyy.games/releases/v0.20.1/BestCraft_0.20.1_x64_zh-CN.msi.zip"
+      },
+      "windows-aarch64": {
+        "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5LZU5NWEpmNVpKQ1pWUDJUZTRDb1NiaWNxNWdaQU8xTjdva29vdm1tOGhxRFpKUnpqUjNGZnZkM3NOQWVQcXc0VjNpNGJYYU91eFBrT3ZVMzhwbHdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzQyOTkyODY1CWZpbGU6QmVzdENyYWZ0XzAuMjAuMV9hcm02NF96aC1DTi5tc2kuemlwCjJyTGNXUkhWRFhBdngvOWZTR1BGS2k1QStobWhEZDVaTHppNnBYZkR5MWpqUWNtcnp5MnAxTDZicTFQb3QxdDR6VUt3eG9IdXlCSnRPWHdOUXI4K0JRPT0K",
+        "url": "https://tnze.yyyy.games/releases/v0.20.1/BestCraft_0.20.1_arm64_zh-CN.msi.zip"
+      }
     }
-}
+  }
