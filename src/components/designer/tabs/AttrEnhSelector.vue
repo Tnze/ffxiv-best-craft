@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -39,6 +39,8 @@ const { $t } = useFluent();
 const setting = settingStore();
 const meals = ref<Enhancer[]>();
 const medicine = ref<Enhancer[]>();
+const mealSearchKeyword = ref('');
+const medicineSearchKeyword = ref('');
 
 const 专家之证: Enhancer = {
     cm: 100,
@@ -62,38 +64,43 @@ const emits = defineEmits<{
 
 onMounted(async () => loadMealsAndMedicine(setting.getDataSource));
 watch(() => setting.getDataSource, loadMealsAndMedicine);
+watch(mealSearchKeyword, async () => loadMeals(await setting.getDataSource));
+watch(medicineSearchKeyword, async () =>
+    loadMedicines(await setting.getDataSource),
+);
 
-async function loadMealsAndMedicine(ds: Promise<DataSource>) {
-    let datasource = await ds;
-    if (datasource.mealsTable) {
-        (async () => {
-            let i = 0,
-                v;
-            meals.value = [];
-            do {
-                v = await datasource.mealsTable((i += 1));
-                meals.value = meals.value.concat(v.results);
-            } while (i < v.totalPages);
-        })();
-    }
-    if (datasource.medicineTable) {
-        (async () => {
-            let i = 0,
-                v;
-            medicine.value = [];
-            do {
-                v = await datasource.medicineTable((i += 1));
-                medicine.value = medicine.value.concat(v.results);
-            } while (i < v.totalPages);
-        })();
-    }
+async function loadMealsAndMedicine(datasource: Promise<DataSource>) {
+    let ds = await datasource;
+    await Promise.all([loadMeals(ds), loadMedicines(ds)]);
 }
 
-function enhancerToOptions(enhancers: Enhancer[] | undefined) {
+async function loadMeals(ds: DataSource) {
+    let i = 0;
+    let results: Enhancer[] = [];
+    do {
+        var v = await ds.mealsTable((i += 1));
+        results.push(...v.results);
+    } while (i < v.totalPages);
+    meals.value = results;
+}
+
+async function loadMedicines(ds: DataSource) {
+    let i = 0;
+    let results: Enhancer[] = [];
+    do {
+        var v = await ds.medicineTable((i += 1));
+        results.push(...v.results);
+    } while (i < v.totalPages);
+    medicine.value = results;
+}
+
+function enhancerToOptions(enhancers: Enhancer[] | undefined, search: string) {
     return (
         enhancers
-            ?.map(value => {
-                const newName = value.name + (value.is_hq ? ' \uE03C' : '');
+            ?.filter(v => v.name.includes(search))
+            .map(value => {
+                let newName = value.name;
+                if (value.is_hq) newName += ' \uE03C';
                 return {
                     label: newName,
                     value: {
@@ -138,11 +145,12 @@ function EnhIncComponent(props: {
         <el-form-item :label="$t('meal')">
             <el-select-v2
                 v-model="enhancers.meal"
-                :options="enhancerToOptions(meals)"
+                :options="enhancerToOptions(meals, mealSearchKeyword)"
                 value-key="name"
                 clearable
                 filterable
                 remote
+                :remote-method="(kw: string) => (mealSearchKeyword = kw)"
                 :loading="!meals"
                 :item-height="50"
             >
@@ -159,11 +167,12 @@ function EnhIncComponent(props: {
         <el-form-item :label="$t('medicine')">
             <el-select-v2
                 v-model="enhancers.potion"
-                :options="enhancerToOptions(medicine)"
+                :options="enhancerToOptions(medicine, medicineSearchKeyword)"
                 value-key="name"
                 clearable
                 filterable
                 remote
+                :remote-method="(kw: string) => (medicineSearchKeyword = kw)"
                 :loading="!medicine"
                 :item-height="50"
             >
