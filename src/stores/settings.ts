@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -80,7 +80,7 @@ export default defineStore('settings', {
             };
             let defaultSource: () => DataSource = dataSources['yyyy.games'];
             if (isTauri) {
-                var { LocalRecipeSource } = await import(
+                let { LocalRecipeSource } = await import(
                     '../datasource/local-source'
                 );
                 let localSource = () => new LocalRecipeSource();

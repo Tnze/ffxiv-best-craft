@@ -26,7 +26,7 @@ import {
     ElSpace,
 } from 'element-plus';
 import { onMounted, reactive, watch, ref, defineAsyncComponent, h } from 'vue';
-import { Enhancer, calculateEnhancedAttributs } from '@/libs/Enhancer';
+import { Enhancer, calculateEnhancedAttributsAddon } from '@/libs/Enhancer';
 import { useFluent } from 'fluent-vue';
 import { Attributes, Jobs } from '@/libs/Craft';
 import settingStore from '@/stores/settings';
@@ -161,7 +161,9 @@ function EnhIncComponent(props: {
             <EnhIncComponent
                 class="enhnacer-info"
                 v-if="enhancers.meal && attributs"
-                :inc="calculateEnhancedAttributs(attributs, enhancers.meal)[1]"
+                :inc="
+                    calculateEnhancedAttributsAddon(attributs, enhancers.meal)
+                "
             />
         </el-form-item>
         <el-form-item :label="$t('medicine')">
@@ -184,7 +186,7 @@ function EnhIncComponent(props: {
                 class="enhnacer-info"
                 v-if="enhancers.potion && attributs"
                 :inc="
-                    calculateEnhancedAttributs(attributs, enhancers.potion)[1]
+                    calculateEnhancedAttributsAddon(attributs, enhancers.potion)
                 "
             />
         </el-form-item>
@@ -193,7 +195,7 @@ function EnhIncComponent(props: {
             <EnhIncComponent
                 class="enhnacer-info"
                 v-if="enhancers.soulOfTheCrafter && attributs"
-                :inc="calculateEnhancedAttributs(attributs, 专家之证)[1]"
+                :inc="calculateEnhancedAttributsAddon(attributs, 专家之证)"
             />
         </el-form-item>
     </el-form>

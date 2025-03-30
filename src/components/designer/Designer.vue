@@ -55,7 +55,7 @@ import {
     CollectablesShopRefine,
 } from '@/libs/Craft';
 import { read_solver } from '@/libs/Solver';
-import { calculateEnhancedAttributs, Enhancer } from '@/libs/Enhancer';
+import { calculateEnhancedAttributsAbs, Enhancer } from '@/libs/Enhancer';
 import useDesignerStore from '@/stores/designer';
 
 import AttrEnhSelector from './tabs/AttrEnhSelector.vue';
@@ -99,13 +99,12 @@ const { height: actionQueueHeight } = useElementSize(actionQueueElem);
 
 // 食物和药水效果
 const attributesEnhancers = ref<Enhancer[]>([]);
-const enhancedAttributes = computed<Attributes>(() => {
-    const [attr, _] = calculateEnhancedAttributs(
+const enhancedAttributes = computed<Attributes>(() =>
+    calculateEnhancedAttributsAbs(
         props.attributes,
         ...attributesEnhancers.value,
-    );
-    return attr;
-});
+    ),
+);
 
 // Attribution Alert
 var attributionAlert = computed(() => {

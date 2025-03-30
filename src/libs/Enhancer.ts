@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -29,41 +29,45 @@ export interface Enhancer {
     cp_max?: number;
 }
 
-export function calculateEnhancedAttributs(
+export function calculateEnhancedAttributsAddon(
     attributes: Attributes,
     ...enhancers: Enhancer[]
-): [Attributes, { cm: number; ct: number; cp: number }] {
-    const sum = (prev: number, curr: number) => prev + curr;
-    const cm = enhancers
-        .filter(v => v.cm && v.cm_max)
-        .map(v =>
-            Math.floor(
-                Math.min((attributes.craftsmanship * v.cm!) / 100, v.cm_max!),
-            ),
-        )
-        .reduce(sum, 0);
-    const ct = enhancers
-        .filter(v => v.ct && v.ct_max)
-        .map(v =>
-            Math.floor(Math.min((attributes.control * v.ct!) / 100, v.ct_max!)),
-        )
-        .reduce(sum, 0);
-    const cp = enhancers
-        .filter(v => v.cp && v.cp_max)
-        .map(v =>
-            Math.floor(
-                Math.min((attributes.craft_points * v.cp!) / 100, v.cp_max!),
-            ),
-        )
-        .reduce(sum, 0);
+): { cm: number; ct: number; cp: number } {
+    let cm = 0,
+        ct = 0,
+        cp = 0;
+    for (const enh of enhancers) {
+        if (enh.cm && enh.cm_max) {
+            cm += Math.floor(
+                Math.min((attributes.craftsmanship * enh.cm) / 100, enh.cm_max),
+            );
+        }
+        if (enh.ct && enh.ct_max) {
+            ct += Math.floor(
+                Math.min((attributes.control * enh.ct) / 100, enh.ct_max),
+            );
+        }
+        if (enh.cp && enh.cp_max) {
+            cp += Math.floor(
+                Math.min((attributes.craft_points * enh.cp) / 100, enh.cp_max),
+            );
+        }
+    }
+    return { cm, ct, cp };
+}
 
-    return [
-        {
-            level: attributes.level,
-            craftsmanship: attributes.craftsmanship + cm,
-            control: attributes.control + ct,
-            craft_points: attributes.craft_points + cp,
-        },
-        { cm, ct, cp },
-    ];
+export function calculateEnhancedAttributsAbs(
+    attributes: Attributes,
+    ...enhancers: Enhancer[]
+): Attributes {
+    const { cm, ct, cp } = calculateEnhancedAttributsAddon(
+        attributes,
+        ...enhancers,
+    );
+    return {
+        level: attributes.level,
+        craftsmanship: attributes.craftsmanship + cm,
+        control: attributes.control + ct,
+        craft_points: attributes.craft_points + cp,
+    };
 }
