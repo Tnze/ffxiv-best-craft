@@ -64,10 +64,6 @@ const emits = defineEmits<{
 
 onMounted(async () => loadMealsAndMedicine(setting.getDataSource));
 watch(() => setting.getDataSource, loadMealsAndMedicine);
-watch(mealSearchKeyword, async () => loadMeals(await setting.getDataSource));
-watch(medicineSearchKeyword, async () =>
-    loadMedicines(await setting.getDataSource),
-);
 
 async function loadMealsAndMedicine(datasource: Promise<DataSource>) {
     let ds = await datasource;
