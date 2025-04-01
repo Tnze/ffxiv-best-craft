@@ -74,6 +74,8 @@ pnpm run build-web
 #### Develop build
 
 ```bash
+# 安装tauri-cli
+cargo install tauri-cli
 cargo tauri dev
 # 或 or
 cargo tauri dev --release
