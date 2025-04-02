@@ -84,13 +84,15 @@ function reload() {
         >
             <template #extra>
                 <template v-if="errorMessage.search('WebAssembly') > 0">
-                    <el-text type="warning">{{ $t('upgrade-browser') }}</el-text
-                    ><br />
+                    <el-text type="warning">
+                        {{ $t('upgrade-browser') }}
+                    </el-text>
+                    <br />
                 </template>
-                <el-button @click="reload">{{ $t('reload') }}</el-button
-                ><br />
-                <el-text type="info">{{ $t('sorry') }}</el-text
-                ><br />
+                <el-button @click="reload">{{ $t('reload') }}</el-button>
+                <br />
+                <el-text type="info">{{ $t('sorry') }}</el-text>
+                <br />
                 <el-text type="info">{{ $t('invite') }}</el-text>
             </template>
         </el-result>

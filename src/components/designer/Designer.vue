@@ -90,7 +90,7 @@ const displayJob = inject(displayJobKey) as Ref<Jobs>;
 const foldMultiFunctionArea = useMediaQuery('screen and (max-width: 480px)');
 watch(foldMultiFunctionArea, fold => {
     if (!fold && activeTab.value == 'action-panel') {
-        activeTab.value = 'attributes-enhance';
+        activeTab.value = DEFAULT_TAB;
     }
 });
 
@@ -136,11 +136,12 @@ var attributionAlert = computed(() => {
     }
     return;
 });
-// UI State
+// UI States
+const DEFAULT_TAB = "solver-list"
 const isReadingSolver = ref(0);
 const isReadingSolverDisplay = ref(false); // This is basicly (isReadingSolver != 0), with a 500ms delay on rising edge
 const previewSolver = ref(false);
-const activeTab = ref('attributes-enhance');
+const activeTab = ref(DEFAULT_TAB);
 
 let isReadingSolverDisplayStopTimer: NodeJS.Timeout | null = null;
 watch(isReadingSolver, (irs, irsPrev) => {
