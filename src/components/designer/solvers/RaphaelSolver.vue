@@ -121,8 +121,8 @@ const useManipulation = ref(false);
 const useHeartAndSoul = ref(false);
 const useQuickInnovation = ref(false);
 const useTrainedEye = ref(true);
-const backloadProgress = ref(true);
-const unsoundBranchPruning = ref(true);
+const backloadProgress = ref(false);
+const minimizeSteps = ref(true);
 const adversarial = ref(false);
 
 function runRaphaelSolver() {
@@ -140,7 +140,7 @@ function runRaphaelSolver() {
                 useTrainedEye.value,
                 backloadProgress.value,
                 adversarial.value,
-                unsoundBranchPruning.value,
+                minimizeSteps.value,
             ).catch(e => {
                 const err = String(e);
                 if (err == 'RuntimeError: unreachable')
@@ -238,14 +238,11 @@ function runRaphaelSolver() {
         </el-space>
         <el-space>
             <el-checkbox
-                v-model="unsoundBranchPruning"
-                :label="$t('unsound-branch-pruning')"
+                v-model="minimizeSteps"
+                :label="$t('minimize-steps')"
             />
-            <el-tag v-if="unsoundBranchPruning" type="success">
-                {{ $t('speed-up') }}
-            </el-tag>
-            <el-tag v-if="unsoundBranchPruning" type="danger">
-                {{ $t('increase-duration') }}
+            <el-tag v-if="minimizeSteps" type="danger">
+                {{ $t('speed-down') }}
             </el-tag>
         </el-space>
         <el-space>
@@ -294,10 +291,11 @@ custom = 自定义
 target-quality = 目标品质
 enable-action = 使用技能：{ $action }
 backload-progress = 后置作业技能（快速求解）
-unsound-branch-pruning = 不健全剪枝
+minimize-steps = 使步骤最短
 adversarial = 确保 100% 可靠（防黑球）
 
 speed-up = 求解速度提高
+speed-down = 求解速度降低
 quality-down = 求解品质下降
 increase-duration = 最终步数增加
 need-learn-manipulation = 需要学习掌握技能
@@ -331,10 +329,11 @@ custom = Custom
 target-quality = Target quality
 enable-action = Enable { $action }
 backload-progress = Backload progress (Quick solve)
-unsound-branch-pruning = Unsound branch pruning
+minimize-steps = Minimize Steps
 adversarial = Ensure 100% reliability
 
 speed-up = speed up
+speed-down = speed down
 quality-down = quality decline
 increase-duration = increase macro duration
 need-learn-manipulation = need manipulation

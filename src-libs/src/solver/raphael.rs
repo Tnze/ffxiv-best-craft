@@ -16,7 +16,7 @@
 
 use ffxiv_crafting::{Actions, Status};
 
-use raphael_simulator::{Action, ActionMask, Settings, SimulationState};
+use raphael_simulator::{Action, ActionMask, Settings};
 use raphael_solvers::{AtomicFlag, MacroSolver, SolverSettings};
 
 pub fn solve(
@@ -60,7 +60,6 @@ pub fn solve(
         backload_progress,
         allow_unsound_branch_pruning,
     };
-    let state = SimulationState::new(&simulator_settings);
     let mut solver = MacroSolver::new(
         solver_settings,
         Box::new(|_| {}),
@@ -68,7 +67,7 @@ pub fn solve(
         AtomicFlag::new(),
     );
     solver
-        .solve(state)
+        .solve()
         .into_iter()
         .flatten()
         .map(map_action)

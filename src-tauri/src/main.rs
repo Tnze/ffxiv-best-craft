@@ -692,11 +692,12 @@ fn main() {
         .run(tauri::generate_context!())
         // .map_err(|err| msgbox::create("Error", err.to_string().as_str(), msgbox::IconType::Error))
         .map_err(|err| {
-            use native_dialog::{MessageDialog, MessageType};
-            MessageDialog::new()
-                .set_type(MessageType::Error)
-                .set_text(err.to_string().as_str())
-                .show_confirm()
+            use native_dialog::{DialogBuilder, MessageLevel};
+            DialogBuilder::message()
+                .set_level(MessageLevel::Error)
+                .set_text(err.to_string())
+                .confirm()
+                .show()
         })
         .unwrap();
 }

@@ -6,13 +6,13 @@ authors = ["Tnze"]
 license = "AGPL"
 
 [dependencies]
-ffxiv-crafting = { version = '7.1.2', features = ["serde-support"] }
+ffxiv-crafting = { version = '7.2.0', features = ["serde-support"] }
 serde = { version = "1.0", features = ["derive"] }
 micro_ndarray = "0.6"
 rand = "0.9.0"
 
-raphael-solvers = { git = "https://github.com/KonaeAkira/raphael-rs.git", package = "raphael-solver" }
-raphael-simulator = { git = "https://github.com/KonaeAkira/raphael-rs.git", package = "raphael-sim" }
+raphael-solvers = { git = "https://github.com/KonaeAkira/raphael-rs.git", package = "raphael-solver", tag = "v0.19.6" }
+raphael-simulator = { git = "https://github.com/KonaeAkira/raphael-rs.git", package = "raphael-sim", tag = "v0.19.6" }
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
 num_cpus = "1.16.0"
