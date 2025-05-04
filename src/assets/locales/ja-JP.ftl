@@ -18,6 +18,9 @@ steps = TURN
 condition = 状態
 difficulty = 必要工数
 initial-quality = 初期品質
+new-gearset = 新しい装備セット
+set-name = 設定名
+default-set-name = デフォルト
 
 meals = 調理品
 medicines = 薬品
@@ -30,6 +33,7 @@ leatherworker = 革細工師
 weaver = 裁縫師
 alchemist = 錬金術師
 culinarian = 調理師
+common = 共用
 
 basic-synthesis = 作業
 basic-touch = 加工

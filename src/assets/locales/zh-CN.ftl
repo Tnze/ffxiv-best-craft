@@ -18,6 +18,9 @@ steps = 工次
 condition = 状态
 difficulty = 难度
 initial-quality = 初期品质
+new-gearset = 新套装
+set-name = 配装名称
+default-set-name = 默认
 
 meals = 食品
 medicines = 药品
@@ -36,6 +39,7 @@ leatherworker = 制革匠
 weaver = 裁衣匠
 alchemist = 炼金术士
 culinarian = 烹调师
+common = 通用
 
 # 技能名
 basic-synthesis = 制作

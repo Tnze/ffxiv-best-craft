@@ -17,17 +17,19 @@
 -->
 
 <script setup lang="ts">
-import { ElForm, ElFormItem, ElSwitch, ElInputNumber } from 'element-plus';
-import useGearsets from '@/stores/gearsets';
+import { ElForm, ElFormItem, ElSwitch, ElInputNumber, ElInput, ElSelect, ElOption } from 'element-plus';
 import { Jobs } from '@/libs/Craft';
+import useGearsets, { ifBasicGearset, labelWrapper } from '@/stores/gearsets';
 import { computed } from 'vue';
 
 const store = useGearsets();
 const props = defineProps<{
-    job: Jobs;
+    name: string;
+    disableJobChange?: boolean;
+    disableSetNameShow?: boolean;
 }>();
 
-const v = computed(() => store.special.find(v => v.name == props.job)!);
+const v = computed(() => store.special.find(v => v.name == props.name)!);
 
 function setInheritFromDefault(val: string | number | boolean) {
     // const v = store.special.find(v => v.name == props.job)!;
@@ -38,16 +40,49 @@ function setInheritFromDefault(val: string | number | boolean) {
     }
 }
 
+function setLabelChange(inputValue: string) {
+    v.value.label = inputValue;
+}
+
 const displayValue = computed(() => v.value.value || store.default);
-const isDefault = computed(() => v.value.value == null);
+const isDefaultSet = computed(() => v.value.name == store.defaultSet.name);
+const isfromDefault = computed(() => v.value.value == null);
+const isBasicGearset = computed(() => ifBasicGearset(v.value));
+
 </script>
 
 <template>
     <el-form v-if="v != undefined" label-position="right" label-width="auto">
-        <el-form-item :label="$t('job')">
-            {{ $t(String(job)) }}
+        <el-form-item v-if="!props.disableSetNameShow" :label="$t('set-name')">
+            <template v-if="isBasicGearset || isDefaultSet">
+                {{ labelWrapper(v) }}
+            </template>
+            <el-input
+                v-else
+                class="set-name-input"
+                :disabled="isBasicGearset" 
+                :model-value="labelWrapper(v)"
+                :maxlength="10"
+                @input="setLabelChange" />
         </el-form-item>
-        <el-form-item :label="$t('attributes')">
+        <el-form-item :label="$t('job')">
+            <template v-if="isBasicGearset || props.disableJobChange || isDefaultSet">
+                {{ $t(String(v.job)) }}
+            </template>
+            <el-select
+                v-else
+                v-model="v.job"
+                placeholder="Select"
+                style="width: 150px">
+                <el-option
+                    v-for="item in Object.values(Jobs)"
+                    :key="item"
+                    :label="$t(String(item))"
+                    :value="item"
+                />
+            </el-select>
+        </el-form-item>
+        <el-form-item v-if="!isDefaultSet" :label="$t('attributes')">
             <el-switch
                 :model-value="v.value == null"
                 :active-text="$t('inherit-from-default')"
@@ -57,8 +92,8 @@ const isDefault = computed(() => v.value.value == null);
         <el-form-item :label="$t('level')">
             <el-input-number
                 :model-value="displayValue.level"
-                :disabled="isDefault"
-                :controls="!isDefault"
+                :disabled="isfromDefault"
+                :controls="!isfromDefault"
                 :min="1"
                 :max="100"
                 :step-strictly="true"
@@ -69,8 +104,8 @@ const isDefault = computed(() => v.value.value == null);
         <el-form-item :label="$t('craftsmanship')">
             <el-input-number
                 :model-value="displayValue.craftsmanship"
-                :disabled="isDefault"
-                :controls="!isDefault"
+                :disabled="isfromDefault"
+                :controls="!isfromDefault"
                 :min="0"
                 :step-strictly="true"
                 :value-on-clear="0"
@@ -80,8 +115,8 @@ const isDefault = computed(() => v.value.value == null);
         <el-form-item :label="$t('control')">
             <el-input-number
                 :model-value="displayValue.control"
-                :disabled="isDefault"
-                :controls="!isDefault"
+                :disabled="isfromDefault"
+                :controls="!isfromDefault"
                 :min="0"
                 :step-strictly="true"
                 :value-on-clear="0"
@@ -91,8 +126,8 @@ const isDefault = computed(() => v.value.value == null);
         <el-form-item :label="$t('craft-point')">
             <el-input-number
                 :model-value="displayValue.craft_points"
-                :disabled="isDefault"
-                :controls="!isDefault"
+                :disabled="isfromDefault"
+                :controls="!isfromDefault"
                 :min="0"
                 :step-strictly="true"
                 :value-on-clear="0"
@@ -101,6 +136,12 @@ const isDefault = computed(() => v.value.value == null);
         </el-form-item>
     </el-form>
 </template>
+
+<style scoped>
+.set-name-input {
+    width: 200px;
+}
+</style>
 
 <fluent locale="zh-CN">
 job = 职业

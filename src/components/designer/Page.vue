@@ -49,8 +49,7 @@ const isCustomRecipe = computed(() => designerStore.content?.job === undefined);
 const attributes = computed(() => {
     const job = designerStore.content?.job;
     return job
-        ? (gearsetsStore.special.find(v => v.name == job)?.value ??
-              gearsetsStore.default)
+        ? gearsetsStore.getUsingSetData(job)?.value ?? gearsetsStore.default
         : gearsetsStore.default;
 });
 const errorMessage = ref<string>();
