@@ -24,12 +24,15 @@ import {
     ElSwitch,
     ElDivider,
     ElSpace,
+    ElSelect,
+    ElOption
 } from 'element-plus';
 import { onMounted, reactive, watch, ref, defineAsyncComponent, h } from 'vue';
 import { Enhancer, calculateEnhancedAttributsAddon } from '@/libs/Enhancer';
 import { useFluent } from 'fluent-vue';
 import { Attributes, Jobs } from '@/libs/Craft';
 import settingStore from '@/stores/settings';
+import useGearsetsStore, { labelWrapper } from '@/stores/gearsets';
 import { DataSource } from '../../../datasource/source';
 import AttrEnhSelectorOption from './AttrEnhSelectorOption.vue';
 
@@ -37,6 +40,7 @@ const Gearset = defineAsyncComponent(() => import('@/components/Gearset.vue'));
 
 const { $t } = useFluent();
 const setting = settingStore();
+const gearsets = useGearsetsStore();
 const meals = ref<Enhancer[]>();
 const medicine = ref<Enhancer[]>();
 const mealSearchKeyword = ref('');
@@ -64,6 +68,8 @@ const emits = defineEmits<{
 
 onMounted(async () => loadMealsAndMedicine(setting.getDataSource));
 watch(() => setting.getDataSource, loadMealsAndMedicine);
+
+const usingSetName = ref(labelWrapper(gearsets.getUsingSetData(props.job)));
 
 async function loadMealsAndMedicine(datasource: Promise<DataSource>) {
     let ds = await datasource;
@@ -197,7 +203,19 @@ function EnhIncComponent(props: {
     </el-form>
     <template v-if="job != undefined">
         <el-divider />
-        <Gearset :job="job" />
+        <el-form-item :label="$t('set-name')">
+            <el-select 
+                v-model="usingSetName"
+                @change="(name) => gearsets.changeJobUsingSet(job as Jobs, name)">
+                <el-option
+                    v-for="set in gearsets.getUsebleSets(job)"
+                    :key="set.name"
+                    :label="labelWrapper(set)"
+                    :value="set.name"
+                />
+            </el-select>
+        </el-form-item>
+        <Gearset :name="gearsets.getUsingSetData(job)!.name" disableJobChange disableSetNameShow />
     </template>
 </template>
 

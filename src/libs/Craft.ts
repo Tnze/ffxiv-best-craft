@@ -139,6 +139,7 @@ export enum Jobs {
     Weaver = 'weaver',
     Alchemist = 'alchemist',
     Culinarian = 'culinarian',
+    Common = 'common'
 }
 
 export enum Actions {

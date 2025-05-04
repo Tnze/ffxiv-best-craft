@@ -18,6 +18,9 @@ steps = Step
 condition = Condition
 difficulty = Difficulty
 initial-quality = Quality
+new-gearset = New Gearset
+set-name = Set Name
+default-set-name = Default
 
 meals = Meals
 medicines = Medicines
@@ -36,6 +39,7 @@ leatherworker = Leatherworker
 weaver = Weaver
 alchemist = Alchemist
 culinarian = Culinarian
+common = Common
 
 # Action names
 basic-synthesis = Basic Synthesis
