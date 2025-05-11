@@ -539,7 +539,6 @@ fn raphael_solve(
     use_trained_eye: bool,
     backload_progress: bool,
     adversarial: bool,
-    unsound_branch_pruning: bool,
 ) -> Vec<Actions> {
     raphael::solve(
         status.clone(),
@@ -550,7 +549,6 @@ fn raphael_solve(
         use_trained_eye,
         backload_progress,
         adversarial,
-        unsound_branch_pruning,
     )
 }
 

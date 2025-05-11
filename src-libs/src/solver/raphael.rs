@@ -28,7 +28,6 @@ pub fn solve(
     use_trained_eye: bool,
     backload_progress: bool,
     adversarial: bool,
-    allow_unsound_branch_pruning: bool,
 ) -> Vec<Actions> {
     let mut allowed_actions = ActionMask::all();
     if !use_heart_and_soul {
@@ -45,8 +44,8 @@ pub fn solve(
     }
     let target_quality = target_quality.unwrap_or(status.recipe.quality) as u16;
     let simulator_settings = Settings {
-        max_cp: status.attributes.craft_points as i16,
-        max_durability: status.recipe.durability as i8,
+        max_cp: status.attributes.craft_points as u16,
+        max_durability: status.recipe.durability,
         max_progress: status.recipe.difficulty as u16,
         max_quality: target_quality - status.quality as u16,
         base_progress: status.caches.base_synth as u16,
@@ -54,12 +53,9 @@ pub fn solve(
         job_level: status.attributes.level,
         allowed_actions,
         adversarial,
-    };
-    let solver_settings = SolverSettings {
-        simulator_settings,
         backload_progress,
-        allow_unsound_branch_pruning,
     };
+    let solver_settings = SolverSettings { simulator_settings };
     let mut solver = MacroSolver::new(
         solver_settings,
         Box::new(|_| {}),

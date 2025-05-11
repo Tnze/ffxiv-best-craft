@@ -31,7 +31,6 @@ onmessage = async e => {
                     args.useTrainedEye,
                     args.backloadProgress,
                     args.adversarial,
-                    args.unsoundBranchPruning,
                 );
         }
         postMessage(result);

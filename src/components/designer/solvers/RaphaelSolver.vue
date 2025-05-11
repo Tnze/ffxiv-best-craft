@@ -122,7 +122,6 @@ const useHeartAndSoul = ref(false);
 const useQuickInnovation = ref(false);
 const useTrainedEye = ref(true);
 const backloadProgress = ref(false);
-const minimizeSteps = ref(true);
 const adversarial = ref(false);
 
 function runRaphaelSolver() {
@@ -140,7 +139,6 @@ function runRaphaelSolver() {
                 useTrainedEye.value,
                 backloadProgress.value,
                 adversarial.value,
-                minimizeSteps.value,
             ).catch(e => {
                 const err = String(e);
                 if (err == 'RuntimeError: unreachable')
@@ -234,15 +232,6 @@ function runRaphaelSolver() {
             </el-tag>
             <el-tag v-if="backloadProgress" type="danger">
                 {{ $t('increase-duration') }}
-            </el-tag>
-        </el-space>
-        <el-space>
-            <el-checkbox
-                v-model="minimizeSteps"
-                :label="$t('minimize-steps')"
-            />
-            <el-tag v-if="minimizeSteps" type="danger">
-                {{ $t('speed-down') }}
             </el-tag>
         </el-space>
         <el-space>

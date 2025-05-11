@@ -169,7 +169,6 @@ export async function raphael_solve(
     useTrainedEye: boolean,
     backloadProgress: boolean,
     adversarial: boolean,
-    minimizeSteps: boolean,
 ): Promise<Actions[]> {
     clarityReport('runRaphaelSolver');
     const args = {
@@ -181,7 +180,6 @@ export async function raphael_solve(
         useTrainedEye,
         backloadProgress,
         adversarial,
-        unsoundBranchPruning: !minimizeSteps,
     };
     if (isTauri) {
         let { invoke } = await pkgTauri;
