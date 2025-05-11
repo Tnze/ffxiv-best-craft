@@ -19,7 +19,23 @@ import { DEFAULT_ATTRIBUTS, GearsetsRow } from '@/libs/Gearsets';
 import { defineStore } from 'pinia';
 
 export default defineStore('gearsets', {
-    state: () => ({ gearsets: <GearsetsRow[]>[] }),
+    state: () => {
+        const gearsets: GearsetsRow[] = [
+            {
+                id: 0,
+                value: { ...DEFAULT_ATTRIBUTS },
+                compatibleJobs: Object.values(Jobs),
+            },
+        ];
+        for (const job of Object.values(Jobs)) {
+            gearsets.push({
+                id: gearsets.length,
+                value: { ...DEFAULT_ATTRIBUTS },
+                compatibleJobs: [job],
+            });
+        }
+        return { gearsets };
+    },
     getters: {
         toJson(): string {
             return JSON.stringify({ gearsets: this.gearsets });
