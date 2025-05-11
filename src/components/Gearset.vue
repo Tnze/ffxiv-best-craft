@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -17,121 +17,82 @@
 -->
 
 <script setup lang="ts">
-import { ElForm, ElFormItem, ElSwitch, ElInputNumber, ElInput, ElSelect, ElOption } from 'element-plus';
+import {
+    ElForm,
+    ElFormItem,
+    ElInputNumber,
+    ElInput,
+    ElCheckboxGroup,
+    ElCheckboxButton,
+} from 'element-plus';
 import { Jobs } from '@/libs/Craft';
-import useGearsets, { ifBasicGearset, labelWrapper } from '@/stores/gearsets';
-import { computed } from 'vue';
+import useGearsets from '@/stores/gearsets';
+import { choiceGearsetDisplayName } from '@/libs/Gearsets';
 
 const store = useGearsets();
 const props = defineProps<{
-    name: string;
-    disableJobChange?: boolean;
-    disableSetNameShow?: boolean;
+    index: number;
+    simplify?: boolean;
 }>();
-
-const v = computed(() => store.special.find(v => v.name == props.name)!);
-
-function setInheritFromDefault(val: string | number | boolean) {
-    // const v = store.special.find(v => v.name == props.job)!;
-    if (val) {
-        v.value.value = undefined;
-    } else {
-        v.value.value = { ...store.default };
-    }
-}
-
-function setLabelChange(inputValue: string) {
-    v.value.label = inputValue;
-}
-
-const displayValue = computed(() => v.value.value || store.default);
-const isDefaultSet = computed(() => v.value.name == store.defaultSet.name);
-const isfromDefault = computed(() => v.value.value == null);
-const isBasicGearset = computed(() => ifBasicGearset(v.value));
-
 </script>
 
 <template>
-    <el-form v-if="v != undefined" label-position="right" label-width="auto">
-        <el-form-item v-if="!props.disableSetNameShow" :label="$t('set-name')">
-            <template v-if="isBasicGearset || isDefaultSet">
-                {{ labelWrapper(v) }}
-            </template>
-            <el-input
-                v-else
-                class="set-name-input"
-                :disabled="isBasicGearset" 
-                :model-value="labelWrapper(v)"
-                :maxlength="10"
-                @input="setLabelChange" />
-        </el-form-item>
-        <el-form-item :label="$t('job')">
-            <template v-if="isBasicGearset || props.disableJobChange || isDefaultSet">
-                {{ $t(String(v.job)) }}
-            </template>
-            <el-select
-                v-else
-                v-model="v.job"
-                placeholder="Select"
-                style="width: 150px">
-                <el-option
-                    v-for="item in Object.values(Jobs)"
-                    :key="item"
-                    :label="$t(String(item))"
-                    :value="item"
+    <el-form label-position="right" label-width="auto">
+        <template v-if="!simplify && store.gearsets[index].id != 0">
+            <el-form-item :label="$t('gearset-name')">
+                <el-input
+                    v-model="store.gearsets[index].name"
+                    class="set-name-input"
+                    :maxlength="10"
+                    :placeholder="
+                        choiceGearsetDisplayName(store.gearsets[index])
+                    "
                 />
-            </el-select>
-        </el-form-item>
-        <el-form-item v-if="!isDefaultSet" :label="$t('attributes')">
-            <el-switch
-                :model-value="v.value == null"
-                :active-text="$t('inherit-from-default')"
-                @change="setInheritFromDefault"
-            />
-        </el-form-item>
+            </el-form-item>
+            <el-form-item :label="$t('job')">
+                <el-checkbox-group
+                    v-model="store.gearsets[index].compatibleJobs"
+                    size="small"
+                >
+                    <el-checkbox-button
+                        v-for="job in Object.values(Jobs)"
+                        :label="$t(job)"
+                        :value="job"
+                    />
+                </el-checkbox-group>
+            </el-form-item>
+        </template>
         <el-form-item :label="$t('level')">
             <el-input-number
-                :model-value="displayValue.level"
-                :disabled="isfromDefault"
-                :controls="!isfromDefault"
+                v-model="store.gearsets[index].value.level"
                 :min="1"
                 :max="100"
                 :step-strictly="true"
                 :value-on-clear="0"
-                @change="x => (v.value!.level = x!)"
             />
         </el-form-item>
         <el-form-item :label="$t('craftsmanship')">
             <el-input-number
-                :model-value="displayValue.craftsmanship"
-                :disabled="isfromDefault"
-                :controls="!isfromDefault"
+                v-model="store.gearsets[index].value.craftsmanship"
                 :min="0"
                 :step-strictly="true"
                 :value-on-clear="0"
-                @change="x => (v.value!.craftsmanship = x!)"
             />
         </el-form-item>
         <el-form-item :label="$t('control')">
             <el-input-number
-                :model-value="displayValue.control"
-                :disabled="isfromDefault"
-                :controls="!isfromDefault"
+                v-model="store.gearsets[index].value.control"
                 :min="0"
                 :step-strictly="true"
                 :value-on-clear="0"
-                @change="x => (v.value!.control = x!)"
             />
         </el-form-item>
         <el-form-item :label="$t('craft-point')">
             <el-input-number
-                :model-value="displayValue.craft_points"
-                :disabled="isfromDefault"
-                :controls="!isfromDefault"
+                v-model="store.gearsets[index].value.craft_points"
                 :min="0"
                 :step-strictly="true"
                 :value-on-clear="0"
-                @change="x => (v.value!.craft_points = x!)"
             />
         </el-form-item>
     </el-form>
@@ -144,18 +105,21 @@ const isBasicGearset = computed(() => ifBasicGearset(v.value));
 </style>
 
 <fluent locale="zh-CN">
-job = 职业
+gearset-name = 配装名称
+job = 适配职业
 attributes = 装备属性
 inherit-from-default = 继承自默认
 </fluent>
 
 <fluent locale="en-US">
-job = Job
+gearset-name = Gearset Name
+job = Fit Job
 attributes = Crafter Attributes
 inherit-from-default = Inherit from default
 </fluent>
 
 <fluent locale="ja-JP">
+gearset-name = ギアセット名
 attributes = 属性
 inherit-from-default = デフォルトから継承
 </fluent>

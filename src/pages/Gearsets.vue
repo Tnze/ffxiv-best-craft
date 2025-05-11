@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -21,38 +21,66 @@ import {
     ElScrollbar,
     ElTabs,
     ElTabPane,
-    ElIcon
+    TabPaneName,
+    ElMessage,
 } from 'element-plus';
-import { onActivated } from 'vue';
-import { Close } from '@element-plus/icons-vue';
-import useGearsetsStore, { labelWrapper } from '@/stores/gearsets';
+import { onActivated, ref } from 'vue';
+import useGearsetsStore from '@/stores/gearsets';
+import { useFluent } from 'fluent-vue';
 import Gearset from '@/components/Gearset.vue';
+import { choiceGearsetDisplayName } from '@/libs/Gearsets';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
 }>();
-onActivated(() => emit('setTitle', 'attributes'));
+const { $t } = useFluent();
 
+onActivated(() => emit('setTitle', 'attributes'));
 const store = useGearsetsStore();
+const jobPage = ref(0);
+
+function handleGearsetsEdit(
+    target: TabPaneName | undefined,
+    action: 'remove' | 'add',
+) {
+    if (action === 'add') {
+        store.addGearset();
+        return;
+    }
+    if (action === 'remove') {
+        if (target == 0) {
+            ElMessage({
+                type: 'error',
+                message: $t('cannot-remove-default-gearsets'),
+            });
+            return;
+        }
+        store.delGearset(target as number);
+        if (jobPage.value === target) {
+            // always works because 0 cannot be removed
+            jobPage.value = target - 1;
+        }
+        return;
+    }
+}
 </script>
 
 <template>
     <el-scrollbar>
-        <el-tabs class="page" v-model="store.jobPage" tab-position="left" :addable="store.showAddSetButton" @tab-add="store.addSet" >
+        <el-tabs
+            class="page"
+            v-model="jobPage"
+            tab-position="left"
+            editable
+            @edit="handleGearsetsEdit"
+        >
             <el-tab-pane
-                v-for="v in store.special"
-                :name="v.name"
+                v-for="v, i in store.gearsets"
+                :name="v.id"
+                :label="choiceGearsetDisplayName(v)"
+                lazy
             >
-                <template #label>
-                    <span>{{ labelWrapper(v) }}</span>
-                        <el-icon
-                            v-if="v.name != store.defaultSet.name"
-                            @click.stop="store.removeSet(v.name)"
-                        >
-                            <Close />
-                        </el-icon>
-                </template>
-                <Gearset :name="v.name" />
+                <Gearset :index="i" :id="v.id" />
             </el-tab-pane>
         </el-tabs>
     </el-scrollbar>
@@ -69,7 +97,19 @@ const store = useGearsetsStore();
 }
 
 .el-form {
-    max-width: 500px;
+    max-width: 700px;
     margin-left: 20px;
 }
 </style>
+
+<fluent locale="zh-CN">
+cannot-remove-default-gearsets = 不能删除默认配装
+</fluent>
+
+<fluent locale="en-US">
+cannot-remove-default-gearsets = Can't remove default gearsets
+</fluent>
+
+<fluent locale="ja-JP">
+cannot-remove-default-gearsets = デフォルトギアセットを削除できません
+</fluent>

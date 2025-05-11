@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -31,6 +31,7 @@ import useDesignerStore from '@/stores/designer';
 import { useFluent } from 'fluent-vue';
 import { displayJobKey } from './injectionkeys';
 import { Jobs } from '@/libs/Craft';
+import { GearsetsRow } from '@/libs/Gearsets';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
@@ -48,9 +49,11 @@ const Simulator = defineAsyncComponent(() => import('./Simulator.vue'));
 const isCustomRecipe = computed(() => designerStore.content?.job === undefined);
 const attributes = computed(() => {
     const job = designerStore.content?.job;
-    return job
-        ? gearsetsStore.getUsingSetData(job)?.value ?? gearsetsStore.default
-        : gearsetsStore.default;
+    if (job == undefined) return gearsetsStore.default.value;
+    const gearset = gearsetsStore.gearsets.find((v: GearsetsRow) =>
+        v.compatibleJobs.includes(job),
+    );
+    return (gearset ?? gearsetsStore.default).value;
 });
 const errorMessage = ref<string>();
 
@@ -106,7 +109,6 @@ function reload() {
                 "
                 :requirements="designerStore.content.requirements"
                 :collectable-shop-refine="designerStore.content.collectability"
-                :attributes="attributes"
                 :is-custom-recipe="isCustomRecipe"
             />
             <Simulator

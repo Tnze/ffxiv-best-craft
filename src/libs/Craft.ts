@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -139,7 +139,6 @@ export enum Jobs {
     Weaver = 'weaver',
     Alchemist = 'alchemist',
     Culinarian = 'culinarian',
-    Common = 'common'
 }
 
 export enum Actions {

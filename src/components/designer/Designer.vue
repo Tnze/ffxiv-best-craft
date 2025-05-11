@@ -56,7 +56,9 @@ import {
 } from '@/libs/Craft';
 import { read_solver } from '@/libs/Solver';
 import { calculateEnhancedAttributsAbs, Enhancer } from '@/libs/Enhancer';
+import { GearsetsRow } from '@/libs/Gearsets';
 import useDesignerStore from '@/stores/designer';
+import useGearsetsStore from '@/stores/gearsets';
 
 import AttrEnhSelector from './tabs/AttrEnhSelector.vue';
 import InitialQualitySetting from './tabs/InitialQualitySetting.vue';
@@ -80,11 +82,11 @@ const props = defineProps<{
     collectableShopRefine?: CollectablesShopRefine;
     item: Item;
     materialQualityFactor: number;
-    attributes: Attributes;
     isCustomRecipe: boolean;
 }>();
 
 const store = useDesignerStore();
+const gearsetsStore = useGearsetsStore();
 const { $t } = useFluent();
 const displayJob = inject(displayJobKey) as Ref<Jobs>;
 const foldMultiFunctionArea = useMediaQuery('screen and (max-width: 480px)');
@@ -97,11 +99,53 @@ watch(foldMultiFunctionArea, fold => {
 const actionQueueElem = ref();
 const { height: actionQueueHeight } = useElementSize(actionQueueElem);
 
+// 装备属性
+const gearsetId = ref(0);
+const selectedGearsetRow = computed<GearsetsRow | undefined>(() => {
+    return gearsetsStore.gearsets.find(v => v.id == gearsetId.value);
+});
+const attributes = computed<Attributes>(
+    () => (selectedGearsetRow.value ?? gearsetsStore.default).value,
+);
+// Gearsets changed
+gearsetsStore.$subscribe((_, state) => {
+    selectDefaultGearset();
+});
+// Recipe changed
+watch(
+    [displayJob, () => props.isCustomRecipe],
+    ([displayJob, isCustomRecipe], old) => {
+        const currentGearset = selectedGearsetRow.value;
+        if (
+            currentGearset == undefined ||
+            currentGearset.id == 0 ||
+            (!isCustomRecipe &&
+                !currentGearset.compatibleJobs.includes(displayJob))
+        ) {
+            // Current selected gearset doesn't fit current recipe
+            selectDefaultGearset();
+        }
+    },
+    { immediate: true },
+);
+
+function selectDefaultGearset() {
+    if (props.isCustomRecipe) {
+        gearsetId.value = 0;
+        return;
+    }
+    const job = displayJob.value;
+    const newGearset = gearsetsStore.gearsets.find(
+        (v, i) => i != 0 && v.compatibleJobs.includes(job),
+    );
+    gearsetId.value = newGearset?.id ?? 0;
+}
+
 // 食物和药水效果
 const attributesEnhancers = ref<Enhancer[]>([]);
 const enhancedAttributes = computed<Attributes>(() =>
     calculateEnhancedAttributsAbs(
-        props.attributes,
+        attributes.value,
         ...attributesEnhancers.value,
     ),
 );
@@ -137,7 +181,7 @@ var attributionAlert = computed(() => {
     return;
 });
 // UI States
-const DEFAULT_TAB = "solver-list"
+const DEFAULT_TAB = 'solver-list';
 const isReadingSolver = ref(0);
 const isReadingSolverDisplay = ref(false); // This is basicly (isReadingSolver != 0), with a 500ms delay on rising edge
 const previewSolver = ref(false);
@@ -381,8 +425,9 @@ async function handleSolverResult(
                         <el-scrollbar style="flex: auto; padding-left: 30px">
                             <AttrEnhSelector
                                 v-model="attributesEnhancers"
+                                v-model:gearset-id="gearsetId"
                                 :job="isCustomRecipe ? undefined : displayJob"
-                                :attributs="attributes"
+                                :attributes="attributes"
                             />
                         </el-scrollbar>
                     </el-tab-pane>

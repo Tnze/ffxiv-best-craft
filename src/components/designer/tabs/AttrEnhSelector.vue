@@ -25,16 +25,25 @@ import {
     ElDivider,
     ElSpace,
     ElSelect,
-    ElOption
+    ElOption,
 } from 'element-plus';
-import { onMounted, reactive, watch, ref, defineAsyncComponent, h } from 'vue';
+import {
+    onMounted,
+    reactive,
+    watch,
+    ref,
+    defineAsyncComponent,
+    h,
+    computed,
+} from 'vue';
 import { Enhancer, calculateEnhancedAttributsAddon } from '@/libs/Enhancer';
 import { useFluent } from 'fluent-vue';
 import { Attributes, Jobs } from '@/libs/Craft';
 import settingStore from '@/stores/settings';
-import useGearsetsStore, { labelWrapper } from '@/stores/gearsets';
-import { DataSource } from '../../../datasource/source';
+import useGearsetsStore from '@/stores/gearsets';
+import { DataSource } from '@/datasource/source';
 import AttrEnhSelectorOption from './AttrEnhSelectorOption.vue';
+import { choiceGearsetDisplayName, GearsetsRow } from '@/libs/Gearsets';
 
 const Gearset = defineAsyncComponent(() => import('@/components/Gearset.vue'));
 
@@ -47,11 +56,11 @@ const mealSearchKeyword = ref('');
 const medicineSearchKeyword = ref('');
 
 const 专家之证: Enhancer = {
-    cm: 100,
+    cm: Number.MAX_VALUE,
     cm_max: 20,
-    ct: 100,
+    ct: Number.MAX_VALUE,
     ct_max: 20,
-    cp: 100,
+    cp: Number.MAX_VALUE,
     cp_max: 15,
     name: $t('soul-of-the-crafter'),
 };
@@ -59,8 +68,12 @@ const 专家之证: Enhancer = {
 const props = defineProps<{
     modelValue: Enhancer[];
     job?: Jobs;
-    attributs?: Attributes;
+    attributes?: Attributes;
 }>();
+const selectedGearset = defineModel<number>('gearsetId', { required: true });
+const selectedGearsetIndex = computed(() =>
+    gearsets.gearsets.findIndex(v => v.id == selectedGearset.value),
+);
 
 const emits = defineEmits<{
     (event: 'update:modelValue', v: Enhancer[]): void;
@@ -69,7 +82,11 @@ const emits = defineEmits<{
 onMounted(async () => loadMealsAndMedicine(setting.getDataSource));
 watch(() => setting.getDataSource, loadMealsAndMedicine);
 
-const usingSetName = ref(labelWrapper(gearsets.getUsingSetData(props.job)));
+const gearsetsList = computed<GearsetsRow[]>(() => {
+    const craftType = props.job;
+    if (craftType == undefined) return gearsets.gearsets; // all gearsets are allowed for custom recipe
+    return gearsets.gearsets.filter(v => v.compatibleJobs.includes(craftType));
+});
 
 async function loadMealsAndMedicine(datasource: Promise<DataSource>) {
     let ds = await datasource;
@@ -162,9 +179,9 @@ function EnhIncComponent(props: {
             </el-select-v2>
             <EnhIncComponent
                 class="enhnacer-info"
-                v-if="enhancers.meal && attributs"
+                v-if="enhancers.meal && attributes"
                 :inc="
-                    calculateEnhancedAttributsAddon(attributs, enhancers.meal)
+                    calculateEnhancedAttributsAddon(attributes, enhancers.meal)
                 "
             />
         </el-form-item>
@@ -186,9 +203,12 @@ function EnhIncComponent(props: {
             </el-select-v2>
             <EnhIncComponent
                 class="enhnacer-info"
-                v-if="enhancers.potion && attributs"
+                v-if="enhancers.potion && attributes"
                 :inc="
-                    calculateEnhancedAttributsAddon(attributs, enhancers.potion)
+                    calculateEnhancedAttributsAddon(
+                        attributes,
+                        enhancers.potion,
+                    )
                 "
             />
         </el-form-item>
@@ -196,27 +216,29 @@ function EnhIncComponent(props: {
             <el-switch v-model="enhancers.soulOfTheCrafter" />
             <EnhIncComponent
                 class="enhnacer-info"
-                v-if="enhancers.soulOfTheCrafter && attributs"
-                :inc="calculateEnhancedAttributsAddon(attributs, 专家之证)"
+                v-if="enhancers.soulOfTheCrafter && attributes"
+                :inc="calculateEnhancedAttributsAddon(attributes, 专家之证)"
             />
         </el-form-item>
+        <template v-if="job != undefined">
+            <el-divider />
+            <el-form-item :label="$t('select-gearset')">
+                <el-select v-model="selectedGearset">
+                    <el-option
+                        v-for="gearset in gearsetsList"
+                        :key="gearset.id"
+                        :label="choiceGearsetDisplayName(gearset)"
+                        :value="gearset.id"
+                    />
+                </el-select>
+            </el-form-item>
+            <Gearset
+                v-if="selectedGearsetIndex != -1"
+                :index="selectedGearsetIndex"
+                simplify
+            />
+        </template>
     </el-form>
-    <template v-if="job != undefined">
-        <el-divider />
-        <el-form-item :label="$t('set-name')">
-            <el-select 
-                v-model="usingSetName"
-                @change="(name) => gearsets.changeJobUsingSet(job as Jobs, name)">
-                <el-option
-                    v-for="set in gearsets.getUsebleSets(job)"
-                    :key="set.name"
-                    :label="labelWrapper(set)"
-                    :value="set.name"
-                />
-            </el-select>
-        </el-form-item>
-        <Gearset :name="gearsets.getUsingSetData(job)!.name" disableJobChange disableSetNameShow />
-    </template>
 </template>
 
 <style scoped>
@@ -244,16 +266,19 @@ function EnhIncComponent(props: {
 meal = 食物
 medicine = 药水
 soul-of-the-crafter = 专家之证
+select-gearset = 选择配装
 </fluent>
 
 <fluent locale="en-US">
 meal = Meal
 medicine = Potion
 soul-of-the-crafter = Soul of the Crafter
+select-gearset = Select gearset
 </fluent>
 
 <fluent locale="ja-JP">
 meal = 調理品
 medicine = 薬品
 soul-of-the-crafter = マイスターの証
+select-gearset = ギアセットを選択
 </fluent>
