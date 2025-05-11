@@ -37,6 +37,11 @@ weaver = 裁衣匠
 alchemist = 炼金术士
 culinarian = 烹调师
 
+# 配装名称
+default = 默认
+common = 通用
+custom = 自定义 { $id }
+
 # 技能名
 basic-synthesis = 制作
 basic-touch = 加工

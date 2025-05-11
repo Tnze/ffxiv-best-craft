@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -14,50 +14,71 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Jobs, Attributes } from '@/libs/Craft';
+import { Jobs } from '@/libs/Craft';
+import { DEFAULT_ATTRIBUTS, GearsetsRow } from '@/libs/Gearsets';
 import { defineStore } from 'pinia';
 
-export interface GearsetsRow {
-    name: Jobs;
-    value: Attributes | undefined;
-}
-
 export default defineStore('gearsets', {
-    state: () => ({
-        default: {
-            level: 100,
-            craftsmanship: 4628,
-            control: 4221,
-            craft_points: 533,
-        },
-        special: [
-            { name: Jobs.Carpenter, value: undefined },
-            { name: Jobs.Blacksmith, value: undefined },
-            { name: Jobs.Armorer, value: undefined },
-            { name: Jobs.Goldsmith, value: undefined },
-            { name: Jobs.Leatherworker, value: undefined },
-            { name: Jobs.Weaver, value: undefined },
-            { name: Jobs.Alchemist, value: undefined },
-            { name: Jobs.Culinarian, value: undefined },
-        ] as GearsetsRow[],
-    }),
+    state: () => ({ gearsets: <GearsetsRow[]>[] }),
     getters: {
         toJson(): string {
-            return JSON.stringify({
-                default: this.default,
-                special: this.special,
-            });
+            return JSON.stringify({ gearsets: this.gearsets });
         },
-        attributes() {
-            return (job: Jobs) =>
-                this.special.find(v => v.name == job)?.value ?? this.default;
+        nextId(): number {
+            const maxId = this.gearsets.reduce(
+                (acc: number, v: GearsetsRow) => Math.max(acc, v.id),
+                0,
+            );
+            return maxId + 1;
+        },
+        default(): GearsetsRow {
+            return this.gearsets[0];
         },
     },
     actions: {
         fromJson(json: string) {
-            let v = JSON.parse(json);
-            this.default = v.default;
-            this.special = v.special;
+            this.gearsets.splice(0);
+            const v = JSON.parse(json);
+
+            if ('gearsets' in v) {
+                this.gearsets = v.gearsets;
+            } else {
+                // Transport data from older version
+                if ('default' in v) {
+                    this.gearsets.push({
+                        id: 0,
+                        value: v.default,
+                        compatibleJobs: Object.values(Jobs),
+                    });
+                }
+                if ('special' in v) {
+                    for (const s of v.special) {
+                        // value == undefined means inherit from default
+                        const value = s.value ?? v.default;
+                        if (value == undefined) {
+                            continue;
+                        }
+
+                        this.gearsets.push({
+                            id: this.nextId,
+                            value,
+                            compatibleJobs: [s.name],
+                        });
+                    }
+                }
+            }
+        },
+        addGearset() {
+            this.gearsets.push({
+                id: this.nextId,
+                value: { ...DEFAULT_ATTRIBUTS },
+                compatibleJobs: Object.values(Jobs),
+            });
+        },
+        delGearset(id: number) {
+            const n = this.gearsets.findIndex(v => v.id == id);
+            console.assert(n != -1, 'Removing unknown gearset id =', id);
+            this.gearsets.splice(n, 1);
         },
     },
 });

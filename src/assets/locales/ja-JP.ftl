@@ -31,6 +31,10 @@ weaver = 裁縫師
 alchemist = 錬金術師
 culinarian = 調理師
 
+default = デフォルト
+common = 一般的な
+custom = カスタム { $id }
+
 basic-synthesis = 作業
 basic-touch = 加工
 masters-mend = マスターズメンド

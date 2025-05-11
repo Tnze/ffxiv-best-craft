@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -21,75 +21,66 @@ import {
     ElScrollbar,
     ElTabs,
     ElTabPane,
-    ElForm,
-    ElFormItem,
-    ElInputNumber,
+    TabPaneName,
+    ElMessage,
 } from 'element-plus';
 import { onActivated, ref } from 'vue';
 import useGearsetsStore from '@/stores/gearsets';
+import { useFluent } from 'fluent-vue';
 import Gearset from '@/components/Gearset.vue';
+import { choiceGearsetDisplayName } from '@/libs/Gearsets';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
 }>();
-onActivated(() => emit('setTitle', 'attributes'));
+const { $t } = useFluent();
 
+onActivated(() => emit('setTitle', 'attributes'));
 const store = useGearsetsStore();
-const jobPage = ref('default');
+const jobPage = ref(0);
+
+function handleGearsetsEdit(
+    target: TabPaneName | undefined,
+    action: 'remove' | 'add',
+) {
+    if (action === 'add') {
+        store.addGearset();
+        return;
+    }
+    if (action === 'remove') {
+        if (target == 0) {
+            ElMessage({
+                type: 'error',
+                message: $t('cannot-remove-default-gearsets'),
+            });
+            return;
+        }
+        store.delGearset(target as number);
+        if (jobPage.value === target) {
+            // always works because 0 cannot be removed
+            jobPage.value = target - 1;
+        }
+        return;
+    }
+}
 </script>
 
 <template>
     <el-scrollbar>
-        <el-tabs class="page" v-model="jobPage" tab-position="left">
-            <el-tab-pane name="default" :label="$t('default')">
-                <el-form
-                    label-position="right"
-                    label-width="auto"
-                    :model="store.default"
-                >
-                    <el-form-item :label="$t('level')">
-                        <el-input-number
-                            :model-value="store.default.level"
-                            :min="1"
-                            :max="100"
-                            :step-strictly="true"
-                            @change="x => (store.default.level = x || 1)"
-                        />
-                    </el-form-item>
-                    <el-form-item :label="$t('craftsmanship')">
-                        <el-input-number
-                            :model-value="store.default.craftsmanship"
-                            :min="0"
-                            :step-strictly="true"
-                            @change="
-                                x => (store.default.craftsmanship = x || 0)
-                            "
-                        />
-                    </el-form-item>
-                    <el-form-item :label="$t('control')">
-                        <el-input-number
-                            :model-value="store.default.control"
-                            :min="0"
-                            :step-strictly="true"
-                            @change="x => (store.default.control = x || 0)"
-                        />
-                    </el-form-item>
-                    <el-form-item :label="$t('craft-point')">
-                        <el-input-number
-                            :model-value="store.default.craft_points"
-                            :min="0"
-                            :step-strictly="true"
-                            @change="x => (store.default.craft_points = x || 0)"
-                        />
-                    </el-form-item>
-                </el-form>
-            </el-tab-pane>
+        <el-tabs
+            class="page"
+            v-model="jobPage"
+            tab-position="left"
+            editable
+            @edit="handleGearsetsEdit"
+        >
             <el-tab-pane
-                v-for="v in store.special"
-                :name="v.name"
-                :label="$t(v.name)"
+                v-for="v, i in store.gearsets"
+                :name="v.id"
+                :label="choiceGearsetDisplayName(v)"
+                lazy
             >
-                <Gearset :job="v.name" />
+                <Gearset :index="i" :id="v.id" />
             </el-tab-pane>
         </el-tabs>
     </el-scrollbar>
@@ -106,19 +97,19 @@ const jobPage = ref('default');
 }
 
 .el-form {
-    max-width: 500px;
+    max-width: 700px;
     margin-left: 20px;
 }
 </style>
 
 <fluent locale="zh-CN">
-default = 默认
+cannot-remove-default-gearsets = 不能删除默认配装
 </fluent>
 
 <fluent locale="en-US">
-default = Default
+cannot-remove-default-gearsets = Can't remove default gearsets
 </fluent>
 
 <fluent locale="ja-JP">
-default = デフォルト
+cannot-remove-default-gearsets = デフォルトギアセットを削除できません
 </fluent>

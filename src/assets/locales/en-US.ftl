@@ -37,6 +37,11 @@ weaver = Weaver
 alchemist = Alchemist
 culinarian = Culinarian
 
+# Gearset names
+default = Default
+common = Common
+custom = Custom { $id }
+
 # Action names
 basic-synthesis = Basic Synthesis
 basic-touch = Basic Touch
