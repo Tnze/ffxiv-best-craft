@@ -75,20 +75,20 @@ jobs:
                   path: ${{ steps.decode_artifact_paths.outputs.artifact_paths }}
 
     deploy-tauri:
-      needs: publish-tauri
-      runs-on: ubuntu-latest
-      environment: SSH Deployer
-      steps:
-          - name: download files
-            uses: actions/download-artifact@v4
+        needs: publish-tauri
+        runs-on: ubuntu-latest
+        environment: SSH Deployer
+        steps:
+            - name: download files
+              uses: actions/download-artifact@v4
               with:
                   name: bestcraft-tauri
-          - name: ssh deploy
-            uses: easingthemes/ssh-deploy@v5.1.0
-            with:
-                SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-                ARGS: '-rlzvc --exclude=releases --exclude=.htaccess --exclude=.user.ini --delete --delete-after -i'
-                SOURCE: './'
-                REMOTE_HOST: ${{ vars.REMOTE_HOST }}
-                REMOTE_USER: ${{ vars.REMOTE_USER }}
-                TARGET: ${{ vars.TARGET }}/releases/${{ github.ref_name }}
+            - name: ssh deploy
+              uses: easingthemes/ssh-deploy@v5.1.0
+              with:
+                  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+                  ARGS: '-rlzvc --exclude=releases --exclude=.htaccess --exclude=.user.ini --delete --delete-after -i'
+                  SOURCE: './'
+                  REMOTE_HOST: ${{ vars.REMOTE_HOST }}
+                  REMOTE_USER: ${{ vars.REMOTE_USER }}
+                  TARGET: ${{ vars.TARGET }}/releases/${{ github.ref_name }}
