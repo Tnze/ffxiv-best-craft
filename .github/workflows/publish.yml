@@ -15,11 +15,16 @@ jobs:
                 include:
                     - platform: 'macos-latest' # for Arm based macs (M1 and above).
                       args: '--target aarch64-apple-darwin'
+                      tauri_platform_name: 'darwin-aarch64'
                     - platform: 'ubuntu-22.04'
+                      args: ''
+                      tauri_platform_name: 'linux-x86_64'
                     - platform: 'windows-latest'
                       args: ''
+                      tauri_platform_name: 'windows-x86_64'
                     - platform: "windows-latest"
                       args: "--target aarch64-pc-windows-msvc"
+                      tauri_platform_name: 'windows-aarch64'
         environment: UpdaterSigner
         runs-on: ${{ matrix.platform }}
         steps:
@@ -60,3 +65,36 @@ jobs:
                   releaseDraft: true
                   prerelease: false
                   args: ${{ matrix.args }}
+            - name: decode JSON array
+              id: decode_artifact_paths
+              shell: bash
+              run: |
+                ARTIFACT_PATHS=$(echo '${{ steps.tauri_build.outputs.artifactPaths }}' | jq -r '.[]')
+                echo "artifact_paths<<EOF" >> $GITHUB_OUTPUT
+                echo "$ARTIFACT_PATHS" >> $GITHUB_OUTPUT
+                echo "EOF" >> $GITHUB_OUTPUT
+            - name: upload files
+              uses: actions/upload-artifact@v4
+              with:
+                  name: artifacts-${{ matrix.tauri_platform_name }}
+                  path: ${{ steps.decode_artifact_paths.outputs.artifact_paths }}
+
+    deploy-tauri:
+        needs: publish-tauri
+        runs-on: ubuntu-latest
+        environment: SSH Deployer
+        steps:
+            - name: download files
+              uses: actions/download-artifact@v4
+              with:
+                  pattern: artifacts-*
+                  merge-multiple: true
+            - name: ssh deploy
+              uses: easingthemes/ssh-deploy@v5.1.0
+              with:
+                  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+                  ARGS: '-rlzvc --exclude=releases --exclude=.htaccess --exclude=.user.ini --delete --delete-after -i'
+                  SOURCE: './'
+                  REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+                  REMOTE_USER: ${{ secrets.REMOTE_USER }}
+                  TARGET: ${{ vars.TARGET }}releases/${{ github.ref_name }}
