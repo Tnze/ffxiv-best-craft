@@ -38,6 +38,7 @@ if (isTauri) {
             worker.onmessage = ev => {
                 if (ev.data.error == undefined) resolve(ev.data);
                 else reject(ev.data.error);
+                worker.terminate();
             };
             worker.onerror = ev => reject(ev);
             worker.postMessage({ name, args: JSON.stringify(args) });
