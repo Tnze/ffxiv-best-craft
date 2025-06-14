@@ -182,7 +182,7 @@ const relations = computed(() => {
                     >
                         {{ $t('clear') }}
                     </el-button>
-                    <el-switch v-model="showRelations" />
+                    <el-switch v-model="showRelations" :active-text="$t('display-relations')" />
                 </div>
                 <BomItem
                     class="item"
@@ -323,6 +323,7 @@ calculating = 计算中
 fetching-item = 正在查询 { $itemName }
 add = 添加
 clear = 清空
+display-relations = 显示依赖关系
 </fluent>
 
 <fluent locale="en-US">
@@ -331,6 +332,7 @@ calculating = Calculating
 fetching-item = Fetching { $itemName }
 add = Add
 clear = Clear
+display-relations = Display Relations
 </fluent>
 
 <fluent locale="ja-JP">
@@ -339,4 +341,5 @@ calculating = ずるい
 fetching-item = つかむ { $itemName }
 add = 追加
 clear = パージ
+display-relations = 表示関係
 </fluent>
