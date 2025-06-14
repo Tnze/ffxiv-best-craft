@@ -48,10 +48,11 @@ import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent';
 import { useRouter } from 'vue-router';
 import DesktopEditionDownload from './components/DesktopEditionDownload.vue';
+import { readTextFile } from '@tauri-apps/plugin-fs';
 
 const { $t } = useFluent();
 const colorMode = useColorMode();
-const settingStore = useSettingsStore();
+const settingsStore = useSettingsStore();
 const gearsetsStore = useGearsetsStore();
 const designerStore = useDesignerStore();
 const preferredLang = usePreferredLanguages();
@@ -67,7 +68,7 @@ watch(router.currentRoute, () => (showMenu.value = false));
 
 const lang = ref('zh-CN');
 watchEffect(() => {
-    let settingLang: string | null = settingStore.language;
+    let settingLang: string | null = settingsStore.language;
     if (settingLang == 'system') settingLang = null;
     const systemLang = preferredLang.value.find(v => languages.has(v));
     lang.value = settingLang ?? systemLang ?? 'zh-CN';
@@ -80,36 +81,33 @@ if (isTauri) {
 }
 
 async function loadStorages() {
+    let settingsJson: Promise<string> | string | null,
+        gearsetsJson: Promise<string> | string | null,
+        designerJson: Promise<string> | string | null;
     if (isTauri) {
         const { BaseDirectory, readTextFile } = await pkgTauriFs;
-        readTextFile('settings.json', { baseDir: BaseDirectory.AppData })
-            .then(settingStore.fromJson)
-            .catch(e => console.error(e));
-        readTextFile('gearsets.json', { baseDir: BaseDirectory.AppData })
-            .then(gearsetsStore.fromJson)
-            .catch(e => console.error(e));
-        readTextFile('designer.json', { baseDir: BaseDirectory.AppData })
-            .then(designerStore.fromJson)
-            .catch(e => console.error(e));
+        const options = { baseDir: BaseDirectory.AppData };
+        settingsJson = readTextFile('settings.json', options);
+        gearsetsJson = readTextFile('gearsets.json', options);
+        designerJson = readTextFile('designer.json', options);
     } else {
-        const ifNotNullThen = (v: string | null, f: (v: string) => void) => {
-            if (v != null) f(v);
-        };
-        ifNotNullThen(
-            window.localStorage.getItem('settings.json'),
-            settingStore.fromJson,
-        );
-        ifNotNullThen(
-            window.localStorage.getItem('gearsets.json'),
-            gearsetsStore.fromJson,
-        );
-        ifNotNullThen(
-            window.localStorage.getItem('designer.json'),
-            designerStore.fromJson,
-        );
+        settingsJson = window.localStorage.getItem('settings.json');
+        gearsetsJson = window.localStorage.getItem('gearsets.json');
+        designerJson = window.localStorage.getItem('designer.json');
+    }
+    for (const v of [
+        { dst: settingsStore.fromJson, src: settingsJson },
+        { dst: gearsetsStore.fromJson, src: gearsetsJson },
+        { dst: designerStore.fromJson, src: designerJson },
+    ]) {
+        if (v.src === null) continue;
+        try {
+            v.dst(await v.src);
+        } catch (e) {
+            console.error(e);
+        }
     }
 }
-loadStorages();
 
 async function writeJson(name: string, jsonStr: string) {
     if (isTauri) {
@@ -138,13 +136,20 @@ async function writeJson(name: string, jsonStr: string) {
         window.localStorage.setItem(name, jsonStr);
     }
 }
-settingStore.$subscribe(() => writeJson('settings.json', settingStore.toJson));
-gearsetsStore.$subscribe(() =>
-    writeJson('gearsets.json', gearsetsStore.toJson),
-);
-designerStore.$subscribe(() =>
-    writeJson('designer.json', designerStore.toJson),
-);
+
+onMounted(async () => {
+    await loadStorages();
+    // subscribe only after storage load
+    settingsStore.$subscribe(() =>
+        writeJson('settings.json', settingsStore.toJson),
+    );
+    gearsetsStore.$subscribe(() =>
+        writeJson('gearsets.json', gearsetsStore.toJson),
+    );
+    designerStore.$subscribe(() =>
+        writeJson('designer.json', designerStore.toJson),
+    );
+});
 
 watchEffect(async () => {
     let isDark: boolean | null;
@@ -262,9 +267,9 @@ watchEffect(async () => {
 }
 
 :root {
-    font-family: Inter, 'Helvetica Neue', Helvetica, 'PingFang SC',
-        'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif,
-        'xivicon';
+    font-family:
+        Inter, 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+        'Microsoft YaHei', '微软雅黑', Arial, sans-serif, 'xivicon';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 

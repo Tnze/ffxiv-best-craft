@@ -58,7 +58,8 @@ export default defineStore('gearsets', {
 
             if ('gearsets' in v) {
                 this.gearsets = v.gearsets;
-            } else {
+            }
+            if (this.gearsets.length == 0) {
                 // Transport data from older version
                 if ('default' in v) {
                     this.gearsets.push({
