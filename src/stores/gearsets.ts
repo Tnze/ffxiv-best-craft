@@ -14,9 +14,52 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Jobs } from '@/libs/Craft';
-import { DEFAULT_ATTRIBUTS, GearsetsRow } from '@/libs/Gearsets';
+import { Attributes, AttributesSchema, Jobs, JobsSchema } from '@/libs/Craft';
+import {
+    DEFAULT_ATTRIBUTS,
+    GearsetsRow,
+    GearsetsRowSchema,
+} from '@/libs/Gearsets';
 import { defineStore } from 'pinia';
+import Ajv, { JSONSchemaType } from 'ajv';
+
+const GearsetsStoreSchema: JSONSchemaType<{ gearsets: GearsetsRow[] }> = {
+    type: 'object',
+    properties: {
+        gearsets: {
+            type: 'array',
+            items: GearsetsRowSchema,
+        },
+    },
+    required: ['gearsets'],
+    additionalProperties: false,
+};
+const GearsetsStoreSchemaOld: JSONSchemaType<{
+    default: Attributes;
+    special: { name: Jobs; value?: Attributes }[];
+}> = {
+    type: 'object',
+    properties: {
+        default: AttributesSchema,
+        special: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    name: JobsSchema,
+                    value: { ...AttributesSchema, nullable: true },
+                },
+                required: ['name'],
+            },
+        },
+    },
+    required: ['default', 'special'],
+    additionalProperties: false,
+};
+
+const ajv = new Ajv();
+const validate = ajv.compile(GearsetsStoreSchema);
+const validateOld = ajv.compile(GearsetsStoreSchemaOld);
 
 export default defineStore('gearsets', {
     state: () => {
@@ -55,34 +98,29 @@ export default defineStore('gearsets', {
         fromJson(json: string) {
             this.gearsets.splice(0);
             const v = JSON.parse(json);
+            // Transport data from older version
+            if (validateOld(v)) {
+                this.gearsets.push({
+                    id: 0,
+                    value: v.default,
+                    compatibleJobs: Object.values(Jobs),
+                });
+                for (const s of v.special) {
+                    // value == undefined means inherit from default
+                    const value = s.value ?? v.default;
+                    if (value == undefined) {
+                        continue;
+                    }
 
-            if ('gearsets' in v) {
-                this.gearsets = v.gearsets;
-            }
-            if (this.gearsets.length == 0) {
-                // Transport data from older version
-                if ('default' in v) {
                     this.gearsets.push({
-                        id: 0,
-                        value: v.default,
-                        compatibleJobs: Object.values(Jobs),
+                        id: this.nextId,
+                        value,
+                        compatibleJobs: [s.name],
                     });
                 }
-                if ('special' in v) {
-                    for (const s of v.special) {
-                        // value == undefined means inherit from default
-                        const value = s.value ?? v.default;
-                        if (value == undefined) {
-                            continue;
-                        }
-
-                        this.gearsets.push({
-                            id: this.nextId,
-                            value,
-                            compatibleJobs: [s.name],
-                        });
-                    }
-                }
+            }
+            if (validate(v)) {
+                this.gearsets = v.gearsets;
             }
         },
         addGearset() {

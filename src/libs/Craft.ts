@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import { JSONSchemaType } from 'ajv';
 import { isTauri } from './Consts';
 
 if (import.meta.env.VITE_BESTCRAFT_TARGET == 'tauri') {
@@ -28,6 +29,18 @@ export interface Attributes {
     control: number;
     craft_points: number;
 }
+
+export const AttributesSchema: JSONSchemaType<Attributes> = {
+    type: 'object',
+    properties: {
+        level: { type: 'number' },
+        craftsmanship: { type: 'number' },
+        control: { type: 'number' },
+        craft_points: { type: 'number' },
+    },
+    required: ['level', 'craftsmanship', 'control', 'craft_points'],
+    additionalProperties: false,
+};
 
 export interface Item {
     id: number;
@@ -141,6 +154,11 @@ export enum Jobs {
     Culinarian = 'culinarian',
 }
 
+export const JobsSchema: JSONSchemaType<Jobs> = {
+    type: 'string',
+    enum: Object.values(Jobs),
+};
+
 export enum Actions {
     BasicSynthesis = 'basic_synthesis',
     BasicTouch = 'basic_touch',
@@ -184,6 +202,11 @@ export enum Actions {
     HastyTouchFail = 'hasty_touch_fail',
     DaringTouchFail = 'daring_touch_fail',
 }
+
+export const ActionsSchema: JSONSchemaType<Actions> = {
+    type: 'string',
+    enum: Object.values(Actions),
+};
 
 const waitTimes = new Map([
     [Actions.BasicSynthesis, 2.17],

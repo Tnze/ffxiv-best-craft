@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { Attributes, Jobs } from './Craft';
+import { JSONSchemaType } from 'ajv';
+import { Attributes, AttributesSchema, Jobs, JobsSchema } from './Craft';
 import { fluent } from '@/fluent';
 
 const $t = fluent.format;
@@ -25,6 +26,17 @@ export interface GearsetsRow {
     value: Attributes;
     compatibleJobs: Jobs[];
 }
+
+export const GearsetsRowSchema: JSONSchemaType<GearsetsRow> = {
+    type: 'object',
+    properties: {
+        id: { type: 'number' },
+        name: { type: 'string', nullable: true },
+        value: AttributesSchema,
+        compatibleJobs: { type: 'array', items: JobsSchema, uniqueItems: true },
+    },
+    required: ['id', 'value', 'compatibleJobs'],
+};
 
 export const DEFAULT_ATTRIBUTS = {
     level: 100,
