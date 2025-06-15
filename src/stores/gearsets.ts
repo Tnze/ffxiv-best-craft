@@ -23,12 +23,14 @@ import {
 import { defineStore } from 'pinia';
 import Ajv, { JSONSchemaType } from 'ajv';
 
+// Schemas
 const GearsetsStoreSchema: JSONSchemaType<{ gearsets: GearsetsRow[] }> = {
     type: 'object',
     properties: {
         gearsets: {
             type: 'array',
             items: GearsetsRowSchema,
+            minItems: 1,
         },
     },
     required: ['gearsets'],
@@ -96,10 +98,10 @@ export default defineStore('gearsets', {
     },
     actions: {
         fromJson(json: string) {
-            this.gearsets.splice(0);
             const v = JSON.parse(json);
             // Transport data from older version
             if (validateOld(v)) {
+                this.gearsets.splice(0);
                 this.gearsets.push({
                     id: 0,
                     value: v.default,
@@ -120,6 +122,7 @@ export default defineStore('gearsets', {
                 }
             }
             if (validate(v)) {
+                this.gearsets.splice(0);
                 this.gearsets = v.gearsets;
             }
         },
