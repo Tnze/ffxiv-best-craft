@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -28,6 +28,10 @@ import {
     ElDivider,
     ElDescriptions,
     ElDescriptionsItem,
+    ElDrawer,
+    ElTable,
+    ElTableColumn,
+    ElScrollbar,
 } from 'element-plus';
 import {
     Statistics,
@@ -37,10 +41,18 @@ import {
     calc_attributes_scope,
     Scope,
 } from '@/libs/Analyzer';
-import { Actions, CollectablesShopRefine, Status } from '@/libs/Craft';
+import {
+    Actions,
+    Buffs as BuffsType,
+    CollectablesShopRefine,
+    simulateDetail,
+    Status,
+} from '@/libs/Craft';
+import Buffs from '../Buffs.vue';
 import * as d3 from 'd3';
 import { ref, computed, watch, reactive } from 'vue';
 import useStore from '@/stores/designer';
+import Action from '../Action.vue';
 
 const props = defineProps<{
     initStatus: Status;
@@ -57,7 +69,21 @@ const options = reactive(store.options.analyzerOptions);
 
 const attributesScope = ref<Scope>();
 
-async function runSimulatios(n: number) {
+const showCheckSimulateDetail = ref(false);
+const simulateDetailResult = ref<SimulateDetailRow[]>([]);
+
+interface SimulateDetailRow {
+    step: number;
+    action?: Actions;
+    progress: number;
+    quality: number;
+    craft_points: number;
+    durability: number;
+    buffs?: BuffsType;
+    error?: string; // When `error` exists, other field no longer display
+}
+
+async function runBatchSimulatios(n: number) {
     simulationResult.value = undefined;
     simulationButtonDisabled.value = true;
     try {
@@ -91,6 +117,59 @@ async function calcScope() {
     } catch {}
 }
 
+async function runSimulateDetail() {
+    const result = await simulateDetail(props.initStatus, props.actions);
+    const details: SimulateDetailRow[] = [
+        {
+            step: props.initStatus.step,
+            progress: props.initStatus.progress,
+            quality: props.initStatus.quality,
+            craft_points: props.initStatus.craft_points,
+            durability: props.initStatus.durability,
+            buffs: props.initStatus.buffs,
+        },
+    ];
+    for (const i in props.actions) {
+        if ('Err' in result[i]) {
+            const error: string = result[i].Err;
+            details.push({
+                step: NaN,
+                action: props.actions[i],
+                progress: NaN,
+                quality: NaN,
+                craft_points: NaN,
+                durability: NaN,
+                error,
+            });
+        } else if ('Ok' in result[i]) {
+            const s: Status = result[i].Ok;
+            details.push({
+                step: s.step,
+                action: props.actions[i],
+                progress: s.progress,
+                quality: s.quality,
+                craft_points: s.craft_points,
+                durability: s.durability,
+                buffs: s.buffs,
+            });
+        }
+    }
+    simulateDetailResult.value = details;
+    showCheckSimulateDetail.value = true;
+}
+
+function simulateDetailSpanMethod(data: {
+    row: SimulateDetailRow;
+    rowIndex: number;
+    columnIndex: number;
+}): [number, number] | undefined {
+    if (data.row.error !== undefined) {
+        if (data.columnIndex == 2) return [1, 5];
+        else if (data.columnIndex > 2) return [0, 0];
+    }
+    return undefined;
+}
+
 let autoRunTimeout: any = null;
 watch(
     () => [props.actions, props.initStatus],
@@ -99,7 +178,7 @@ watch(
             clearTimeout(autoRunTimeout);
         }
         const thisTimeout = setTimeout(async () => {
-            await runSimulatios(defaultSimulationCounts);
+            await runBatchSimulatios(defaultSimulationCounts);
             await calcScope();
             if (autoRunTimeout == thisTimeout) {
                 autoRunTimeout = null;
@@ -160,8 +239,8 @@ const arcLabel = d3
             <el-dropdown
                 split-button
                 type="default"
-                @click="runSimulatios(defaultSimulationCounts)"
-                @command="(n: number) => runSimulatios(n)"
+                @click="runBatchSimulatios(defaultSimulationCounts)"
+                @command="(n: number) => runBatchSimulatios(n)"
                 :disabled="simulationButtonDisabled"
             >
                 {{ $t('run-simulations') }}
@@ -252,6 +331,82 @@ const arcLabel = d3
                 {{ attributesScope.control_range }} ~
             </el-form-item>
         </Transition>
+        <el-divider />
+        <el-form-item>
+            <el-button @click="runSimulateDetail">
+                {{ $t('check-simulate-detail') }}
+            </el-button>
+            <el-drawer
+                v-model="showCheckSimulateDetail"
+                direction="btt"
+                size="80%"
+                :title="$t('check-simulate-detail')"
+            >
+                <el-scrollbar>
+                    <el-table
+                        :data="simulateDetailResult"
+                        :span-method="simulateDetailSpanMethod"
+                    >
+                        <el-table-column
+                            :label="$t('steps')"
+                            prop="step"
+                            width="80px"
+                            align="center"
+                        />
+                        <el-table-column
+                            :label="$t('action')"
+                            prop="action"
+                            width="100px"
+                            align="center"
+                        >
+                            <template #default="{ row }">
+                                <Action
+                                    style="transform: scale(0.7)"
+                                    v-if="row.action !== undefined"
+                                    :action="row.action"
+                                    :effect="row.error ? 'black' : 'normal'"
+                                    noHover
+                                    disabled
+                                />
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                            :label="$t('durability')"
+                            prop="durability"
+                        >
+                            <template #default="{ row }">
+                                <template v-if="row.error === undefined">
+                                    {{ row.durability }}
+                                </template>
+                                <template v-else>
+                                    {{ $t(row.error) }}
+                                </template>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                            :label="$t('craft-point')"
+                            prop="craft_points"
+                        />
+                        <el-table-column
+                            :label="$t('progress')"
+                            prop="progress"
+                        />
+                        <el-table-column
+                            :label="$t('quality')"
+                            prop="quality"
+                        />
+                        <el-table-column :label="$t('buffs')" prop="buffs">
+                            <template #default="{ row }">
+                                <Buffs
+                                    v-if="row.buffs !== undefined"
+                                    :buffs="row.buffs"
+                                />
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-scrollbar>
+            </el-drawer>
+        </el-form-item>
     </el-form>
 </template>
 
@@ -294,6 +449,10 @@ high_collectability = 收藏价值三档
 calc-scope = 计算装备属性适配范围
 craftsmanship-range = { craftsmanship }范围
 control-range = { control }范围
+
+check-simulate-detail = 检查模拟细节
+action = 技能
+buffs = 增益效果
 </fluent>
 
 <fluent locale="en-US">
@@ -318,4 +477,8 @@ high_collectability = High Collectability
 calc-scope = Calculate the range of adaptive gearsets
 craftsmanship-range = { craftsmanship } range
 control-range = { control } range
+
+check-simulate-detail = Check simulate detail
+action = Action
+buffs = Buffs
 </fluent>

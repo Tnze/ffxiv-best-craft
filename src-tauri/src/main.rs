@@ -26,7 +26,7 @@ use std::{
 
 use app_libs::{
     analyzer::{rand_simulations, scope_of_application::Scope},
-    ffxiv_crafting::{Actions, Attributes, Recipe, Status},
+    ffxiv_crafting::{Actions, Attributes, CastActionError, Recipe, Status},
     solver::{
         depth_first_search_solver, normal_progress_solver, raphael, reflect_solver, rika_solver,
         Solver, SolverHash,
@@ -88,6 +88,11 @@ fn simulate_one_step(
     app_libs::simulate_one_step(&mut status, action, force_success, &mut rng)
         .map(|is_success| SimulateOneStepResult { status, is_success })
         .map_err(err_to_string)
+}
+
+#[tauri::command(async)]
+fn simulate_detail(status: Status, actions: Vec<Actions>) -> Vec<Result<Status, CastActionError>> {
+    app_libs::simulate_detail(status, actions)
 }
 
 #[tauri::command(async)]
@@ -638,6 +643,7 @@ fn main() {
             new_status,
             simulate,
             simulate_one_step,
+            simulate_detail,
             high_quality_probability,
             allowed_list,
             craftpoints_list,

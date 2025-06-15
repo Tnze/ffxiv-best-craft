@@ -61,6 +61,27 @@ pub fn simulate(status: Status, actions: Vec<Actions>) -> SimulateResult {
     result
 }
 
+/// 模拟以指定初始状态按顺序执行一个技能序列后的结果，
+/// 详细记录每一步执行后的状态
+pub fn simulate_detail(
+    mut status: Status,
+    actions: Vec<Actions>,
+) -> Vec<Result<Status, CastActionError>> {
+    let mut result = Vec::with_capacity(actions.len());
+    for action in actions {
+        match status.is_action_allowed(action) {
+            Ok(_) => {
+                status.cast_action(action);
+                result.push(Ok(status.clone()));
+            }
+            Err(err) => {
+                result.push(Err(err));
+            }
+        }
+    }
+    result
+}
+
 #[derive(Serialize)]
 pub struct SimulateOneStepResult {
     pub status: Status,

@@ -119,6 +119,25 @@ desc-immaculate-mend = 耐久恢复到最大值。
 desc-quick-innovation = 获得改革状态，持续1次作业，一次制作最多可使用1次。
 desc-trained-perfection = 下一个会消耗耐久的技能耐久消耗变为0，一次制作最多可使用1次。
 
+# 技能释放错误
+DurabilityNotEnough = 耐久不足
+CraftPointNotEnough = 制作力不足
+CraftingAlreadyFinished = 制作已完成无法发动技能
+PlayerLevelTooLow = 该技能尚未学会，玩家等级不足
+RequireGoodOrExcellent = 该技能只有在“高品质”及以上的状态下才能使用
+NotAllowedInWastNotBuff = 该技能在俭约及长期简约状态下无法使用
+OnlyAllowedInFirstStep = 该技能仅可在首次作业时发动
+LevelGapMustGreaterThanTen = 该技能仅可在首次作业且用于等级低了10级及以上的配方时发动
+RequireInnerQuiet1 = 该技能只有在内静的档数大于1时才可以使用
+RequireInnerQuiet10 = 该技能只有在内静的档数为10时才可以使用
+CarefulObservationUsed3 = 设计变动最多使用三次
+HeartAndSoulUsed = 专心致志一次制作只能使用一次
+FocusNeverFailsAfterObserved = 注视在观察之后无法失败
+RequireHastyTouchSuccessed = 必须在仓促成功后使用
+QuickInnovationUsed = 快速改革一次制作只能使用一次
+NotAllowedInInnovationBuff = 改革状态下无法发动快速改革
+TrainedPerfectionUsed = 工匠的绝技一次制作只能使用一次
+
 # 状态
 normal = 通常
 good = 高品质

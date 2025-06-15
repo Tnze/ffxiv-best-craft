@@ -80,6 +80,24 @@ immaculate-mend = Immaculate Mend
 quick-innovation = Quick Innovation
 trained-perfection = Trained Perfection
 
+DurabilityNotEnough = Durability not enough
+CraftPointNotEnough = Craft point not enough
+CraftingAlreadyFinished = Crafting already finished
+PlayerLevelTooLow = Player level too low
+RequireGoodOrExcellent = Require good or excellent
+NotAllowedInWastNotBuff = Not allowed in wast not buff
+OnlyAllowedInFirstStep = Only allowed in first step
+LevelGapMustGreaterThanTen = Level gap must greater than 10
+RequireInnerQuiet1 = Require at least 1 stack of inner quiet
+RequireInnerQuiet10 = Require 10 stack of inner quiet
+CarefulObservationUsed3 = Careful observation can only use 3 times
+HeartAndSoulUsed = Heart and soul can be only used once
+FocusNeverFailsAfterObserved = Focus never fails after observed
+RequireHastyTouchSuccessed = Require hasty touch successed first
+QuickInnovationUsed = Quick innovation can be only used once
+NotAllowedInInnovationBuff = Not allowed in innovation buff
+TrainedPerfectionUsed = Trained perfection can be only used once
+
 # Conditions
 normal = Normal
 good = Good

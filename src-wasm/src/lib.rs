@@ -43,6 +43,13 @@ pub fn simulate(status: JsValue, actions: JsValue) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
+pub fn simulate_detail(status: JsValue, actions: JsValue) -> Result<JsValue, JsValue> {
+    let status: Status = from_value(status)?;
+    let actions: Vec<Actions> = from_value(actions)?;
+    Ok(to_value(&app_libs::simulate_detail(status, actions))?)
+}
+
+#[wasm_bindgen]
 pub fn simulate_one_step(
     status: JsValue,
     action: JsValue,

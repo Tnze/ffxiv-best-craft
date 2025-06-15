@@ -297,6 +297,19 @@ export async function simulate(
     }
 }
 
+export async function simulateDetail(
+    status: Status,
+    actions: Actions[],
+): Promise<any> {
+    if (isTauri) {
+        let { invoke } = await pkgTauri;
+        return invoke('simulate_detail', { status, actions });
+    } else {
+        let { simulate_detail } = await pkgWasm;
+        return simulate_detail(status, actions);
+    }
+}
+
 export interface SimulateOneStepResult {
     status: Status;
     is_success: boolean;
