@@ -49,6 +49,6 @@ jobs:
                   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
                   ARGS: '-rlzvc --exclude=releases --exclude=.htaccess --exclude=.user.ini --delete --delete-after -i'
                   SOURCE: './'
-                  REMOTE_HOST: ${{ vars.REMOTE_HOST }}
-                  REMOTE_USER: ${{ vars.REMOTE_USER }}
+                  REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+                  REMOTE_USER: ${{ secrets.REMOTE_USER }}
                   TARGET: ${{ vars.TARGET }}
