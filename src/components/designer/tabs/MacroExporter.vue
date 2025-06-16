@@ -79,14 +79,13 @@ const hasNotify = computed(() => {
 
 const chunkedActions = computed(() => {
     const macros = [];
+    // First, find out how many chunks we need
     let maxLinesPerChunk = 15;
     if (hasNotify.value) maxLinesPerChunk--;
     if (genOptions.hasLock) maxLinesPerChunk--;
+    if (genOptions.sectionMethod == 'disable') maxLinesPerChunk = 1e9; // Don't use Infinity here for minChunks calculations below
     let minChunks = Math.ceil(props.actions.length / maxLinesPerChunk);
-    if (genOptions.sectionMethod == 'disable') {
-        maxLinesPerChunk = Infinity;
-        minChunks = 1;
-    }
+    // Second, generate every chunk
     const size = Math.ceil(props.actions.length / minChunks);
     for (let sec = 0; sec < minChunks; sec++) {
         let section;
