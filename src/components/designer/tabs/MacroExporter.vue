@@ -288,7 +288,6 @@ disable-section = 禁用
 
 wait-time-inc = 增加等待时间
 
-
 export-json = 导出 JSON
 copied-json = 已复制 JSON 表达式 到系统剪切板
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
@@ -301,10 +300,19 @@ has-notify = Notification
 has-notify-auto = Auto
 has-notify-true = Always
 has-notify-false = Never
+
 has-lock = Macro Lock
-avg-size = Equalize
 oneclick-copy = Oneclick Copy
+
 notify-sound = Beep type
+random-sound = Random Sound
+no-sound = No Sound
+
+section-method = Section method
+avg-section = Average
+greedy-section = Greedy
+disable-section = Disable
+
 wait-time-inc = Increase waiting time
 
 export-json = Export as JSON
