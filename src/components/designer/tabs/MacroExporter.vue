@@ -41,25 +41,30 @@ const props = defineProps<{
 const { $t } = useFluent();
 const store = useStore();
 const genOptions = reactive(store.options.exportOptions);
-const addNotification = [
+
+const addNotification = computed(() => [
     { label: $t('has-notify-auto'), value: 'auto' },
     { label: $t('has-notify-true'), value: true },
     { label: $t('has-notify-false'), value: false },
-];
-const sectionOptions = [
+]);
+const sectionOptions = computed(() => [
     { label: $t('avg-section'), value: 'avg' },
     { label: $t('greedy-section'), value: 'greedy' },
     { label: $t('disable-section'), value: 'disable' },
-];
-const notifySoundOptions = [
-    { value: '', label: $t('no-sound') },
-    { value: ` <se>`, label: $t('random-sound') },
-].concat(
-    Array.from({ length: 16 }).map((_, i) => ({
-        value: ` <se.${i + 1}>`,
-        label: ` <se.${i + 1}>`,
-    })),
-);
+]);
+const notifySoundOptions = computed(() => {
+    const options = [
+        { label: $t('no-sound'), value: '' },
+        { label: $t('random-sound'), value: ` <se>` },
+    ];
+    for (let i = 1; i <= 16; i++) {
+        options.push({
+            label: ` <se.${i}>`,
+            value: ` <se.${i}>`,
+        });
+    }
+    return options;
+});
 
 // 自动确认是否添加完成提示
 const hasNotify = computed(() => {
