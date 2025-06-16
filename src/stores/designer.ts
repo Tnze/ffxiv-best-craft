@@ -49,9 +49,9 @@ export default defineStore('designer', {
         options: {
             exportOptions: {
                 addNotification: <boolean | 'auto'>'auto', // 宏执行完成是否提示
+                sectionMethod: <'avg' | 'greedy' | 'disable'>'avg', // 宏分块的方式
                 notifySound: ' <se.1>', // 宏完成提示音
                 hasLock: false, // 添加锁定宏语句
-                avgSize: true, // 让每个宏的长度尽量相同
                 waitTimeInc: 0, // 增加等待时间(秒)
                 oneclickCopy: true, // 一键复制
             },

@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -46,15 +46,19 @@ const addNotification = [
     { label: $t('has-notify-true'), value: true },
     { label: $t('has-notify-false'), value: false },
 ];
-const notifySoundOptions = Array.from({ length: 16 }).map((_, i) => ({
-    value: ` <se.${i + 1}>`,
-    label: ` <se.${i + 1}>`,
-}));
-notifySoundOptions.splice(
-    0,
-    0,
+const sectionOptions = [
+    { label: $t('avg-section'), value: 'avg' },
+    { label: $t('greedy-section'), value: 'greedy' },
+    { label: $t('disable-section'), value: 'disable' },
+];
+const notifySoundOptions = [
     { value: '', label: $t('no-sound') },
     { value: ` <se>`, label: $t('random-sound') },
+].concat(
+    Array.from({ length: 16 }).map((_, i) => ({
+        value: ` <se.${i + 1}>`,
+        label: ` <se.${i + 1}>`,
+    })),
 );
 
 // 自动确认是否添加完成提示
@@ -78,21 +82,30 @@ const chunkedActions = computed(() => {
     let maxLinesPerChunk = 15;
     if (hasNotify.value) maxLinesPerChunk--;
     if (genOptions.hasLock) maxLinesPerChunk--;
-    const minChunks = Math.ceil(props.actions.length / maxLinesPerChunk);
+    let minChunks = Math.ceil(props.actions.length / maxLinesPerChunk);
+    if (genOptions.sectionMethod == 'disable') {
+        maxLinesPerChunk = Infinity;
+        minChunks = 1;
+    }
     const size = Math.ceil(props.actions.length / minChunks);
     for (let sec = 0; sec < minChunks; sec++) {
         let section;
-        if (genOptions.avgSize) {
-            section = props.actions.slice(
-                sec * size,
-                Math.min(props.actions.length, (sec + 1) * size),
-            );
-        } else {
-            const start = sec * maxLinesPerChunk;
-            section = props.actions.slice(
-                start,
-                Math.min(props.actions.length, start + maxLinesPerChunk),
-            );
+        switch (genOptions.sectionMethod) {
+            case 'avg':
+                section = props.actions.slice(
+                    sec * size,
+                    Math.min(props.actions.length, (sec + 1) * size),
+                );
+                break;
+            case 'greedy':
+                const start = sec * maxLinesPerChunk;
+                section = props.actions.slice(
+                    start,
+                    Math.min(props.actions.length, start + maxLinesPerChunk),
+                );
+                break;
+            case 'disable':
+                section = props.actions.slice();
         }
         let lines = [];
         if (genOptions.hasLock) lines.push(`/mlock`);
@@ -156,7 +169,6 @@ async function copy(macroText: string, macroInfo: string) {
     <div style="margin-left: 10px">
         <div>
             <el-checkbox v-model="genOptions.hasLock" :label="$t('has-lock')" />
-            <el-checkbox v-model="genOptions.avgSize" :label="$t('avg-size')" />
             <el-checkbox
                 v-if="isWebsite"
                 v-model="genOptions.oneclickCopy"
@@ -168,6 +180,12 @@ async function copy(macroText: string, macroInfo: string) {
                 <el-segmented
                     v-model="genOptions.addNotification"
                     :options="addNotification"
+                />
+            </el-form-item>
+            <el-form-item :label="$t('section-method')">
+                <el-segmented
+                    v-model="genOptions.sectionMethod"
+                    :options="sectionOptions"
                 />
             </el-form-item>
             <el-form-item v-if="hasNotify" :label="$t('notify-sound')">
@@ -255,14 +273,21 @@ has-notify = 添加完成提示
 has-notify-auto = 自动确定
 has-notify-true = 总是提示
 has-notify-false = 不提示
-has-lock = 锁定宏指令
-avg-size = 长度平均化
-oneclick-copy = 一键复制
-notify-sound = 提示音
-wait-time-inc = 增加等待时间
 
+has-lock = 锁定宏指令
+oneclick-copy = 一键复制
+
+notify-sound = 提示音
 random-sound = 随机提示音
 no-sound = 无提示音
+
+section-method = 拆分过长的宏
+avg-section = 平均
+greedy-section = 贪婪
+disable-section = 禁用
+
+wait-time-inc = 增加等待时间
+
 
 export-json = 导出 JSON
 copied-json = 已复制 JSON 表达式 到系统剪切板
