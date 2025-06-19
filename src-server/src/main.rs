@@ -14,14 +14,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use std::{collections::BTreeMap, env};
+use std::{
+    collections::{BTreeMap, HashMap},
+    env,
+};
 
 use salvo::cors;
 use salvo::cors::Cors;
 use salvo::hyper::Method;
 use salvo::prelude::*;
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 mod db;
 use db::{
@@ -31,24 +34,46 @@ use db::{
 
 type Result<T> = std::result::Result<T, StatusError>;
 
+#[derive(Deserialize, Debug)]
+struct ServerConfig {
+    lang: HashMap<String, LanguageConfig>,
+}
+
+#[derive(Deserialize, Debug)]
+struct LanguageConfig {
+    database: String,
+}
+
 #[derive(Clone)]
 struct AppState {
-    conn: DatabaseConnection,
+    connections: HashMap<String, DatabaseConnection>,
 }
 
 #[tokio::main]
 async fn main() {
     println!("hello, world");
+
+    // parse configs
+    let config_str = std::fs::read_to_string("config.toml").unwrap();
+    let config: ServerConfig = toml::from_str(&config_str).unwrap();
+    println!("{config:?}");
+
     // get env vars
-    dotenvy::dotenv().ok();
+    dotenvy::dotenv().unwrap();
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
     let host = env::var("HOST").expect("HOST is not set in .env file");
     let port = env::var("PORT").expect("PORT is not set in .env file");
     let server_url = format!("{host}:{port}");
 
     // create post table if not exists
+    let mut connections = HashMap::new();
+    for (lang, lang_cfg) in config.lang.into_iter() {
+        let url = format!("{db_url}/{}", lang_cfg.database);
+        let conn = Database::connect(&url).await.unwrap();
+        connections.insert(lang, conn);
+    }
     let conn = Database::connect(&db_url).await.unwrap();
-    let state = AppState { conn };
+    let state = AppState { connections };
 
     let cors = Cors::new()
         .allow_origin(cors::Any)
@@ -63,15 +88,18 @@ async fn main() {
 
     let router = Router::with_hoop(cors)
         .hoop(affix_state::inject(state))
-        .push(Router::with_path("recipe_level_table").get(recipe_level_table))
-        .push(Router::with_path("recipe_table").get(recipe_table))
-        .push(Router::with_path("recipe_info").get(recipe_info))
-        .push(Router::with_path("recipes_ingredientions").get(recipes_ingredientions))
-        .push(Router::with_path("recipe_collectability").get(recipe_collectability))
-        .push(Router::with_path("item_info").get(item_info))
-        .push(Router::with_path("craft_type").get(craft_type))
-        .push(Router::with_path("medicine_table").get(medicine_table))
-        .push(Router::with_path("meals_table").get(meals_table));
+        .push(
+            Router::with_path("{lang}")
+                .push(Router::with_path("recipe_level_table").get(recipe_level_table))
+                .push(Router::with_path("recipe_table").get(recipe_table))
+                .push(Router::with_path("recipe_info").get(recipe_info))
+                .push(Router::with_path("recipes_ingredientions").get(recipes_ingredientions))
+                .push(Router::with_path("recipe_collectability").get(recipe_collectability))
+                .push(Router::with_path("item_info").get(item_info))
+                .push(Router::with_path("craft_type").get(craft_type))
+                .push(Router::with_path("medicine_table").get(medicine_table))
+                .push(Router::with_path("meals_table").get(meals_table)),
+        );
     let listener = TcpListener::new(server_url);
     let acceptor = listener.bind().await;
     Server::new(acceptor).serve(router).await;
@@ -107,11 +135,16 @@ async fn recipe_level_table(
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
     let rlv = req
         .query::<u32>("rlv")
         .ok_or_else(|| StatusError::bad_request())?;
     let Some(rt) = RecipeLevelTables::find_by_id(rlv)
-        .one(&state.conn)
+        .one(conn)
         .await
         .map_err(|_| StatusError::internal_server_error())?
     else {
@@ -128,6 +161,11 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error().detail("Obtain AppState error"))?;
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
     let page_id = req
         .query::<u64>("page_id")
         .ok_or_else(|| StatusError::bad_request().detail("Need 'page_id'"))?;
@@ -178,7 +216,7 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
         .column_as(recipes::Column::RequiredControl, "required_control")
         .column_as(recipes::Column::CanHq, "can_hq")
         .order_by(recipes::Column::Id, Order::Asc);
-    let paginate = query.into_model::<RecipeInfo>().paginate(&state.conn, 200);
+    let paginate = query.into_model::<RecipeInfo>().paginate(conn, 200);
 
     let p = paginate.num_pages().await.map_err(|err| {
         println!("Failed to get total page numbers: {err}");
@@ -199,17 +237,22 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
 }
 
 #[handler]
-async fn craft_type(_req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
+async fn craft_type(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
     let query = CraftTypes::find()
         .column_as(craft_types::Column::Id, "id")
         .column_as(craft_types::Column::Name, "name")
         .order_by(craft_types::Column::Id, Order::Asc);
     let result = query
         .into_model::<craft_types::Model>()
-        .all(&state.conn)
+        .all(conn)
         .await
         .map_err(|err| {
             println!("Failed to get craft type list: {err}");
@@ -229,6 +272,11 @@ async fn recipes_ingredientions(
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
     let recipe_id = req
         .query::<u32>("recipe_id")
         .ok_or_else(|| StatusError::bad_request())?;
@@ -236,7 +284,7 @@ async fn recipes_ingredientions(
     let mut needs = BTreeMap::new();
     let ing = ItemWithAmount::find()
         .filter(item_with_amount::Column::RecipeId.eq(recipe_id))
-        .all(&state.conn)
+        .all(conn)
         .await
         .map_err(|_| StatusError::internal_server_error())?;
     for v in &ing {
@@ -255,6 +303,11 @@ async fn recipe_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error().detail("Obtain AppState error"))?;
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
     let recipe_id = req
         .query::<u32>("recipe_id")
         .ok_or_else(|| StatusError::bad_request().detail("Need 'recipe_id'"))?;
@@ -287,7 +340,7 @@ async fn recipe_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -
         .column_as(recipes::Column::RequiredControl, "required_control")
         .column_as(recipes::Column::CanHq, "can_hq")
         .into_model::<RecipeInfo>()
-        .one(&state.conn)
+        .one(conn)
         .await
         .map_err(|e| {
             println!("recipe_info error: {e:?}");
@@ -307,13 +360,18 @@ async fn recipe_collectability(
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error().detail("Obtain AppState error"))?;
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
     let recipe_id = req
         .query::<u32>("recipe_id")
         .ok_or_else(|| StatusError::bad_request().detail("Need 'recipe_id'"))?;
     let result = CollectablesShopRefine::find()
         .reverse_join(Recipes)
         .filter(recipes::Column::Id.eq(recipe_id))
-        .one(&state.conn)
+        .one(conn)
         .await
         .map_err(|_| StatusError::internal_server_error())?;
     res.render(Json(result));
@@ -326,11 +384,16 @@ async fn item_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -> 
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
     let item_id = req
         .query::<u32>("item_id")
         .ok_or_else(|| StatusError::bad_request())?;
     let result = Items::find_by_id(item_id)
-        .one(&state.conn)
+        .one(conn)
         .await
         .map_err(|_| StatusError::internal_server_error())?
         .ok_or_else(|| StatusError::bad_gateway())?;
@@ -364,22 +427,30 @@ const MEDICINE_SEARCH_ID: u32 = 43;
 const MEALS_SEARCH_ID: u32 = 45;
 
 #[handler]
-async fn medicine_table(_req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
+async fn medicine_table(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
-    res.render(Json(
-        query_enhancers(&state.conn, MEDICINE_SEARCH_ID).await?,
-    ));
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
+    res.render(Json(query_enhancers(conn, MEDICINE_SEARCH_ID).await?));
     Ok(())
 }
 
 #[handler]
-async fn meals_table(_req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
+async fn meals_table(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<()> {
     let state = depot
         .obtain::<AppState>()
         .map_err(|_| StatusError::internal_server_error())?;
-    res.render(Json(query_enhancers(&state.conn, MEALS_SEARCH_ID).await?));
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
+    res.render(Json(query_enhancers(conn, MEALS_SEARCH_ID).await?));
     Ok(())
 }
 
