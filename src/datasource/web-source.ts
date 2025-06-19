@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -33,7 +33,7 @@ export class WebSource {
     public sourceType = DataSourceType.RemoteRealtime;
     base: string;
 
-    constructor(base: string, lang?: string) {
+    constructor(base: string, lang: string) {
         if (lang !== undefined)
             this.base = new URL(lang + '/', base).toString();
         else this.base = base;
@@ -188,5 +188,4 @@ export class WebSource {
     }
 }
 
-export const YYYYGamesApiBase = 'https://bc-api.yyyy.games/';
-export const YYYYGamesApiBaseBeta = 'https://bc-api-beta.yyyy.games/';
+export const YYYYGamesApiBase = 'https://tnze.yyyy.games/api/datasource/';
