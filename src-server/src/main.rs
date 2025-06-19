@@ -56,7 +56,6 @@ async fn main() {
     // parse configs
     let config_str = std::fs::read_to_string("config.toml").unwrap();
     let config: ServerConfig = toml::from_str(&config_str).unwrap();
-    println!("{config:?}");
 
     // get env vars
     dotenvy::dotenv().unwrap();
