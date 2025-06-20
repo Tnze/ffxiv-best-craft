@@ -79,8 +79,8 @@ const emits = defineEmits<{
     (event: 'update:modelValue', v: Enhancer[]): void;
 }>();
 
-onMounted(async () => loadMealsAndMedicine(setting.getDataSource));
-watch(() => setting.getDataSource, loadMealsAndMedicine);
+onMounted(async () => loadMealsAndMedicine(setting.getDataSource()));
+watch(() => setting.getDataSource(), loadMealsAndMedicine);
 
 const gearsetsList = computed<GearsetsRow[]>(() => {
     const craftType = props.job;

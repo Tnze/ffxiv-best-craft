@@ -59,28 +59,30 @@ export default defineStore('settings', {
                 dataSourceLang: this.dataSourceLang,
             });
         },
-        async getDataSource(): Promise<DataSource> {
-            let dataSources: Record<string, () => DataSource> = {
-                'yyyy.games': () =>
+        getDataSource(): () => Promise<DataSource> {
+            console.log('get data source', this.dataSource);
+            let dataSources: Record<string, () => Promise<DataSource>> = {
+                'yyyy.games': async () =>
                     new WebSource(YYYYGamesApiBase, this.dataSourceLang!),
-                cafe: () => new XivApiRecipeSource(CafeMakerApiBase),
-                xivapi: () =>
+                cafe: async () => new XivApiRecipeSource(CafeMakerApiBase),
+                xivapi: async () =>
                     new BetaXivApiRecipeSource(
                         BetaXivapiBase,
                         <'en' | 'ja' | 'de' | 'fr'>this.dataSourceLang,
                     ),
             };
-            let defaultSource: () => DataSource = dataSources['yyyy.games'];
+            let defaultSource = dataSources['yyyy.games'];
             if (isTauri) {
-                let { LocalRecipeSource } = await import(
-                    '../datasource/local-source'
-                );
-                let localSource = () => new LocalRecipeSource();
+                let localSource = async () => {
+                    let { LocalRecipeSource } = await import(
+                        '../datasource/local-source'
+                    );
+                    return new LocalRecipeSource();
+                };
                 dataSources['local'] = localSource;
                 defaultSource = localSource;
             }
-
-            return (dataSources[this.dataSource] ?? defaultSource)();
+            return dataSources[this.dataSource] ?? defaultSource;
         },
     },
     actions: {

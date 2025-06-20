@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -98,13 +98,13 @@ const conditionsFlag = computed<Conditions[]>({
 
 let recipeLevelPromise: Promise<RecipeLevel> | null = null;
 watch(
-    [autoLoad, () => settingStore.dataSource, rlv],
-    async ([autoLoadValue, _, rlv]) => {
+    [autoLoad, settingStore.getDataSource, rlv],
+    async ([autoLoadValue, dataSource, rlv]) => {
         if (!autoLoadValue) return;
         try {
             autoLoadLoading.value = true;
             if (recipeLevelPromise != null) await recipeLevelPromise;
-            const ds = await settingStore.getDataSource;
+            const ds = await dataSource;
             recipeLevelPromise = ds.recipeLevelTable(rlv);
             customRecipe.value.rlv = await recipeLevelPromise;
             recipeLevelPromise = null;

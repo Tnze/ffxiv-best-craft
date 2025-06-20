@@ -47,7 +47,7 @@ const tableInstance = useTemplateRef<TableInstance>('table');
 async function update() {
     try {
         isLoading.value = true;
-        const source = await settingStore.getDataSource;
+        const source = await settingStore.getDataSource();
         const recipeTable = await source.recipeTable(1, search.value);
         recipeList.value = recipeTable.results;
     } finally {

@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -28,9 +28,10 @@ import {
     ElRadioButton,
 } from 'element-plus';
 import { ArrowUp } from '@element-plus/icons-vue';
-import { computed, reactive, ref, watchEffect } from 'vue';
+import { computed, reactive, ref, watch, watchEffect } from 'vue';
 import { Item, ItemWithAmount, Recipe } from '@/libs/Craft';
 import useSettingsStore from '@/stores/settings';
+import { DataSource } from '@/datasource/source';
 
 const settingStore = useSettingsStore();
 
@@ -55,16 +56,15 @@ const initQuality = computed({
     },
 });
 
-const calcItems = (ri: ItemWithAmount[]) =>
-    Promise.all(
+async function calcItems(source: DataSource, ri: ItemWithAmount[]) {
+    return Promise.all(
         ri.map(async item => ({
-            item: await (
-                await settingStore.getDataSource
-            ).itemInfo(item.ingredient_id),
+            item: await source.itemInfo(item.ingredient_id),
             amount: item.amount,
             hqAmount: 0,
         })),
     );
+}
 const inputType = ref<'manully' | 'ingredient'>('ingredient');
 const manullyInput = computed(
     () => props.recipeId !== undefined && inputType.value != 'manully',
@@ -77,16 +77,19 @@ watchEffect(() => {
     }
 });
 
-watchEffect(async () => {
-    const recipeId = props.recipeId;
-    const ri =
-        recipeId === undefined
-            ? null
-            : await (
-                  await settingStore.getDataSource
-              ).recipesIngredients(recipeId);
-    items.value = ri == null ? [] : reactive(await calcItems(ri));
-});
+watch(
+    [settingStore.getDataSource, () => props.recipeId],
+    async ([dataSource, recipeId]) => {
+        const source = await dataSource;
+        if (recipeId === undefined) {
+            items.value = [];
+        } else {
+            const ri = await source.recipesIngredients(recipeId);
+            items.value = reactive(await calcItems(source, ri));
+        }
+    },
+    { immediate: true },
+);
 
 watchEffect(() => {
     if (items.value == null || !manullyInput.value) return;

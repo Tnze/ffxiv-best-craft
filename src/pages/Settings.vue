@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -102,39 +102,22 @@ if (isTauri) {
             <el-form-item :label="$t('data-source')">
                 <el-select v-model="store.dataSource">
                     <el-option
-                        v-if="isTauri"
-                        :label="$t('ds-local')"
-                        value="local"
-                    />
-                    <el-option :label="$t('ds-yyyygames')" value="yyyy.games">
-                        <span style="float: left">
-                            {{ $t('ds-yyyygames') }}
-                        </span>
-                        <span class="data-source-option-note">
-                            {{ $t('ds-yyyygames-desc') }}
-                        </span>
-                    </el-option>
-                    <el-option
-                        :label="$t('ds-yyyygames-beta')"
-                        value="yyyy.games-beta"
+                        v-for="dataSource in dataSourceList"
+                        :label="$t(`ds-${dataSource[0].replace('.', '')}`)"
+                        :value="dataSource[0]"
                     >
                         <span style="float: left">
-                            {{ $t('ds-yyyygames-beta') }}
+                            {{ $t(`ds-${dataSource[0].replace('.', '')}`) }}
                         </span>
                         <span class="data-source-option-note">
-                            {{ $t('ds-yyyygames-beta-desc') }}
-                        </span>
-                    </el-option>
-                    <el-option :label="$t('ds-beta-xivapi')" value="xivapi">
-                        <span style="float: left">
-                            {{ $t('ds-beta-xivapi') }}
-                        </span>
-                        <span class="data-source-option-note">
-                            {{ $t('ds-beta-xivapi-desc') }}
+                            {{
+                                $t(`ds-${dataSource[0].replace('.', '')}-desc`)
+                            }}
                         </span>
                     </el-option>
                 </el-select>
             </el-form-item>
+            <!-- Data source languages -->
             <el-form-item
                 v-if="(dataSourceList.get(store.dataSource)?.length ?? 0) > 1"
             >
@@ -143,25 +126,19 @@ if (isTauri) {
                         v-for="lang in dataSourceList.get(store.dataSource)"
                         :label="$t('dslang-' + lang)"
                         :value="lang!"
-                    />
+                    >
+                        <span style="float: left">
+                            {{ $t(`dslang-${lang}`) }}
+                        </span>
+                        <span
+                            v-if="store.dataSource == 'yyyy.games'"
+                            class="data-source-option-note"
+                        >
+                            {{ $t(`dslang-${lang}-desc`) }}
+                        </span>
+                    </el-option>
                 </el-select>
             </el-form-item>
-            <!-- <el-form-item v-if="store.dataSource == 'xivapi'">
-                <el-select v-model="store.dataSourceLang">
-                    <el-option :label="$t('dslang-en')" value="en" />
-                    <el-option :label="$t('dslang-ja')" value="ja" />
-                    <el-option :label="$t('dslang-de')" value="de" />
-                    <el-option :label="$t('dslang-fr')" value="fr" />
-                </el-select>
-            </el-form-item>
-            <el-form-item v-else-if="store.dataSource == 'yyyy.games-beta'">
-                <el-select v-model="store.dataSourceLang">
-                    <el-option :label="$t('dslang-en')" value="en" />
-                    <el-option :label="$t('dslang-ja')" value="ja" />
-                    <el-option :label="$t('dslang-de')" value="de" />
-                    <el-option :label="$t('dslang-fr')" value="fr" />
-                </el-select>
-            </el-form-item> -->
             <el-form-item v-if="isWebsite" :label="$t('switch-lines')">
                 <el-button @click="switchLinesDialogVisible = true">
                     {{ $t('detail') }}
@@ -300,19 +277,25 @@ theme = 主题
 light = 亮
 dark = 暗
 auto = 自动
+
 data-source = 数据源
 ds-local = 本地
-# ds-xivapi =
-ds-yyyygames-desc = 国服数据
-ds-yyyygames-beta-desc = 国际服数据
-# ds-cafe =
-ds-beta-xivapi-desc = 国际服数据
+# ds-yyyygames = 
+ds-xivapi = Xivapi
+ds-local-desc = 国服数据
+ds-yyyygames-desc = 混合
+ds-xivapi-desc = 国际服数据
 switch-lines = 切换线路
 dslang-zh = 汉语
 dslang-en = 英语
 dslang-ja = 日语
 dslang-de = 德语
 dslang-fr = 法语
+dslang-zh-desc = 国服数据
+dslang-en-desc = 国际服数据
+dslang-ja-desc = 国际服数据
+dslang-de-desc = 国际服数据
+dslang-fr-desc = 国际服数据
 system-lang = 跟随系统
 version-number = 版本号
 tauri = Tauri
@@ -336,19 +319,21 @@ auto = Auto
 data-source = Data Source
 ds-local = Local
 ds-yyyygames = YYYY.GAMES
-ds-yyyygames-desc = Chinese
-ds-yyyygames-beta = YYYY.GAMES (Beta)
-ds-yyyygames-beta-desc = Latest
 ds-xivapi = Xivapi
-ds-cafe = Cafe Maker
-ds-beta-xivapi = Xivapi (Beta)
-ds-beta-xivapi-desc = Latest
+ds-local-desc = Chinese
+ds-yyyygames-desc = Mixed
+ds-xivapi-desc = Latest
 switch-lines = Switch Lines
 dslang-zh = Chinese
 dslang-en = English
 dslang-ja = Japanese
 dslang-de = German
 dslang-fr = French
+dslang-zh-desc = Chinese
+dslang-en-desc = Latest
+dslang-ja-desc = Latest
+dslang-de-desc = Latest
+dslang-fr-desc = Latest
 system-lang = System
 version-number = Version
 tauri = Tauri

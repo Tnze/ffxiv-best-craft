@@ -94,7 +94,7 @@ export default defineStore('bom', {
 
         async updateBom() {
             const settingStore = useSettingStore();
-            const ds = await settingStore.getDataSource;
+            const ds = await settingStore.getDataSource();
 
             for (const slot of this.targetItems) {
                 slot.requiredBy.clear();

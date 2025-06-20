@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -81,7 +81,7 @@ const craftTypeOptions = ref<CraftType[]>([]);
 const filterRecipeLevel = ref<number>();
 
 async function craftTypeRemoteMethod() {
-    const source = await settingStore.getDataSource;
+    const source = await settingStore.getDataSource();
     filterCraftType.value = undefined;
     craftTypeOptions.value = await source.craftTypeList();
 }
@@ -148,7 +148,7 @@ async function infiniteRecipeLoad() {
 // 搜索时更新
 let searchTimer: any = null;
 watch(searchText, async searching => {
-    const source = await settingStore.getDataSource;
+    const source = await settingStore.getDataSource();
     if (searchTimer != null) {
         clearTimeout(searchTimer);
     }
@@ -170,14 +170,14 @@ watch(searchText, async searching => {
 watch(
     () => pagination.Page,
     async pageNumber => {
-        const source = await settingStore.getDataSource;
+        const source = await settingStore.getDataSource();
         await updateRecipePage(source, pageNumber, searchText.value);
     },
 );
 
 // 回车手动更新
 async function triggerSearch() {
-    const source = await settingStore.getDataSource;
+    const source = await settingStore.getDataSource();
     const pageNumber = pagination.Page;
     const searching = searchText.value;
     pagination.Page = 1; // 触发搜索时应该翻回第一页，否则搜不到东西
@@ -218,7 +218,7 @@ let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null =
 async function selectRecipeRow(row: RecipeInfo) {
     try {
         isRecipeTableLoading.value = true;
-        const source = await settingStore.getDataSource;
+        const source = await settingStore.getDataSource();
         var [recipeLevel, itemInfo, collectability] = await Promise.all([
             source.recipeLevelTable(row.rlv),
             source.itemInfo(row.item_id),
@@ -266,7 +266,7 @@ async function selectRecipeRow(row: RecipeInfo) {
 }
 
 async function selectRecipeById(recipeId: number) {
-    const source = await settingStore.getDataSource;
+    const source = await settingStore.getDataSource();
     if (source.recipeInfo == undefined) {
         ElMessage.error($t('datasource-unsupport-recipe-info'));
         return;
