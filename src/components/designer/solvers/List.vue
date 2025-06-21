@@ -64,7 +64,7 @@ const activeNames = ref<string>('raphael');
 
 async function runSimpleSolver(
     solverId: SequenceSource,
-    solvingRunningState: Ref<Boolean>,
+    solvingRunningState: Ref<boolean>,
     solver: (initStatus: Status) => Promise<Actions[]>,
 ) {
     const msg1 = ElMessage({

@@ -45,7 +45,7 @@ const emits = defineEmits<{
     (
         event: 'runSimpleSolver',
         solverId: SequenceSource,
-        solvingRunningState: Ref<Boolean>,
+        solvingRunningState: Ref<boolean>,
         solver: (initStatus: Status) => Promise<Actions[]>,
     ): void;
 }>();

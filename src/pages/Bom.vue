@@ -61,7 +61,7 @@ const groupedIngs = computed(() => {
         return [];
     }
     const maxDepth = store.ingredients[store.ingredients.length - 1].depth;
-    const groups: BomSlot[][] = new Array(maxDepth);
+    const groups: BomSlot[][] = Array.from({ length: maxDepth });
     for (const ing of store.ingredients) {
         if (groups[ing.depth] == undefined) groups[ing.depth] = [ing];
         else groups[ing.depth].push(ing);
@@ -182,7 +182,10 @@ const relations = computed(() => {
                     >
                         {{ $t('clear') }}
                     </el-button>
-                    <el-switch v-model="showRelations" :active-text="$t('display-relations')" />
+                    <el-switch
+                        v-model="showRelations"
+                        :active-text="$t('display-relations')"
+                    />
                 </div>
                 <BomItem
                     class="item"

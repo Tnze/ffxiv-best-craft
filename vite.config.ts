@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -23,6 +23,7 @@ import {
 } from 'unplugin-fluent-vue/vite';
 import wasm from 'vite-plugin-wasm';
 import { resolve } from 'path';
+import oxlintPlugin from 'vite-plugin-oxlint';
 
 const projectRootDir = resolve(__dirname);
 
@@ -62,6 +63,7 @@ export default defineConfig({
             baseDir: 'src', // base directory for Vue files
             ftlDir: 'src/assets/locales', // directory with ftl files
         }),
+        oxlintPlugin()
     ],
     resolve: {
         alias: [{ find: '@', replacement: resolve(projectRootDir, 'src') }],
