@@ -60,7 +60,6 @@ export default defineStore('settings', {
             });
         },
         getDataSource(): () => Promise<DataSource> {
-            console.log('get data source', this.dataSource);
             let dataSources: Record<string, () => Promise<DataSource>> = {
                 'yyyy.games': async () =>
                     new WebSource(YYYYGamesApiBase, this.dataSourceLang!),
