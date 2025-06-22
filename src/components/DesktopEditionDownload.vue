@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2025  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -24,6 +24,7 @@ import {
     ElLink,
     ElSpace,
 } from 'element-plus';
+import { gte } from 'semver';
 
 interface Versions {
     version: string;
@@ -40,17 +41,36 @@ interface Versions {
 
 const versions = ref<Versions>();
 
-// const endpoints = [
-//     "https://gitee.com/Tnze/ffxiv-best-craft/raw/main/versions.json",
-//     "https://github.com/Tnze/ffxiv-best-craft/releases/latest/download/latest.json",
-//     "https://raw.githubusercontent.com/Tnze/ffxiv-best-craft/main/versions.json",
-// ];
+const endpoints = [
+    'https://gitee.com/Tnze/ffxiv-best-craft/raw/main/versions.json',
+    'https://github.com/Tnze/ffxiv-best-craft/releases/latest/download/latest.json',
+    'https://raw.githubusercontent.com/Tnze/ffxiv-best-craft/main/versions.json',
+];
 
 async function requestVersions() {
-    // const requests = endpoints.map(async endpoint => fetch(endpoint, { method: 'GET', mode: 'cors' }));
-    // const firstResponse = await Promise.any(requests);
-    // versions.value = await firstResponse.json();
-    versions.value = await import('@/../versions.json');
+    // 从多个源查询最新版本信息
+    const requests = endpoints.map(async endpoint => {
+        const resp = await fetch(endpoint, {
+            method: 'GET',
+            mode: 'cors',
+        });
+        return <Versions>await resp.json();
+    });
+    requests.push(import('@/../versions.json'));
+
+    // 以任意顺序接收版本信息响应，找到最新的数据
+    requests.map(resp =>
+        resp
+            .then(async v => {
+                if (
+                    versions.value == undefined ||
+                    gte(v.version, versions.value.version)
+                ) {
+                    versions.value = v;
+                }
+            })
+            .catch(() => {}),
+    );
 }
 
 requestVersions();

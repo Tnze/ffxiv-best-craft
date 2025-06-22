@@ -48,7 +48,6 @@ import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent';
 import { useRouter } from 'vue-router';
 import DesktopEditionDownload from './components/DesktopEditionDownload.vue';
-import { readTextFile } from '@tauri-apps/plugin-fs';
 
 const { $t } = useFluent();
 const colorMode = useColorMode();
