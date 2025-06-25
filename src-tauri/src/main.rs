@@ -196,6 +196,22 @@ async fn recipe_table(
 }
 
 #[tauri::command(async)]
+async fn recipe_level_table_by_job_level(
+    job_level: i32,
+    app_state: tauri::State<'_, AppState>,
+    app_handle: tauri::AppHandle,
+) -> Result<Option<recipe_level_tables::Model>, String> {
+    let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
+    let result = RecipeLevelTables::find()
+        .filter(recipe_level_tables::Column::ClassJobLevel.eq(job_level))
+        .order_by_asc(recipe_level_tables::Column::Id)
+        .one(db)
+        .await
+        .map_err(err_to_string)?;
+    Ok(result)
+}
+
+#[tauri::command(async)]
 async fn recipes_ingredientions(
     recipe_id: i32,
     app_state: tauri::State<'_, AppState>,
@@ -216,16 +232,6 @@ async fn recipes_ingredientions(
     }
     Ok(needs.into_iter().collect())
 }
-
-// #[derive(Serialize)]
-// enum CollectablesMetadata {
-//     CollectablesShopRefine(CollectablesShopRefine),
-//     // HWDCrafterSupply,
-//     // SatisfactionSupply,
-//     // SharlayanCraftWorkSupply,
-//     // CollectablesRefine,
-//     Unknown(u16),
-// }
 
 #[tauri::command(async)]
 async fn recipe_collectability(
@@ -642,6 +648,7 @@ fn main() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .invoke_handler(tauri::generate_handler![
             recipe_level_table,
+            recipe_level_table_by_job_level,
             new_status,
             simulate,
             simulate_one_step,

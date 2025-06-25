@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -73,10 +73,23 @@ export class LocalRecipeSource {
     }
 
     async recipeLevelTable(rlv: number): Promise<RecipeLevel> {
+        const invoke = await this.invoke;
         let result: RecipeLevel = {
-            ...(await (await this.invoke)('recipe_level_table', { rlv })),
+            ...(await invoke('recipe_level_table', { rlv })),
             stars: 0,
         };
+        return result;
+    }
+
+    async recipeLevelTablebyJobLevel(
+        jobLevel: number,
+    ): Promise<RecipeLevel | null> {
+        const invoke = await this.invoke;
+        const result: RecipeLevel = await invoke(
+            'recipe_level_table_by_job_level',
+            { jobLevel },
+        );
+        result.stars = 0;
         return result;
     }
 

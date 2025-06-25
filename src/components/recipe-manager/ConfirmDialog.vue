@@ -22,26 +22,44 @@ import {
     ElDescriptions,
     ElDescriptionsItem,
     ElButton,
+    ElInputNumber,
+    ElAlert,
 } from 'element-plus';
-import { CollectablesShopRefine, Item, Recipe, RecipeInfo } from '@/libs/Craft';
+import {
+    CollectablesShopRefine,
+    Item,
+    newRecipe,
+    Recipe,
+    RecipeInfo,
+} from '@/libs/Craft';
 import { selectRecipe } from './common';
 import { useMediaQuery } from '@vueuse/core';
 import { useRouter } from 'vue-router';
+import { computed, ref, registerRuntimeCompiler, watch } from 'vue';
+import useSettingStore from '@/stores/settings';
 
 const props = defineProps<{
-    recipe: Recipe;
     recipeInfo: RecipeInfo;
     itemInfo: Item;
     collectability?: CollectablesShopRefine;
     isNormalRecipe: boolean;
 }>();
 const router = useRouter();
+const settingsStore = useSettingStore();
 const visible = defineModel<boolean>({ required: true });
+const recipe = defineModel<Recipe>('recipe', { required: true });
 const compactLayout = useMediaQuery('screen and (max-width: 500px)');
+
+const dynRecipeLevel = ref<number>();
+const isDynRecipe = computed(() => {
+    const notebook = props.recipeInfo.recipe_notebook_list;
+    return notebook >= 1496 && notebook <= 1503;
+});
+const dynRecipeFixed = ref(false);
 
 async function confirm(mode: 'simulator' | 'designer') {
     selectRecipe(
-        props.recipe,
+        recipe.value,
         props.recipeInfo.id,
         props.recipeInfo.material_quality_factor,
         props.recipeInfo,
@@ -53,6 +71,26 @@ async function confirm(mode: 'simulator' | 'designer') {
     router.push({ name: 'designer' });
     visible.value = false;
 }
+
+watch(dynRecipeLevel, async jobLevel => {
+    if (jobLevel == undefined) {
+        dynRecipeFixed.value = false;
+        return;
+    }
+    const ds = await settingsStore.getDataSource();
+    const recipeLevel = await ds.recipeLevelTablebyJobLevel!(jobLevel);
+    if (recipeLevel == null) {
+        dynRecipeFixed.value = false;
+        return;
+    }
+    recipe.value = await newRecipe(
+        recipeLevel,
+        props.recipeInfo.difficulty_factor,
+        props.recipeInfo.quality_factor,
+        props.recipeInfo.durability_factor,
+    );
+    dynRecipeFixed.value = true;
+});
 </script>
 
 <template>
@@ -62,7 +100,26 @@ async function confirm(mode: 'simulator' | 'designer') {
         :align-center="true"
         :width="compactLayout ? '90%' : '50%'"
     >
+        <template v-if="isDynRecipe">
+            <el-alert
+                :title="$t('alert-sync-level')"
+                :type="dynRecipeFixed ? 'success' : 'error'"
+                :closable="false"
+            />
+            <br />
+        </template>
         <el-descriptions loading="true">
+            <el-descriptions-item
+                v-if="isDynRecipe"
+                :label="$t('sync-level')"
+                :span="3"
+            >
+                <el-input-number
+                    size="small"
+                    v-model="dynRecipeLevel"
+                    :min="1"
+                />
+            </el-descriptions-item>
             <el-descriptions-item :label="$t('name')" :span="3">
                 {{ recipeInfo.item_name }}
             </el-descriptions-item>
@@ -108,7 +165,11 @@ async function confirm(mode: 'simulator' | 'designer') {
                 >
                     {{ $t('simulator-mode') }}
                 </el-button>
-                <el-button type="primary" @click="confirm('designer')">
+                <el-button
+                    type="primary"
+                    :disabled="isDynRecipe && !dynRecipeFixed"
+                    @click="confirm('designer')"
+                >
                     {{ $t(isNormalRecipe ? 'confirm' : 'designer-mode') }}
                 </el-button>
             </span>
@@ -119,6 +180,7 @@ async function confirm(mode: 'simulator' | 'designer') {
 <fluent locale="zh-CN">
 confirm-select = 开始制作“{ $itemName }”吗？
 confirm-select2 = 这是一个高难度配方，请选择模式。
+alert-sync-level = 这是一个等级同步配方，请输入同步等级
 please-confirm = 请确认
 
 cancel = 取消
@@ -126,6 +188,7 @@ confirm = 确认
 designer-mode = 普通模式
 simulator-mode = 高难模式
 
+sync-level = 等级同步
 type = 类型
 level = 等级
 name = 名称

@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -14,7 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { CollectablesShopRefine, Item, ItemWithAmount, RecipeInfo, RecipeLevel } from '@/libs/Craft';
+import {
+    CollectablesShopRefine,
+    Item,
+    ItemWithAmount,
+    RecipeInfo,
+    RecipeLevel,
+} from '@/libs/Craft';
 import { Enhancer } from '@/libs/Enhancer';
 
 export interface DataSource {
@@ -29,7 +35,10 @@ export interface DataSource {
     ): Promise<RecipesSourceResult>;
     recipesIngredients(recipeId: number): Promise<ItemWithAmount[]>;
     recipeLevelTable(rlv: number): Promise<RecipeLevel>;
-    recipeCollectableShopRefine?(recipeId: number): Promise<CollectablesShopRefine>;
+    recipeLevelTablebyJobLevel?(job_level: number): Promise<RecipeLevel | null>;
+    recipeCollectableShopRefine?(
+        recipeId: number,
+    ): Promise<CollectablesShopRefine>;
     recipeInfo?(recipeId: number): Promise<RecipeInfo>;
     itemInfo(id: number): Promise<Item>;
     craftTypeList(): Promise<CraftType[]>;

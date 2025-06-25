@@ -217,21 +217,7 @@ const itemInfo = ref<Item>();
 const collectability = ref<CollectablesShopRefine>();
 const isNormalRecipe = computed(() => recipe.value?.conditions_flag === 15);
 
-function isDynRecipe(row: RecipeInfo): boolean {
-    const notebook = row.recipe_notebook_list;
-    return notebook >= 1496 && notebook <= 1503;
-}
-
 async function selectRecipeRow(row: RecipeInfo, job_level?: number) {
-    // 月球重建等级同步
-    if (isDynRecipe(row)) {
-        if (job_level == undefined) {
-            // confirmDynRecipeDialogVisible.value = true;
-            return;
-        }
-    }
-
-    // Load recipe data
     try {
         isRecipeTableLoading.value = true;
         const source = await settingStore.getDataSource();
@@ -266,7 +252,6 @@ async function selectRecipeRow(row: RecipeInfo, job_level?: number) {
     itemInfo.value = itemInfoTmp;
     collectability.value = collectabilityTmp;
     confirmDialogVisible.value = true;
-    console.log("fetched recipe data")
 }
 
 async function selectRecipeById(recipeId: number) {
@@ -293,7 +278,7 @@ async function selectRecipeById(recipeId: number) {
         <ConfirmDialog
             v-if="recipe && recipeInfo && itemInfo"
             v-model="confirmDialogVisible"
-            :recipe="recipe"
+            v-model:recipe="recipe"
             :recipe-info="recipeInfo"
             :item-info="itemInfo"
             :collectability="collectability"
