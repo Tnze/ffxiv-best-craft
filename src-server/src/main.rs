@@ -26,8 +26,7 @@ use salvo::prelude::*;
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::{Deserialize, Serialize};
 
-mod db;
-use db::{
+use app_db::{
     craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*,
     recipe_level_tables, recipes,
 };
@@ -71,7 +70,6 @@ async fn main() {
         let conn = Database::connect(&url).await.unwrap();
         connections.insert(lang, conn);
     }
-    let conn = Database::connect(&db_url).await.unwrap();
     let state = AppState { connections };
 
     let cors = Cors::new()
@@ -405,6 +403,7 @@ struct ItemFoodAction {
     name: String,
     level: u32,
     item_food_id: u16,
+    #[allow(dead_code)]
     item_food_duration: u16,
 }
 

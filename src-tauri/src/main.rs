@@ -40,12 +40,11 @@ use serde::Serialize;
 use tauri::{path::BaseDirectory, Manager};
 use tokio::sync::{Mutex, OnceCell};
 
-mod db;
 mod memoization_solver;
 mod muscle_memory_solver;
 mod rika_tnze_solver;
 
-use db::{
+use app_db::{
     collectables_shop_refine, craft_types, item_action, item_food, item_food_effect,
     item_with_amount, items, prelude::*, recipe_level_tables, recipes,
 };
@@ -53,10 +52,10 @@ use db::{
 /// 创建新的Recipe对象，蕴含了模拟一次制作过程所必要的全部配方信息
 #[tauri::command(async)]
 async fn recipe_level_table(
-    rlv: i32,
+    rlv: u32,
     app_state: tauri::State<'_, AppState>,
     app_handle: tauri::AppHandle,
-) -> Result<db::recipe_level_tables::Model, String> {
+) -> Result<recipe_level_tables::Model, String> {
     let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
     let Some(rt) = RecipeLevelTables::find_by_id(rlv)
         .one(db)
@@ -199,7 +198,7 @@ async fn recipes_ingredientions(
     recipe_id: i32,
     app_state: tauri::State<'_, AppState>,
     app_handle: tauri::AppHandle,
-) -> Result<Vec<(i32, i32)>, String> {
+) -> Result<Vec<(u32, i32)>, String> {
     let db = app_state.get_db(app_handle).await?;
     let mut needs = BTreeMap::new();
     let ing = ItemWithAmount::find()
@@ -244,7 +243,7 @@ async fn recipe_collectability(
 
 #[tauri::command(async)]
 async fn item_info(
-    item_id: i32,
+    item_id: u32,
     app_state: tauri::State<'_, AppState>,
     app_handle: tauri::AppHandle,
 ) -> Result<items::Model, String> {
@@ -261,6 +260,7 @@ struct ItemFoodAction {
     name: String,
     level: u32,
     item_food_id: u16,
+    #[allow(dead_code)]
     item_food_duration: u16,
 }
 
@@ -270,12 +270,12 @@ struct Enhancer {
     level: u32,
     is_hq: bool,
 
-    cm: Option<i32>,
-    cm_max: Option<i32>,
-    ct: Option<i32>,
-    ct_max: Option<i32>,
-    cp: Option<i32>,
-    cp_max: Option<i32>,
+    cm: Option<i8>,
+    cm_max: Option<i16>,
+    ct: Option<i8>,
+    ct_max: Option<i16>,
+    cp: Option<i8>,
+    cp_max: Option<i16>,
 }
 
 const MEDICINE_SEARCH_ID: u32 = 43;
@@ -364,7 +364,7 @@ async fn query_enhancers(
                 ..Enhancer::default()
             };
             for item_food in crafting_item_food
-                .get(&(item.item_food_id as i32))
+                .get(&(item.item_food_id as u32))
                 .into_iter()
                 .flatten()
             {

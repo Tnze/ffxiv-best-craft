@@ -15,6 +15,14 @@ version = "0.0.0"
 tauri-build = { version = "2", features = ["config-toml"] }
 
 [dependencies]
+app-libs = { path = "../src-libs" }
+app-db = { path = "../src-db" }
+
+sea-orm = { workspace = true, features = ["sqlx-sqlite"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+
 crossbeam-channel = "0.5.15"
 futures = "0.3"
 micro_ndarray = "0.6"
@@ -22,14 +30,6 @@ native-dialog = "0.9.0"
 num_cpus = "1.17"
 percent-encoding = "2.3.1"
 rand = "0.9.1"
-sea-orm = { version = "1.1.12", features = [
-  "sqlx-sqlite",
-  "runtime-tokio-native-tls",
-  "macros",
-] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-tokio = "1.45"
 window-vibrancy = "0.6"
 
 tauri = { version = "2", features = [] }
@@ -37,9 +37,6 @@ tauri-plugin-fs = "2"
 tauri-plugin-process = "2"
 tauri-plugin-updater = "2"
 tauri-plugin-clipboard-manager = "2"
-
-# internal deps
-app-libs = { path = "../src-libs" }
 
 [features]
 # by default Tauri runs in production mode
