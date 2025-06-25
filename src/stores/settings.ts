@@ -15,10 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import { defineStore } from 'pinia';
-import {
-    CafeMakerApiBase,
-    XivApiRecipeSource,
-} from '@/datasource/remote-source';
 import { DataSource } from '@/datasource/source';
 import { WebSource, YYYYGamesApiBase } from '@/datasource/web-source';
 import {
@@ -60,15 +56,29 @@ export default defineStore('settings', {
             });
         },
         getDataSource(): () => Promise<DataSource> {
+            const dataSourceLanguageList =
+                dataSourceList.get(this.dataSource) ??
+                dataSourceList.values().next().value!;
+            // Check language setting valid
+            let dataSourceLanguage = this.dataSourceLang;
+            if (dataSourceLanguageList.length > 0) {
+                if (
+                    dataSourceLanguage == undefined ||
+                    !dataSourceLanguageList.includes(dataSourceLanguage)
+                ) {
+                    dataSourceLanguage = dataSourceLanguageList[0];
+                }
+            }
             let dataSources: Record<string, () => Promise<DataSource>> = {
-                'yyyy.games': async () =>
-                    new WebSource(YYYYGamesApiBase, this.dataSourceLang!),
-                cafe: async () => new XivApiRecipeSource(CafeMakerApiBase),
-                xivapi: async () =>
-                    new BetaXivApiRecipeSource(
+                'yyyy.games': async () => {
+                    return new WebSource(YYYYGamesApiBase, dataSourceLanguage!);
+                },
+                xivapi: async () => {
+                    return new BetaXivApiRecipeSource(
                         BetaXivapiBase,
-                        <'en' | 'ja' | 'de' | 'fr'>this.dataSourceLang,
-                    ),
+                        <'en' | 'ja' | 'de' | 'fr'>dataSourceLanguage,
+                    );
+                },
             };
             let defaultSource = dataSources['yyyy.games'];
             if (isTauri) {

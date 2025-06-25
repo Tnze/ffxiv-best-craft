@@ -71,6 +71,19 @@ if (isTauri) {
         checkingUpdate.value = false;
     };
 }
+
+/// Fix language setting when datasource changed
+function fixDataSourceLanguage() {
+    const dsLangAllowedList = dataSourceList.get(store.dataSource);
+    const dsLang = store.dataSourceLang;
+    if (
+        dsLangAllowedList &&
+        dsLangAllowedList.length > 0 &&
+        dsLangAllowedList.find(v => v == dsLang) == undefined
+    ) {
+        store.dataSourceLang = dsLangAllowedList[0];
+    }
+}
 </script>
 
 <template>
@@ -100,7 +113,10 @@ if (isTauri) {
                 </el-radio-group>
             </el-form-item>
             <el-form-item :label="$t('data-source')">
-                <el-select v-model="store.dataSource">
+                <el-select
+                    v-model="store.dataSource"
+                    @change="fixDataSourceLanguage"
+                >
                     <el-option
                         v-for="dataSource in dataSourceList"
                         :label="$t(`ds-${dataSource[0].replace('.', '')}`)"
