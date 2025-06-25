@@ -396,6 +396,7 @@ export interface RecipeInfo {
     required_control: number;
 
     can_hq: boolean;
+    recipe_notebook_list: number;
 }
 
 export interface RecipeRequirements {

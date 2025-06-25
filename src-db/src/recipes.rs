@@ -34,6 +34,8 @@ pub struct Model {
     pub collectables_metadata_key: u16,
     #[sea_orm(column_name = "CollectablesMetadata")]
     pub collectables_metadata: u32,
+    #[sea_orm(column_name = "RecipeNotebookList")]
+    pub recipe_notebook_list: u32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

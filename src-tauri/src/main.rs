@@ -131,6 +131,7 @@ struct RecipeInfo {
     required_control: u16,
 
     can_hq: bool,
+    recipe_notebook_list: u32,
 }
 
 #[tauri::command(async)]
@@ -186,6 +187,7 @@ async fn recipe_table(
         )
         .column_as(recipes::Column::RequiredControl, "required_control")
         .column_as(recipes::Column::CanHq, "can_hq")
+        .column_as(recipes::Column::RecipeNotebookList, "recipe_notebook_list")
         .into_model::<RecipeInfo>()
         .paginate(db, 200);
     let p = paginate.num_pages().await.map_err(err_to_string)?;
