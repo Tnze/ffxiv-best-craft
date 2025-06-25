@@ -27,11 +27,8 @@ import {
     watchEffect,
 } from 'vue';
 import {
-    ElDescriptions,
-    ElDescriptionsItem,
     ElInput,
     ElButton,
-    ElDialog,
     ElTable,
     ElTableColumn,
     ElPagination,
@@ -43,10 +40,15 @@ import {
     ElInputNumber,
 } from 'element-plus';
 import { EditPen } from '@element-plus/icons-vue';
-import { newRecipe, Recipe, RecipeInfo } from '@/libs/Craft';
+import {
+    CollectablesShopRefine,
+    Item,
+    newRecipe,
+    Recipe,
+    RecipeInfo,
+} from '@/libs/Craft';
 import { useRouter } from 'vue-router';
 import { useFluent } from 'fluent-vue';
-import { selectRecipe } from './common';
 import {
     CraftType,
     DataSource,
@@ -55,6 +57,7 @@ import {
 } from '@/datasource/source';
 import useSettingsStore from '@/stores/settings';
 import { useMediaQuery } from '@vueuse/core';
+import ConfirmDialog from './ConfirmDialog.vue';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
@@ -208,18 +211,31 @@ watchEffect(() => {
 });
 
 const confirmDialogVisible = ref(false);
-const selectedRecipe = ref<[Recipe, RecipeInfo]>();
-const isNormalRecipe = computed(() => {
-    return selectedRecipe.value?.[0].conditions_flag === 15;
-});
-let confirmDialogCallback: ((mode: 'designer' | 'simulator') => void) | null =
-    null;
+const recipe = ref<Recipe>();
+const recipeInfo = ref<RecipeInfo>();
+const itemInfo = ref<Item>();
+const collectability = ref<CollectablesShopRefine>();
+const isNormalRecipe = computed(() => recipe.value?.conditions_flag === 15);
 
-async function selectRecipeRow(row: RecipeInfo) {
+function isDynRecipe(row: RecipeInfo): boolean {
+    const notebook = row.recipe_notebook_list;
+    return notebook >= 1496 && notebook <= 1503;
+}
+
+async function selectRecipeRow(row: RecipeInfo, job_level?: number) {
+    // 月球重建等级同步
+    if (isDynRecipe(row)) {
+        if (job_level == undefined) {
+            // confirmDynRecipeDialogVisible.value = true;
+            return;
+        }
+    }
+
+    // Load recipe data
     try {
         isRecipeTableLoading.value = true;
         const source = await settingStore.getDataSource();
-        var [recipeLevel, itemInfo, collectability] = await Promise.all([
+        var [recipeLevel, itemInfoTmp, collectabilityTmp] = await Promise.all([
             source.recipeLevelTable(row.rlv),
             source.itemInfo(row.item_id),
             (async () => {
@@ -240,29 +256,17 @@ async function selectRecipeRow(row: RecipeInfo) {
     } finally {
         isRecipeTableLoading.value = false;
     }
-    const recipe = await newRecipe(
+    recipe.value = await newRecipe(
         recipeLevel,
         row.difficulty_factor,
         row.quality_factor,
         row.durability_factor,
     );
-    selectedRecipe.value = [recipe, row];
-    confirmDialogCallback = (mode: 'designer' | 'simulator') => {
-        selectRecipe(
-            recipe,
-            row.id,
-            row.material_quality_factor,
-            row,
-            collectability,
-            itemInfo,
-            row.job,
-            mode == 'simulator',
-        );
-        router.push({ name: 'designer' });
-        confirmDialogVisible.value = false;
-        confirmDialogCallback = null;
-    };
+    recipeInfo.value = row;
+    itemInfo.value = itemInfoTmp;
+    collectability.value = collectabilityTmp;
     confirmDialogVisible.value = true;
+    console.log("fetched recipe data")
 }
 
 async function selectRecipeById(recipeId: number) {
@@ -286,67 +290,15 @@ async function selectRecipeById(recipeId: number) {
 
 <template>
     <div class="container">
-        <el-dialog
+        <ConfirmDialog
+            v-if="recipe && recipeInfo && itemInfo"
             v-model="confirmDialogVisible"
-            :title="$t('please-confirm')"
-            :align-center="true"
-            :width="compactLayout ? '90%' : '50%'"
-        >
-            <el-descriptions>
-                <el-descriptions-item :label="$t('name')" :span="3">
-                    {{ selectedRecipe?.[1].item_name }}
-                </el-descriptions-item>
-                <el-descriptions-item :label="$t('recipe-level')">
-                    {{ selectedRecipe?.[0].rlv.id }}
-                </el-descriptions-item>
-                <el-descriptions-item :label="$t('type')">
-                    {{ selectedRecipe?.[1].job }}
-                </el-descriptions-item>
-                <el-descriptions-item :label="$t('level')">
-                    {{ selectedRecipe?.[0].job_level }}
-                </el-descriptions-item>
-
-                <el-descriptions-item :label="$t('required-craftsmanship')">
-                    {{ selectedRecipe?.[1].required_craftsmanship }}
-                </el-descriptions-item>
-                <el-descriptions-item :label="$t('required-control')">
-                    {{ selectedRecipe?.[1].required_control }}
-                </el-descriptions-item>
-                <el-descriptions-item :label="$t('can-hq')">
-                    {{ $t(String(selectedRecipe?.[1].can_hq)) }}
-                </el-descriptions-item>
-            </el-descriptions>
-            <br />
-            <span>
-                {{
-                    isNormalRecipe
-                        ? $t('confirm-select', {
-                              itemName: selectedRecipe?.[1].item_name || '',
-                          })
-                        : $t('confirm-select2')
-                }}
-            </span>
-            <template #footer>
-                <span>
-                    <el-button @click="confirmDialogVisible = false">
-                        {{ $t('cancel') }}
-                    </el-button>
-                    <el-button
-                        v-if="!isNormalRecipe"
-                        type="primary"
-                        @click="confirmDialogCallback!('simulator')"
-                    >
-                        {{ $t('simulator-mode') }}
-                    </el-button>
-                    <el-button
-                        type="primary"
-                        @click="confirmDialogCallback!('designer')"
-                    >
-                        {{ $t(isNormalRecipe ? 'confirm' : 'designer-mode') }}
-                    </el-button>
-                </span>
-            </template>
-        </el-dialog>
+            :recipe="recipe"
+            :recipe-info="recipeInfo"
+            :item-info="itemInfo"
+            :collectability="collectability"
+            :is-normal-recipe="isNormalRecipe"
+        />
         <el-input
             v-model="searchText"
             @keydown.enter="triggerSearch"
@@ -478,14 +430,6 @@ async function selectRecipeById(recipeId: number) {
 <fluent locale="zh-CN">
 datasource-unsupport-recipe-info = 当前数据源不支持从外部选择配方
 select-recipe-by-id-error = 获取配方信息失败：{ $err }，请尝试切换数据源
-confirm-select = 开始制作“{ $itemName }”吗？
-confirm-select2 = 这是一个高难度配方，请选择模式。
-please-confirm = 请确认
-
-cancel = 取消
-confirm = 确认
-designer-mode = 普通模式
-simulator-mode = 高难模式
 
 search = 键入以搜索
 please-wait = 请稍等...
@@ -494,24 +438,12 @@ type = 类型
 craft-type = 制作类型
 level = 等级
 name = 名称
-true = 是
-false = 否
 can-hq = 存在HQ
-required-craftsmanship = 最低{ craftsmanship }
-required-control = 最低{ control }
 </fluent>
 
 <fluent locale="en-US">
 datasource-unsupport-recipe-info = Current data-source doesn't support choice recipe from external pages
 select-recipe-by-id-error = Error fetching recipe data: { $err }. Please try choosing another DataSource
-confirm-select = Start crafting "{ $itemName }"?
-confirm-select2 = This is a 高难度配方. Please make a choice.
-please-confirm = Please confirm
-
-cancel = Cancel
-confirm = Confirm
-designer-mode = Normal Mode
-simulator-mode = Simulator Mode
 
 search = Search
 please-wait = Please wait...
@@ -520,9 +452,5 @@ type = Type
 craft-type = Craft Type
 level = Level
 name = Name
-true = True
-false = False
-can-hq = Can be HQ
-required-craftsmanship = Required { craftsmanship }
-required-control = Required { control }
+can-hq = Can HQ
 </fluent>

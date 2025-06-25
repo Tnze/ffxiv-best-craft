@@ -17,13 +17,8 @@
 -->
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, onActivated, ref, watch } from 'vue';
 import {
-    ElContainer,
-    ElHeader,
-    ElRow,
-    ElCol,
-    ElMain,
     ElButton,
     ElInputNumber,
     ElForm,
@@ -31,7 +26,7 @@ import {
     ElSwitch,
     ElCheckboxGroup,
     ElCheckboxButton,
-    ElText,
+    ElScrollbar,
 } from 'element-plus';
 import { useRouter } from 'vue-router';
 import { selectRecipe } from './common';
@@ -48,6 +43,11 @@ import useSettingsStore from '@/stores/settings';
 const router = useRouter();
 const { $t } = useFluent();
 const settingStore = useSettingsStore();
+
+const emit = defineEmits<{
+    (e: 'setTitle', title: string): void;
+}>();
+onActivated(() => emit('setTitle', 'custom-recipe'));
 
 const autoLoad = ref(false);
 const autoLoadLoading = ref(false);
@@ -142,115 +142,102 @@ function confirm(simulatorMode: boolean) {
 </script>
 
 <template>
-    <el-container>
-        <el-header>
-            <h1>{{ $t('custom-recipe') }}</h1>
-        </el-header>
-        <el-main>
-            <el-row>
-                <el-col :span="12"> </el-col>
-                <el-col :span="12"> </el-col>
-            </el-row>
-            <el-form :inline="true" label-position="right" label-width="100px">
-                <el-form-item :label="$t('class-job-level')">
-                    <el-input-number
-                        v-model="customRecipe.job_level"
-                        :min="1"
-                    ></el-input-number>
-                </el-form-item>
-                <el-form-item :label="$t('difficulty')">
-                    <el-input-number
-                        v-model="customRecipe.difficulty"
-                        :min="1"
-                    ></el-input-number>
-                </el-form-item>
-                <el-form-item :label="$t('quality')">
-                    <el-input-number
-                        v-model="customRecipe.quality"
-                        :min="1"
-                    ></el-input-number>
-                </el-form-item>
-                <el-form-item :label="$t('durability')">
-                    <el-input-number
-                        v-model="customRecipe.durability"
-                        :min="1"
-                    ></el-input-number>
-                </el-form-item>
-                <el-form-item :label="$t('conditions-flag')">
-                    <el-text class="conditions-flag">{{
-                        customRecipe.conditions_flag
-                    }}</el-text>
-                    <el-checkbox-group v-model="conditionsFlag" size="small">
-                        <el-checkbox-button
-                            v-for="cond in Conditions"
-                            :key="cond"
-                            :value="cond as string"
-                        >
-                            {{ $t(cond.toLowerCase()) }}
-                        </el-checkbox-button>
-                    </el-checkbox-group>
-                </el-form-item>
-            </el-form>
-            <el-form :inline="true" label-position="right" label-width="100px">
-                <el-form-item :label="$t('recipe-level')">
-                    <el-input-number v-model="rlv" :min="1"></el-input-number>
-                </el-form-item>
-                <el-form-item :label="$t('auto-load')">
-                    <el-switch v-model="autoLoad" :loading="autoLoadLoading" />
-                </el-form-item>
-            </el-form>
-            <el-form :inline="true" label-position="right" label-width="100px">
-                <el-form-item :label="$t('progress-divider')">
-                    <el-input-number
-                        :disabled="autoLoad"
-                        v-model="customRecipe.rlv.progress_divider"
-                    />
-                </el-form-item>
-                <el-form-item :label="$t('progress-modifier')">
-                    <el-input-number
-                        :disabled="autoLoad"
-                        v-model="customRecipe.rlv.progress_modifier"
-                    />
-                </el-form-item>
-                <el-form-item :label="$t('quality-divider')">
-                    <el-input-number
-                        :disabled="autoLoad"
-                        v-model="customRecipe.rlv.quality_divider"
-                    />
-                </el-form-item>
-                <el-form-item :label="$t('quality-modifier')">
-                    <el-input-number
-                        :disabled="autoLoad"
-                        v-model="customRecipe.rlv.quality_modifier"
-                    />
-                </el-form-item>
-            </el-form>
-            <span>
-                <el-button type="default" @click="router.back()">
-                    {{ $t('back') }}
-                </el-button>
-                <el-button type="primary" @click="confirm(false)">
-                    {{ $t('confirm') }}
-                </el-button>
-                <el-button
-                    type="primary"
-                    v-if="customRecipe.conditions_flag != 15"
-                    @click="confirm(true)"
-                >
-                    {{ $t('simulator-mode') }}
-                </el-button>
-            </span>
-        </el-main>
-    </el-container>
+    <el-scrollbar class="container">
+        <el-form :inline="true" label-position="right" label-width="100px">
+            <el-form-item :label="$t('class-job-level')">
+                <el-input-number
+                    v-model="customRecipe.job_level"
+                    :min="1"
+                ></el-input-number>
+            </el-form-item>
+            <el-form-item :label="$t('difficulty')">
+                <el-input-number
+                    v-model="customRecipe.difficulty"
+                    :min="1"
+                ></el-input-number>
+            </el-form-item>
+            <el-form-item :label="$t('quality')">
+                <el-input-number
+                    v-model="customRecipe.quality"
+                    :min="1"
+                ></el-input-number>
+            </el-form-item>
+            <el-form-item :label="$t('durability')">
+                <el-input-number
+                    v-model="customRecipe.durability"
+                    :min="1"
+                ></el-input-number>
+            </el-form-item>
+            <el-form-item :label="$t('conditions-flag')">
+                <el-checkbox-group v-model="conditionsFlag" size="small">
+                    <el-checkbox-button
+                        v-for="cond in Conditions"
+                        :key="cond"
+                        :value="cond as string"
+                    >
+                        {{ $t(cond.toLowerCase()) }}
+                    </el-checkbox-button>
+                </el-checkbox-group>
+            </el-form-item>
+        </el-form>
+        <el-form :inline="true" label-position="right" label-width="100px">
+            <el-form-item :label="$t('recipe-level')">
+                <el-input-number v-model="rlv" :min="1"></el-input-number>
+            </el-form-item>
+            <el-form-item :label="$t('auto-load')">
+                <el-switch v-model="autoLoad" :loading="autoLoadLoading" />
+            </el-form-item>
+        </el-form>
+        <el-form :inline="true" label-position="right" label-width="100px">
+            <el-form-item :label="$t('progress-divider')">
+                <el-input-number
+                    :disabled="autoLoad"
+                    v-model="customRecipe.rlv.progress_divider"
+                />
+            </el-form-item>
+            <el-form-item :label="$t('progress-modifier')">
+                <el-input-number
+                    :disabled="autoLoad"
+                    v-model="customRecipe.rlv.progress_modifier"
+                />
+            </el-form-item>
+            <el-form-item :label="$t('quality-divider')">
+                <el-input-number
+                    :disabled="autoLoad"
+                    v-model="customRecipe.rlv.quality_divider"
+                />
+            </el-form-item>
+            <el-form-item :label="$t('quality-modifier')">
+                <el-input-number
+                    :disabled="autoLoad"
+                    v-model="customRecipe.rlv.quality_modifier"
+                />
+            </el-form-item>
+        </el-form>
+        <span>
+            <el-button type="default" @click="router.back()">
+                {{ $t('back') }}
+            </el-button>
+            <el-button type="primary" @click="confirm(false)">
+                {{ $t('confirm') }}
+            </el-button>
+            <el-button
+                type="primary"
+                v-if="customRecipe.conditions_flag != 15"
+                @click="confirm(true)"
+            >
+                {{ $t('simulator-mode') }}
+            </el-button>
+        </span>
+    </el-scrollbar>
 </template>
 
 <style scoped>
-.conditions-flag {
-    margin-right: 5px;
-}
-
-.el-main {
-    margin: 20px;
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: transparent !important;
 }
 </style>
 
