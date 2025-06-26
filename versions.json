@@ -1,23 +1,23 @@
 {
-    "version": "0.20.5",
-    "notes": "- 使装备数据处理的代码更加健壮\n- 解决了一些装备数据储存的问题\n- 在模拟器的分析菜单中添加了检查模拟细节的按钮\n- 在模拟器的导出宏菜单中现在可以禁用每个宏最大15行的限制 #45\n- 解决了客户端版本切换数据源不会立刻生效的问题 #45\n- 更新了 YYYY.Games 数据源的配置，优化设置页数据源菜单的UI",
-    "pub_date": "2025-06-20T12:11:01.57Z",
+    "version": "0.21.1",
+    "notes": "- 代码结构优化，统一了SeaORM关系定义、拆分配方列表的实现代码\n- 新增了 RecipeNotebookList 数据，现在可以识别配方所属的笔记了\n- 新增了配方的等级同步功能，宇宙重建相关配方现在可以手动等级同步",
+    "pub_date": "2025-06-26T11:48:59.991Z",
     "platforms": {
         "darwin-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnQyK3ArVEpFM3g5di93cFB1WkRONW91dHR3QVA1TG5KZnluVEM0Y3A5NWNSc1BEQmZHZHY0ZnJRYnRhYi9vUmVGYlBZdDJkWHpKR3BNTEZ1YktMNlFrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUwNDIxMjg3CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKU1lzREtqb0I5bFBZSllYRHdCa2crSzUrdnBta29uNTQvdk0rQU91WlZaT0h3REFCR1V3cnNYRldIWFg0aU56NEpucHR6UnIySHZrS2h4MUI0aGNXQlE9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v0.20.5/BestCraft_aarch64.app.tar.gz"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnRtRGwrYklhRDY0Y3NzYVpxUkpYcmFzMGtDV3dOckl5Z3JsWVB3TDQrK3hwbEhBdkVlSUhEUTJjT21qMnVjWktFcEFvYk9WS2MwRFo0dzl2cHRCclFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUwOTM4MzIzCWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKcVA4cThFWFBTUGxUTGJiUWtkWVZFczJqRGFoWlZreHF3S1FjaGptdFpVVlBzTkYzQUZKc3k4aE40cTVTWXNvQ2hHWXFRNSt1MzNDcEpvTGE1MS9sQVE9PQo=",
+            "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.21.1/BestCraft_aarch64.app.tar.gz"
         },
         "linux-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmlWQVAvV3ptZE01MzZ3QnJCRDFHR1VWUHZFZ1VySG4yUFN6RzhXOXQvdVlJRHBWSGYrK08rVTNmcDM2MkFBVGdqbHNnQ2tuWGFHZlVMclkzeTFKdVFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUwNDIxMzQ4CWZpbGU6QmVzdENyYWZ0XzAuMjAuNV9hbWQ2NC5BcHBJbWFnZQppYUFMbmFjdkZLZkFqcWN1TXZaM1YzN0V4QmVkR2NyQ3JRbmp6aXBDclFkUFNYbmw3N0FzYVMxajM1ZXpoYWNXa20xcnpMN2Y1N0ZqempxZzBzMmREQT09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v0.20.5/BestCraft_0.20.5_amd64.AppImage"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnMwZVc2Wi80WXo0VTFtNG1YRUE4a3F3aUt4Sm9aK3ZhenZOUlM5RGZRVjVUejlCYnZCZmdwcXZNbklMbHUwcFBYOW5vNXlZa2JvdnRhU0VCVG9mWVFRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUwOTM4NDI0CWZpbGU6QmVzdENyYWZ0XzAuMjEuMV9hbWQ2NC5BcHBJbWFnZQpXRWNmS1hhVWNxcjl5NllvcVdONlNidDRaN2ZvbS9yZGN1ajN5YkhUbUc0eXJSZmdtRzJzSytESll3WnlYbG8yZGliT29ES1J2dU10bjNYQXc2KzZEUT09Cg==",
+            "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.21.1/BestCraft_0.21.1_amd64.AppImage"
         },
         "windows-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmlEYmh2bmRkL2UwYjlJcXZ3ajFHTnc1OXE1SVBBaFVsL0JvQXI1Mmx3MERMVjBxUW5WTEgwcytQUGR2SUE2S1d3aXBRN1Bxd3QxbmxSam42dG5XMGdnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUwNDIxNDI1CWZpbGU6QmVzdENyYWZ0XzAuMjAuNV94NjRfemgtQ04ubXNpLnppcAplRklWR01UNFlRS1NaN0x2Q3VqNVJydnVROGN6aEtjT0RNRnZ1N0kzY1B2K2FZelFLbzlWT0NYNWRDdHlFN2l0WlhzOEtLOGxQOTdCTFRkZGpkUS9CQT09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v0.20.5/BestCraft_0.20.5_x64_zh-CN.msi.zip"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmxPTEFQeVFEdEV6UTJQR0tTOTdBdlVtVHNvMm1pblJremRQQUxOb3Eyd1NzSnNRTE9HYTRRRXd2LzhFczlCZG9lVjA0dnp4TWF6VU9WY1lDN3VBbmdjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUwOTM4NTIwCWZpbGU6QmVzdENyYWZ0XzAuMjEuMV94NjRfemgtQ04ubXNpLnppcAp3UmZmb3RzSC8xdkpIaFRFZUhQRXlBQ0hTbkxqRVVqbnNoRHQvQ1pXbFY4S2hpMnduemVnS0xRS0NxODd3aWlxR1QveldoVEhuVm1zZGZpRUdYVUNEUT09Cg==",
+            "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.21.1/BestCraft_0.21.1_x64_zh-CN.msi.zip"
         },
         "windows-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5oTlJBVU13WmJOWW5VWFQ4OTYyMHVaRnFNbVAwYlNCNWl2Z2NrYUpGdmRxakVsZEo3WWEzT2ZPQU95MkJRdHByRmQ0WHZ0OVNZNFJHaW1FeEc2NUFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUwNDIxNDU1CWZpbGU6QmVzdENyYWZ0XzAuMjAuNV9hcm02NF96aC1DTi5tc2kuemlwCmRVQWRZMlVoOG1EeC95cmQwZ1VXa1J6U1FHNytzNTN5eVREQ2g1ZVhqenBZbC8xbDdtR1N0cGxHRnBJUXdDQjIwUXczWVBTZWYyTjA2TUVDeHhpekN3PT0K",
-            "url": "https://tnze.yyyy.games/releases/v0.20.5/BestCraft_0.20.5_arm64_zh-CN.msi.zip"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnBFajFkaEFzbE82eHoyVHM1NDBRNlRrWk5tN09CN282RFc1VkxXUzkzakhrN2FGMkxkWWU1SXZ3REMrV1EwdW80OGNxNkJBYjlUMnY2ZkxqRTlRMmd3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUwOTM4NTM0CWZpbGU6QmVzdENyYWZ0XzAuMjEuMV9hcm02NF96aC1DTi5tc2kuemlwCkJVMzZDakFPY1VRSi9NaWVRemVMM0JuNjhkQ3h6VmVBcnJmYlBZQ3hMb1h3ay8ySFF5Ukh1UzY2eUxWWWNMb2M0UFB0aG1IN3pNMHBENFNmUzB2eUJRPT0K",
+            "url": "https://github.com/Tnze/ffxiv-best-craft/releases/download/v0.21.1/BestCraft_0.21.1_arm64_zh-CN.msi.zip"
         }
     }
 }
