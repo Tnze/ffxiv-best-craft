@@ -217,7 +217,7 @@ const itemInfo = ref<Item>();
 const collectability = ref<CollectablesShopRefine>();
 const isNormalRecipe = computed(() => recipe.value?.conditions_flag === 15);
 
-async function selectRecipeRow(row: RecipeInfo, job_level?: number) {
+async function selectRecipeRow(row: RecipeInfo) {
     try {
         isRecipeTableLoading.value = true;
         const source = await settingStore.getDataSource();

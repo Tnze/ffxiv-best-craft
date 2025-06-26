@@ -206,4 +206,4 @@ export class WebSource {
     }
 }
 
-export const YYYYGamesApiBase = 'http://127.0.0.1:8693/';
+export const YYYYGamesApiBase = 'https://tnze.yyyy.games/api/datasource/';

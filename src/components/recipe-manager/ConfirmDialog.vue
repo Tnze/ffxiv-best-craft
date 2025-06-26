@@ -24,6 +24,7 @@ import {
     ElButton,
     ElInputNumber,
     ElAlert,
+    ElSwitch,
 } from 'element-plus';
 import {
     CollectablesShopRefine,
@@ -35,8 +36,9 @@ import {
 import { selectRecipe } from './common';
 import { useMediaQuery } from '@vueuse/core';
 import { useRouter } from 'vue-router';
-import { computed, ref, watch } from 'vue';
+import { computed, onWatcherCleanup, ref, watch } from 'vue';
 import useSettingStore from '@/stores/settings';
+import { useFluent } from 'fluent-vue';
 
 const props = defineProps<{
     recipeInfo: RecipeInfo;
@@ -45,6 +47,7 @@ const props = defineProps<{
     isNormalRecipe: boolean;
 }>();
 const router = useRouter();
+const { $t } = useFluent();
 const settingsStore = useSettingStore();
 const visible = defineModel<boolean>({ required: true });
 const rawRecipe = defineModel<Recipe>('recipe', { required: true });
@@ -55,37 +58,72 @@ const isDynRecipe = computed(() => {
     const notebook = props.recipeInfo.recipe_notebook_list;
     return notebook >= 1496 && notebook <= 1503;
 });
+const enableDynRecipe = ref(false);
+const dynRecipeLoading = ref(false);
 const dynRecipe = ref<Recipe>();
 const recipe = computed(() => dynRecipe.value ?? rawRecipe.value);
 
-watch([isDynRecipe, dynRecipeLevel], async ([isDynRecipe, dynRecipeLevel]) => {
-    if (!isDynRecipe || dynRecipeLevel == undefined) {
-        dynRecipe.value = undefined;
-        return;
+async function loadDynRecipe(
+    isDynRecipe: boolean,
+    enableDynRecipe: boolean,
+    dynRecipeLevel: number | undefined,
+): Promise<Recipe | undefined> {
+    if (!isDynRecipe || !enableDynRecipe || dynRecipeLevel == undefined) {
+        return undefined;
     }
     const ds = await settingsStore.getDataSource();
     const recipeLevel = await ds.recipeLevelTablebyJobLevel!(dynRecipeLevel);
     if (recipeLevel == null) {
-        dynRecipe.value = undefined;
-        return;
+        return undefined;
     }
 
-    dynRecipe.value = await newRecipe(
+    return await newRecipe(
         recipeLevel,
         props.recipeInfo.difficulty_factor,
         props.recipeInfo.quality_factor,
         props.recipeInfo.durability_factor,
     );
-});
+}
+
+watch(
+    [isDynRecipe, enableDynRecipe, dynRecipeLevel],
+    async ([isDynRecipe, enableDynRecipe, dynRecipeLevel]) => {
+        try {
+            dynRecipeLoading.value = true;
+
+            let cancel = false;
+            onWatcherCleanup(() => {
+                cancel = true;
+            });
+            const recipe = await loadDynRecipe(
+                isDynRecipe,
+                enableDynRecipe,
+                dynRecipeLevel,
+            );
+            if (!cancel) {
+                dynRecipe.value = recipe;
+            }
+        } finally {
+            dynRecipeLoading.value = false;
+        }
+    },
+);
 
 async function confirm(mode: 'simulator' | 'designer') {
+    const itemInfo = { ...props.itemInfo };
+    if (enableDynRecipe.value && dynRecipeLevel.value != undefined) {
+        itemInfo.name = $t('sync-level-item-name', {
+            itemName: itemInfo.name,
+            syncLevel: dynRecipeLevel.value,
+        });
+    }
     selectRecipe(
         recipe.value,
         props.recipeInfo.id,
         props.recipeInfo.material_quality_factor,
         props.recipeInfo,
         props.collectability,
-        props.itemInfo,
+        itemInfo,
         props.recipeInfo.job,
         mode == 'simulator',
     );
@@ -115,10 +153,15 @@ async function confirm(mode: 'simulator' | 'designer') {
                 :label="$t('sync-level')"
                 :span="3"
             >
+                <el-switch
+                    v-model="enableDynRecipe"
+                    :loading="dynRecipeLoading"
+                />
                 <el-input-number
-                    size="small"
+                    style="margin-left: 14px"
                     v-model="dynRecipeLevel"
                     :min="1"
+                    :disabled="!enableDynRecipe"
                 />
             </el-descriptions-item>
             <el-descriptions-item :label="$t('name')" :span="3">
@@ -168,7 +211,8 @@ async function confirm(mode: 'simulator' | 'designer') {
                 </el-button>
                 <el-button
                     type="primary"
-                    :disabled="isDynRecipe && !dynRecipe"
+                    :loading="dynRecipeLoading"
+                    :disabled="enableDynRecipe && dynRecipe == undefined"
                     @click="confirm('designer')"
                 >
                     {{ $t(isNormalRecipe ? 'confirm' : 'designer-mode') }}
@@ -188,6 +232,7 @@ cancel = 取消
 confirm = 确认
 designer-mode = 普通模式
 simulator-mode = 高难模式
+sync-level-item-name = { $itemName }（等级同步：{ $syncLevel }）
 
 sync-level = 等级同步
 type = 类型
@@ -209,6 +254,7 @@ cancel = Cancel
 confirm = Confirm
 designer-mode = Normal Mode
 simulator-mode = Simulator Mode
+sync-level-item-name = { $itemName } (Lv. { $syncLevel })
 
 type = Type
 level = Level
