@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2025 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -88,6 +88,10 @@ async fn main() {
         .push(
             Router::with_path("{lang}")
                 .push(Router::with_path("recipe_level_table").get(recipe_level_table))
+                .push(
+                    Router::with_path("recipe_level_table_by_job_level")
+                        .get(recipe_level_table_by_job_level),
+                )
                 .push(Router::with_path("recipe_table").get(recipe_table))
                 .push(Router::with_path("recipe_info").get(recipe_info))
                 .push(Router::with_path("recipes_ingredientions").get(recipes_ingredientions))
@@ -149,6 +153,34 @@ async fn recipe_level_table(
         return Err(StatusError::bad_gateway());
     };
     res.render(Json(rt));
+    Ok(())
+}
+
+// job_level: i32,
+#[handler]
+async fn recipe_level_table_by_job_level(
+    req: &mut Request,
+    depot: &mut Depot,
+    res: &mut Response,
+) -> Result<()> {
+    let state = depot
+        .obtain::<AppState>()
+        .map_err(|_| StatusError::internal_server_error())?;
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
+    let job_level = req
+        .query::<u32>("job_level")
+        .ok_or_else(|| StatusError::bad_request())?;
+    let result = RecipeLevelTables::find()
+        .filter(recipe_level_tables::Column::ClassJobLevel.eq(job_level))
+        .order_by_asc(recipe_level_tables::Column::Id)
+        .one(conn)
+        .await
+        .map_err(|_| StatusError::internal_server_error())?;
+    res.render(Json(result));
     Ok(())
 }
 

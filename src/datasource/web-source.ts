@@ -110,6 +110,24 @@ export class WebSource {
         return result;
     }
 
+    async recipeLevelTablebyJobLevel(
+        job_level: number,
+    ): Promise<RecipeLevel | null> {
+        const query = new URLSearchParams({ job_level: String(job_level) });
+        const url = new URL('recipe_level_table_by_job_level', this.base);
+        url.search = query.toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+        });
+        const result: RecipeLevel | null = await resp.json();
+        if (result == null) return null;
+        return {
+            ...result,
+            stars: 0, // TODO
+        };
+    }
+
     async recipeCollectableShopRefine(
         recipeId: number,
     ): Promise<CollectablesShopRefine> {
@@ -188,4 +206,4 @@ export class WebSource {
     }
 }
 
-export const YYYYGamesApiBase = 'https://tnze.yyyy.games/api/datasource/';
+export const YYYYGamesApiBase = 'http://127.0.0.1:8693/';

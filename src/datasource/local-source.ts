@@ -85,10 +85,11 @@ export class LocalRecipeSource {
         jobLevel: number,
     ): Promise<RecipeLevel | null> {
         const invoke = await this.invoke;
-        const result: RecipeLevel = await invoke(
+        const result: RecipeLevel | null = await invoke(
             'recipe_level_table_by_job_level',
             { jobLevel },
         );
+        if (result == null) return null;
         result.stars = 0;
         return result;
     }

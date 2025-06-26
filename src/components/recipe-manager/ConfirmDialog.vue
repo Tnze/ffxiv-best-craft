@@ -35,7 +35,7 @@ import {
 import { selectRecipe } from './common';
 import { useMediaQuery } from '@vueuse/core';
 import { useRouter } from 'vue-router';
-import { computed, ref, registerRuntimeCompiler, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import useSettingStore from '@/stores/settings';
 
 const props = defineProps<{
@@ -47,7 +47,7 @@ const props = defineProps<{
 const router = useRouter();
 const settingsStore = useSettingStore();
 const visible = defineModel<boolean>({ required: true });
-const recipe = defineModel<Recipe>('recipe', { required: true });
+const rawRecipe = defineModel<Recipe>('recipe', { required: true });
 const compactLayout = useMediaQuery('screen and (max-width: 500px)');
 
 const dynRecipeLevel = ref<number>();
@@ -55,7 +55,28 @@ const isDynRecipe = computed(() => {
     const notebook = props.recipeInfo.recipe_notebook_list;
     return notebook >= 1496 && notebook <= 1503;
 });
-const dynRecipeFixed = ref(false);
+const dynRecipe = ref<Recipe>();
+const recipe = computed(() => dynRecipe.value ?? rawRecipe.value);
+
+watch([isDynRecipe, dynRecipeLevel], async ([isDynRecipe, dynRecipeLevel]) => {
+    if (!isDynRecipe || dynRecipeLevel == undefined) {
+        dynRecipe.value = undefined;
+        return;
+    }
+    const ds = await settingsStore.getDataSource();
+    const recipeLevel = await ds.recipeLevelTablebyJobLevel!(dynRecipeLevel);
+    if (recipeLevel == null) {
+        dynRecipe.value = undefined;
+        return;
+    }
+
+    dynRecipe.value = await newRecipe(
+        recipeLevel,
+        props.recipeInfo.difficulty_factor,
+        props.recipeInfo.quality_factor,
+        props.recipeInfo.durability_factor,
+    );
+});
 
 async function confirm(mode: 'simulator' | 'designer') {
     selectRecipe(
@@ -71,26 +92,6 @@ async function confirm(mode: 'simulator' | 'designer') {
     router.push({ name: 'designer' });
     visible.value = false;
 }
-
-watch(dynRecipeLevel, async jobLevel => {
-    if (jobLevel == undefined) {
-        dynRecipeFixed.value = false;
-        return;
-    }
-    const ds = await settingsStore.getDataSource();
-    const recipeLevel = await ds.recipeLevelTablebyJobLevel!(jobLevel);
-    if (recipeLevel == null) {
-        dynRecipeFixed.value = false;
-        return;
-    }
-    recipe.value = await newRecipe(
-        recipeLevel,
-        props.recipeInfo.difficulty_factor,
-        props.recipeInfo.quality_factor,
-        props.recipeInfo.durability_factor,
-    );
-    dynRecipeFixed.value = true;
-});
 </script>
 
 <template>
@@ -103,7 +104,7 @@ watch(dynRecipeLevel, async jobLevel => {
         <template v-if="isDynRecipe">
             <el-alert
                 :title="$t('alert-sync-level')"
-                :type="dynRecipeFixed ? 'success' : 'error'"
+                :type="dynRecipe != undefined ? 'success' : 'error'"
                 :closable="false"
             />
             <br />
@@ -167,7 +168,7 @@ watch(dynRecipeLevel, async jobLevel => {
                 </el-button>
                 <el-button
                     type="primary"
-                    :disabled="isDynRecipe && !dynRecipeFixed"
+                    :disabled="isDynRecipe && !dynRecipe"
                     @click="confirm('designer')"
                 >
                     {{ $t(isNormalRecipe ? 'confirm' : 'designer-mode') }}
