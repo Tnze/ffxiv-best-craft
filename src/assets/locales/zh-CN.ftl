@@ -3,7 +3,7 @@ licenses-notices-2 = BestCraft 本着可用的意愿分发，但不作任何担�
 licenses-notices-3 = 您应该随 BestCraft 收到一份 GNU Affero 通用公共许可协议。否则请参阅：http://www.gnu.org/licenses/
 copyright-notices = 
     版权所有 2025 Tnze. All Rights Reserved.
-    引用的FFXIV相关资源 Copyright © 2010 - 2024 SQUARE ENIX CO., LTD.
+    引用的FFXIV相关资源 Copyright © 2010 - 2025 SQUARE ENIX CO., LTD.
 
 level = 等级
 recipe-level = 配方等级
