@@ -25,9 +25,12 @@ import {
     ElInputNumber,
     ElAlert,
     ElSwitch,
+    ElSpace,
+    ElTag,
 } from 'element-plus';
 import {
     CollectablesShopRefine,
+    Conditions,
     Item,
     newRecipe,
     Recipe,
@@ -39,6 +42,7 @@ import { useRouter } from 'vue-router';
 import { computed, onWatcherCleanup, ref, watch } from 'vue';
 import useSettingStore from '@/stores/settings';
 import { useFluent } from 'fluent-vue';
+import Condition from '../designer/Condition.vue';
 
 const props = defineProps<{
     recipeInfo: RecipeInfo;
@@ -138,7 +142,7 @@ async function confirm(mode: 'simulator' | 'designer') {
         v-model="visible"
         :title="$t('please-confirm')"
         :align-center="true"
-        :width="compactLayout ? '90%' : '50%'"
+        :width="compactLayout ? '90%' : '70%'"
     >
         <template v-if="isDynRecipe">
             <el-alert
@@ -148,7 +152,7 @@ async function confirm(mode: 'simulator' | 'designer') {
             />
             <br />
         </template>
-        <el-descriptions loading="true">
+        <el-descriptions loading="true" :border="true">
             <el-descriptions-item
                 v-if="isDynRecipe"
                 :label="$t('sync-level')"
@@ -165,41 +169,82 @@ async function confirm(mode: 'simulator' | 'designer') {
                     :disabled="!enableDynRecipe"
                 />
             </el-descriptions-item>
-            <el-descriptions-item :label="$t('name')" :span="3">
+
+            <!-- Item Info -->
+            <el-descriptions-item :label="$t('item-info')" :span="3">
                 {{ recipeInfo.item_name }}
+                <template v-if="recipeInfo.item_amount">
+                    × {{ recipeInfo.item_amount }}
+                </template>
+            </el-descriptions-item>
+
+            <!-- Recipe Data -->
+            <el-descriptions-item :label="$t('recipe-id')">
+                {{ recipeInfo.id }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('recipe-level')">
                 {{ recipe.rlv.id }}
             </el-descriptions-item>
-            <el-descriptions-item :label="$t('type')">
-                {{ recipeInfo.job }}
-            </el-descriptions-item>
             <el-descriptions-item :label="$t('level')">
                 {{ recipe.job_level }}
             </el-descriptions-item>
+            <el-descriptions-item :label="$t('difficulty')">
+                {{ recipe.difficulty }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('quality')">
+                {{ recipe.quality }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('durability')">
+                {{ recipe.durability }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('conditions')" :span="3">
+                <div class="conditions-list">
+                    <template v-for="(cond, i) in Object.values(Conditions)">
+                        <el-tag
+                            v-if="recipe.conditions_flag & (1 << i)"
+                            type="info"
+                        >
+                            <Condition :cond="cond" />
+                        </el-tag>
+                    </template>
+                </div>
+            </el-descriptions-item>
 
+            <!-- Recipe Info -->
+            <el-descriptions-item :label="$t('difficulty-factor')">
+                {{ recipeInfo.difficulty_factor }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('quality-factor')">
+                {{ recipeInfo.quality_factor }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('durability-factor')">
+                {{ recipeInfo.durability_factor }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('type')">
+                {{ recipeInfo.job }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('material-quality-factor')">
+                {{ recipeInfo.material_quality_factor }}
+            </el-descriptions-item>
+            <el-descriptions-item :label="$t('can-hq')">
+                {{ $t(String(recipeInfo.can_hq)) }}
+            </el-descriptions-item>
             <el-descriptions-item :label="$t('required-craftsmanship')">
                 {{ recipeInfo.required_craftsmanship }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('required-control')">
                 {{ recipeInfo.required_control }}
             </el-descriptions-item>
-            <el-descriptions-item :label="$t('can-hq')">
-                {{ $t(String(recipeInfo.can_hq)) }}
-            </el-descriptions-item>
         </el-descriptions>
-        <br />
-        <span>
+        <div class="notice">
             {{
                 isNormalRecipe
-                    ? $t('confirm-select', {
-                          itemName: recipeInfo.item_name || '',
-                      })
+                    ? $t('confirm-select', { itemName: recipeInfo.item_name })
                     : $t('confirm-select2')
             }}
-        </span>
+        </div>
         <template #footer>
-            <span>
+            <span class="footer">
                 <el-button @click="visible = false">
                     {{ $t('cancel') }}
                 </el-button>
@@ -223,6 +268,19 @@ async function confirm(mode: 'simulator' | 'designer') {
     </el-dialog>
 </template>
 
+<style scoped>
+.conditions-list {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.notice {
+    margin: 15px 0;
+}
+
+</style>
+
 <fluent locale="zh-CN">
 confirm-select = 开始制作“{ $itemName }”吗？
 confirm-select2 = 这是一个高难度配方，请选择模式。
@@ -236,19 +294,22 @@ simulator-mode = 高难模式
 sync-level-item-name = { $itemName }（等级同步：{ $syncLevel }）
 
 sync-level = 等级同步
-type = 类型
+type = 制作类型
 level = 等级
-name = 名称
+recipe-id = 配方编号
+item-info = 物品信息
+
 true = 是
 false = 否
 can-hq = 存在HQ
+
 required-craftsmanship = 最低{ craftsmanship }
 required-control = 最低{ control }
 </fluent>
 
 <fluent locale="en-US">
 confirm-select = Start crafting "{ $itemName }"?
-confirm-select2 = This is a 高难度配方. Please make a choice.
+confirm-select2 = This is a hard recipe. Please make a choice.
 please-confirm = Please confirm
 
 cancel = Cancel
@@ -257,9 +318,11 @@ designer-mode = Normal Mode
 simulator-mode = Simulator Mode
 sync-level-item-name = { $itemName } (Lv. { $syncLevel })
 
-type = Type
+type = Crafting Type
 level = Level
-name = Name
+recipe-id = Recipe ID
+item-info = Item info
+conditions = Conditions
 true = True
 false = False
 can-hq = Can be HQ

@@ -18,6 +18,15 @@ steps = Step
 condition = Condition
 difficulty = Difficulty
 initial-quality = Quality
+conditions = Cond. Flag
+progress-divider = Progress Divider
+progress-modifier = Progress Modifier
+quality-divider = Quality Divider
+quality-modifier = Quality Modifier
+difficulty-factor = Difficulty Factor
+quality-factor = Quality Factor
+durability-factor = Durability Factor
+material-quality-factor = Material Quality Factor
 
 meals = Meals
 medicines = Medicines

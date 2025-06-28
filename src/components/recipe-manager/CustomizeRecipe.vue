@@ -168,7 +168,7 @@ function confirm(simulatorMode: boolean) {
                     :min="1"
                 ></el-input-number>
             </el-form-item>
-            <el-form-item :label="$t('conditions-flag')">
+            <el-form-item :label="$t('conditions')">
                 <el-checkbox-group v-model="conditionsFlag" size="small">
                     <el-checkbox-button
                         v-for="cond in Conditions"
@@ -244,11 +244,6 @@ function confirm(simulatorMode: boolean) {
 <fluent locale="zh-CN">
 back = 返回
 custom-recipe = 自定义配方
-conditions-flag = 球色标志
-progress-divider = 作业难度系数
-progress-modifier = 作业压制系数
-quality-divider = 加工难度系数
-quality-modifier = 加工压制系数
 auto-load = 自动填充
 
 cancel = 取消
@@ -259,11 +254,6 @@ simulator-mode = 模拟器模式
 <fluent locale="en-US">
 back = Back
 custom-recipe = Custom Recipe
-conditions-flag = Cond. Flag
-progress-divider = Progress Divider
-progress-modifier = Progress Modifier
-quality-divider = Quality Divider
-quality-modifier = Quality Modifier
 auto-load = Auto Fill
 
 cancel = Cancel

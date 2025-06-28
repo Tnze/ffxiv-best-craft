@@ -18,6 +18,15 @@ steps = 工次
 condition = 状态
 difficulty = 难度
 initial-quality = 初期品质
+conditions = 制作状态
+progress-divider = 作业难度系数
+progress-modifier = 作业压制系数
+quality-divider = 加工难度系数
+quality-modifier = 加工压制系数
+difficulty-factor = 配方难度系数
+quality-factor = 配方品质系数
+durability-factor = 配方耐久系数
+material-quality-factor = 半成品品质贡献度
 
 meals = 食品
 medicines = 药品
