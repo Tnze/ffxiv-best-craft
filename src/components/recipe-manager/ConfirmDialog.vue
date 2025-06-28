@@ -66,7 +66,11 @@ const isDynRecipe = computed(() => {
 const enableDynRecipe = ref(false);
 const dynRecipeLoading = ref(false);
 const dynRecipe = ref<Recipe>();
-const recipe = computed(() => dynRecipe.value ?? rawRecipe.value);
+const recipe = computed(() =>
+    isDynRecipe.value && enableDynRecipe.value && dynRecipe.value != undefined
+        ? dynRecipe.value
+        : rawRecipe.value,
+);
 
 async function loadDynRecipe(
     isDynRecipe: boolean,
@@ -258,7 +262,9 @@ async function confirm(mode: 'simulator' | 'designer') {
                 <el-button
                     type="primary"
                     :loading="dynRecipeLoading"
-                    :disabled="enableDynRecipe && dynRecipe == undefined"
+                    :disabled="
+                        isDynRecipe && enableDynRecipe && dynRecipe == undefined
+                    "
                     @click="confirm('designer')"
                 >
                     {{ $t(isNormalRecipe ? 'confirm' : 'designer-mode') }}
@@ -278,7 +284,6 @@ async function confirm(mode: 'simulator' | 'designer') {
 .notice {
     margin: 15px 0;
 }
-
 </style>
 
 <fluent locale="zh-CN">
