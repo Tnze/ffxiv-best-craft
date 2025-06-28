@@ -76,6 +76,7 @@ async function loadDynRecipe(
     isDynRecipe: boolean,
     enableDynRecipe: boolean,
     dynRecipeLevel: number | undefined,
+    recipeInfo: RecipeInfo,
 ): Promise<Recipe | undefined> {
     if (!isDynRecipe || !enableDynRecipe || dynRecipeLevel == undefined) {
         return undefined;
@@ -95,8 +96,8 @@ async function loadDynRecipe(
 }
 
 watch(
-    [isDynRecipe, enableDynRecipe, dynRecipeLevel],
-    async ([isDynRecipe, enableDynRecipe, dynRecipeLevel]) => {
+    [isDynRecipe, enableDynRecipe, dynRecipeLevel, () => props.recipeInfo],
+    async ([isDynRecipe, enableDynRecipe, dynRecipeLevel, recipeInfo]) => {
         try {
             dynRecipeLoading.value = true;
 
@@ -108,6 +109,7 @@ watch(
                 isDynRecipe,
                 enableDynRecipe,
                 dynRecipeLevel,
+                recipeInfo,
             );
             if (!cancel) {
                 dynRecipe.value = recipe;
