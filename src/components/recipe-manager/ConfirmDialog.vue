@@ -55,8 +55,9 @@ const compactLayout = useMediaQuery('screen and (max-width: 500px)');
 
 const dynRecipeLevel = ref<number>();
 const isDynRecipe = computed(() => {
+    // 宇宙探索A级以下配方存在等级同步规则
     const notebook = props.recipeInfo.recipe_notebook_list;
-    return notebook >= 1496 && notebook <= 1503;
+    return notebook >= 1496 && notebook <= 1503 && props.recipeInfo.rlv == 690;
 });
 const enableDynRecipe = ref(false);
 const dynRecipeLoading = ref(false);
