@@ -323,19 +323,21 @@ async function readSolver() {
 async function handleSolverResult(
     actions: Actions[],
     solverName: SequenceSource,
+    additional: boolean,
 ) {
-    let slots: Slot[] = [];
-    for (const i in actions)
-        slots.push({ action: actions[i], id: Number.parseInt(i) });
-    const seq = {
-        slots,
-        maxid: actions.length,
-        source: solverName,
-        itemName: store.content?.item.name,
-    };
-    loadSeq(seq);
-    store.pushRotation(seq);
-    store.sortRotations(initStatus.value);
+    if (additional) {
+        for (const i in actions) pushAction(actions[i]);
+    } else {
+        const seq = {
+            slots: actions.map((action, id) => ({ action, id })),
+            maxid: actions.length,
+            source: solverName,
+            itemName: store.content?.item.name,
+        };
+        loadSeq(seq);
+        store.pushRotation(seq);
+        store.sortRotations(initStatus.value);
+    }
     // activeTab.value = 'store';
 }
 </script>
@@ -457,6 +459,7 @@ async function handleSolverResult(
                         <el-scrollbar style="flex: auto">
                             <SolverList
                                 :init-status="initStatus"
+                                :current-status="displayedStatus"
                                 :recipe-name="item.name"
                                 :can-hq="item.can_be_hq"
                                 @solver-load="readSolver()"

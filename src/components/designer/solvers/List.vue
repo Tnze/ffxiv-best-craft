@@ -46,6 +46,7 @@ const { $t } = useFluent();
 
 const props = defineProps<{
     initStatus: Status;
+    currentStatus: Status;
     recipeName: string;
     canHq: boolean;
     collectableShopRefine?: CollectablesShopRefine;
@@ -57,6 +58,7 @@ const emits = defineEmits<{
         event: 'solverResult',
         result: Actions[],
         solverName: SequenceSource,
+        additional: boolean,
     ): void;
 }>();
 
@@ -66,6 +68,7 @@ async function runSimpleSolver(
     solverId: SequenceSource,
     solvingRunningState: Ref<boolean>,
     solver: (initStatus: Status) => Promise<Actions[]>,
+    fromState: 'initial' | 'current' = 'initial',
 ) {
     const msg1 = ElMessage({
         showClose: true,
@@ -76,7 +79,9 @@ async function runSimpleSolver(
     try {
         solvingRunningState.value = true;
         const startTime = new Date().getTime();
-        const result = await solver(props.initStatus);
+        const initStatus =
+            fromState == 'current' ? props.currentStatus : props.initStatus;
+        const result = await solver(initStatus);
         const stopTime = new Date().getTime();
 
         const msgArgs = {
@@ -88,7 +93,7 @@ async function runSimpleSolver(
                 type: 'success',
                 message: $t('simple-solver-finished', msgArgs),
             });
-            emits('solverResult', result, solverId);
+            emits('solverResult', result, solverId, fromState == 'current');
         } else {
             ElMessage({
                 showClose: true,

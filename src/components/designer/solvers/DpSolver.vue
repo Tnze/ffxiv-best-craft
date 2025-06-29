@@ -28,6 +28,7 @@ import {
     ElTable,
     ElTableColumn,
     ElMessage,
+    ElSegmented,
 } from 'element-plus';
 import { create_solver, destroy_solver, reflect_solve } from '@/libs/Solver';
 import { ChatSquare } from '@element-plus/icons-vue';
@@ -57,6 +58,7 @@ const emits = defineEmits<{
         solverId: SequenceSource,
         solvingRunningState: Ref<boolean>,
         solver: (initStatus: Status) => Promise<Actions[]>,
+        fromState: 'initial' | 'current',
     ): void;
 }>();
 
@@ -66,6 +68,8 @@ const useWasteNot = ref(false);
 const useMuscleMemory = ref(false);
 const useObserve = ref(true);
 const solvers = ref<Solver[]>([]);
+const fromState = ref<'initial' | 'current'>('initial');
+const fromStateOptions = ['initial', 'current'];
 
 const reflectSolveIsSolving = ref(false);
 function runReflectSolver() {
@@ -80,6 +84,7 @@ function runReflectSolver() {
                 useWasteNot.value ? 8 : 0,
                 useObserve.value,
             ),
+        fromState.value,
     );
 }
 
@@ -163,6 +168,11 @@ const destroySolver = async (s: Solver) => {
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
+        <el-segmented v-model="fromState" :options="fromStateOptions">
+            <template #default="scope">
+                {{ $t('from-' + scope.item) }}
+            </template>
+        </el-segmented>
         <el-checkbox
             v-model="useMuscleMemory"
             :label="$t('enable-action', { action: $t('muscle-memory') })"
@@ -247,6 +257,9 @@ const destroySolver = async (s: Solver) => {
 </style>
 
 <fluent locale="zh-CN">
+from-initial = 整体求解
+from-current = 追加求解
+
 solver-start = 开始求解
 simple-solver-solving = 正在求解中
 create-solver = 创建求解器
@@ -331,7 +344,11 @@ muscle-memory-msg = 坚信模式的使用方法与其余求解器略有不同，
 dp-solver-empty-text = 没有已加载的求解器
 
 </fluent>
+
 <fluent locale="en-US">
+from-initial = From initial
+from-current = From current
+
 solver-start = Start
 simple-solver-solving = Solving
 create-solver = Create solver

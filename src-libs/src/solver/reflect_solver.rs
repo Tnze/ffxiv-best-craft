@@ -31,8 +31,8 @@ pub fn solve(
 ) -> Vec<Actions> {
     let solver = QualitySolver::new(
         status.clone(),
-        use_manipulation,
-        use_waste_not + 1,
+        use_manipulation || status.buffs.manipulation > 0,
+        (status.buffs.wast_not as usize + 1).max(use_waste_not + 1),
         use_observe,
     );
     let result1 = solver.read_all(&status);

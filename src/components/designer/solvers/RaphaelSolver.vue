@@ -49,6 +49,7 @@ const emits = defineEmits<{
         solverId: SequenceSource,
         solvingRunningState: Ref<boolean>,
         solver: (initStatus: Status) => Promise<Actions[]>,
+        fromState: 'initial' | 'current',
     ): void;
 }>();
 
@@ -69,6 +70,8 @@ const solverTargetSegmented = computed({
         else solverTarget.value = v;
     },
 });
+const fromState = ref<'initial' | 'current'>('initial');
+const fromStateOptions = ['initial', 'current'];
 
 type TargetQuality = 'full' | '1st' | '2nd' | '3rd' | number;
 type TargetQualityOption = {
@@ -145,6 +148,7 @@ function runRaphaelSolver() {
                     throw $t('error-probably-out-of-memory', { err });
                 else throw e;
             }),
+        fromState.value,
     );
 }
 </script>
@@ -168,6 +172,33 @@ function runRaphaelSolver() {
         </i18n>
     </el-dialog>
     <el-space direction="vertical" alignment="normal">
+        <el-space style="margin-bottom: 10px">
+            <el-button
+                @click="runRaphaelSolver"
+                type="primary"
+                :loading="raphaelSolveIsSolving"
+            >
+                {{
+                    raphaelSolveIsSolving
+                        ? $t('simple-solver-solving')
+                        : $t('solver-start')
+                }}
+            </el-button>
+            <el-button
+                :icon="ChatSquare"
+                circle
+                @click="dialogVisible = true"
+            />
+            <el-segmented
+                v-model="fromState"
+                :options="fromStateOptions"
+                :disabled="true"
+            >
+                <template #default="scope">
+                    {{ $t('from-' + scope.item) }}
+                </template>
+            </el-segmented>
+        </el-space>
         <el-space>
             <el-text style="flex: none">
                 {{ $t('target-quality') }}
@@ -244,20 +275,6 @@ function runRaphaelSolver() {
             </el-tag>
         </el-space>
     </el-space>
-    <div style="margin-top: 10px">
-        <el-button
-            @click="runRaphaelSolver"
-            type="primary"
-            :loading="raphaelSolveIsSolving"
-        >
-            {{
-                raphaelSolveIsSolving
-                    ? $t('simple-solver-solving')
-                    : $t('solver-start')
-            }}
-        </el-button>
-        <el-button :icon="ChatSquare" circle @click="dialogVisible = true" />
-    </div>
 </template>
 
 <style scoped>
@@ -270,6 +287,9 @@ function runRaphaelSolver() {
 solver-start = 开始求解
 simple-solver-solving = 正在求解中
 error-probably-out-of-memory = { $err }（可能是内存不足，请尝试使用桌面端）
+
+from-initial = 整体求解
+from-current = 追加求解
 
 first-stage = 一档
 second-stage = 二档
@@ -304,10 +324,14 @@ solver-info =
     · 产生最优解，不可能达到比求解器更高的品质
     · 求解时间短（5-20 秒），内存占用合理（300-500 MB）
 </fluent>
+
 <fluent locale="en-US">
 solver-start = Start
 simple-solver-solving = Solving
 error-probably-out-of-memory = { $err } (Probably out of memory, please use the desktop edition)
+
+from-initial = From initial
+from-current = From current
 
 first-stage = 1st
 second-stage = 2nd

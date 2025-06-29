@@ -27,6 +27,7 @@ import {
     ElDialog,
     ElSpace,
     ElText,
+    ElSegmented,
 } from 'element-plus';
 import { useFluent } from 'fluent-vue';
 import { Ref, ref, watch } from 'vue';
@@ -47,6 +48,7 @@ const emits = defineEmits<{
         solverId: SequenceSource,
         solvingRunningState: Ref<boolean>,
         solver: (initStatus: Status) => Promise<Actions[]>,
+        fromState: 'initial' | 'current',
     ): void;
 }>();
 
@@ -58,6 +60,8 @@ const maxDepth = ref(warningDepth);
 const useSpecialist = ref(false);
 const doNotTouch = ref(false);
 const dfsSolving = ref(false);
+const fromState = ref<'initial' | 'current'>('initial');
+const fromStateOptions = ['initial', 'current'];
 
 watch(
     () => props.canHq,
@@ -82,6 +86,7 @@ function runDfsSolver() {
             const solver = doNotTouch.value ? nq_solve : dfs_solve;
             return solver(initStatus, maxDepth.value, useSpecialist.value);
         },
+        fromState.value,
     );
 }
 </script>
@@ -132,7 +137,7 @@ function runDfsSolver() {
             :label="$t('specialist')"
             :disabled="dfsSolving"
         />
-        <div>
+        <el-space>
             <el-button
                 type="primary"
                 @click="runDfsSolver"
@@ -149,7 +154,12 @@ function runDfsSolver() {
                 circle
                 @click="dialogVisible = true"
             />
-        </div>
+            <el-segmented v-model="fromState" :options="fromStateOptions">
+                <template #default="scope">
+                    {{ $t('from-' + scope.item) }}
+                </template>
+            </el-segmented>
+        </el-space>
     </el-space>
 </template>
 
@@ -160,6 +170,8 @@ function runDfsSolver() {
 </style>
 
 <fluent locale="zh-CN">
+from-initial = 整体求解
+from-current = 追加求解
 do-not-touch = 不推品质
 dfs-max-depth = 最大深度
 solver-start = 开始求解
@@ -175,7 +187,10 @@ dfs-solver-info =
     .command-line-tool = 命令行工具
 dfs-too-depth = 选择的最大深度过大，求解所需时间可能极长
 </fluent>
+
 <fluent locale="en-US">
+from-initial = From initial
+from-current = From current
 do-not-touch = Do not "touching"
 dfs-max-depth = Depth
 solver-start = Start
