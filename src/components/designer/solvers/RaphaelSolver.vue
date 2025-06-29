@@ -81,7 +81,7 @@ type TargetQualityOption = {
 };
 const targetQualityOptions = computed(() => {
     const options: TargetQualityOption[] = [];
-    options.push({ label: 'custom', value: 'custom', disabled: true });
+    options.push({ label: 'custom-target', value: 'custom', disabled: true });
     const v = props.collectableShopRefine;
     if (v != undefined) {
         if (v.low_collectability > 0)
@@ -91,7 +91,7 @@ const targetQualityOptions = computed(() => {
         if (v.high_collectability > 0)
             options.push({ label: 'third-stage', value: '3rd' });
     }
-    options.push({ label: 'maximum', value: 'full' });
+    options.push({ label: 'maximum-target', value: 'full' });
     return options;
 });
 
@@ -294,8 +294,8 @@ from-current = 追加求解
 first-stage = 一档
 second-stage = 二档
 third-stage = 三档
-maximum = 最大
-custom = 自定义
+maximum-target = 最大
+custom-target = 自定义
 
 target-quality = 目标品质
 enable-action = 使用技能：{ $action }
@@ -336,8 +336,8 @@ from-current = From current
 first-stage = 1st
 second-stage = 2nd
 third-stage = 3rd
-maximum = Maximum
-custom = Custom
+maximum-target = Maximum
+custom-target = Custom
 
 target-quality = Target quality
 enable-action = Enable { $action }

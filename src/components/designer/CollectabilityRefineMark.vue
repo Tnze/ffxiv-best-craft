@@ -107,7 +107,7 @@ const highMark = computed(() =>
                     v-if="midMark"
                     :x="midMark"
                     y="5"
-                    :width="highMark - midMark"
+                    :width="highMark ?? markWidth - midMark"
                     height="4"
                     :fill="palette[1]"
                 />
