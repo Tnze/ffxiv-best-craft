@@ -1,23 +1,23 @@
 {
-    "version": "0.21.5",
-    "notes": "v0.21.5, v0.21.4:\n- 修复配方等级同步的问题\nv0.21.3:\n- 选择配方时会显示更多的详细信息\nv0.21.2:\n- 修复导入宏时 Waste Not 无法正确识别的问题\n- 修复导出宏时 Wast not 中 n 为小写的问题\n- 更新依赖库\n- 现在宇宙探索A级配方不会显示等级同步",
-    "pub_date": "2025-06-28T04:26:43.93Z",
+    "version": "0.21.6",
+    "notes": "增加追加求解功能",
+    "pub_date": "2025-06-29T04:21:52.323Z",
     "platforms": {
         "darwin-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnA2clExTzVpclduWmFGSGNOQ29mYVc3TVZUVzhLS0VNUzRwZzRIL2hscFlXZDFmZC9MSXhXMEpIYzdCNi9DWDhVL0hiQ3phOHpLSzVMdVErL1JVYndBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUxMDg0Njk2CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKM0o3UXNmNU5jdmROWUQxNnFqLzN3eUNsbU96Z3V2WnRxVHgxMlNkTFoxT1BNdTVFOVJXWDFQczI4ZE5UT1BlNG12Qk9LQ0xnRjcvZVF0UXpNQ0lURHc9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v0.21.5/BestCraft_aarch64.app.tar.gz"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnRrcDB2VGFtcU01TlEwVEdlNnhZcWg1RFJ5SGcyTWZwUVp2eG9HakNBYmNia1VhQU93YlI0MFNQWktSem5Lc01IQWo3TFJZazlMbFN1ZGgxckFhMndRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUxMTcwNTU0CWZpbGU6QmVzdENyYWZ0LmFwcC50YXIuZ3oKY214UGdWdnpXRDBjZmJZUk9rOUhuRTJ1RERJQkNSRzVkMzRmV244WWpYNllydU8rMHNLam1aM0l2VVpYYXFKM2dxUlA1ekx5NDhaVUN2V0ppZjVWQUE9PQo=",
+            "url": "https://tnze.yyyy.games/releases/v0.21.6/BestCraft_aarch64.app.tar.gz"
         },
         "linux-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmpyQUhjcmFPMmhMNkVHdlE2RFdyQ1dBRHJhajdIRlF4S2ltVWo2T3Y0eDhObnIzcmxWMlBTeUpkU2F0SVVTWHFLMUZkcUVMdEp5ZWgwd3Nua2JURHdnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUxMDg0Njk0CWZpbGU6QmVzdENyYWZ0XzAuMjEuNV9hbWQ2NC5BcHBJbWFnZQo0WVdQUVJZN2dMaDRwZDdqK0FXTGE3Y2pxRGpyUFduOUxYbzVBS3hNK25paHJvWUYyWDNLV0Jkb1hDaVNQUjFGN2htOGV6dHJvN05JaGsyVVpKaGdEZz09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v0.21.5/BestCraft_0.21.5_amd64.AppImage"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnNMd2VuMnpVVGdvdE1zMkVGOEw0TTJDTE9OUlJmcU9NcU8zd1dza0Yyb3dzU1VRWWZPYnVjd1BMV2pIWWVvZVVVNDFXTURyUHVsOHBkUWMxUlNBeWdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUxMTcwNjYzCWZpbGU6QmVzdENyYWZ0XzAuMjEuNl9hbWQ2NC5BcHBJbWFnZQpCVGt1ZlpkdjcyTThWUnVYTnR1TEYwQzBSYk5IVnB1UkhGcjlyaXZqVUFOMEx5dHpsZk5PanlSZnVvZURrUHU1bmxBeEV4OElyY1M5RUJsaWw0V2VCZz09Cg==",
+            "url": "https://tnze.yyyy.games/releases/v0.21.6/BestCraft_0.21.6_amd64.AppImage"
         },
         "windows-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm8zaVlGV09VdXczSnF0SjR6T1kvZ29ER3BCcGUvRFpNNjZtTmo4b2FGUWtLejV2NzRqSkI3VDVPbDRIV3hqTzVZWjRpc09SSnpXcHJRVXBtbzJUM2dNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUxMDg0NzkxCWZpbGU6QmVzdENyYWZ0XzAuMjEuNV94NjRfemgtQ04ubXNpLnppcAozRDVBbXZtczRkTXRhc2xrMTZWUzFJeWZEcWErK0J0Rm5GblhLVlFqV1ZGU2t1bWEwSFhwaHgrd3ZvdnRvTVh5Wmd6ZlFrNjRkajlMR09KQ25YY05EZz09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v0.21.5/BestCraft_0.21.5_x64_zh-CN.msi.zip"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnB6OThRL0tXMzY4QnJBY29wckRMMW9PUk1sWk5INUJvUEUwa3U2dUNlVnRocStYZ1dETW13NkljZ1F6OUZZR1VmM2VGcXRCdTBkK1VDdnUxa0hDbnc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUxMTcwODI5CWZpbGU6QmVzdENyYWZ0XzAuMjEuNl94NjRfemgtQ04ubXNpLnppcApNazhjMU1kbC9tNXpTOUI4aWJDZUFjMG50MWRDQ2lmSjY4OEVET2VhbnhzUHh4WXVUcVprVG1kbkVtRHRmN0xVVHhJbkRjY3ZVSnJRWWVobENpam9EZz09Cg==",
+            "url": "https://tnze.yyyy.games/releases/v0.21.6/BestCraft_0.21.6_x64_zh-CN.msi.zip"
         },
         "windows-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnVXUU9OUGtsT01EL0xTd1dwbDE3R0hMK1lyZGdGajdMdHExZ2VxV2Z0U2RqVEs0eGZXK3NNcFJLWjRneFVPcHJkckU4QkJ1VWRnWHlDenFqTUhYc0FnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUxMDg0Nzk4CWZpbGU6QmVzdENyYWZ0XzAuMjEuNV9hcm02NF96aC1DTi5tc2kuemlwCk9KaXgwZWVXS0g1dFFWbEhNR0cwR1d3Mk0xQ0tJVko1NWREQUN0WkNkRWYxRDhHTlFCOGQ3QlFzdzZISmEzSDB4bzA4cmpyQUFVSUExNGxyTTVKakJnPT0K",
-            "url": "https://tnze.yyyy.games/releases/v0.21.5/BestCraft_0.21.5_arm64_zh-CN.msi.zip"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnUzSkFReDFoT1BXY3RXamQ5K3drNXlqZEZoSDYyS2JJUEc3eE1rTFJuMG0yenRWZFhCZTRuSDFhR2JlelU3K1BiNmpZVkVjUHVtbmdBSTliVmttTGd3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzUxMTcwOTA3CWZpbGU6QmVzdENyYWZ0XzAuMjEuNl9hcm02NF96aC1DTi5tc2kuemlwCmVGa25zd0xRMVFsUGtISExSbzROQWZYYTZoUndRenpnZmJzemd6Q0F5b3ZUZU02S0dDa1prQmJreVFnZ1FKcitHcVpFQjBMMzE5Q0xiSUJZWHd5RENBPT0K",
+            "url": "https://tnze.yyyy.games/releases/v0.21.6/BestCraft_0.21.6_arm64_zh-CN.msi.zip"
         }
     }
 }
