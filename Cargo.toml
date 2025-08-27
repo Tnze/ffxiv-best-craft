@@ -6,7 +6,7 @@ members = ["src-libs", "src-tauri", "src-wasm", "src-server", "src-db"]
 sea-orm = { version = "1.1", features = ["runtime-tokio-native-tls", "macros"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tokio = "1.45"
+tokio = "1.47"
 
 [profile.release]
 lto = true
