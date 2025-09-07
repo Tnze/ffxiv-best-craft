@@ -17,12 +17,12 @@
 -->
 
 <script setup lang="ts">
-import { ElText, ElButton, ElLink } from 'element-plus';
+import { ElText, ElButton, ElLink, ElDialog } from 'element-plus';
 import { computed, onActivated, ref } from 'vue';
 import { useFluent } from 'fluent-vue';
-import { clarityReport } from '@/libs/Utils';
 import { isWebsite, isYYYYGames } from '@/libs/Consts';
 import E1 from '@/eastereggs/e1';
+import DesktopEditionDownload from '@/components/DesktopEditionDownload.vue';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
@@ -43,15 +43,18 @@ const time = computed<
     else if (hour >= 19 && hour < 21) return 'evening';
     else return 'night';
 });
-
-function goFco() {
-    window.open('https://yyyy.games/fco/', '_blank');
-    clarityReport('goFco');
-}
+const showDesktopEditionDownload = ref(false);
 </script>
 
 <template>
     <div class="container">
+        <el-dialog
+            v-if="isWebsite"
+            v-model="showDesktopEditionDownload"
+            :title="$t('download-desktop-edition')"
+        >
+            <DesktopEditionDownload />
+        </el-dialog>
         <div class="greeting-box">
             <el-text class="greeting">
                 {{ cks ? cks : $t('welcome', { time }) }}
@@ -65,11 +68,20 @@ function goFco() {
             >
                 {{ $t('select-recipe') }}
             </el-button>
-            <el-button v-if="E1.c()" type="warning" size="large" @click="cks += E1.t0">
+            <el-button
+                v-if="E1.c()"
+                type="warning"
+                size="large"
+                @click="cks += E1.t0"
+            >
                 {{ E1.t1 }}
             </el-button>
-            <el-button v-if="isWebsite" size="large" @click="goFco">
-                {{ $t('go-back') }}
+            <el-button
+                v-if="isWebsite"
+                size="large"
+                @click="showDesktopEditionDownload = true"
+            >
+                {{ $t('download-desktop-edition') }}
             </el-button>
         </div>
         <el-link
@@ -142,7 +154,7 @@ no-data = 无配方
 
 confirm = 确认
 select-recipe = 选择配方
-go-back = 回到 FCO
+download-desktop-edition = 下载桌面客户端
 </fluent>
 
 <fluent locale="en-US">
@@ -164,5 +176,9 @@ no-data = No recipe
 
 confirm = Confirm
 select-recipe = Select recipe
-go-back = Back to FCO
+download-desktop-edition = Download Desktop Edition
+</fluent>
+
+<fluent locale="ja-JP">
+download-desktop-edition = デスクトップ版のダウンロード
 </fluent>
