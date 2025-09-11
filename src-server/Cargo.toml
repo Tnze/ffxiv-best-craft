@@ -14,6 +14,6 @@ tokio = { workspace = true, features = ["tokio-macros"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 
-salvo = { version = "0.79", features = ["affix-state", "cors"] }
+salvo = { version = "0.84", features = ["affix-state", "cors"] }
 dotenvy = "0.15.7"
-toml = "0.8.23"
+toml = "0.9"
