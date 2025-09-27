@@ -149,6 +149,7 @@ select-recipe = Select Recipe
 custom-recipe = Custom Recipe
 bill-of-material = Bill of Material
 settings = Settings
+favorite-recipes = Favorite Recipes
 title = { $recipe } (Simulator Mode)
 
 # Solvers

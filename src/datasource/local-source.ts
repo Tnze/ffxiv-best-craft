@@ -40,6 +40,7 @@ export class LocalRecipeSource {
         craftTypeId?: number,
         jobLevelMin?: number,
         jobLevelMax?: number,
+        favoriteIds?: number[],
     ): Promise<RecipesSourceResult> {
         if (searchName === undefined) {
             searchName = '';
@@ -53,6 +54,7 @@ export class LocalRecipeSource {
             recipeLevel: rlv,
             jobLevelMin,
             jobLevelMax,
+            favoriteIds,
         });
         return { results, totalPages };
     }

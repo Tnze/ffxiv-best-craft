@@ -46,6 +46,7 @@ export class WebSource {
         craftTypeId?: number,
         jobLevelMin?: number,
         jobLevelMax?: number,
+        favoriteIds?: number[],
     ): Promise<RecipesSourceResult> {
         if (searchName === undefined) {
             searchName = '';
@@ -65,6 +66,10 @@ export class WebSource {
         }
         if (jobLevelMax !== undefined) {
             query.set('job_level_max', String(jobLevelMax));
+        }
+
+        if (favoriteIds !== undefined && favoriteIds.length > 0) {
+            query.set('favorite_ids', favoriteIds.join(','));
         }
 
         const url =

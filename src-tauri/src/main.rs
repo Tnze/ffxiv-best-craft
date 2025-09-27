@@ -142,6 +142,7 @@ async fn recipe_table(
     recipe_level: Option<i32>,
     job_level_min: Option<i32>,
     job_level_max: Option<i32>,
+    favorite_ids: Option<Vec<i32>>,
     app_state: tauri::State<'_, AppState>,
     app_handle: tauri::AppHandle,
 ) -> Result<(Vec<RecipeInfo>, u64), String> {
@@ -166,6 +167,11 @@ async fn recipe_table(
     }
     if let Some(job_level_max) = job_level_max {
         query = query.filter(recipe_level_tables::Column::ClassJobLevel.lte(job_level_max))
+    }
+    if let Some(favorite_ids) = favorite_ids {
+        if !favorite_ids.is_empty() {
+            query = query.filter(recipes::Column::Id.is_in(favorite_ids));
+        }
     }
     let paginate = query
         .column_as(recipes::Column::Id, "id")
