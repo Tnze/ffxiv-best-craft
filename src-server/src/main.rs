@@ -202,6 +202,12 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
     let search_name = req
         .query::<String>("search_name")
         .ok_or_else(|| StatusError::bad_request().detail("Need 'search_name'"))?;
+    let ids: Vec<i32> = req
+        .query::<String>("favorite_ids")
+        .unwrap_or_default()
+        .split(',')
+        .filter_map(|s| s.trim().parse::<i32>().ok())
+        .collect();
 
     let mut query = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
@@ -225,6 +231,10 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
     if let Some(job_level_max) = req.query::<u32>("job_level_max") {
         query = query.filter(recipe_level_tables::Column::ClassJobLevel.lte(job_level_max))
     }
+    if !ids.is_empty() {
+        query = query.filter(recipes::Column::Id.is_in(ids));
+    }
+
     let query = query
         .column_as(recipes::Column::Id, "id")
         .column_as(recipes::Column::RecipeLevelId, "rlv")
