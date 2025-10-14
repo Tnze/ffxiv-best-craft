@@ -18,6 +18,7 @@
         "@tauri-apps/api": "^2.8.0",
         "@tauri-apps/plugin-clipboard-manager": "^2.3.0",
         "@tauri-apps/plugin-fs": "^2.4.2",
+        "@tauri-apps/plugin-opener": "^2.5.0",
         "@tauri-apps/plugin-process": "^2.3.0",
         "@tauri-apps/plugin-updater": "^2.9.0",
         "@vueuse/core": "^13.9.0",
