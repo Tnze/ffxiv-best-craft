@@ -1,0 +1,31 @@
+{
+    "identifier": "default",
+    "description": "Default capabilities migrated from v1 configuration.",
+    "windows": [
+        "main"
+    ],
+    "permissions": [
+        "core:default",
+        "fs:allow-appdata-read",
+        "fs:allow-appdata-write",
+        "clipboard-manager:allow-write-text",
+        "updater:default",
+        {
+            "identifier": "opener:allow-open-url",
+            "allow": [
+                {
+                    "url": "https://pd.qq.com/s/al6b5xo69"
+                },
+                {
+                    "url": "https://qm.qq.com/q/YMujBifn6G"
+                },
+                {
+                    "url": "https://gitee.com/Tnze/ffxiv-best-craft"
+                },
+                {
+                    "url": "https://github.com/Tnze/ffxiv-best-craft"
+                }
+            ]
+        }
+    ]
+}
