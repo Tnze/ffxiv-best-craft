@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { isTauri, isWebsite } from './Consts';
-
 export function formatDuration(u: number, fixed?: number): string {
     if (u < 1000) {
         return u + 'ms';
@@ -34,13 +32,11 @@ export function clarityReport(event: string) {
     }
 }
 
-export async function openExternalLink(url: string) {
-    if (!url || typeof url !== 'string') return;
-
-    if (isTauri) {
+export async function openUrl(url: string) {
+    if (import.meta.env.VITE_BESTCRAFT_TARGET == 'tauri') {
         const { openUrl } = await import('@tauri-apps/plugin-opener');
         await openUrl(url);
-    } else if (isWebsite) {
+    } else {
         window.open(url, '_blank');
     }
 }

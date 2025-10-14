@@ -36,7 +36,7 @@ import useSettingsStore, { dataSourceList } from '@/stores/settings';
 import { languages } from '../lang';
 import { useColorMode } from '@vueuse/core';
 import { isTauri, isWebsite, isYYYYGames } from '@/libs/Consts';
-import { openExternalLink } from '@/libs/Utils';
+import { openUrl } from '@/libs/Utils';
 import SupportUs from '@/components/SupportUs.vue';
 import E1 from '@/eastereggs/e1';
 
@@ -226,18 +226,22 @@ function fixDataSourceLanguage() {
                 {{ E1.c() ? E1.t3 : 'Tnze' }}
             </el-form-item>
             <el-form-item :label="$t('feedback')">
-                <el-link @click="openExternalLink('https://pd.qq.com/s/al6b5xo69')">
+                <el-link @click="openUrl('https://pd.qq.com/s/al6b5xo69')">
                     QQ频道
                 </el-link>
-                <el-link @click="openExternalLink('https://qm.qq.com/q/YMujBifn6G')">
+                <el-link @click="openUrl('https://qm.qq.com/q/YMujBifn6G')">
                     QQ群聊
                 </el-link>
             </el-form-item>
             <el-form-item :label="$t('source')">
-                <el-link @click="openExternalLink('https://gitee.com/Tnze/ffxiv-best-craft')">
+                <el-link
+                    @click="openUrl('https://gitee.com/Tnze/ffxiv-best-craft')"
+                >
                     Gitee
                 </el-link>
-                <el-link @click="openExternalLink('https://github.com/Tnze/ffxiv-best-craft')">
+                <el-link
+                    @click="openUrl('https://github.com/Tnze/ffxiv-best-craft')"
+                >
                     Github
                 </el-link>
             </el-form-item>

@@ -36,6 +36,3 @@ target
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-# Tauri generated schemas
-/src-tauri/gen/schemas/
