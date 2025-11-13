@@ -55,7 +55,10 @@ pub fn solve(
         adversarial,
         backload_progress,
     };
-    let solver_settings = SolverSettings { simulator_settings };
+    let solver_settings = SolverSettings {
+        simulator_settings,
+        allow_non_max_quality_solutions: true,
+    };
     let mut solver = MacroSolver::new(
         solver_settings,
         Box::new(|_| {}),

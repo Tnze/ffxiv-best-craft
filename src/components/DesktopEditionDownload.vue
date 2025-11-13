@@ -78,9 +78,9 @@ requestVersions();
 
 <template>
     <el-descriptions tnze-loading="versions" :column="1" :border="true">
-        <el-descriptions-item :label="$t('version')">{{
-            versions?.version ?? $t('loading')
-        }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('version')">
+            {{ versions?.version ?? $t('loading') }}
+        </el-descriptions-item>
         <el-descriptions-item :label="$t('date')">
             {{
                 versions
