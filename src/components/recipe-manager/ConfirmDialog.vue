@@ -122,7 +122,7 @@ watch(
 
 async function confirm(mode: 'simulator' | 'designer') {
     const itemInfo = { ...props.itemInfo };
-    if (enableDynRecipe.value && dynRecipeLevel.value != undefined) {
+    if (isDynRecipe.value && enableDynRecipe.value && dynRecipeLevel.value != undefined) {
         itemInfo.name = $t('sync-level-item-name', {
             itemName: itemInfo.name,
             syncLevel: dynRecipeLevel.value,
