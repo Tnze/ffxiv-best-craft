@@ -77,7 +77,6 @@ async function loadDynRecipe(
     recipeInfo: RecipeInfo,
     abortSignal: AbortSignal,
 ): Promise<Recipe | undefined> {
-    console.log('laod dyn recipe');
     if (!isDynRecipe || dynRecipeLevel == undefined) {
         return undefined;
     }
