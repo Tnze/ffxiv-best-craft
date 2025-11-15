@@ -63,11 +63,10 @@ const isDynRecipe = computed(() => {
     const notebook = props.recipeInfo.recipe_notebook_list;
     return notebook >= 1496 && notebook <= 1503 && props.recipeInfo.rlv == 690;
 });
-const enableDynRecipe = ref(false);
 const dynRecipeLoading = ref(false);
 const dynRecipe = ref<Recipe>();
 const recipe = computed(() =>
-    isDynRecipe.value && enableDynRecipe.value && dynRecipe.value != undefined
+    isDynRecipe.value && dynRecipe.value != undefined
         ? dynRecipe.value
         : rawRecipe.value,
 );
@@ -78,6 +77,7 @@ async function loadDynRecipe(
     recipeInfo: RecipeInfo,
     abortSignal: AbortSignal,
 ): Promise<Recipe | undefined> {
+    console.log('laod dyn recipe');
     if (!isDynRecipe || dynRecipeLevel == undefined) {
         return undefined;
     }
