@@ -318,11 +318,14 @@ solver-info =
 
     许可证：Apache-2.0
 
-    原理：A*搜索 + 帕累托优化 + 动态规划
+    计算最优生产宏：
+    · 产生的宏必须能够推满配方的作业（即100%进展）
+    · 按以下优先级选择最优的宏：
+        - 品质越高越好，直到满足目标品质
+        - 宏长度越短越好
+        - 总时间越短越好
 
-    特性：
-    · 产生最优解，不可能达到比求解器更高的品质
-    · 求解时间短（5-20 秒），内存占用合理（300-500 MB）
+    工作原理：分支定界、最佳优先搜索、动态规划，以及帕累托优化
 </fluent>
 
 <fluent locale="en-US">
@@ -360,9 +363,12 @@ solver-info =
 
     License: Apache-2.0
 
-    How it works: A* search + Pareto optimization + Dynamic programming.
+    Optimal macro selection:
+    - The generated macro must be able to finish the synthesis, i.e. reach 100% progress.
+    - Valid macros are then ranked based on these criteria, in order:
+        - Quality reached, capped at the target quality defined in the solver configuration. (Higher is better)
+        - Number of macro steps. (Lower is better)
+        - Total macro duration, in seconds. (Lower is better)
 
-    Feature:
-    - Produces optimal solutions. Achieving higher quality than the solver is impossible.
-    - Short solve time (5-20 seconds) and reasonable memory usage (300-500 MB).
+    How does it work: Branch-and-bound, best-first-search, dynamic programming, Pareto optimization.
 </fluent>

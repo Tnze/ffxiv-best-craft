@@ -24,8 +24,6 @@ import {
     ElButton,
     ElInputNumber,
     ElAlert,
-    ElSwitch,
-    ElSpace,
     ElTag,
 } from 'element-plus';
 import {
