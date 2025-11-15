@@ -74,11 +74,11 @@ const recipe = computed(() =>
 
 async function loadDynRecipe(
     isDynRecipe: boolean,
-    enableDynRecipe: boolean,
     dynRecipeLevel: number | undefined,
     recipeInfo: RecipeInfo,
+    abortSignal: AbortSignal,
 ): Promise<Recipe | undefined> {
-    if (!isDynRecipe || !enableDynRecipe || dynRecipeLevel == undefined) {
+    if (!isDynRecipe || dynRecipeLevel == undefined) {
         return undefined;
     }
     const ds = await settingsStore.getDataSource();
@@ -87,33 +87,29 @@ async function loadDynRecipe(
         return undefined;
     }
 
+    abortSignal.throwIfAborted();
+
     return await newRecipe(
         recipeLevel,
-        props.recipeInfo.difficulty_factor,
-        props.recipeInfo.quality_factor,
-        props.recipeInfo.durability_factor,
+        recipeInfo.difficulty_factor,
+        recipeInfo.quality_factor,
+        recipeInfo.durability_factor,
     );
 }
 
 watch(
-    [isDynRecipe, enableDynRecipe, dynRecipeLevel, () => props.recipeInfo],
-    async ([isDynRecipe, enableDynRecipe, dynRecipeLevel, recipeInfo]) => {
+    [isDynRecipe, dynRecipeLevel, () => props.recipeInfo],
+    async ([isDynRecipe, dynRecipeLevel, recipeInfo]) => {
         try {
             dynRecipeLoading.value = true;
-
-            let cancel = false;
-            onWatcherCleanup(() => {
-                cancel = true;
-            });
-            const recipe = await loadDynRecipe(
+            let cancel = new AbortController();
+            onWatcherCleanup(() => cancel.abort('watcher is cleanup'));
+            dynRecipe.value = await loadDynRecipe(
                 isDynRecipe,
-                enableDynRecipe,
                 dynRecipeLevel,
                 recipeInfo,
+                cancel.signal,
             );
-            if (!cancel) {
-                dynRecipe.value = recipe;
-            }
         } finally {
             dynRecipeLoading.value = false;
         }
@@ -122,7 +118,7 @@ watch(
 
 async function confirm(mode: 'simulator' | 'designer') {
     const itemInfo = { ...props.itemInfo };
-    if (isDynRecipe.value && enableDynRecipe.value && dynRecipeLevel.value != undefined) {
+    if (isDynRecipe.value && dynRecipeLevel.value != undefined) {
         itemInfo.name = $t('sync-level-item-name', {
             itemName: itemInfo.name,
             syncLevel: dynRecipeLevel.value,
@@ -164,15 +160,10 @@ async function confirm(mode: 'simulator' | 'designer') {
                 :label="$t('sync-level')"
                 :span="3"
             >
-                <el-switch
-                    v-model="enableDynRecipe"
-                    :loading="dynRecipeLoading"
-                />
                 <el-input-number
                     style="margin-left: 14px"
                     v-model="dynRecipeLevel"
                     :min="1"
-                    :disabled="!enableDynRecipe"
                 />
             </el-descriptions-item>
 
@@ -264,9 +255,7 @@ async function confirm(mode: 'simulator' | 'designer') {
                 <el-button
                     type="primary"
                     :loading="dynRecipeLoading"
-                    :disabled="
-                        isDynRecipe && enableDynRecipe && dynRecipe == undefined
-                    "
+                    :disabled="isDynRecipe && dynRecipe == undefined"
                     @click="confirm('designer')"
                 >
                     {{ $t(isNormalRecipe ? 'confirm' : 'designer-mode') }}
