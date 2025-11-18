@@ -98,6 +98,10 @@ export default defineStore('designer', {
             this.rotations.staged.length = 0;
         },
 
+        truncateRotations(n: number) {
+            this.rotations.staged.length = n;
+        },
+
         async sortRotations(initStatus: Status) {
             const results = new Map<number, SimulateResult>();
             await Promise.all(

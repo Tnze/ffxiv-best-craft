@@ -255,6 +255,7 @@ watch(initStatus, async newInitStatus => {
     // re-simulate activeSeq
     activeRst.value = await simulate(newInitStatus, actions.value);
     store.sortRotations(newInitStatus);
+    store.truncateRotations(1000);
 });
 watch(actions, async a => {
     activeRst.value = await simulate(initStatus.value, a);
