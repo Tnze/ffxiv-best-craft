@@ -24,9 +24,9 @@
         "@vueuse/core": "^14.0.0",
         "ajv": "^8.17.1",
         "d3": "^7.9.0",
-        "el-table-infinite-scroll": "^3.0.7",
-        "element-plus": "^2.11.7",
-        "fluent-vue": "^3.7.5",
+        "el-table-infinite-scroll": "^3.0.8",
+        "element-plus": "^2.11.8",
+        "fluent-vue": "^3.8.0",
         "pinia": "3.0.3",
         "semver": "^7.7.3",
         "vue": "^3.5.24",
@@ -41,16 +41,16 @@
         "@types/node": "^24.10.1",
         "@types/semver": "^7.7.1",
         "@vitejs/plugin-vue": "^6.0.1",
-        "naive-ui": "^2.43.1",
-        "oxlint": "^1.28.0",
+        "naive-ui": "^2.43.2",
+        "oxlint": "^1.29.0",
         "prettier": "^3.6.2",
         "typescript": "^5.9.3",
         "unplugin-element-plus": "0.11.1",
         "unplugin-fluent-vue": "1.4.1",
         "vite": "^7.2.2",
-        "vite-plugin-oxlint": "^1.4.0",
+        "vite-plugin-oxlint": "^1.4.2",
         "vite-plugin-wasm": "^3.5.0",
-        "vue-tsc": "^3.1.3"
+        "vue-tsc": "^3.1.4"
     },
-    "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"
+    "packageManager": "pnpm@10.22.0+sha512.bf049efe995b28f527fd2b41ae0474ce29186f7edcb3bf545087bd61fbbebb2bf75362d1307fda09c2d288e1e499787ac12d4fcb617a974718a6051f2eee741c"
 }
