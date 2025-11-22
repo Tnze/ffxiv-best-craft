@@ -99,7 +99,8 @@ export default defineStore('designer', {
         },
 
         truncateRotations(n: number) {
-            this.rotations.staged.length = n;
+            if (this.rotations.staged.length > n)
+                this.rotations.staged.length = n;
         },
 
         async sortRotations(initStatus: Status) {
