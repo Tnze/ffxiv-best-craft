@@ -39,6 +39,7 @@ import {
 } from 'element-plus';
 import { Bottom, Close } from '@element-plus/icons-vue';
 import { useMediaQuery, useElementSize } from '@vueuse/core';
+import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller';
 
 import {
     Attributes,
@@ -73,6 +74,7 @@ import SolverList from './solvers/List.vue';
 import { useFluent } from 'fluent-vue';
 import Analyzers from './tabs/Analyzers.vue';
 import { activeSeqKey, displayJobKey } from './injectionkeys';
+import { MAX_ROTATIONS_STAGED_LENGTH } from './consts';
 import { Slot, Sequence, SequenceSource } from './types';
 
 const props = defineProps<{
@@ -255,7 +257,7 @@ watch(initStatus, async newInitStatus => {
     // re-simulate activeSeq
     activeRst.value = await simulate(newInitStatus, actions.value);
     store.sortRotations(newInitStatus);
-    store.truncateRotations(1000);
+    store.truncateRotations(MAX_ROTATIONS_STAGED_LENGTH);
 });
 watch(actions, async a => {
     activeRst.value = await simulate(initStatus.value, a);
@@ -474,7 +476,12 @@ async function handleSolverResult(
                         name="store"
                         class="multi-function-area"
                     >
-                        <el-scrollbar class="savedqueue-list">
+                        <DynamicScroller
+                            class="savedqueue-list"
+                            :items="store.rotations.staged"
+                            :key-field="'key'"
+                            :min-item-size="50">
+                            <template #before>
                             <el-button-group>
                                 <el-button
                                     @click="saveSequence(true)"
@@ -501,19 +508,24 @@ async function handleSolverResult(
                                     {{ $t('apply-solver') }}
                                 </el-checkbox-button>
                             </el-button-group>
-                            <TransitionGroup name="savedqueues" tag="div">
-                                <StagedActionQueueItem
-                                    v-for="({ key, seq }, i) in store.rotations
-                                        .staged"
-                                    :key="key"
-                                    :seq="seq"
-                                    :status="initStatus"
-                                    :display-job="displayJob"
-                                    @load="loadSeq(seq)"
-                                    @delete="store.deleteRotation(i)"
-                                />
-                            </TransitionGroup>
-                        </el-scrollbar>
+                            </template>
+                            <template #default="{ item, index, active }">
+                                <DynamicScrollerItem
+                                    :item="item"
+                                    :active="active"
+                                    :key="item.key"
+                                    :size-dependencies="[item.seq]"
+                                >
+                                    <StagedActionQueueItem
+                                        :seq="item.seq"
+                                        :status="initStatus"
+                                        :display-job="displayJob"
+                                        @load="loadSeq(item.seq)"
+                                        @delete="store.deleteRotation(index)"
+                                    />
+                                </DynamicScrollerItem>
+                            </template>
+                        </DynamicScroller>
                     </el-tab-pane>
                     <el-tab-pane
                         :label="$t('analyzer')"
@@ -616,6 +628,7 @@ async function handleSolverResult(
 .savedqueue-list {
     margin: 0;
     flex: auto;
+    height: 100%;
 }
 
 .savedqueues-move,

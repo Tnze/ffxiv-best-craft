@@ -15,3 +15,5 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 export const collectabilityPalette = ['#79c7ec', '#fbc800', '#c0ffc0'];
+
+export const MAX_ROTATIONS_STAGED_LENGTH = 1000;
