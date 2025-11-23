@@ -13,3 +13,5 @@ declare module '*.ftl' {
     const component: FluentResource;
     export default component;
 }
+
+declare module 'vue-virtual-scroller';

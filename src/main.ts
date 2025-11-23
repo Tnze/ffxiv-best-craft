@@ -20,10 +20,12 @@ import { fluent } from './fluent';
 import { ElLoading } from 'element-plus';
 import { router } from './router';
 import ElTableInfiniteScroll from 'el-table-infinite-scroll';
+import VueVirtualScroller from 'vue-virtual-scroller';
 
 import 'element-plus/theme-chalk/dark/css-vars.css';
 import 'element-plus/es/components/message/style/css';
 import 'element-plus/es/components/message-box/style/css';
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 
 import App from './App.vue';
 
@@ -35,4 +37,5 @@ createApp(App)
     .use(router)
     .use(fluent)
     .use(ElTableInfiniteScroll)
+    .use(VueVirtualScroller)
     .mount('#app');
