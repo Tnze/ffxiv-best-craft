@@ -32,12 +32,7 @@ import {
     ElAlert,
     ElTabs,
     ElTabPane,
-    ElCheckboxButton,
-    ElButton,
-    ElButtonGroup,
-    ElPopconfirm,
 } from 'element-plus';
-import { Bottom, Close } from '@element-plus/icons-vue';
 import { useMediaQuery, useElementSize } from '@vueuse/core';
 
 import {
@@ -46,7 +41,6 @@ import {
     simulate,
     Status,
     newStatus,
-    compareStatus,
     Recipe,
     Jobs,
     Item,
@@ -64,7 +58,6 @@ import AttrEnhSelector from './tabs/AttrEnhSelector.vue';
 import InitialQualitySetting from './tabs/InitialQualitySetting.vue';
 import MacroExporter from './tabs/MacroExporter.vue';
 import MacroImporter from './tabs/MacroImporter.vue';
-import StagedActionQueueItem from './tabs/StagedActionQueueItem.vue';
 
 import ActionPanel from './ActionPanel.vue';
 import ActionQueue from './ActionQueue.vue';
@@ -254,23 +247,10 @@ watch(initStatus, readSolver);
 watch(initStatus, async newInitStatus => {
     // re-simulate activeSeq
     activeRst.value = await simulate(newInitStatus, actions.value);
-    store.sortRotations(newInitStatus);
-    store.truncateRotations(1000);
 });
 watch(actions, async a => {
     activeRst.value = await simulate(initStatus.value, a);
 });
-function saveSequence(isManual: boolean) {
-    const queue = previewSolver.value ? solverResult : activeSeq;
-    store.pushRotation({
-        slots: queue.slots.slice(),
-        maxid: queue.maxid,
-        source: isManual ? SequenceSource.Manual : SequenceSource.AutoSave,
-        itemName: store.content?.item.name,
-    });
-    store.sortRotations(initStatus.value);
-    activeTab.value = 'store';
-}
 
 const displayedStatus = computed(() => {
     return previewSolver.value &&
@@ -280,16 +260,6 @@ const displayedStatus = computed(() => {
               activeRst.value?.status ??
               initStatus.value)
         : (activeRst.value?.status ?? initStatus.value);
-});
-watch(displayedStatus, async status => {
-    if (status.progress < status.recipe.difficulty) return;
-    const staged = await Promise.all(
-        store.rotations.staged
-            .map(v => v.seq.slots.map(v => v.action))
-            .map(v => simulate(initStatus.value, v)),
-    );
-    if (staged.some(v => compareStatus(v.status, status) >= 0)) return;
-    saveSequence(false);
 });
 
 async function readSolver() {
@@ -336,10 +306,7 @@ async function handleSolverResult(
             itemName: store.content?.item.name,
         };
         loadSeq(seq);
-        store.pushRotation(seq);
-        store.sortRotations(initStatus.value);
     }
-    // activeTab.value = 'store';
 }
 </script>
 
@@ -470,52 +437,6 @@ async function handleSolverResult(
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane
-                        :label="$t('store')"
-                        name="store"
-                        class="multi-function-area"
-                    >
-                        <el-scrollbar class="savedqueue-list">
-                            <el-button-group>
-                                <el-button
-                                    @click="saveSequence(true)"
-                                    :icon="Bottom"
-                                >
-                                    {{ $t('save-workspace') }}
-                                </el-button>
-                                <el-popconfirm
-                                    :title="$t('confirm-clear-store')"
-                                    @confirm="store.clearRotations()"
-                                    :confirm-button-text="$t('confirm')"
-                                    :cancel-button-text="$t('cancel')"
-                                >
-                                    <template #reference>
-                                        <el-button :icon="Close">
-                                            {{ $t('clear-store') }}
-                                        </el-button>
-                                    </template>
-                                </el-popconfirm>
-                                <el-checkbox-button
-                                    v-model:model-value="previewSolver"
-                                    v-if="solverResult.slots.length > 0"
-                                >
-                                    {{ $t('apply-solver') }}
-                                </el-checkbox-button>
-                            </el-button-group>
-                            <TransitionGroup name="savedqueues" tag="div">
-                                <StagedActionQueueItem
-                                    v-for="({ key, seq }, i) in store.rotations
-                                        .staged"
-                                    :key="key"
-                                    :seq="seq"
-                                    :status="initStatus"
-                                    :display-job="displayJob"
-                                    @load="loadSeq(seq)"
-                                    @delete="store.deleteRotation(i)"
-                                />
-                            </TransitionGroup>
-                        </el-scrollbar>
-                    </el-tab-pane>
-                    <el-tab-pane
                         :label="$t('analyzer')"
                         name="analyzer"
                         class="multi-function-area"
@@ -613,26 +534,6 @@ async function handleSolverResult(
     margin-bottom: 5px;
 }
 
-.savedqueue-list {
-    margin: 0;
-    flex: auto;
-}
-
-.savedqueues-move,
-.savedqueues-enter-active,
-.savedqueues-leave-active {
-    transition: all 0.5s ease;
-}
-
-.savedqueues-enter-from,
-.savedqueues-leave-to {
-    opacity: 0;
-    transform: translateX(30px);
-}
-
-.savedqueues-leave-active {
-    position: absolute;
-}
 </style>
 
 <fluent locale="zh-CN">
@@ -644,13 +545,6 @@ init-quality = 初期品质
 store = 储存
 analyzer = 分析
 action-panel = 技能面板
-
-save-workspace = 储存
-clear-store = 清空
-confirm-clear-store = 确定要清空保存区域吗？
-apply-solver = 应用求解结果
-confirm = 确认
-cancel = 取消
 
 waring = 警告
 
@@ -679,13 +573,6 @@ init-quality = Quality
 store = Store
 analyzer = Analyzer
 action-panel = Action Panel
-
-save-workspace = Save
-clear-store = Clear
-confirm-clear-store = Are you sure to clear the storeage?
-apply-solver = Apply solver result
-confirm = Confirm
-cancel = Cancel
 
 waring = Warning
 

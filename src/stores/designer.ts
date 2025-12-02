@@ -16,19 +16,12 @@
 
 import {
     CollectablesShopRefine,
-    compareStatus,
     Item,
     Jobs,
     Recipe,
     RecipeRequirements,
-    simulate,
-    SimulateResult,
-    Status,
 } from '@/libs/Craft';
 import { defineStore } from 'pinia';
-import { Sequence } from '@/components/designer/types';
-
-type StagedSequence = { key: number; seq: Sequence };
 
 export default defineStore('designer', {
     state: () => ({
@@ -42,10 +35,6 @@ export default defineStore('designer', {
             collectability?: CollectablesShopRefine;
             simulatorMode: boolean;
         } | null,
-        rotations: {
-            staged: <StagedSequence[]>[],
-            maxid: 0,
-        },
         options: {
             exportOptions: {
                 addNotification: <boolean | 'auto'>'auto', // 宏执行完成是否提示
@@ -66,7 +55,6 @@ export default defineStore('designer', {
     getters: {
         toJson(): string {
             return JSON.stringify({
-                rotations: this.rotations,
                 options: this.options,
             });
         },
@@ -85,44 +73,9 @@ export default defineStore('designer', {
             this.content = payload;
         },
 
-        pushRotation(seq: Sequence) {
-            const key = this.rotations.maxid++;
-            this.rotations.staged.push({ key, seq });
-        },
-
-        deleteRotation(i: number) {
-            this.rotations.staged.splice(i, 1);
-        },
-
-        clearRotations() {
-            this.rotations.staged.length = 0;
-        },
-
-        truncateRotations(n: number) {
-            if (this.rotations.staged.length > n)
-                this.rotations.staged.length = n;
-        },
-
-        async sortRotations(initStatus: Status) {
-            const results = new Map<number, SimulateResult>();
-            await Promise.all(
-                this.rotations.staged.map(async v => {
-                    const actions = v.seq.slots.map(v => v.action);
-                    const result = await simulate(initStatus, actions);
-                    results.set(v.key, result);
-                }),
-            );
-            this.rotations.staged.sort((a, b) => {
-                const as = results.get(a.key)!.status;
-                const bs = results.get(b.key)!.status;
-                return compareStatus(bs, as) ?? a.key - b.key;
-            });
-        },
-
         fromJson(json: string) {
             try {
                 const v = JSON.parse(json);
-                if (v.rotations) this.rotations = v.rotations;
                 if (v.options) {
                     this.$patch({ options: v.options });
                 }

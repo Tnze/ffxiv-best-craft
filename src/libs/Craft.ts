@@ -112,13 +112,6 @@ export enum LimitedActionState {
     Used = 'Used',
 }
 
-export const compareStatus = (s1: Status, s2: Status): number => {
-    if (s1.progress != s2.progress) return s1.progress - s2.progress;
-    if (s1.quality != s2.quality) return s1.quality - s2.quality;
-    if (s1.step != s2.step) return s2.step - s1.step;
-    return 0;
-};
-
 export enum Conditions {
     // 白：通常
     Normal = 'Normal',
