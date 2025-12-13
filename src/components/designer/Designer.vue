@@ -564,6 +564,34 @@ attributes-do-not-meet-the-requirements = 装备{ $attribute }不满足配方要
 attributes-requirements = 制作该配方要求：作业精度 ≥ { $craftsmanship } 且 加工精度 ≥ { $control }
 </fluent>
 
+<fluent locale="zh-TW">
+solvers = 求解
+export-macro = 匯出
+import-macro = 匯入
+attributes-enhance = 食藥&裝備
+init-quality = 初期品質
+store = 儲存
+analyzer = 分析
+action-panel = 技能面板
+
+waring = 警告
+
+macro-file-type-name = BestCraft巨集檔案
+save-file = 儲存檔案
+save-success = 儲存成功
+save-fail = 儲存失敗：{ $reason }
+open-file = 開啟檔案
+read-n-macros = 讀取了 { $n } 個巨集
+read-fail = 讀取失敗：{ $reason }
+
+edit = 編輯
+delete = 刪除
+
+and = { $a }和{ $b }
+attributes-do-not-meet-the-requirements = 裝備{ $attribute }不滿足配方要求
+attributes-requirements = 製作該配方要求：作業精度 ≥ { $craftsmanship } 且 加工精度 ≥ { $control }
+</fluent>
+
 <fluent locale="en-US">
 solvers = Solvers
 export-macro = Export

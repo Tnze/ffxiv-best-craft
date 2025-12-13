@@ -168,6 +168,11 @@ required-number = 需求数量
 holding-number = 持有数量
 </fluent>
 
+<fluent locale="zh-TW">
+required-number = 需求數量
+holding-number = 持有數量
+</fluent>
+
 <fluent locale="en-US">
 required-number = Required number
 holding-number = Holding number

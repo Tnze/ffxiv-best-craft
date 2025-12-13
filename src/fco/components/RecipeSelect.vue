@@ -155,6 +155,10 @@ async function updateValue(value: number) {
 select-recipe = 选择配方
 </fluent>
 
+<fluent locale="zh-TW">
+select-recipe = 選擇配方
+</fluent>
+
 <fluent locale="en-US">
 select-recipe = Select Recipe
 </fluent>

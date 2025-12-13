@@ -269,6 +269,13 @@ soul-of-the-crafter = 专家之证
 select-gearset = 选择配装
 </fluent>
 
+<fluent locale="zh-TW">
+meal = 食物
+medicine = 藥水
+soul-of-the-crafter = 專家之證
+select-gearset = 選擇配裝
+</fluent>
+
 <fluent locale="en-US">
 meal = Meal
 medicine = Potion

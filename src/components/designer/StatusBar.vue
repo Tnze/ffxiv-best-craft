@@ -309,6 +309,13 @@ collectability-stage = 收藏价值等级
 hq-probability = 优质率
 </fluent>
 
+<fluent locale="zh-TW">
+display-attrs-label = { $label }：
+remaining = 剩餘
+collectability-stage = 收藏價值等級
+hq-probability = 優質率
+</fluent>
+
 <fluent locale="en-US">
 display-attrs-label = { $label }: 
 remaining = Remaining

@@ -419,6 +419,11 @@ error-save-file = 保存文件 { $file } 失败：{ $err }
 download-desktop-edition = 下载桌面客户端
 </fluent>
 
+<fluent locale="zh-TW">
+error-save-file = 儲存檔案 { $file } 失敗：{ $err }
+download-desktop-edition = 下載桌面客戶端
+</fluent>
+
 <fluent locale="en-US">
 error-save-file = Failed when saving { $file }: { $err }
 download-desktop-edition = Download Desktop Edition

@@ -220,6 +220,18 @@ random = 随机模拟
 macro = 宏指令
 </fluent>
 
+<fluent locale="zh-TW">
+edit = 編輯
+solve = 求解
+
+cancel = 取消
+save = 儲存
+clear = 清空
+
+random = 隨機模擬
+macro = 巨集指令
+</fluent>
+
 <fluent locale="en-US">
 edit = Edit
 solve = Solve

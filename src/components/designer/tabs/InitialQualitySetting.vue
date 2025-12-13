@@ -179,6 +179,18 @@ select-hq-ingredients = 选择HQ半成品计算
 manully-input = 手动输入
 </fluent>
 
+<fluent locale="zh-TW">
+nq = 普通
+hq = 優質
+
+please-input-init-quality = 請輸入初期品質
+config-init-quality = 設定初期品質
+please-input-integers = 請輸入整數
+
+select-hq-ingredients = 選擇HQ半成品計算
+manully-input = 手動輸入
+</fluent>
+
 <fluent locale="en-US">
 nq = NQ
 hq = HQ

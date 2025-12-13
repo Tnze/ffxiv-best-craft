@@ -300,6 +300,32 @@ required-craftsmanship = 最低{ craftsmanship }
 required-control = 最低{ control }
 </fluent>
 
+<fluent locale="zh-TW">
+confirm-select = 開始製作“{ $itemName }”嗎？
+confirm-select2 = 這是一個高難度配方，請選擇模式。
+alert-sync-level = 這是一個等級同步配方，請輸入同步等級
+please-confirm = 請確認
+
+cancel = 取消
+confirm = 確認
+designer-mode = 普通模式
+simulator-mode = 高難模式
+sync-level-item-name = { $itemName }（等級同步：{ $syncLevel }）
+
+sync-level = 等級同步
+type = 製作型別
+level = 等級
+recipe-id = 配方編號
+item-info = 物品資訊
+
+true = 是
+false = 否
+can-hq = 存在HQ
+
+required-craftsmanship = 最低{ craftsmanship }
+required-control = 最低{ control }
+</fluent>
+
 <fluent locale="en-US">
 confirm-select = Start crafting "{ $itemName }"?
 confirm-select2 = This is a hard recipe. Please make a choice.

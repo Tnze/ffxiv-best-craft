@@ -111,6 +111,13 @@ attributes = 装备属性
 inherit-from-default = 继承自默认
 </fluent>
 
+<fluent locale="zh-TW">
+gearset-name = 配裝名稱
+job = 適配職業
+attributes = 裝備屬性
+inherit-from-default = 繼承自預設
+</fluent>
+
 <fluent locale="en-US">
 gearset-name = Gearset Name
 job = Fit Job

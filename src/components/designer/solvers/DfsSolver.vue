@@ -188,6 +188,25 @@ dfs-solver-info =
 dfs-too-depth = 选择的最大深度过大，求解所需时间可能极长
 </fluent>
 
+<fluent locale="zh-TW">
+from-initial = 整體求解
+from-current = 追加求解
+do-not-touch = 不推品質
+dfs-max-depth = 最大深度
+solver-start = 開始求解
+simple-solver-solving = 正在求解中
+dfs-solver-info-title = 深度優先搜尋
+dfs-solver-info =
+    此款求解器源於 Tnze 早期開發的一款{ $ffxivCraftingAlgo }，最初用於搜尋最短的巨匠手法。
+
+    該演算法採用樸素的暴力搜尋，所需時間隨搜尋深度限制指數級增大。推薦將搜尋深度限制為6。
+    更新至v2後擁有多執行緒加速。
+
+    此求解器通常適合低於玩家10級以上的配方。
+    .command-line-tool = 命令列工具
+dfs-too-depth = 選擇的最大深度過大，求解所需時間可能極長
+</fluent>
+
 <fluent locale="en-US">
 from-initial = From initial
 from-current = From current

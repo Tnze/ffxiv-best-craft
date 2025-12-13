@@ -106,6 +106,10 @@ function handleGearsetsEdit(
 cannot-remove-default-gearsets = 不能删除默认配装
 </fluent>
 
+<fluent locale="zh-TW">
+cannot-remove-default-gearsets = 不能刪除預設配裝
+</fluent>
+
 <fluent locale="en-US">
 cannot-remove-default-gearsets = Can't remove default gearsets
 </fluent>

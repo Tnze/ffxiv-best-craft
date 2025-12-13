@@ -133,6 +133,10 @@ const dark = useDark();
 condition = 制作状态
 </fluent>
 
+<fluent locale="zh-TW">
+condition = 製作狀態
+</fluent>
+
 <fluent locale="en-US">
 condition = Condition
 </fluent>
