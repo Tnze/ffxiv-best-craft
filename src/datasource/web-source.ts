@@ -28,7 +28,7 @@ import {
     RecipesSourceResult,
 } from './source';
 import { Enhancer } from '@/libs/Enhancer';
-import { PageTranslator } from '@/libs/ZhConvertor'
+import { PageTranslator } from '@/libs/ZhConvertor';
 import useSettingsStore from '@/stores/settings';
 
 export class WebSource {
