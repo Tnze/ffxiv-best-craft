@@ -325,6 +325,45 @@ check-update = 检查更新
 checking-update = 正在检查更新
 </fluent>
 
+<fluent locale="zh-TW">
+# language =
+theme = 主題
+light = 亮
+dark = 暗
+auto = 自動
+
+data-source = 資料來源
+ds-local = 本地
+# ds-yyyygames = 
+ds-xivapi = Xivapi
+ds-local-desc = 國服資料
+ds-yyyygames-desc = 混合
+ds-xivapi-desc = 國際服資料
+switch-lines = 切換線路
+dslang-zh = 漢語
+dslang-en = 英語
+dslang-ja = 日語
+dslang-de = 德語
+dslang-fr = 法語
+dslang-zh-desc = 國服資料
+dslang-en-desc = 國際服資料
+dslang-ja-desc = 國際服資料
+dslang-de-desc = 國際服資料
+dslang-fr-desc = 國際服資料
+system-lang = 跟隨系統
+version-number = 版本號
+tauri = Tauri
+developer = 作者
+feedback = 反饋 / 聊天
+license = 許可
+source = 原始碼
+donate = 捐贈
+detail = 詳情
+
+check-update = 檢查更新
+checking-update = 正在檢查更新
+</fluent>
+
 <fluent locale="en-US">
 language = Language
 theme = Theme

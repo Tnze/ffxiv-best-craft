@@ -29,6 +29,7 @@ import {
 } from './source';
 import { Enhancer } from '@/libs/Enhancer';
 import { PageTranslator } from '@/libs/ZhConvertor'
+import useSettingsStore from '@/stores/settings';
 
 export class WebSource {
     public sourceType = DataSourceType.RemoteRealtime;
@@ -51,9 +52,12 @@ export class WebSource {
         if (searchName === undefined) {
             searchName = '';
         }
+        const settingStore = useSettingsStore();
+        if (settingStore.language.startsWith('zh') && settingStore.dataSourceLang == 'zh') //雙語言互通查詢
+            searchName = translator.simplize(searchName)
         const query = new URLSearchParams({
             page_id: String(page - 1),
-            search_name: '%' + translator.simplize(searchName) + '%',
+            search_name: '%' + searchName + '%',
         });
         if (rlv !== undefined) {
             query.set('rlv', String(rlv));
@@ -226,6 +230,12 @@ const translator = new PageTranslator({
 });
 
 export async function jsonZhConvert<T>(resp: Response): Promise<T> {
+    const settingStore = useSettingsStore();
     const raw = await resp.text();
-    return JSON.parse(translator.traditionalize(raw)) as T;
+    switch (settingStore.language) {
+        case 'zh-TW' :
+            return JSON.parse(translator.traditionalize(raw)) as T;
+        default:
+            return JSON.parse(raw) as T;
+    }
 }
