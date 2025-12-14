@@ -4,7 +4,6 @@ licenses-notices-3 = 您應該隨 BestCraft 收到一份 GNU Affero 通用公共
 copyright-notices = 
     版權所有 2025 Tnze. All Rights Reserved.
     引用的FFXIV相關資源 Copyright © 2010 - 2025 SQUARE ENIX CO., LTD.
-
 level = 等級
 recipe-level = 配方等級
 class-job-level = 特職等級
@@ -37,12 +36,12 @@ amount = 數量
 specialist = 專家
 
 # 職業名
-carpenter = 刻木匠
-blacksmith = 鍛鐵匠
-armorer = 鑄甲匠
-goldsmith = 雕金匠
-leatherworker = 製革匠
-weaver = 裁衣匠
+carpenter = 木工師
+blacksmith = 鍛造師
+armorer = 甲冑師
+goldsmith = 金工師
+leatherworker = 皮革師
+weaver = 裁縫師
 alchemist = 鍊金術士
 culinarian = 烹調師
 
