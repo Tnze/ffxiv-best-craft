@@ -138,23 +138,23 @@ const showDesktopEditionDownload = ref(false);
 <fluent locale="zh-CN">
 greeting = 
     { $time ->
-        [beforedawn] 日出東方隈，似從地底來
+        [beforedawn] 日出东方隈，似从地底来
         [morning] 早上好
         [noon] 中午好
         [afternoon] 下午好
         [evening] 晚上好
         [night] 夜深了
-        *[other] 很高興見到你
+        *[other] 很高兴见到你
     }
-welcome = { greeting }，歡迎使用生產計算器
-input-recipe-name = 輸入配方名稱
-loading = 載入中
-no-match = 沒有匹配的配方
-no-data = 無配方
+welcome = { greeting }，欢迎使用生产模拟器
+input-recipe-name = 输入配方名称
+loading = 加载中
+no-match = 没有匹配的配方
+no-data = 无配方
 
-confirm = 確認
-select-recipe = 選擇配方
-download-desktop-edition = 下載桌面客戶端
+confirm = 确认
+select-recipe = 选择配方
+download-desktop-edition = 下载桌面客户端
 </fluent>
 
 <fluent locale="zh-TW">

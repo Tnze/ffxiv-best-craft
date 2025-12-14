@@ -52,7 +52,7 @@ export class WebSource {
         if (searchName === undefined) {
             searchName = '';
         }
-        const settingStore = useSettingsStore();
+        const settingStore = getSettingsStore();
         if (settingStore.language.startsWith('zh') && settingStore.dataSourceLang === 'zh') // 雙語言互通查詢
             searchName = translator.simplize(searchName);
         const query = new URLSearchParams({
@@ -214,12 +214,18 @@ export class WebSource {
 export const YYYYGamesApiBase = 'https://tnze.yyyy.games/api/datasource/';
 
 const translator = new PageTranslator();
+let cachedSettingsStore: ReturnType<typeof useSettingsStore> | null = null;
+
+function getSettingsStore() {
+    if (cachedSettingsStore === null) cachedSettingsStore = useSettingsStore();
+    return cachedSettingsStore;
+}
 
 export async function jsonZhConvert<T>(resp: Response): Promise<T> {
-    const settingStore = useSettingsStore();
+    const settingStore = getSettingsStore();
     const raw = await resp.text();
     switch (settingStore.language) {
-        case 'zh-TW' :
+        case 'zh-TW':
             return JSON.parse(translator.traditionalize(raw)) as T;
         default:
             return JSON.parse(raw) as T;

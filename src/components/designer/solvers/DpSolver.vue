@@ -257,6 +257,7 @@ const destroySolver = async (s: Solver) => {
 </style>
 
 <fluent locale="zh-CN">
+from-initial = 整体求解
 from-current = 追加求解
 
 solver-start = 开始求解

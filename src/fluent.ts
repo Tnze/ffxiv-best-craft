@@ -40,7 +40,7 @@ export const fluent = createFluentVue({
 export function selectLanguage(newLang: string) {
     switch (newLang) {
         case 'zh-CN':
-            fluent.bundles = [zhCNBundle, enUSBundle, jaJPBundle, zhTWBundle];
+            fluent.bundles = [zhCNBundle, zhTWBundle, enUSBundle, jaJPBundle];
             break;
         case 'zh-TW':
             fluent.bundles = [zhTWBundle, zhCNBundle, enUSBundle, jaJPBundle];

@@ -1,9 +1,5 @@
-/* below is copied from : http://download.arefly.com/chinese_convert.js , thanks to community */
+/* below is copied from : http://download.arefly.com/chinese_convert.js , https://github.com/ccckmit/chinese_convert MIT license thanks to community */
 /*****************************************************************************************/
-
-// translator.ts
-export type Encoding = 1 | 2;
-
 /**
  * Page translator (Simplified <-> Traditional) - TypeScript version
  */
@@ -17,38 +13,41 @@ export class PageTranslator {
     this.tradToSimp = PageTranslator.buildCharMap(FTPY_STR, JTPY_STR);
   }
 
-  /** 對應原本的 Traditionalized(cc) */
-  public traditionalize = (cc: string): string => {
-    let out = "";
-    for (let i = 0; i < cc.length; i++) {
-      const ch = cc.charAt(i);
-      if (cc.charCodeAt(i) > 10000) {
-        const mapped = this.simpToTrad.get(ch);
-        if (mapped) {
-          out += mapped;
-          continue;
-        }
-      }
-      out += ch;
-    }
-    return out;
-  };
+public traditionalize = (cc: string): string => {
+  const n = cc.length;
+  // 預先配置長度，避免 push 動態擴容（可選，但通常更快）
+  const buf = new Array<string>(n);
 
-  /** 對應原本的 Simplized(cc) */
+  for (let i = 0; i < n; i++) {
+    const ch = cc.charAt(i);
+
+    if (cc.charCodeAt(i) > 10000) {
+      const mapped = this.simpToTrad.get(ch);
+      buf[i] = mapped ?? ch;
+    } else {
+      buf[i] = ch;
+    }
+  }
+
+  return buf.join("");
+};
+
   public simplize = (cc: string): string => {
-    let out = "";
-    for (let i = 0; i < cc.length; i++) {
+    const n = cc.length;
+    const buf = new Array<string>(n);
+
+    for (let i = 0; i < n; i++) {
       const ch = cc.charAt(i);
+
       if (cc.charCodeAt(i) > 10000) {
         const mapped = this.tradToSimp.get(ch);
-        if (mapped) {
-          out += mapped;
-          continue;
-        }
+        buf[i] = mapped ?? ch;
+      } else {
+        buf[i] = ch;
       }
-      out += ch;
     }
-    return out;
+
+    return buf.join("");
   };
   private static buildCharMap(from: string, to: string): Map<string, string> {
     const m = new Map<string, string>();
