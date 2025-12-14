@@ -22,8 +22,8 @@ jobs:
                     - platform: 'windows-latest'
                       args: ''
                       tauri_platform_name: 'windows-x86_64'
-                    - platform: "windows-latest"
-                      args: "--target aarch64-pc-windows-msvc"
+                    - platform: 'windows-latest'
+                      args: '--target aarch64-pc-windows-msvc'
                       tauri_platform_name: 'windows-aarch64'
         environment: UpdaterSigner
         runs-on: ${{ matrix.platform }}

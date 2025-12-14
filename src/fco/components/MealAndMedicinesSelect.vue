@@ -20,10 +20,7 @@
 import { ref } from 'vue';
 import { NSelect } from 'naive-ui';
 
-import {
-    WebSource,
-    YYYYGamesApiBase,
-} from '@/datasource/web-source';
+import { WebSource, YYYYGamesApiBase } from '@/datasource/web-source';
 import { Enhancer } from '@/libs/Enhancer';
 
 const dataSource = new WebSource(YYYYGamesApiBase);

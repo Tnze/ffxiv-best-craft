@@ -28,10 +28,7 @@ import {
 } from 'naive-ui';
 
 import useFcoSimulatorStore from '../stores/simulator';
-import {
-    WebSource,
-    YYYYGamesApiBase,
-} from '@/datasource/web-source';
+import { WebSource, YYYYGamesApiBase } from '@/datasource/web-source';
 import { RecipesSourceResult } from '@/datasource/source';
 import { newRecipe, RecipeInfo } from '@/libs/Craft';
 import JobSelect from './JobSelect.vue';

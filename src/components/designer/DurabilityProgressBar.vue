@@ -63,7 +63,7 @@ const color = computed(() => {
                             (modelValue / 10) * blockTotal - blockMargin / 2
                         "
                         :height="blockHeight"
-                        style="transition: 0.1s width ease;"
+                        style="transition: 0.1s width ease"
                     />
                 </clipPath>
             </defs>

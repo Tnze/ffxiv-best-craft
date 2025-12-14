@@ -27,12 +27,7 @@ import {
     ref,
     watch,
 } from 'vue';
-import {
-    ElScrollbar,
-    ElAlert,
-    ElTabs,
-    ElTabPane,
-} from 'element-plus';
+import { ElScrollbar, ElAlert, ElTabs, ElTabPane } from 'element-plus';
 import { useMediaQuery, useElementSize } from '@vueuse/core';
 
 import {
@@ -533,7 +528,6 @@ async function handleSolverResult(
     border-left: 5px solid var(--el-border-color);
     margin-bottom: 5px;
 }
-
 </style>
 
 <fluent locale="zh-CN">

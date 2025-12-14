@@ -126,8 +126,8 @@ const onAnimationEnd = (event: AnimationEvent) => {
     left: -8px;
     position: absolute;
     pointer-events: none;
-    background: url('../../assets/icons/icona_frame_tex.png') no-repeat top -72px
-        left -240px;
+    background: url('../../assets/icons/icona_frame_tex.png') no-repeat
+        top -72px left -240px;
     animation: clickable-wave 0.3s;
 }
 

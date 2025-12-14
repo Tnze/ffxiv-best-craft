@@ -36,7 +36,7 @@ const props = defineProps<{
     clipZone: UseElementBoundingReturn;
 }>();
 
-const canvas = useTemplateRef('canvas')
+const canvas = useTemplateRef('canvas');
 const palette = new Map([
     ['required', useCssVar('--el-color-danger', canvas)],
     ['crafted', useCssVar('--el-color-warning', canvas)],

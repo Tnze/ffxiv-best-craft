@@ -75,7 +75,7 @@ function handleGearsetsEdit(
             @edit="handleGearsetsEdit"
         >
             <el-tab-pane
-                v-for="v, i in store.gearsets"
+                v-for="(v, i) in store.gearsets"
                 :name="v.id"
                 :label="choiceGearsetDisplayName(v)"
                 lazy

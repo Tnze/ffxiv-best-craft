@@ -63,7 +63,7 @@ export default defineConfig({
             baseDir: 'src', // base directory for Vue files
             ftlDir: 'src/assets/locales', // directory with ftl files
         }),
-        oxlintPlugin()
+        oxlintPlugin(),
     ],
     resolve: {
         alias: [{ find: '@', replacement: resolve(projectRootDir, 'src') }],
