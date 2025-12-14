@@ -93,10 +93,18 @@ const router = useRouter();
 guide = 向导
 gearsets = 配装
 recipe = 配方
-bom = 物料
 simulator = 模拟
 bom = 清单
 settings = 设置
+</fluent>
+
+<fluent locale="zh-TW">
+guide = 嚮導
+gearsets = 配裝
+recipe = 配方
+simulator = 模擬
+bom = 清單
+settings = 設定
 </fluent>
 
 <fluent locale="en-US">

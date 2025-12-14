@@ -137,6 +137,14 @@ type-to-search = 输入以搜索
 confirm = 确认
 </fluent>
 
+<fluent locale="zh-TW">
+craft-type = 製作職業
+name = 名稱
+
+type-to-search = 輸入以搜尋
+confirm = 確認
+</fluent>
+
 <fluent locale="en-US">
 craft-type = Craft Type
 name = Name

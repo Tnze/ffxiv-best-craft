@@ -146,6 +146,15 @@ sorry = 由于技术原因，出现错误后暂时只能通过刷新页面恢复
 invite = 如果您有兴趣解决这个问题，欢迎向本项目仓库提交PR
 </fluent>
 
+<fluent locale="zh-TW">
+error-happens = 載入配方時出現了一些錯誤
+not-selected = 請先選擇配方
+upgrade-browser = 這個問題似乎是瀏覽器版本過舊導致的，請嘗試更新您的瀏覽器
+reload = 重新整理
+sorry = 由於技術原因，出現錯誤後暫時只能透過重新整理頁面恢復，對此造成的不便我們深表歉意
+invite = 如果您有興趣解決這個問題，歡迎向本專案倉庫提交PR
+</fluent>
+
 <fluent locale="en-US">
 not-selected = Please select recipe first
 reload = Reload

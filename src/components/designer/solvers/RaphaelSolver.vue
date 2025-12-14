@@ -328,6 +328,51 @@ solver-info =
     工作原理：分支定界、最佳优先搜索、动态规划，以及帕累托优化
 </fluent>
 
+<fluent locale="zh-TW">
+solver-start = 開始求解
+simple-solver-solving = 正在求解中
+error-probably-out-of-memory = { $err }（可能是記憶體不足，請嘗試使用桌面端）
+
+from-initial = 整體求解
+from-current = 追加求解
+
+first-stage = 一檔
+second-stage = 二檔
+third-stage = 三檔
+maximum-target = 最大
+custom-target = 自定義
+
+target-quality = 目標品質
+enable-action = 使用技能：{ $action }
+backload-progress = 後置作業技能（快速求解）
+minimize-steps = 使步驟最短
+adversarial = 確保 100% 可靠（防黑球）
+
+speed-up = 求解速度提高
+speed-down = 求解速度降低
+quality-down = 求解品質下降
+increase-duration = 最終步數增加
+need-learn-manipulation = 需要學習掌握技能
+consume-crafters-delineation = 消耗能工巧匠圖紙
+
+solver-info-title = Raphael 求解器
+solver-info =
+    來源：{ $origin }
+
+    原始碼：{ $source }
+
+    許可證：Apache-2.0
+
+    計算最優生產巨集：
+    · 產生的巨集必須能夠推滿配方的作業（即100%進展）
+    · 按以下優先順序選擇最優的巨集：
+        - 品質越高越好，直到滿足目標品質
+        - 巨集長度越短越好
+        - 總時間越短越好
+
+    工作原理：分支定界、最佳優先搜尋、動態規劃，以及帕累託最佳化
+</fluent>
+
 <fluent locale="en-US">
 solver-start = Start
 simple-solver-solving = Solving

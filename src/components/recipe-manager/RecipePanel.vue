@@ -426,6 +426,20 @@ name = 名称
 can-hq = 存在HQ
 </fluent>
 
+<fluent locale="zh-TW">
+datasource-unsupport-recipe-info = 當前資料來源不支援從外部選擇配方
+select-recipe-by-id-error = 獲取配方資訊失敗：{ $err }，請嘗試切換資料來源
+
+search = 鍵入以搜尋
+please-wait = 請稍等...
+
+type = 職業
+craft-type = 製作職業
+level = 等級
+name = 名稱
+can-hq = 存在HQ
+</fluent>
+
 <fluent locale="en-US">
 datasource-unsupport-recipe-info = Current data-source doesn't support choice recipe from external pages
 select-recipe-by-id-error = Error fetching recipe data: { $err }. Please try choosing another DataSource

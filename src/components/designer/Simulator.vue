@@ -278,6 +278,11 @@ meal-and-potion = 食物 & 药水
 restart = 倒
 </fluent>
 
+<fluent locale="zh-TW">
+meal-and-potion = 食物 & 藥水
+restart = 倒
+</fluent>
+
 <fluent locale="en-US">
 meal-and-potion = Meal & Potions
 restart = Restart

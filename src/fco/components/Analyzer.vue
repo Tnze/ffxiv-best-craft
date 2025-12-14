@@ -252,6 +252,25 @@ craftsmanship-range = { craftsmanship }范围
 control-range = { control }范围
 </fluent>
 
+<fluent locale="zh-TW">
+run-simulations = 執行模擬
+run-n-times = 執行 { $n } 次模擬
+action-queue = 技能佇列
+ignore-errors = 忽略錯誤
+
+empty = 空
+
+errors = 錯誤
+unfinished = 未完成
+fails = 失敗
+normal = 普通品質
+highqual = 高品質
+
+calc-scope = 計算裝備屬性適配範圍
+craftsmanship-range = { craftsmanship }範圍
+control-range = { control }範圍
+</fluent>
+
 <fluent locale="en-US">
 run-simulations = Run simulations
 run-n-times = Run simulation { $n } times

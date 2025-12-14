@@ -249,6 +249,10 @@ function calcEffect(index: number): 'normal' | 'red-cross' | 'black' {
 solved-in = 求解完成（{ $time }）
 </fluent>
 
+<fluent locale="zh-TW">
+solved-in = 求解完成（{ $time }）
+</fluent>
+
 <fluent locale="en-US">
 solved-in = Solving finished ({ $time })
 </fluent>

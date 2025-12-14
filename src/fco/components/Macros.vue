@@ -150,6 +150,15 @@ copied-macro = 已复制 宏#{ $id } 到系统剪切板
 macro-finished = 宏#{ $id } 已完成！
 </fluent>
 
+<fluent locale="zh-TW">
+macro = 巨集指令
+has-notify = 新增完成提示
+has-lock = 鎖定巨集指令
+avg-size = 長度平均化
+copied-macro = 已複製 巨集#{ $id } 到系統剪下板
+macro-finished = 巨集#{ $id } 已完成！
+</fluent>
+
 <fluent locale="en-US">
 macro = Macro
 copied-macro = Copied M#{ $id } to system clipboard!

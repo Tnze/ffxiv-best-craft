@@ -206,6 +206,23 @@ warn-action-not-found = 没有识别到技能
 recognize-success = 识别成功，一共导入了 { $n } 个技能
 </fluent>
 
+<fluent locale="zh-TW">
+auto-recognize = 貼上自動識別
+confirm = 確認
+strict-mode = 嚴格模式
+
+err-parse-json = 嘗試解析 JSON 失敗：{ $err }
+err-not-an-array = 輸入的 JSON 不是一個數組
+err-not-a-string = 元素 { $elem } 不是一個字串
+err-invalid-action = 未知的技能：{ $action }
+
+err-parse-strict = 嚴格模式匯入巨集失敗：{ $err }
+err-parse-line-error = 匯入第 { $n } 行失敗
+
+warn-action-not-found = 沒有識別到技能
+recognize-success = 識別成功，一共匯入了 { $n } 個技能
+</fluent>
+
 <fluent locale="en-US">
 auto-recognize = Paste macros or JSON here
 confirm = Confirm

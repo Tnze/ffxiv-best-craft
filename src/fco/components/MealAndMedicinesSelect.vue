@@ -78,6 +78,11 @@ select-meals = 选择{ meals }
 select-medicines = 选择{ medicines }
 </fluent>
 
+<fluent locale="zh-TW">
+select-meals = 選擇{ meals }
+select-medicines = 選擇{ medicines }
+</fluent>
+
 <fluent locale="en-US">
 select-meals = Select { meals }
 select-medicines = Select { medicines }

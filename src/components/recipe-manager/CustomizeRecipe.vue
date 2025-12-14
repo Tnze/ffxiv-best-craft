@@ -251,6 +251,16 @@ confirm = 确认
 simulator-mode = 模拟器模式
 </fluent>
 
+<fluent locale="zh-TW">
+back = 返回
+custom-recipe = 自定義配方
+auto-load = 自動填充
+
+cancel = 取消
+confirm = 確認
+simulator-mode = 模擬器模式
+</fluent>
+
 <fluent locale="en-US">
 back = Back
 custom-recipe = Custom Recipe

@@ -14,18 +14,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import zhTW from 'element-plus/es/locale/lang/zh-tw';
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 import en from 'element-plus/es/locale/lang/en';
 import ja from 'element-plus/es/locale/lang/ja';
 
 export const languages = new Map([
     ['zh-CN', '简体中文'],
+    ['zh-TW', '繁體中文'],
     ['en-US', 'English'],
     ['ja-JP', '日本語'],
 ]);
 
 export const elementPlusLang = new Map([
     ['zh-CN', zhCn],
+    ['zh-TW', zhTW],
     ['en-US', en],
     ['ja-JP', ja],
 ]);

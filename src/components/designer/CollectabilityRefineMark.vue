@@ -156,6 +156,17 @@ collectability-stage =
     }
 </fluent>
 
+<fluent locale="zh-TW">
+required-collectability = 所需收藏價值
+collectability-stage =
+    { $lv ->
+        [1] 一檔：{ $v } ~
+        [2] 二檔：{ $v } ~
+        [3] 三檔：{ $v } ~
+       *[other] 未知
+    }
+</fluent>
+
 <fluent locale="en-US">
 required-collectability = Required Collectability
 collectability-stage =

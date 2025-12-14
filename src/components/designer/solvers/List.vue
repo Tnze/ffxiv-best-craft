@@ -300,6 +300,48 @@ tnzever-rika-solver-info =
 
 </fluent>
 
+<fluent locale="zh-TW">
+web-worker-not-avaliable = 您正在使用的瀏覽器不支援 Web Worker 功能，無法執行求解器。
+
+do-not-touch = 不推品質
+reduce-steps-info = 最少資源方案
+
+solving-info = 「{ $solverName }」求解中，請耐心等待
+error-with = 錯誤：{ $err }
+
+warning = 警告
+solver-start = 開始求解
+rika-solver-warning = 當前配方不滿足 Rika 求解器的使用條件，是否強制執行？
+simple-solver-solving = 正在求解中
+simple-solver-finished =「{ $solverName }」求解完成({ $solveTime })
+simple-solver-finished-no-result = 發動了「{ $solverName }」求解器，沒有獲得任何結果({ $solveTime })
+
+sum-info = 提示：下面會顯示對您沒有幫助的碎碎念，使用求解器請直接點選“{solver-start}”按鈕。
+
+rika-solver-info =
+    由{$rikaRepoLink}，作者同意後移植至本應用。
+    注：該演算法透過激進的剪枝策略與窮舉法求解，
+    其中剪枝策略由作者根據經驗手工指定，僅適用於特定版本的配方。
+
+    {$startButton}
+
+    {$rikaSaidLine}
+    .design-by-rika = Rika設計的演算法
+    .rika-said =「速度較快但不一定找到最優解，適用範圍僅限於560以上70耐久配方」—— Rika
+
+tnzever-rika-solver-info =
+    此款求解器是 Rika 廣度優先搜尋演算法的 Tnze 改良款。
+
+    {$startButton}
+
+    保留了 Rika 演算法的 Phase 1，將 Phase 2 交由 Tnze 精心重製的動規演算法實現。
+    該方法既能利用動態規劃能計算最優解的優秀特性，也能充分利用 Rika 演算法能處理“堅信”起手的優點。
+
+    注：類似於“廣度優先搜尋”求解器，該版演算法可能也只適用於特定版本的配方。
+    如您認為遇到了異常情況，請透過 Gitee 或 Github 等渠道提交 issue 反饋。
+
+</fluent>
+
 <fluent locale="en-US">
 web-worker-not-avaliable = Your browser doesn't support Web Worker, which is required to running solvers.
 

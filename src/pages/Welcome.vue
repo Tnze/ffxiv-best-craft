@@ -157,6 +157,28 @@ select-recipe = 选择配方
 download-desktop-edition = 下载桌面客户端
 </fluent>
 
+<fluent locale="zh-TW">
+greeting = 
+    { $time ->
+        [beforedawn] 日出東方隈，似從地底來
+        [morning] 早上好
+        [noon] 中午好
+        [afternoon] 下午好
+        [evening] 晚上好
+        [night] 夜深了
+        *[other] 很高興見到你
+    }
+welcome = { greeting }，歡迎使用生產計算器
+input-recipe-name = 輸入配方名稱
+loading = 載入中
+no-match = 沒有匹配的配方
+no-data = 無配方
+
+confirm = 確認
+select-recipe = 選擇配方
+download-desktop-edition = 下載桌面客戶端
+</fluent>
+
 <fluent locale="en-US">
 greeting = 
     { $time ->

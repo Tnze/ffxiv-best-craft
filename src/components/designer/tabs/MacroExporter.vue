@@ -299,6 +299,33 @@ marco-finished = 宏#{ $id } 已完成！
 copy-failed = 复制失败：{ $err }
 </fluent>
 
+<fluent locale="zh-TW">
+has-notify = 新增完成提示
+has-notify-auto = 自動確定
+has-notify-true = 總是提示
+has-notify-false = 不提示
+
+has-lock = 鎖定巨集指令
+oneclick-copy = 一鍵複製
+
+notify-sound = 提示音
+random-sound = 隨機提示音
+no-sound = 無提示音
+
+section-method = 拆分過長的巨集
+avg-section = 平均
+greedy-section = 貪婪
+disable-section = 停用
+
+wait-time-inc = 增加等待時間
+
+export-json = 匯出 JSON
+copied-json = 已複製 JSON 表示式 到系統剪下板
+copied-marco = 已複製 巨集#{ $id } 到系統剪下板
+marco-finished = 巨集#{ $id } 已完成！
+copy-failed = 複製失敗：{ $err }
+</fluent>
+
 <fluent locale="en-US">
 has-notify = Notification
 has-notify-auto = Auto

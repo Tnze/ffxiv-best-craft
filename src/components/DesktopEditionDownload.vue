@@ -119,11 +119,20 @@ date = 发布日期
 download = 下载链接
 loading = 加载中
 </fluent>
+
+<fluent locale="zh-TW">
+version = 版本號
+date = 釋出日期
+download = 下載連結
+loading = 載入中
+</fluent>
+
 <fluent locale="en-US">
 version = Version
 date = Pub Date
 download = Download
 loading = Loading
 </fluent>
+
 <fluent locale="ja-JP">
 </fluent>
