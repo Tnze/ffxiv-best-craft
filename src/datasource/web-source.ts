@@ -53,7 +53,7 @@ export class WebSource {
             searchName = '';
         }
         const settingStore = useSettingsStore();
-        if (settingStore.language.startsWith('zh') && settingStore.dataSourceLang == 'zh') //雙語言互通查詢
+        if (settingStore.language.startsWith('zh') && settingStore.dataSourceLang === 'zh') //雙語言互通查詢
             searchName = translator.simplize(searchName)
         const query = new URLSearchParams({
             page_id: String(page - 1),
