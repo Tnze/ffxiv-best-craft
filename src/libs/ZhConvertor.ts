@@ -13,24 +13,24 @@ export class PageTranslator {
     this.tradToSimp = PageTranslator.buildCharMap(FTPY_STR, JTPY_STR);
   }
 
-public traditionalize = (cc: string): string => {
-  const n = cc.length;
-  // 預先配置長度，避免 push 動態擴容（可選，但通常更快）
-  const buf = new Array<string>(n);
+  public traditionalize = (cc: string): string => {
+    const n = cc.length;
+    // 預先配置長度，避免 push 動態擴容（可選，但通常更快）
+    const buf = new Array<string>(n);
 
-  for (let i = 0; i < n; i++) {
-    const ch = cc.charAt(i);
+    for (let i = 0; i < n; i++) {
+      const ch = cc.charAt(i);
 
-    if (cc.charCodeAt(i) > 10000) {
-      const mapped = this.simpToTrad.get(ch);
-      buf[i] = mapped ?? ch;
-    } else {
-      buf[i] = ch;
+      if (cc.charCodeAt(i) > 10000) {
+        const mapped = this.simpToTrad.get(ch);
+        buf[i] = mapped ?? ch;
+      } else {
+        buf[i] = ch;
+      }
     }
-  }
 
-  return buf.join("");
-};
+    return buf.join("");
+  };
 
   public simplize = (cc: string): string => {
     const n = cc.length;
