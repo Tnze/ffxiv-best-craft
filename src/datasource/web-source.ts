@@ -28,8 +28,6 @@ import {
     RecipesSourceResult,
 } from './source';
 import { Enhancer } from '@/libs/Enhancer';
-import { PageTranslator } from '@/libs/ZhConvertor';
-import useSettingsStore from '@/stores/settings';
 
 export class WebSource {
     public sourceType = DataSourceType.RemoteRealtime;
@@ -52,9 +50,6 @@ export class WebSource {
         if (searchName === undefined) {
             searchName = '';
         }
-        const settingStore = getSettingsStore();
-        if (settingStore.language.startsWith('zh') && settingStore.dataSourceLang === 'zh') // 雙語言互通查詢
-            searchName = translator.simplize(searchName); //目前僅簡中API可用，故單向，待有繁中API可更改為雙向轉換
         const query = new URLSearchParams({
             page_id: String(page - 1),
             search_name: '%' + searchName + '%',
@@ -80,7 +75,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
-        const { data: results, p: totalPages } = (await jsonZhConvert(resp)) as {
+        const { data: results, p: totalPages } = (await resp.json()) as {
             data: RecipeInfo[];
             p: number;
         };
@@ -159,7 +154,7 @@ export class WebSource {
         if (!resp.ok) {
             throw resp.statusText;
         }
-        return await jsonZhConvert(resp);
+        return resp.json();
     }
 
     async itemInfo(itemId: number): Promise<Item> {
@@ -171,7 +166,7 @@ export class WebSource {
             mode: 'cors',
         });
         const { id, name, level, can_be_hq, category_id } =
-            (await jsonZhConvert(resp)) as {
+            (await resp.json()) as {
                 id: number;
                 name: string;
                 level: number;
@@ -187,7 +182,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
-        return (await jsonZhConvert(resp)) as CraftType[];
+        return (await resp.json()) as CraftType[];
     }
 
     async medicineTable(_page: number): Promise<DataSourceResult<Enhancer>> {
@@ -196,7 +191,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
-        const results = (await jsonZhConvert(resp)) as Enhancer[];
+        const results = (await resp.json()) as Enhancer[];
         return { results, totalPages: 1 };
     }
 
@@ -206,28 +201,9 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
-        const results = (await jsonZhConvert(resp)) as Enhancer[];
+        const results = (await resp.json()) as Enhancer[];
         return { results, totalPages: 1 };
     }
 }
 
 export const YYYYGamesApiBase = 'https://tnze.yyyy.games/api/datasource/';
-
-const translator = new PageTranslator();
-let cachedSettingsStore: ReturnType<typeof useSettingsStore> | null = null;
-
-function getSettingsStore() {
-    if (cachedSettingsStore === null) cachedSettingsStore = useSettingsStore();
-    return cachedSettingsStore;
-}
-
-export async function jsonZhConvert<T>(resp: Response): Promise<T> {
-    const settingStore = getSettingsStore();
-    const raw = await resp.text();
-    switch (settingStore.language) {
-        case 'zh-TW':
-            return JSON.parse(translator.traditionalize(raw)) as T;
-        default:
-            return JSON.parse(raw) as T;
-    }
-}
