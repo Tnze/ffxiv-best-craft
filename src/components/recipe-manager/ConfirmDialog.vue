@@ -313,7 +313,7 @@ simulator-mode = 高難模式
 sync-level-item-name = { $itemName }（等級同步：{ $syncLevel }）
 
 sync-level = 等級同步
-type = 製作型別
+type = 製作職業
 level = 等級
 recipe-id = 配方編號
 item-info = 物品資訊

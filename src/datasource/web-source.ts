@@ -54,7 +54,7 @@ export class WebSource {
         }
         const settingStore = getSettingsStore();
         if (settingStore.language.startsWith('zh') && settingStore.dataSourceLang === 'zh') // 雙語言互通查詢
-            searchName = translator.simplize(searchName);
+            searchName = translator.simplize(searchName); //目前僅簡中API可用，故單向，待有繁中API可更改為雙向轉換
         const query = new URLSearchParams({
             page_id: String(page - 1),
             search_name: '%' + searchName + '%',

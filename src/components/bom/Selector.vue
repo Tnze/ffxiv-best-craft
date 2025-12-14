@@ -138,7 +138,7 @@ confirm = 确认
 </fluent>
 
 <fluent locale="zh-TW">
-craft-type = 製作型別
+craft-type = 製作職業
 name = 名稱
 
 type-to-search = 輸入以搜尋

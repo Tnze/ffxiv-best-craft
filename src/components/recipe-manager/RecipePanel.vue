@@ -433,8 +433,8 @@ select-recipe-by-id-error = 獲取配方資訊失敗：{ $err }，請嘗試切�
 search = 鍵入以搜尋
 please-wait = 請稍等...
 
-type = 型別
-craft-type = 製作型別
+type = 職業
+craft-type = 製作職業
 level = 等級
 name = 名稱
 can-hq = 存在HQ
