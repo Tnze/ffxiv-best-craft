@@ -1,6 +1,6 @@
-licenses-notices-1 = BestCraft 是自由軟體：您可以在遵守由自由軟體基金會發布的 GNU Affero 通用公共許可協議的情況下重新分發且或修改軟體；或第三版許可協議，或（根據您的選擇）任何更新版本。
-licenses-notices-2 = BestCraft 本著可用的意願分發，但不作任何擔保；甚至沒有商業性的或對特定目的適用性的暗指。更多細節請參看 GNU Affero 通用公共許可協議。
-licenses-notices-3 = 您應該隨 BestCraft 收到一份 GNU Affero 通用公共許可協議。否則請參閱：http://www.gnu.org/licenses/
+licenses-notices-1 = 本程式是自由軟體：您可以根據GNU Affero General Public License的條款重新發佈和/或修改它。您可以根據自由軟體基金會發佈的GNU Affero通用公共許可的條款來重新發佈和/或修改它。您可以根據自由軟體基金會發佈的GNU Affero通用公共許可的條款重新發佈和/或修改它。許可，或（根據您的選擇）任何後來的版本。
+licenses-notices-2 = 本程式的發佈是希望它能起到作用。但沒有任何保證；甚至沒有隱含的保證。本程式的分發是希望它是有用的，但沒有任何保證，甚至沒有隱含的適銷對路或適合某一特定目的的保證。 參見 GNU Affero通用公共許可瞭解更多細節。
+licenses-notices-3 = 您應該已經收到了一份GNU Affero通用公共許可的副本。的副本。 如果沒有，請參見https://www.gnu.org/licenses/。
 copyright-notices = 
     版權所有 2025 Tnze. All Rights Reserved.
     引用的FFXIV相關資源 Copyright © 2010 - 2025 SQUARE ENIX CO., LTD.
