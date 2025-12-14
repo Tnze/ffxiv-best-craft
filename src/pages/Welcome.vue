@@ -90,7 +90,7 @@ const showDesktopEditionDownload = ref(false);
             href="https://beian.miit.gov.cn/"
             type="info"
         >
-            粵ICP備2021156196號-1
+            粤ICP备2021156196号-1
         </el-link>
         <el-text class="info-text" type="info">
             {{ $t('copyright-notices') }}

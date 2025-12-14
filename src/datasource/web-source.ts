@@ -53,8 +53,8 @@ export class WebSource {
             searchName = '';
         }
         const settingStore = useSettingsStore();
-        if (settingStore.language.startsWith('zh') && settingStore.dataSourceLang === 'zh') //雙語言互通查詢
-            searchName = translator.simplize(searchName)
+        if (settingStore.language.startsWith('zh') && settingStore.dataSourceLang === 'zh') // 雙語言互通查詢
+            searchName = translator.simplize(searchName);
         const query = new URLSearchParams({
             page_id: String(page - 1),
             search_name: '%' + searchName + '%',
@@ -213,21 +213,7 @@ export class WebSource {
 
 export const YYYYGamesApiBase = 'https://tnze.yyyy.games/api/datasource/';
 
-const translator = new PageTranslator({
-  translateButtonId: "translateButtonId",
-  targetEncodingCookie: "targetEncodingCookie",
-
-  msgToTraditionalChinese: "繁體",
-  msgToSimplifiedChinese: "简体",
-
-  defaultEncoding: 1,
-  currentEncoding: 1,
-  targetEncoding: 2,
-
-  translateDelay: 300,
-
-  translateBody: () => {},
-});
+const translator = new PageTranslator();
 
 export async function jsonZhConvert<T>(resp: Response): Promise<T> {
     const settingStore = useSettingsStore();
