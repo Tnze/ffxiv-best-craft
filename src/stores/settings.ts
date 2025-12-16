@@ -134,6 +134,9 @@ export default defineStore('settings', {
             ) {
                 this.dataSource = 'yyyy.games';
             }
+            if (String(this.dataSourceLang) == 'zh') {
+                this.dataSourceLang = 'zh-CN';
+            }
         },
     },
 });
