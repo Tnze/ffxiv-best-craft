@@ -25,7 +25,7 @@ import useDesignerStore from '@/stores/designer';
 
 const designerStore = useDesignerStore();
 
-const jobMapsZh: { [key: string]: Jobs } = {
+const jobMapsZhCN: { [key: string]: Jobs } = {
     木工: Jobs.Carpenter,
     锻冶: Jobs.Blacksmith,
     铸甲: Jobs.Armorer,
@@ -34,6 +34,16 @@ const jobMapsZh: { [key: string]: Jobs } = {
     裁缝: Jobs.Weaver,
     炼金: Jobs.Alchemist,
     烹调: Jobs.Culinarian,
+};
+const jobMapsZhTW: { [key: string]: Jobs } = {
+    木工: Jobs.Carpenter,
+    鍛造: Jobs.Blacksmith,
+    甲冑: Jobs.Armorer,
+    金工: Jobs.Goldsmith,
+    皮革: Jobs.Leatherworker,
+    裁縫: Jobs.Weaver,
+    鍊金: Jobs.Alchemist,
+    烹調: Jobs.Culinarian,
 };
 const jobMapsEn: { [key: string]: Jobs } = {
     Woodworking: Jobs.Carpenter,
@@ -78,7 +88,8 @@ const jobMapsFr: { [key: string]: Jobs } = {
 
 export function craftTypeTojobs(craftType: string): Jobs | undefined {
     return (
-        jobMapsZh[craftType] ??
+        jobMapsZhCN[craftType] ??
+        jobMapsZhTW[craftType] ??
         jobMapsEn[craftType] ??
         jobMapsJa[craftType] ??
         jobMapsDe[craftType] ??

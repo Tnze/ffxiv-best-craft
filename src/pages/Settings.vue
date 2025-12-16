@@ -141,17 +141,11 @@ function fixDataSourceLanguage() {
                 <el-select v-model="store.dataSourceLang">
                     <el-option
                         v-for="lang in dataSourceList.get(store.dataSource)"
-                        :label="$t('dslang-' + lang)"
+                        :label="$t(`dslang-${lang}`)"
                         :value="lang!"
                     >
                         <span style="float: left">
                             {{ $t(`dslang-${lang}`) }}
-                        </span>
-                        <span
-                            v-if="store.dataSource == 'yyyy.games'"
-                            class="data-source-option-note"
-                        >
-                            {{ $t(`dslang-${lang}-desc`) }}
                         </span>
                     </el-option>
                 </el-select>
@@ -301,16 +295,12 @@ ds-local-desc = 国服数据
 ds-yyyygames-desc = 混合
 ds-xivapi-desc = 国际服数据
 switch-lines = 切换线路
-dslang-zh = 汉语
+dslang-zh-CN = 简体中文
+dslang-zh-TW = 繁体中文
 dslang-en = 英语
 dslang-ja = 日语
 dslang-de = 德语
 dslang-fr = 法语
-dslang-zh-desc = 国服数据
-dslang-en-desc = 国际服数据
-dslang-ja-desc = 国际服数据
-dslang-de-desc = 国际服数据
-dslang-fr-desc = 国际服数据
 system-lang = 跟随系统
 version-number = 版本号
 tauri = Tauri
@@ -340,16 +330,12 @@ ds-local-desc = 國服資料
 ds-yyyygames-desc = 混合
 ds-xivapi-desc = 國際服資料
 switch-lines = 切換線路
-dslang-zh = 漢語
+dslang-zh-CN = 簡體中文
+dslang-zh-TW = 繁體中文
 dslang-en = 英語
 dslang-ja = 日語
 dslang-de = 德語
 dslang-fr = 法語
-dslang-zh-desc = 國服資料
-dslang-en-desc = 國際服資料
-dslang-ja-desc = 國際服資料
-dslang-de-desc = 國際服資料
-dslang-fr-desc = 國際服資料
 system-lang = 跟隨系統
 version-number = 版本號
 tauri = Tauri
@@ -378,16 +364,12 @@ ds-local-desc = Chinese
 ds-yyyygames-desc = Mixed
 ds-xivapi-desc = Latest
 switch-lines = Switch Lines
-dslang-zh = Chinese
+dslang-zh-CN = Simplified Chinese
+dslang-zh-TW = Traditional Chinese
 dslang-en = English
 dslang-ja = Japanese
 dslang-de = German
 dslang-fr = French
-dslang-zh-desc = Chinese
-dslang-en-desc = Latest
-dslang-ja-desc = Latest
-dslang-de-desc = Latest
-dslang-fr-desc = Latest
 system-lang = System
 version-number = Version
 tauri = Tauri
@@ -409,7 +391,8 @@ ds-local = ローカル
 # ds-xivapi =
 # ds-cafe =
 switch-lines = サーバの切り替え
-dslang-zh = 中国語
+dslang-zh-CN = 簡体字中国語
+dslang-zh-TW = 繁体字中国語
 dslang-en = 英語
 dslang-ja = 日本語
 dslang-de = ドイツ語
