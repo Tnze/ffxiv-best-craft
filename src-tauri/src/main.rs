@@ -591,6 +591,7 @@ async fn destroy_solver(
 /// which means the front-end should make its background transparent to show the window effect below.
 #[tauri::command]
 fn set_theme(app_handle: tauri::AppHandle, is_dark: Option<bool>) -> bool {
+    #[allow(unused)]
     let window = app_handle.get_webview_window("main").unwrap();
     #[cfg(target_os = "macos")]
     {
