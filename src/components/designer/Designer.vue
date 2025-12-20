@@ -62,6 +62,7 @@ import { useFluent } from 'fluent-vue';
 import Analyzers from './tabs/Analyzers.vue';
 import { activeSeqKey, displayJobKey } from './injectionkeys';
 import { Slot, Sequence, SequenceSource } from './types';
+import MarcoInfo from './MarcoInfo.vue';
 
 const props = defineProps<{
     recipe: Recipe;
@@ -348,6 +349,11 @@ async function handleSolverResult(
                         :err-list="activeRst?.errors"
                         :loading-solver-result="isReadingSolverDisplay"
                         clearable
+                    />
+                    <MarcoInfo
+                        style="margin-left: 9px"
+                        :seq="activeSeq"
+                        :status="displayedStatus"
                     />
                 </div>
                 <el-tabs
