@@ -25,6 +25,7 @@ import {
     Setting,
     Guide,
     Box,
+    Star,
 } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 
@@ -54,6 +55,12 @@ const router = useRouter();
                 <collection />
             </el-icon>
             <template #title>{{ $t('recipe') }}</template>
+        </el-menu-item>
+                <el-menu-item index="/favorites">
+            <el-icon>
+                <Star />
+            </el-icon>
+            <template #title>{{ $t('favorites') }}</template>
         </el-menu-item>
         <el-menu-item index="/designer">
             <el-icon>
@@ -96,6 +103,7 @@ recipe = 配方
 simulator = 模拟
 bom = 清单
 settings = 设置
+favorites = 收藏
 </fluent>
 
 <fluent locale="zh-TW">
@@ -114,6 +122,7 @@ recipe = Recipes
 bom = BOM
 simulator = Simulator
 settings = Settings
+favorites = Favorites
 </fluent>
 
 <fluent locale="ja-JP">
@@ -123,4 +132,5 @@ recipe = フォーミュラ
 bom = 材料リスト
 # simulator = デザイン
 settings = 設定
+favorites = お気に入り
 </fluent>

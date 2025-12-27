@@ -38,8 +38,9 @@ import {
     ElSelect,
     ElOption,
     ElInputNumber,
+    ElIcon
 } from 'element-plus';
-import { EditPen } from '@element-plus/icons-vue';
+import { EditPen, Star, StarFilled } from '@element-plus/icons-vue';
 import {
     CollectablesShopRefine,
     Item,
@@ -56,6 +57,7 @@ import {
     RecipesSourceResult,
 } from '@/datasource/source';
 import useSettingsStore from '@/stores/settings';
+import useFavoritesStore from '@/stores/favorites';
 import { useMediaQuery } from '@vueuse/core';
 import ConfirmDialog from './ConfirmDialog.vue';
 
@@ -64,8 +66,13 @@ const emit = defineEmits<{
 }>();
 onActivated(() => emit('setTitle', 'select-recipe'));
 
+const props = defineProps<{
+  limitFavorites?: boolean
+}>()
+
 const searchingDelayMs = 200;
 const settingStore = useSettingsStore();
+const favoritesStore = useFavoritesStore();
 const router = useRouter();
 const { $t } = useFluent();
 
@@ -98,22 +105,31 @@ async function updateRecipePage(
     pageNumber: number,
     searching: string,
 ) {
+    // 收藏模式且没有收藏时直接返回空
+    if (favoritesStore.pageTotal === 0 && props.limitFavorites) {
+        displayTable.value = [];
+        pagination.PageTotal = 1;
+        loadRecipeTableResult = null;
+        return;
+    }
     // 对于已有缓存的加载会很快，只有较慢的情况才需要显示Loading
     let timer = setTimeout(() => (isRecipeTableLoading.value = true), 200);
+    const favoriteIds = favoritesStore.getFavoriteIdsByPage(pageNumber);
     try {
         let promise = dataSource.recipeTable(
-            pageNumber,
+            props.limitFavorites ? 1 : pageNumber,
             searching,
             filterRecipeLevel.value,
             filterCraftType.value,
             filterLevel.value ? filterLevel.value * 10 - 9 : undefined,
             filterLevel.value ? filterLevel.value * 10 : undefined,
+            props.limitFavorites ? favoriteIds : undefined
         );
         loadRecipeTableResult = promise;
         let { results, totalPages, next } = await promise;
         if (loadRecipeTableResult == promise) {
             displayTable.value = results;
-            pagination.PageTotal = totalPages;
+            pagination.PageTotal = props.limitFavorites ? favoritesStore.pageTotal : totalPages;
             loadRecipeTableResult = null;
             infiniteRecipeNext.value = next;
         }
@@ -201,6 +217,17 @@ watch(
         craftTypeRemoteMethod();
     },
 );
+
+// 收藏变更时更新
+if (props.limitFavorites) {
+  watch(
+    () => favoritesStore.favoriteIds,
+    () => {
+        triggerSearch();
+        craftTypeRemoteMethod();
+    },
+  )
+}
 
 // 接受跳转参数
 watchEffect(() => {
@@ -359,6 +386,17 @@ async function selectRecipeById(recipeId: number) {
             :infinite-scroll-immediate="false"
             :infinite-scroll-distance="100"
         >
+            <el-table-column :width="compactLayout ? undefined : 50">
+                <template #default="{ row }">
+                    <el-icon
+                        :size="24"
+                        :color="favoritesStore.isFavoriteMap[row.id] ? '#f5a623' : '#9ca3af'"
+                        style="vertical-align: middle;cursor: pointer;" 
+                        @click.stop="favoritesStore.clickStar(row.id)">
+                           <component :is="favoritesStore.isFavoriteMap[row.id] ? StarFilled : Star" />
+                    </el-icon>
+                </template>
+            </el-table-column>
             <el-table-column
                 prop="id"
                 label="ID"
