@@ -83,9 +83,8 @@ export default defineStore('settings', {
             let defaultSource = dataSources['yyyy.games'];
             if (isTauri) {
                 let localSource = async () => {
-                    let { LocalRecipeSource } = await import(
-                        '../datasource/local-source'
-                    );
+                    let { LocalRecipeSource } =
+                        await import('../datasource/local-source');
                     return new LocalRecipeSource();
                 };
                 dataSources['local'] = localSource;

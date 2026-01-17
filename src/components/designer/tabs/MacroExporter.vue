@@ -144,9 +144,8 @@ async function copyChunk(i: number, macro: string[]) {
 async function copy(macroText: string, macroInfo: string) {
     try {
         if (isTauri) {
-            let { writeText } = await import(
-                '@tauri-apps/plugin-clipboard-manager'
-            );
+            let { writeText } =
+                await import('@tauri-apps/plugin-clipboard-manager');
             await writeText(macroText);
         } else {
             let { useClipboard } = await import('@vueuse/core');

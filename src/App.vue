@@ -280,7 +280,6 @@ watchEffect(async () => {
     --tnze-sidebar-width: 150px;
     --tnze-topbar-height: 40px;
 }
-
 </style>
 
 <style scoped>
