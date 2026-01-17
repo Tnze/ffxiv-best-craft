@@ -401,14 +401,13 @@ async function selectRecipeById(recipeId: number) {
 
 .el-table {
     user-select: none;
-    border-top-left-radius: var(--tnze-content-raduis);
-    --el-table-header-bg-color: transparent;
-    --el-table-tr-bg-color: transparent;
+    --el-fill-color-blank: transparent;
 }
 
 .el-pagination {
     justify-content: center;
     /* margin-bottom: 10px; */
+    --el-fill-color-blank: transparent;
 }
 </style>
 

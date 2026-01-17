@@ -316,7 +316,7 @@ const relations = computed(() => {
 
 <style>
 .el-divider__text {
-    background-color: var(--tnze-main-bg-color);
+    background-color: var(--tnze-mica-bg-color);
 }
 </style>
 

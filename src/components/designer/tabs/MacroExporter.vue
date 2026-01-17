@@ -268,7 +268,7 @@ async function copy(macroText: string, macroInfo: string) {
 }
 
 :deep(.el-divider__text) {
-    background-color: var(--tnze-main-bg-color);
+    background-color: var(--tnze-mica-bg-color);
 }
 </style>
 
