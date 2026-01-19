@@ -82,7 +82,6 @@ const router = useRouter();
     border: none;
     user-select: none;
     padding: 5px;
-    --el-menu-bg-color: transparent;
 }
 
 .el-menu-item {

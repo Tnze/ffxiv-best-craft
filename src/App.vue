@@ -275,10 +275,17 @@ watchEffect(async () => {
     --el-border-radius-base: 10px;
     --el-border-radius-small: 5px;
     --el-border-radius-round: 20px;
+    --el-menu-bg-color: var(--app-bg-color);
 
     --tnze-content-raduis: var(--el-border-radius-round);
     --tnze-sidebar-width: 150px;
     --tnze-topbar-height: 40px;
+}
+
+@media screen and (min-width: 760px) {
+    .el-menu {
+        --el-menu-bg-color: transparent;
+    }
 }
 </style>
 
