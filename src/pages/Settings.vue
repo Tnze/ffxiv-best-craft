@@ -37,6 +37,7 @@ import { languages } from '../lang';
 import { useColorMode } from '@vueuse/core';
 import { isTauri, isWebsite, isYYYYGames } from '@/libs/Consts';
 import { openUrl } from '@/libs/Utils';
+import FeedbackEmail from '@/components/FeedbackEmail.vue';
 import SupportUs from '@/components/SupportUs.vue';
 import E1 from '@/eastereggs/e1';
 
@@ -220,6 +221,7 @@ function fixDataSourceLanguage() {
                 {{ E1.c() ? E1.t3 : 'Tnze' }}
             </el-form-item>
             <el-form-item :label="$t('feedback')">
+                <FeedbackEmail @click="openUrl" :version="version" />
                 <el-link @click="openUrl('https://qm.qq.com/q/YMujBifn6G')">
                     QQ群聊
                 </el-link>
