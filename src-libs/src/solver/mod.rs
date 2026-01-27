@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2023 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -17,7 +17,6 @@
 pub mod depth_first_search_solver;
 pub mod normal_progress_solver;
 pub mod reflect_solver;
-pub mod rika_solver;
 pub mod raphael;
 
 use std::cmp::Ordering;

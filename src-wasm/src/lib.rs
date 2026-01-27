@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2025 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -81,14 +81,6 @@ pub fn craftpoints_list(status: JsValue, skills: JsValue) -> Result<JsValue, JsV
 pub fn high_quality_probability(status: JsValue) -> Result<JsValue, JsValue> {
     let status: Status = from_value(status)?;
     Ok(to_value(&app_libs::high_quality_probability(status))?)
-}
-
-#[wasm_bindgen]
-pub fn rika_solve(status: JsValue) -> Result<JsValue, JsValue> {
-    use app_libs::solver::rika_solver::solve;
-    let status: Status = from_value(status)?;
-    let result: Vec<Actions> = solve(status);
-    Ok(to_value(&result)?)
 }
 
 #[wasm_bindgen]

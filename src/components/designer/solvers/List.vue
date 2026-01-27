@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -21,19 +21,12 @@ import { Ref, ref } from 'vue';
 import {
     ElAlert,
     ElScrollbar,
-    ElButton,
-    ElLink,
     ElMessage,
-    ElMessageBox,
     ElTabs,
     ElTabPane,
 } from 'element-plus';
 import { Actions, CollectablesShopRefine, Status } from '@/libs/Craft';
-import {
-    supported as solverSupported,
-    rika_solve,
-    rika_solve_tnzever,
-} from '@/libs/Solver';
+import { supported as solverSupported } from '@/libs/Solver';
 import { formatDuration } from '@/libs/Utils';
 import { useFluent } from 'fluent-vue';
 import { Solver } from './DpSolver.vue';
@@ -115,48 +108,6 @@ async function runSimpleSolver(
         msg1.close();
     }
 }
-
-const rikaIsSolving = ref(false);
-
-async function runRikaSolver() {
-    if (
-        props.initStatus.recipe.rlv.id < 560 ||
-        props.initStatus.recipe.difficulty < 70
-    ) {
-        try {
-            await ElMessageBox.confirm(
-                $t('rika-solver-warning'),
-                $t('warning'),
-                {
-                    type: 'warning',
-                },
-            );
-        } catch (_err) {
-            return;
-        }
-    }
-    await runSimpleSolver(SequenceSource.BFSSolver, rikaIsSolving, rika_solve);
-}
-
-const tnzeVerRikaIsSolving = ref(false);
-const tnzeVerRikaUseManipulation = ref(true);
-const tnzeVerRikaUseObserve = ref(true);
-const tnzeVerRikaReduceSteps = ref(true);
-
-async function runTnzeVerRikaSolver() {
-    await runSimpleSolver(
-        SequenceSource.TnzeVerRikaSolver,
-        tnzeVerRikaIsSolving,
-        initStatus =>
-            rika_solve_tnzever(
-                initStatus,
-                tnzeVerRikaUseManipulation.value,
-                8,
-                tnzeVerRikaUseObserve.value,
-                tnzeVerRikaReduceSteps.value,
-            ),
-    );
-}
 </script>
 
 <template>
@@ -195,35 +146,6 @@ async function runTnzeVerRikaSolver() {
                     :can-hq="canHq"
                     @run-simple-solver="runSimpleSolver"
                 />
-            </el-tab-pane>
-            <el-tab-pane :label="$t('bfs-solver')" name="bfs">
-                <i18n path="rika-solver-info" tag="span" class="solver-info">
-                    <template #rikaRepoLink="{ designByRika }">
-                        <el-link
-                            type="primary"
-                            href="https://github.com/RikaKagurasaka/xiv_craft_solver"
-                            target="_blank"
-                        >
-                            {{ designByRika }}
-                        </el-link>
-                    </template>
-                    <template #startButton>
-                        <el-button
-                            type="primary"
-                            @click="runRikaSolver"
-                            :loading="rikaIsSolving"
-                        >
-                            {{
-                                rikaIsSolving
-                                    ? $t('simple-solver-solving')
-                                    : $t('solver-start')
-                            }}
-                        </el-button>
-                    </template>
-                    <template #rikaSaidLine="{ rikaSaid }">
-                        {{ rikaSaid }}
-                    </template>
-                </i18n>
             </el-tab-pane>
         </el-tabs>
     </el-scrollbar>
@@ -269,35 +191,11 @@ error-with = 错误：{ $err }
 
 warning = 警告
 solver-start = 开始求解
-rika-solver-warning = 当前配方不满足 Rika 求解器的使用条件，是否强制运行？
 simple-solver-solving = 正在求解中
 simple-solver-finished =「{ $solverName }」求解完成({ $solveTime })
 simple-solver-finished-no-result = 发动了「{ $solverName }」求解器，没有获得任何结果({ $solveTime })
 
 sum-info = 提示：下面会显示对您没有帮助的碎碎念，使用求解器请直接点击“{solver-start}”按钮。
-
-rika-solver-info =
-    由{$rikaRepoLink}，作者同意后移植至本应用。
-    注：该算法通过激进的剪枝策略与穷举法求解，
-    其中剪枝策略由作者根据经验手工指定，仅适用于特定版本的配方。
-
-    {$startButton}
-
-    {$rikaSaidLine}
-    .design-by-rika = Rika设计的算法
-    .rika-said =「速度较快但不一定找到最优解，适用范围仅限于560以上70耐久配方」—— Rika
-
-tnzever-rika-solver-info =
-    此款求解器是 Rika 广度优先搜索算法的 Tnze 改良款。
-
-    {$startButton}
-
-    保留了 Rika 算法的 Phase 1，将 Phase 2 交由 Tnze 精心重制的动规算法实现。
-    该方法既能利用动态规划能计算最优解的优秀特性，也能充分利用 Rika 算法能处理“坚信”起手的优点。
-
-    注：类似于“广度优先搜索”求解器，该版算法可能也只适用于特定版本的配方。
-    如您认为遇到了异常情况，请通过 Gitee 或 Github 等渠道提交 issue 反馈。
-
 </fluent>
 
 <fluent locale="zh-TW">
@@ -311,35 +209,11 @@ error-with = 錯誤：{ $err }
 
 warning = 警告
 solver-start = 開始求解
-rika-solver-warning = 當前配方不滿足 Rika 求解器的使用條件，是否強制執行？
 simple-solver-solving = 正在求解中
 simple-solver-finished =「{ $solverName }」求解完成({ $solveTime })
 simple-solver-finished-no-result = 發動了「{ $solverName }」求解器，沒有獲得任何結果({ $solveTime })
 
 sum-info = 提示：下面會顯示對您沒有幫助的碎碎念，使用求解器請直接點選“{solver-start}”按鈕。
-
-rika-solver-info =
-    由{$rikaRepoLink}，作者同意後移植至本應用。
-    注：該演算法透過激進的剪枝策略與窮舉法求解，
-    其中剪枝策略由作者根據經驗手工指定，僅適用於特定版本的配方。
-
-    {$startButton}
-
-    {$rikaSaidLine}
-    .design-by-rika = Rika設計的演算法
-    .rika-said =「速度較快但不一定找到最優解，適用範圍僅限於560以上70耐久配方」—— Rika
-
-tnzever-rika-solver-info =
-    此款求解器是 Rika 廣度優先搜尋演算法的 Tnze 改良款。
-
-    {$startButton}
-
-    保留了 Rika 演算法的 Phase 1，將 Phase 2 交由 Tnze 精心重製的動規演算法實現。
-    該方法既能利用動態規劃能計算最優解的優秀特性，也能充分利用 Rika 演算法能處理“堅信”起手的優點。
-
-    注：類似於“廣度優先搜尋”求解器，該版演算法可能也只適用於特定版本的配方。
-    如您認為遇到了異常情況，請透過 Gitee 或 Github 等渠道提交 issue 反饋。
-
 </fluent>
 
 <fluent locale="en-US">
@@ -353,37 +227,11 @@ error-with = Error: { $err }
 
 warning = Warning
 solver-start = Start
-rika-solver-warning = The current recipe does not meet the usage conditions of the Rika's solver. Do you want to force it to run?
 simple-solver-solving = Solving
 simple-solver-finished = Solver "{ $solverName }" finished. ({ $solveTime })
 simple-solver-finished-no-result = "{ $solverName }" is finished. None of result is returned. ({ $solveTime })
 
 sum-info = Warning: The following content contains many fragmented ideas that are not helpful to you. To use the solvers, please click on the '{solver-start}' button directly.
-
-rika-solver-info =
-    {$rikaRepoLink}. Transplant with the consent of the author.
-    P.S: The algorithm uses radical pruning strategy for solving,
-    The pruning strategy is manually specified by the author based on experience,
-    and is applicable to specific versions of the recipe.
-
-    {$startButton}
-
-    {$rikaSaidLine}
-    .design-by-rika = Designed by Rika
-    .rika-said =「速度较快但不一定找到最优解，适用范围仅限于560以上70耐久配方」—— Rika
-
-tnzever-rika-solver-info =
-    This solver is a Tnze improved version of the Rika's Breadth First Search.
-
-    {$startButton}
-
-    Retained Phase 1 of Rika algorithm and entrusted Phase 2 to Tnze's carefully crafted Dynamic Programing algorithm implementation.
-    This method can not only take advantage of the excellent characteristics of dynamic programming that can calculate the optimal solution, 
-    but also take full advantage of the advantage of Rika algorithm that can handle the "conviction" starting.
-    
-    Note: Similar to the "Breadth First Search" solver, this version of the algorithm may only be applicable to specific some of recipes.
-    If you believe that you have encountered an abnormal situation, please submit an issue on Gitee or Github.
-
 </fluent>
 <fluent locale="ja-JP">
 </fluent>

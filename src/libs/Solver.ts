@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2025 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -74,37 +74,6 @@ export async function read_solver(status: Status): Promise<Actions[]> {
     if (isTauri) {
         let { invoke } = await pkgTauri;
         return invoke('read_solver', { status });
-    } else {
-        throw 'solver-doesn-t-exist';
-    }
-}
-
-export async function rika_solve(status: Status): Promise<Actions[]> {
-    clarityReport('runRikaSolver');
-    if (isTauri) {
-        return (await pkgTauri).invoke('rika_solve', { status });
-    } else {
-        return invokeWasmSolver('rika_solve', { status });
-    }
-}
-
-export async function rika_solve_tnzever(
-    status: Status,
-    useManipulation: boolean,
-    useWastNot: number,
-    useObserve: boolean,
-    reduceSteps: boolean,
-): Promise<Actions[]> {
-    clarityReport('runRikaSolverTnzeVer');
-    if (isTauri) {
-        let { invoke } = await pkgTauri;
-        return invoke('rika_solve_tnzever', {
-            status,
-            useManipulation,
-            useWastNot,
-            useObserve,
-            reduceSteps,
-        });
     } else {
         throw 'solver-doesn-t-exist';
     }

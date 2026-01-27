@@ -155,5 +155,4 @@ title = { $recipe } (Simulator Mode)
 dp-solver = DP
 raphael-solver = Raphael
 bfs-solver = BFS
-tnzever-rika-solver = BFS ~Tnze Impv.~
 dfs-solver = DFS

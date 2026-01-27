@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2025 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -28,7 +28,7 @@ use app_libs::{
     analyzer::{rand_simulations, scope_of_application::Scope},
     ffxiv_crafting::{Actions, Attributes, CastActionError, Recipe, Status},
     solver::{
-        depth_first_search_solver, normal_progress_solver, raphael, reflect_solver, rika_solver,
+        depth_first_search_solver, normal_progress_solver, raphael, reflect_solver,
         Solver, SolverHash,
     },
     SimulateOneStepResult, SimulateResult,
@@ -42,7 +42,6 @@ use tokio::sync::{Mutex, OnceCell};
 
 mod memoization_solver;
 mod muscle_memory_solver;
-mod rika_tnze_solver;
 
 use app_db::{
     collectables_shop_refine, craft_types, item_action, item_food, item_food_effect,
@@ -501,28 +500,6 @@ async fn read_solver(
 }
 
 #[tauri::command(async)]
-fn rika_solve(status: Status) -> Vec<Actions> {
-    rika_solver::solve(status)
-}
-
-#[tauri::command(async)]
-fn rika_solve_tnzever(
-    status: Status,
-    use_manipulation: bool,
-    use_wast_not: usize,
-    use_observe: bool,
-    reduce_steps: bool,
-) -> Vec<Actions> {
-    rika_tnze_solver::solve(
-        status,
-        use_manipulation,
-        use_wast_not,
-        use_observe,
-        reduce_steps,
-    )
-}
-
-#[tauri::command(async)]
 fn dfs_solve(status: Status, depth: usize, specialist: bool) -> Vec<Actions> {
     depth_first_search_solver::solve(status, depth, specialist)
 }
@@ -668,8 +645,6 @@ fn main() {
             create_solver,
             read_solver,
             destroy_solver,
-            rika_solve,
-            rika_solve_tnzever,
             dfs_solve,
             nq_solve,
             reflect_solve,
