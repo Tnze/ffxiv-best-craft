@@ -4452,7 +4452,7 @@ dependencies = [
 [[package]]
 name = "raphael-sim"
 version = "0.0.0"
-source = "git+https://github.com/KonaeAkira/raphael-rs.git?tag=v0.25.3#9ec209b40f9962df51d60f17a11301c771dc17d9"
+source = "git+https://github.com/KonaeAkira/raphael-rs.git?tag=v0.25.10#f5a149c77a5951bcc730107bf1b0125689481c03"
 dependencies = [
  "bitfield-struct",
  "log",
@@ -4463,7 +4463,7 @@ dependencies = [
 [[package]]
 name = "raphael-solver"
 version = "0.0.0"
-source = "git+https://github.com/KonaeAkira/raphael-rs.git?tag=v0.25.3#9ec209b40f9962df51d60f17a11301c771dc17d9"
+source = "git+https://github.com/KonaeAkira/raphael-rs.git?tag=v0.25.10#f5a149c77a5951bcc730107bf1b0125689481c03"
 dependencies = [
  "bitfield-struct",
  "log",
