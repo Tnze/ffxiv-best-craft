@@ -107,12 +107,16 @@ pub fn simulate_one_step(
             _ => unreachable!(),
         });
     }
-    if !matches!(action, Actions::FinalAppraisal | Actions::HeartAndSoul) {
+    if !matches!(
+        action,
+        Actions::FinalAppraisal | Actions::HeartAndSoul | Actions::QuickInnovation
+    ) {
         status.condition = match status.condition {
             Condition::Good if !force_success => Condition::Normal,
             Condition::Excellent if !force_success => Condition::Poor,
             Condition::Poor => Condition::Normal,
             Condition::GoodOmen => Condition::Good,
+            Condition::Robust => Condition::Sturdy,
             _ => {
                 ConditionIterator::new(
                     status.recipe.conditions_flag as i32,

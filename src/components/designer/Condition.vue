@@ -127,6 +127,10 @@ const dark = useDark();
 .goodomen {
     color: pink;
 }
+
+.robust {
+    color: lightblue;
+}
 </style>
 
 <fluent locale="zh-CN">

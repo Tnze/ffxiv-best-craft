@@ -173,7 +173,7 @@ function leaveAction() {
 <template>
     <div class="main-page">
         <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
-            <AttrEnhSelector v-model="attributesEnhancers" />
+            <!-- <AttrEnhSelector v-model="attributesEnhancers" /> -->
         </el-dialog>
         <StatusBarVue
             class="status-bar"

@@ -118,6 +118,7 @@ pliant = Pliant
 malleable = Malleable
 primed = Primed
 goodomen = Good Omen
+robust = Robust
 
 # Updater
 update-available = Update Available: v{ $version }

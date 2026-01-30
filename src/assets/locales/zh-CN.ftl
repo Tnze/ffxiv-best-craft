@@ -158,6 +158,7 @@ pliant = 高效
 malleable = 大进展
 primed = 长持续
 goodomen = 好兆头
+robust = 强韧
 
 # 更新器
 update-available = 更新可用：v{ $version }

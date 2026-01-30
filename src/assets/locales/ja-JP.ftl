@@ -85,6 +85,7 @@ pliant = 高能率
 malleable = 高進捗
 primed = 長持続
 goodomen = 良兆候
+robust = 頑固
 
 update-available = 利用可能なアップデート: v{ $version }
 update-now = 今すぐ更新

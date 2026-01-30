@@ -134,6 +134,8 @@ export enum Conditions {
     Primed = 'Primed',
     // 粉：下一回合必定是红球
     GoodOmen = 'GoodOmen',
+    // 强韧：耐久消耗减半，下个工次必定出现结实状态。
+    Robust = 'Robust',
 }
 
 export enum Jobs {
