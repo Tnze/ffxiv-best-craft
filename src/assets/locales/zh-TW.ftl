@@ -2,8 +2,8 @@ licenses-notices-1 = 本程式是自由軟體：您可以根據GNU Affero Genera
 licenses-notices-2 = 本程式的發佈是希望它能起到作用。但沒有任何保證；甚至沒有隱含的保證。本程式的分發是希望它是有用的，但沒有任何保證，甚至沒有隱含的適銷對路或適合某一特定目的的保證。 參見 GNU Affero通用公共許可瞭解更多細節。
 licenses-notices-3 = 您應該已經收到了一份GNU Affero通用公共許可的副本。的副本。 如果沒有，請參見https://www.gnu.org/licenses/。
 copyright-notices = 
-    版權所有 2025 Tnze. All Rights Reserved.
-    引用的FFXIV相關資源 Copyright © 2010 - 2025 SQUARE ENIX CO., LTD.
+    版權所有 2026 Tnze. All Rights Reserved.
+    引用的FFXIV相關資源 Copyright © 2010 - 2026 SQUARE ENIX CO., LTD.
 level = 等級
 recipe-level = 配方等級
 class-job-level = 特職等級
