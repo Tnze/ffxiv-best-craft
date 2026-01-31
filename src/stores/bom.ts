@@ -82,9 +82,14 @@ export default defineStore('bom', {
     actions: {
         addTarget(...items: Item[]) {
             for (const item of items) {
-                const slot = new Slot(item);
-                slot.setFixRequiredNumber(1);
-                this.targetItems.push(slot);
+                const slot = this.targetItems.find(x => x.item.id == item.id);
+                if (slot != undefined) {
+                    slot.setFixRequiredNumber(slot.getFixRequiredNumber() + 1);
+                } else {
+                    const slot = new Slot(item);
+                    slot.setFixRequiredNumber(1);
+                    this.targetItems.push(slot);
+                }
             }
         },
 
