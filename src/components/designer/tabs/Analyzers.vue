@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -328,7 +328,15 @@ const arcLabel = d3
                 :label="$t('control-range')"
                 v-if="attributesScope?.control_range"
             >
-                {{ attributesScope.control_range }} ~
+                ≥ {{ attributesScope.control_range }}
+            </el-form-item>
+        </Transition>
+        <Transition>
+            <el-form-item
+                :label="$t('craft-point')"
+                v-if="attributesScope?.craft_points"
+            >
+                ≥ {{ attributesScope.craft_points }}
             </el-form-item>
         </Transition>
         <el-divider />
