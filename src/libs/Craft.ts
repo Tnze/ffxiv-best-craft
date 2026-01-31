@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2025 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -84,6 +84,7 @@ export interface Buffs {
     final_appraisal: number;
     manipulation: number;
     wast_not: number;
+    wast_not_ii: number;
     heart_and_soul: LimitedActionState;
     trained_perfection: LimitedActionState;
     careful_observation_used: number;

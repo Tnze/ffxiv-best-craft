@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -32,7 +32,7 @@ pub fn solve(
     let solver = QualitySolver::new(
         status.clone(),
         use_manipulation || status.buffs.manipulation > 0,
-        (status.buffs.wast_not as usize + 1).max(use_waste_not + 1),
+        (status.buffs.wast_not.max(status.buffs.wast_not_ii) as usize + 1).max(use_waste_not + 1),
         use_observe,
     );
     let result1 = solver.read_all(&status);
@@ -152,7 +152,7 @@ impl QualitySolver {
             s.buffs.innovation as usize,
             s.buffs.great_strides as usize,
             s.buffs.manipulation as usize,
-            s.buffs.wast_not as usize,
+            s.buffs.wast_not.max(s.buffs.wast_not_ii) as usize,
             s.buffs.touch_combo_stage as usize,
             s.buffs.trained_perfection as usize,
             s.durability as usize / 5,
@@ -245,6 +245,7 @@ impl Solver for QualitySolver {
             inner_quiet: s.buffs.inner_quiet,
             manipulation: s.buffs.manipulation,
             wast_not: s.buffs.wast_not,
+            wast_not_ii: s.buffs.wast_not_ii,
             touch_combo_stage: s.buffs.touch_combo_stage,
             observed: s.buffs.observed,
             trained_perfection: s.buffs.trained_perfection,
@@ -326,7 +327,7 @@ impl ProgressSolver {
             s.buffs.observed as usize,
             s.buffs.veneration as usize,
             s.buffs.manipulation as usize,
-            s.buffs.wast_not as usize,
+            s.buffs.wast_not.max(s.buffs.wast_not_ii) as usize,
             s.buffs.trained_perfection as usize,
             (s.durability as usize).div_ceil(5),
             s.craft_points as usize,
@@ -425,6 +426,7 @@ impl Solver for ProgressSolver {
             veneration: s.buffs.veneration,
             manipulation: s.buffs.manipulation,
             wast_not: s.buffs.wast_not,
+            wast_not_ii: s.buffs.wast_not_ii,
             observed: s.buffs.observed,
             trained_perfection: s.buffs.trained_perfection,
             ..Buffs::default()
