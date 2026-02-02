@@ -59,7 +59,9 @@ const dynRecipeLevel = ref<number>();
 const isDynRecipe = computed(() => {
     // 宇宙探索A级以下配方存在等级同步规则
     const notebook = props.recipeInfo.recipe_notebook_list;
-    return notebook >= 1496 && notebook <= 1503 && props.recipeInfo.rlv == 690;
+    const range1 = notebook >= 1496 && notebook <= 1503;
+    const range2 = notebook >= 1528 && notebook <= 1535;
+    return (range1 || range2) && props.recipeInfo.rlv == 690;
 });
 const dynRecipeLoading = ref(false);
 const dynRecipe = ref<Recipe>();
