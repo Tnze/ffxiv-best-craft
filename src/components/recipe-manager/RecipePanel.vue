@@ -215,7 +215,6 @@ const recipe = ref<Recipe>();
 const recipeInfo = ref<RecipeInfo>();
 const itemInfo = ref<Item>();
 const collectability = ref<CollectablesShopRefine>();
-const isNormalRecipe = computed(() => recipe.value?.conditions_flag === 15);
 
 async function selectRecipeRow(row: RecipeInfo) {
     try {
@@ -282,7 +281,6 @@ async function selectRecipeById(recipeId: number) {
             :recipe-info="recipeInfo"
             :item-info="itemInfo"
             :collectability="collectability"
-            :is-normal-recipe="isNormalRecipe"
         />
         <el-input
             v-model="searchText"

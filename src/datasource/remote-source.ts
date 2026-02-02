@@ -59,6 +59,8 @@ interface XivapiItemResult {
     Name: string;
     LevelItem: number;
     CanBeHq: number;
+    IsCollectable: number;
+    AlwaysCollectable: number;
 }
 
 export class XivApiRecipeSource {
@@ -223,7 +225,8 @@ export class XivApiRecipeSource {
 
     async itemInfo(id: number): Promise<Item> {
         const query = new URLSearchParams({
-            columns: 'ID,Name,LevelItem,CanBeHq',
+            columns:
+                'ID,Name,LevelItem,CanBeHq,IsCollectable,AlwaysCollectable',
         });
         if (this.language != undefined) query.set('language', this.language);
         const url =
@@ -241,6 +244,8 @@ export class XivApiRecipeSource {
             name: data.Name,
             level: data.LevelItem,
             can_be_hq: data.CanBeHq != 0,
+            is_collectable: data.IsCollectable != 0,
+            always_collectable: data.AlwaysCollectable != 0,
             category_id: undefined,
         };
     }

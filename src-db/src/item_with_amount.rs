@@ -22,7 +22,7 @@ pub enum Relation {
         belongs_to = "super::items::Entity",
         from = "Column::IngredientId",
         to = "super::items::Column::Id",
-        on_update = "NoAction",
+        on_update = "Restrict",
         on_delete = "Cascade"
     )]
     Items,
@@ -30,8 +30,8 @@ pub enum Relation {
         belongs_to = "super::recipes::Entity",
         from = "Column::RecipeId",
         to = "super::recipes::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
     Recipes,
 }

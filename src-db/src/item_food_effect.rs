@@ -28,8 +28,8 @@ pub enum Relation {
         belongs_to = "super::item_food::Entity",
         from = "Column::ItemFoodId",
         to = "super::item_food::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
     ItemFood,
 }

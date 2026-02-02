@@ -47,6 +47,8 @@ export interface Item {
     name: string;
     level: number;
     can_be_hq: boolean;
+    is_collectable: boolean;
+    always_collectable: boolean;
     category_id?: number;
 }
 
@@ -392,6 +394,7 @@ export interface RecipeInfo {
     required_control: number;
 
     can_hq: boolean;
+    is_expert: boolean;
     recipe_notebook_list: number;
 }
 

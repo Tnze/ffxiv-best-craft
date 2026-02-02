@@ -20,6 +20,10 @@ pub struct Model {
     pub item_search_category_id: Option<u32>,
     #[sea_orm(column_name = "ItemActionId")]
     pub item_action_id: Option<u32>,
+    #[sea_orm(column_name = "IsCollectable")]
+    pub is_collectable: i8,
+    #[sea_orm(column_name = "AlwaysCollectable")]
+    pub always_collectable: i8,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -28,24 +32,24 @@ pub enum Relation {
         belongs_to = "super::item_action::Entity",
         from = "Column::ItemActionId",
         to = "super::item_action::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
     ItemAction,
     #[sea_orm(
         belongs_to = "super::item_search_categories::Entity",
         from = "Column::ItemSearchCategoryId",
         to = "super::item_search_categories::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
     ItemSearchCategories,
     #[sea_orm(
         belongs_to = "super::item_ui_categories::Entity",
         from = "Column::ItemUiCategoryId",
         to = "super::item_ui_categories::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        on_update = "Restrict",
+        on_delete = "Restrict"
     )]
     ItemUiCategories,
     #[sea_orm(has_many = "super::item_with_amount::Entity")]

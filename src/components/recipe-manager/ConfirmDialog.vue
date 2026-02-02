@@ -46,7 +46,6 @@ const props = defineProps<{
     recipeInfo: RecipeInfo;
     itemInfo: Item;
     collectability?: CollectablesShopRefine;
-    isNormalRecipe: boolean;
 }>();
 const router = useRouter();
 const { $t } = useFluent();
@@ -231,12 +230,15 @@ async function confirm(mode: 'simulator' | 'designer') {
             <el-descriptions-item :label="$t('required-control')">
                 {{ recipeInfo.required_control }}
             </el-descriptions-item>
+            <el-descriptions-item :label="$t('is-expert')">
+                {{ $t(String(recipeInfo.is_expert)) }}
+            </el-descriptions-item>
         </el-descriptions>
         <div class="notice">
             {{
-                isNormalRecipe
-                    ? $t('confirm-select', { itemName: recipeInfo.item_name })
-                    : $t('confirm-select2')
+                recipeInfo.is_expert
+                    ? $t('confirm-select2')
+                    : $t('confirm-select', { itemName: recipeInfo.item_name })
             }}
         </div>
         <template #footer>
@@ -245,7 +247,7 @@ async function confirm(mode: 'simulator' | 'designer') {
                     {{ $t('cancel') }}
                 </el-button>
                 <el-button
-                    v-if="!isNormalRecipe"
+                    v-if="recipeInfo.is_expert"
                     type="primary"
                     @click="confirm('simulator')"
                 >
@@ -257,7 +259,7 @@ async function confirm(mode: 'simulator' | 'designer') {
                     :disabled="isDynRecipe && dynRecipe == undefined"
                     @click="confirm('designer')"
                 >
-                    {{ $t(isNormalRecipe ? 'confirm' : 'designer-mode') }}
+                    {{ $t(recipeInfo.is_expert ? 'designer-mode' : 'confirm') }}
                 </el-button>
             </span>
         </template>
@@ -297,6 +299,7 @@ item-info = 物品信息
 true = 是
 false = 否
 can-hq = 存在HQ
+is-expert = 高难度配方
 
 required-craftsmanship = 最低{ craftsmanship }
 required-control = 最低{ control }
@@ -323,6 +326,7 @@ item-info = 物品資訊
 true = 是
 false = 否
 can-hq = 存在HQ
+is-expert = 高難度配方
 
 required-craftsmanship = 最低{ craftsmanship }
 required-control = 最低{ control }
@@ -331,6 +335,7 @@ required-control = 最低{ control }
 <fluent locale="en-US">
 confirm-select = Start crafting "{ $itemName }"?
 confirm-select2 = This is a hard recipe. Please make a choice.
+alert-sync-level = This recipe is variant with job level, please setting it
 please-confirm = Please confirm
 
 cancel = Cancel
@@ -343,10 +348,12 @@ type = Crafting Type
 level = Level
 recipe-id = Recipe ID
 item-info = Item info
-conditions = Conditions
+
 true = True
 false = False
 can-hq = Can be HQ
+is-expert = Is Expert
+
 required-craftsmanship = Required { craftsmanship }
 required-control = Required { control }
 </fluent>

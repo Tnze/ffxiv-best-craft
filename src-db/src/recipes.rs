@@ -30,6 +30,8 @@ pub struct Model {
     pub required_control: u16,
     #[sea_orm(column_name = "CanHq")]
     pub can_hq: i8,
+    #[sea_orm(column_name = "IsExpert")]
+    pub is_expert: i8,
     #[sea_orm(column_name = "CollectablesMetadataKey")]
     pub collectables_metadata_key: u16,
     #[sea_orm(column_name = "CollectablesMetadata")]
@@ -44,7 +46,7 @@ pub enum Relation {
         belongs_to = "super::craft_types::Entity",
         from = "Column::CraftTypeId",
         to = "super::craft_types::Column::Id",
-        on_update = "NoAction",
+        on_update = "Restrict",
         on_delete = "Cascade"
     )]
     CraftTypes,
@@ -52,7 +54,7 @@ pub enum Relation {
         belongs_to = "super::item_with_amount::Entity",
         from = "Column::ItemResultId",
         to = "super::item_with_amount::Column::Id",
-        on_update = "NoAction",
+        on_update = "Restrict",
         on_delete = "Cascade"
     )]
     ItemWithAmount,
@@ -60,7 +62,7 @@ pub enum Relation {
         belongs_to = "super::recipe_level_tables::Entity",
         from = "Column::RecipeLevelId",
         to = "super::recipe_level_tables::Column::Id",
-        on_update = "NoAction",
+        on_update = "Restrict",
         on_delete = "Cascade"
     )]
     RecipeLevelTables,

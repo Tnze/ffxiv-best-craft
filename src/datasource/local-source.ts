@@ -95,16 +95,34 @@ export class LocalRecipeSource {
     }
 
     async itemInfo(itemId: number): Promise<Item> {
-        const { id, name, level, can_be_hq, category_id } = (await (
+        const {
+            id,
+            name,
+            level,
+            can_be_hq,
+            is_collectable,
+            always_collectable,
+            category_id,
+        } = (await (
             await this.invoke
         )('item_info', { itemId })) as {
             id: number;
             name: string;
             level: number;
             can_be_hq: number;
+            is_collectable: number;
+            always_collectable: number;
             category_id?: number;
         };
-        return { id, name, level, can_be_hq: can_be_hq != 0, category_id };
+        return {
+            id,
+            name,
+            level,
+            can_be_hq: can_be_hq != 0,
+            is_collectable: is_collectable != 0,
+            always_collectable: always_collectable != 0,
+            category_id,
+        };
     }
     async craftTypeList(): Promise<CraftType[]> {
         return await (
