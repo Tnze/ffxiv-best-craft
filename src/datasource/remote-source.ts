@@ -51,6 +51,7 @@ interface XivapiRecipeResult {
         RequiredCraftsmanship: number;
         RequiredControl: number;
         CanHq: number;
+        IsExpert: number;
     }[];
 }
 
@@ -82,7 +83,7 @@ export class XivApiRecipeSource {
         const params: Record<string, string> = {
             page: String(page),
             columns:
-                'ID,Icon,ItemResult.Name,ItemResult.ID,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable.ID,RequiredCraftsmanship,RequiredControl,CanHq',
+                'ID,Icon,ItemResult.Name,ItemResult.ID,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable.ID,RequiredCraftsmanship,RequiredControl,CanHq,IsExpert',
         };
         const query = new URLSearchParams(params);
         let url: string;
@@ -142,6 +143,7 @@ export class XivApiRecipeSource {
                         required_control: v.RequiredControl,
 
                         can_hq: v.CanHq != 0,
+                        is_expert: v.IsExpert != 0,
                     },
             ),
             totalPages: data.Pagination.PageTotal,

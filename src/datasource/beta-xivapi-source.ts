@@ -47,7 +47,7 @@ export class BetaXivApiRecipeSource {
         jobLevelMax?: number,
     ): Promise<RecipesSourceResult> {
         const params: Record<string, string> = {
-            fields: 'Icon,ItemResult.Name,AmountResult,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq',
+            fields: 'Icon,ItemResult.Name,AmountResult,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq,IsExpert',
             // 'limit': "100",
         };
         const query = new URLSearchParams(params);
@@ -157,6 +157,7 @@ export class BetaXivApiRecipeSource {
             ),
 
             can_hq: assert(v?.fields?.CanHq, 'can_hq'),
+            is_expert: assert(v?.fields?.IsExpert, 'is_expert'),
             recipe_notebook_list: 0,
         };
     }
@@ -251,7 +252,7 @@ export class BetaXivApiRecipeSource {
 
     async recipeInfo(recipeId: number): Promise<RecipeInfo> {
         const query = new URLSearchParams({
-            fields: 'Icon,ItemResult.Name,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq',
+            fields: 'Icon,ItemResult.Name,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq,IsExpert',
         });
         if (this.language != undefined) query.set('language', this.language);
         const url =
@@ -271,7 +272,7 @@ export class BetaXivApiRecipeSource {
 
     async itemInfo(id: number): Promise<Item> {
         const query = new URLSearchParams({
-            fields: 'Name,LevelItem,CanBeHq,CategoryID',
+            fields: 'Name,LevelItem,CanBeHq,CategoryID,IsCollectable,AlwaysCollectable',
         });
         if (this.language != undefined) query.set('language', this.language);
         const url =
@@ -291,6 +292,11 @@ export class BetaXivApiRecipeSource {
             name: assert(data.fields.Name, 'name'),
             level: assert(data.fields.LevelItem.value, 'level'),
             can_be_hq: assert(data.fields.CanBeHq, 'can_be_hq'),
+            is_collectable: assert(data.fields.IsCollectable, 'is_collectable'),
+            always_collectable: assert(
+                data.fields.AlwaysCollectable,
+                'always_collectable',
+            ),
             category_id: undefined,
         };
     }
@@ -454,6 +460,7 @@ export class BetaXivApiRecipeSource {
 }
 
 export const BetaXivapiBase = 'https://beta.xivapi.com/api/1/';
+export const CafeXivapiBase = 'https://xivapi-v2.xivcdn.com/';
 
 const MedicineID = 43;
 const Meals = 45;
