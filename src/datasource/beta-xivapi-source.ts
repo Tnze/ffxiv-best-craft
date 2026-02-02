@@ -45,6 +45,7 @@ export class BetaXivApiRecipeSource {
         craftTypeId?: number,
         jobLevelMin?: number,
         jobLevelMax?: number,
+        favoriteIds?: number[],
     ): Promise<RecipesSourceResult> {
         const params: Record<string, string> = {
             fields: 'Icon,ItemResult.Name,AmountResult,CraftType.Name,DifficultyFactor,DurabilityFactor,QualityFactor,MaterialQualityFactor,RecipeLevelTable@as(raw),RequiredCraftsmanship,RequiredControl,CanHq',
@@ -72,6 +73,10 @@ export class BetaXivApiRecipeSource {
         }
         if (jobLevelMax != undefined) {
             filters.push(`RecipeLevelTable.ClassJobLevel<=${jobLevelMax}`);
+        }
+
+        if (favoriteIds != undefined && favoriteIds.length > 0) {
+            query.set('rows', favoriteIds.join(','));
         }
 
         // Fetch

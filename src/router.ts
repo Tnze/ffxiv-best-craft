@@ -22,6 +22,8 @@ const RecipePanelVue = () =>
     import('./components/recipe-manager/RecipePanel.vue');
 const CustomizeRecipe = () =>
     import('./components/recipe-manager/CustomizeRecipe.vue');
+const FavoritesVue = () => 
+    import('./components/recipe-manager/FavoriteRecipePanel.vue');
 const DesignerVue = () => import('./components/designer/Page.vue');
 const BOMVue = () => import('./pages/Bom.vue');
 const SettingsVue = () => import('./pages/Settings.vue');
@@ -33,6 +35,7 @@ const router = createRouter({
         { path: '/welcome', component: Welcome },
         { path: '/gearsets', name: 'gearsets', component: GearsetsVue },
         { path: '/recipe', name: 'recipe', component: RecipePanelVue },
+        { path: '/favorites', name: 'favorites', component: FavoritesVue },
         {
             path: '/recipe/customize',
             name: 'customize-recipe',

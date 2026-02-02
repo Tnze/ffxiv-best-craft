@@ -44,6 +44,7 @@ import Menu from '@/components/Menu.vue';
 import useSettingsStore from '@/stores/settings';
 import useGearsetsStore from '@/stores/gearsets';
 import useDesignerStore from '@/stores/designer';
+import useFavoritesStore from '@/stores/favorites';
 import { elementPlusLang, languages } from './lang';
 import { selectLanguage } from './fluent';
 import { useRouter } from 'vue-router';
@@ -54,6 +55,7 @@ const colorMode = useColorMode();
 const settingsStore = useSettingsStore();
 const gearsetsStore = useGearsetsStore();
 const designerStore = useDesignerStore();
+const favoritesStore = useFavoritesStore();
 const preferredLang = usePreferredLanguages();
 const bgColor = useCssVar('--app-bg-color', ref(null));
 const bgMicaColor = useCssVar('--tnze-mica-bg-color', ref(null));
@@ -82,22 +84,26 @@ if (isTauri) {
 async function loadStorages() {
     let settingsJson: Promise<string> | string | null,
         gearsetsJson: Promise<string> | string | null,
-        designerJson: Promise<string> | string | null;
+        designerJson: Promise<string> | string | null,
+        favoritesJson: Promise<string> | string | null;
     if (isTauri) {
         const { BaseDirectory, readTextFile } = await pkgTauriFs;
         const options = { baseDir: BaseDirectory.AppData };
         settingsJson = readTextFile('settings.json', options);
         gearsetsJson = readTextFile('gearsets.json', options);
         designerJson = readTextFile('designer.json', options);
+        favoritesJson = readTextFile('favorites.json', options);
     } else {
         settingsJson = window.localStorage.getItem('settings.json');
         gearsetsJson = window.localStorage.getItem('gearsets.json');
         designerJson = window.localStorage.getItem('designer.json');
+        favoritesJson = window.localStorage.getItem('favorites.json');
     }
     for (const v of [
         { dst: settingsStore.fromJson, src: settingsJson },
         { dst: gearsetsStore.fromJson, src: gearsetsJson },
         { dst: designerStore.fromJson, src: designerJson },
+        { dst: favoritesStore.fromJson, src: favoritesJson },
     ]) {
         if (v.src === null) continue;
         try {
@@ -147,6 +153,9 @@ onMounted(async () => {
     );
     designerStore.$subscribe(() =>
         writeJson('designer.json', designerStore.toJson),
+    );
+    favoritesStore.$subscribe(() =>
+        writeJson('favorites.json', favoritesStore.toJson),
     );
 });
 
