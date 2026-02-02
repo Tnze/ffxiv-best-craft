@@ -20,6 +20,7 @@ import { WebSource, YYYYGamesApiBase } from '@/datasource/web-source';
 import {
     BetaXivApiRecipeSource,
     BetaXivapiBase,
+    CafeXivapiBase,
 } from '@/datasource/beta-xivapi-source';
 import { isTauri, isWebsite } from '@/libs/Consts';
 
@@ -29,12 +30,20 @@ export type DataSourceID =
     | 'yyyy.games-beta'
     | 'cafe'
     | 'xivapi';
-export type DataSourceLangID = 'zh-CN' | 'zh-TW' | 'en' | 'de' | 'fr' | 'ja';
+export type DataSourceLangID =
+    | 'zh-CN'
+    | 'zh-TW'
+    | 'en'
+    | 'de'
+    | 'fr'
+    | 'ja'
+    | 'ko';
 
 export const dataSourceList: Map<string, DataSourceLangID[]> = new Map([
     ['local', []],
     ['yyyy.games', ['zh-CN', 'zh-TW', 'en', 'de', 'fr', 'ja']],
-    ['xivapi', ['en', 'de', 'fr', 'ja']],
+    // ['xivapi', ['en', 'de', 'fr', 'ja']],
+    // ['cafe-xivapi', ['zh-CN', 'zh-TW', 'ja', 'en', 'de', 'fr', 'ko']],
 ]);
 if (!isTauri) {
     dataSourceList.delete('local');
@@ -73,11 +82,19 @@ export default defineStore('settings', {
                 'yyyy.games': async () => {
                     return new WebSource(YYYYGamesApiBase, dataSourceLanguage!);
                 },
-                xivapi: async () => {
-                    return new BetaXivApiRecipeSource(
+                xivapi: async () =>
+                    new BetaXivApiRecipeSource(
                         BetaXivapiBase,
-                        <'en' | 'ja' | 'de' | 'fr'>dataSourceLanguage,
-                    );
+                        dataSourceLanguage,
+                    ),
+                'cafe-xivapi': async () => {
+                    let lang = undefined;
+                    if (dataSourceLanguage)
+                        lang = new Map([
+                            ['zh-CN', 'chs'],
+                            ['zh-TW', 'tc'],
+                        ]).get(dataSourceLanguage);
+                    return new BetaXivApiRecipeSource(CafeXivapiBase, lang);
                 },
             };
             let defaultSource = dataSources['yyyy.games'];
@@ -127,8 +144,8 @@ export default defineStore('settings', {
         fromJson(json: string) {
             this.$patch(JSON.parse(json));
             if (
-                this.dataSource !== 'xivapi' &&
-                this.dataSource !== 'yyyy.games-beta' &&
+                // this.dataSource !== 'xivapi' &&
+                // this.dataSource !== 'cafe-xivapi' &&
                 (isWebsite || this.dataSource !== 'local')
             ) {
                 this.dataSource = 'yyyy.games';

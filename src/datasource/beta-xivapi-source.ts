@@ -30,10 +30,10 @@ function assert<T>(v: T, name: string): T {
 
 export class BetaXivApiRecipeSource {
     base: string;
-    language: 'en' | 'ja' | 'de' | 'fr' | undefined;
+    language: string | undefined;
     public sourceType = DataSourceType.RemoteRealtime;
 
-    constructor(base: string, language?: 'en' | 'ja' | 'de' | 'fr') {
+    constructor(base: string, language?: string) {
         this.base = base;
         this.language = language;
     }
@@ -432,7 +432,10 @@ export class BetaXivApiRecipeSource {
     }
 
     private async queryAll<T>(sheets: string, query: string, fields?: string) {
-        const params = new URLSearchParams({ sheets, query });
+        const params = new URLSearchParams({
+            sheets,
+            query,
+        });
         if (fields) params.set('fields', fields);
         if (this.language != undefined) params.set('language', this.language);
 
@@ -460,7 +463,7 @@ export class BetaXivApiRecipeSource {
 }
 
 export const BetaXivapiBase = 'https://beta.xivapi.com/api/1/';
-export const CafeXivapiBase = 'https://xivapi-v2.xivcdn.com/';
+export const CafeXivapiBase = 'https://xivapi-v2.xivcdn.com/api/';
 
 const MedicineID = 43;
 const Meals = 45;
