@@ -71,6 +71,7 @@ daring-touch = デアリングタッチ
 immaculate-mend = パーフェクトメンド
 quick-innovation = クイックイノベーション
 trained-perfection = 匠の絶技
+stellar-steady-hand = コスモステディハンド
 
 desc-immaculate-mend = 耐久を全回復する。
 desc-trained-perfection = 一度だけ、アクションによる耐久の消費が0になる。一回の製作/製作練習につき1回まで使用可能

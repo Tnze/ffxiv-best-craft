@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
 onmessage = async e => {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == 'web') {
         var { dfs_solve, nq_solve, reflect_solve, raphael_solve } =
@@ -43,6 +42,7 @@ onmessage = async e => {
                     args.useTrainedEye,
                     args.backloadProgress,
                     args.adversarial,
+                    args.stellarSteadyHandCharges,
                 );
         }
         postMessage(result);

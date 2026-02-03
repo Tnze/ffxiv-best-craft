@@ -19,7 +19,7 @@ use crate::{
     solver::{Score, Solver},
     SimulateResult,
 };
-use ffxiv_crafting::{Actions, Buffs, Status};
+use ffxiv_crafting::{Actions, Buffs, ComboStates, Status};
 use micro_ndarray::Array;
 use std::cell::Cell;
 
@@ -104,8 +104,8 @@ pub struct QualitySolver {
     mn: bool,
     wn: usize,
     obz: bool,
-    // results [obz][iq][iv][gs][mn][wn][touch][tp][qi][d][cp]
-    results: Array<Cell<SolverSlot<u32>>, 10>,
+    // results [combo][iq][iv][gs][mn][wn][tp][qi][d][cp]
+    results: Array<Cell<SolverSlot<u32>>, 9>,
 }
 
 impl QualitySolver {
@@ -115,13 +115,12 @@ impl QualitySolver {
         let du = init_status.recipe.durability as usize;
         let progress_solver = ProgressSolver::new(init_status, mn, wn, obz);
         let size = [
-            obz as usize + 1,
+            4, // None, Observed, BasicTouched, StdTouched
             11,
             5,
             4,
             mn as usize * 8 + 1,
             wn + 1,
-            3,
             3,
             du / 5 + 1,
             cp + 1,
@@ -147,13 +146,12 @@ impl QualitySolver {
 
     fn get(&self, s: &Status) -> &Cell<SolverSlot<u32>> {
         let i = [
-            s.buffs.observed as usize,
+            s.combo.map(|x| x as usize).unwrap_or(0),
             s.buffs.inner_quiet as usize,
             s.buffs.innovation as usize,
             s.buffs.great_strides as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not.max(s.buffs.wast_not_ii) as usize,
-            s.buffs.touch_combo_stage as usize,
             s.buffs.trained_perfection as usize,
             s.durability as usize / 5,
             s.craft_points as usize,
@@ -196,8 +194,10 @@ impl QualitySolver {
                 || (matches!(sk, Actions::WasteNot) && self.wn < 4)
                 || (matches!(sk, Actions::Observe) && !self.obz)
                 || (matches!(sk, Actions::AdvancedTouch)
-                    && s.buffs.observed == 0
-                    && s.buffs.touch_combo_stage != 2)
+                    && !matches!(
+                        s.combo,
+                        Some(ComboStates::Observed | ComboStates::StandardTouched)
+                    ))
             {
                 continue;
             }
@@ -246,8 +246,6 @@ impl Solver for QualitySolver {
             manipulation: s.buffs.manipulation,
             wast_not: s.buffs.wast_not,
             wast_not_ii: s.buffs.wast_not_ii,
-            touch_combo_stage: s.buffs.touch_combo_stage,
-            observed: s.buffs.observed,
             trained_perfection: s.buffs.trained_perfection,
             ..Buffs::default()
         };
@@ -324,7 +322,7 @@ impl ProgressSolver {
 
     fn get(&self, s: &Status) -> &Cell<SolverSlot<u16>> {
         let i = [
-            s.buffs.observed as usize,
+            s.combo.map(|x| x as usize).unwrap_or(0),
             s.buffs.veneration as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not.max(s.buffs.wast_not_ii) as usize,
@@ -427,7 +425,6 @@ impl Solver for ProgressSolver {
             manipulation: s.buffs.manipulation,
             wast_not: s.buffs.wast_not,
             wast_not_ii: s.buffs.wast_not_ii,
-            observed: s.buffs.observed,
             trained_perfection: s.buffs.trained_perfection,
             ..Buffs::default()
         };

@@ -87,6 +87,7 @@ daring-touch = 冒進
 immaculate-mend = 巧奪天工
 quick-innovation = 快速改革
 trained-perfection = 工匠的絕技
+stellar-steady-hand = 宇宙穩手
 
 # 技能描述
 desc-basic-synthesis = 推動進展，效率：100，31級後效率：120。

@@ -87,17 +87,15 @@ export interface Buffs {
     manipulation: number;
     wast_not: number;
     wast_not_ii: number;
-    heart_and_soul: LimitedActionState;
-    trained_perfection: LimitedActionState;
-    careful_observation_used: number;
-    quick_innovation_used: number;
-    touch_combo_stage: number;
-    observed: number;
     expedience: number;
+    heart_and_soul: number;
+    trained_perfection: number;
 }
 
 export interface Status {
     buffs: Buffs;
+    combo: ComboStates | undefined;
+    limits: ActionLimits;
     attributes: Attributes;
     recipe: Recipe;
     catches: any;
@@ -107,6 +105,20 @@ export interface Status {
     quality: number;
     step: number;
     condition: Conditions;
+}
+
+export enum ComboStates {
+    Observed = 'Observed',
+    BasicTouched = 'BasicTouched',
+    StandardTouched = 'StandardTouched',
+}
+
+export interface ActionLimits {
+    careful_observation_used: number;
+    quick_innovation_used: number;
+    heart_and_soul_used: number;
+    trained_perfection_used: number;
+    stellar_steady_hand_used: number;
 }
 
 export enum LimitedActionState {
@@ -195,6 +207,8 @@ export enum Actions {
     ImmaculateMend = 'immaculate_mend',
     QuickInnovation = 'quick_innovation',
     TrainedPerfection = 'trained_perfection',
+    // 7.4
+    StellarSteadyHand = 'stellar_steady_hand',
     // fake skills
     RapidSynthesisFail = 'rapid_synthesis_fail',
     HastyTouchFail = 'hasty_touch_fail',
@@ -243,6 +257,7 @@ const waitTimes = new Map([
     [Actions.ImmaculateMend, 2.17],
     [Actions.QuickInnovation, 2.17],
     [Actions.TrainedPerfection, 2.17],
+    [Actions.StellarSteadyHand, 2.17]
 ]);
 
 export const newRecipe = async (

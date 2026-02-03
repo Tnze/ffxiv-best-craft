@@ -126,6 +126,7 @@ const useQuickInnovation = ref(false);
 const useTrainedEye = ref(true);
 const backloadProgress = ref(false);
 const adversarial = ref(false);
+const stellarSteadyHandCharges = ref(0);
 
 function runRaphaelSolver() {
     emits(
@@ -142,6 +143,7 @@ function runRaphaelSolver() {
                 useTrainedEye.value,
                 backloadProgress.value,
                 adversarial.value,
+                stellarSteadyHandCharges.value,
             ).catch(e => {
                 const err = String(e);
                 if (err == 'RuntimeError: unreachable')

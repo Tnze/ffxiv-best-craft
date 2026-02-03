@@ -28,8 +28,8 @@ use app_libs::{
     analyzer::{rand_simulations, scope_of_application::Scope},
     ffxiv_crafting::{Actions, Attributes, CastActionError, Recipe, Status},
     solver::{
-        depth_first_search_solver, normal_progress_solver, raphael, reflect_solver,
-        Solver, SolverHash,
+        depth_first_search_solver, normal_progress_solver, raphael, reflect_solver, Solver,
+        SolverHash,
     },
     SimulateOneStepResult, SimulateResult,
 };
@@ -39,9 +39,6 @@ use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult
 use serde::Serialize;
 use tauri::{path::BaseDirectory, Manager};
 use tokio::sync::{Mutex, OnceCell};
-
-mod memoization_solver;
-mod muscle_memory_solver;
 
 use app_db::{
     collectables_shop_refine, craft_types, item_action, item_food, item_food_effect,
@@ -436,7 +433,6 @@ impl AppState {
 #[tauri::command(async)]
 async fn create_solver(
     status: Status,
-    use_muscle_memory: bool,
     use_manipulation: bool,
     use_observe: bool,
     app_state: tauri::State<'_, AppState>,
@@ -458,21 +454,12 @@ async fn create_solver(
         }
     };
     // let solver: Box<dyn Solver + Send> = Box::new(memory_search_solver::Solver::new(status));
-    let solver: Box<dyn Solver + Send> = if use_muscle_memory {
-        Box::new(muscle_memory_solver::PreprogressSolver::new(
-            status,
-            use_manipulation,
-            8,
-            use_observe,
-        ))
-    } else {
-        Box::new(reflect_solver::QualitySolver::new(
-            status,
-            use_manipulation,
-            8 + 1,
-            use_observe,
-        ))
-    };
+    let solver = Box::new(reflect_solver::QualitySolver::new(
+        status,
+        use_manipulation,
+        8 + 1,
+        use_observe,
+    ));
     *solver_slot.lock().await = Some(solver);
     Ok(())
 }
@@ -531,6 +518,7 @@ fn raphael_solve(
     use_trained_eye: bool,
     backload_progress: bool,
     adversarial: bool,
+    stellar_steady_hand_charges: u8,
 ) -> Vec<Actions> {
     raphael::solve(
         status.clone(),
@@ -541,6 +529,7 @@ fn raphael_solve(
         use_trained_eye,
         backload_progress,
         adversarial,
+        stellar_steady_hand_charges,
     )
 }
 

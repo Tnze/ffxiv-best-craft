@@ -26,7 +26,7 @@ import {
     allowedList,
     craftPointsList,
     Conditions,
-    LimitedActionState,
+    ComboStates,
 } from '@/libs/Craft';
 
 const props = defineProps<{
@@ -52,12 +52,12 @@ const actions: Actions[][] = [
         Actions.MastersMend,
     ],
     [
-        Actions.FinalAppraisal,
         Actions.Veneration,
         Actions.PrudentSynthesis,
         Actions.Groundwork,
         Actions.BasicSynthesis,
         Actions.CarefulSynthesis,
+        Actions.DelicateSynthesis,
     ],
     [
         Actions.Innovation,
@@ -69,24 +69,28 @@ const actions: Actions[][] = [
         Actions.RefinedTouch,
         Actions.TrainedFinesse,
         Actions.GreatStrides,
-        Actions.QuickInnovation,
         Actions.ByregotsBlessing,
     ],
     [
-        Actions.HeartAndSoul,
         Actions.TricksOfTheTrade,
         Actions.IntensiveSynthesis,
         Actions.PreciseTouch,
     ],
     [
-        Actions.DelicateSynthesis,
         Actions.Observe,
+        Actions.FinalAppraisal,
+        Actions.HeartAndSoul,
+        Actions.QuickInnovation,
+    ],
+    [
+        Actions.StellarSteadyHand,
         Actions.RapidSynthesis,
         Actions.HastyTouch, // Actions.DaringTouch,
-    ],
+    ]
 ];
 
 const actionsForSimulator: Actions[][] = [
+    [Actions.StellarSteadyHand],
     [
         Actions.Reflect,
         Actions.MuscleMemory,
@@ -161,17 +165,17 @@ const isActived = (action: Actions) => {
             return (
                 props.status.condition == Conditions.Good ||
                 props.status.condition == Conditions.Excellent ||
-                props.status.buffs.heart_and_soul == LimitedActionState.Active
+                props.status.buffs.heart_and_soul > 0
             );
         case Actions.ByregotsBlessing:
             return props.status.buffs.inner_quiet > 0;
         case Actions.RefinedTouch:
         case Actions.StandardTouch:
-            return props.status.buffs.touch_combo_stage == 1;
+            return props.status.combo === ComboStates.BasicTouched;
         case Actions.AdvancedTouch:
             return (
-                props.status.buffs.touch_combo_stage == 2 ||
-                props.status.buffs.observed > 0
+                props.status.combo === ComboStates.Observed ||
+                props.status.combo === ComboStates.StandardTouched
             );
         case Actions.DaringTouch:
             return props.status.buffs.expedience > 0;

@@ -88,6 +88,7 @@ daring-touch = Daring Touch
 immaculate-mend = Immaculate Mend
 quick-innovation = Quick Innovation
 trained-perfection = Trained Perfection
+stellar-steady-hand = Stellar Steady Hand
 
 DurabilityNotEnough = Durability not enough
 CraftPointNotEnough = Craft point not enough

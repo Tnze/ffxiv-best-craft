@@ -117,6 +117,7 @@ pub fn raphael_solve(
     use_trained_eye: bool,
     backload_progress: bool,
     adversarial: bool,
+    stellar_steady_hand_charges: u8,
 ) -> Result<JsValue, JsValue> {
     use app_libs::solver::raphael::solve;
     let status: Status = from_value(status)?;
@@ -129,6 +130,7 @@ pub fn raphael_solve(
         use_trained_eye,
         backload_progress,
         adversarial,
+        stellar_steady_hand_charges,
     );
     Ok(to_value(&result)?)
 }

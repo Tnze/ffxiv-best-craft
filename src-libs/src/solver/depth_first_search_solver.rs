@@ -126,8 +126,7 @@ pub fn solve(status: Status, maximum_depth: usize, specialist: bool) -> Vec<Acti
         specialist: bool,
     ) {
         for next_action in ACTION_LIST {
-            if !matches!(next_action, Actions::AdvancedTouch if status.buffs.observed == 0 && status.buffs.touch_combo_stage != 2)
-                && !matches!(next_action, Actions::FinalAppraisal if status.buffs.final_appraisal == 0)
+            if !matches!(next_action, Actions::FinalAppraisal if status.buffs.final_appraisal == 0)
                 && (!matches!(next_action, Actions::HeartAndSoul) || specialist)
                 && stack_seq.len() <= maximum_depth
                 && status.is_action_allowed(next_action).is_ok()

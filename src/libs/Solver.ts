@@ -48,14 +48,12 @@ if (isTauri) {
 
 export async function create_solver(
     status: Status,
-    useMuscleMemory: boolean,
     useManipulation: boolean,
     useObserve: boolean,
 ) {
     let { invoke } = await pkgTauri;
     return invoke('create_solver', {
         status,
-        useMuscleMemory,
         useManipulation,
         useObserve,
     });
@@ -139,6 +137,7 @@ export async function raphael_solve(
     useTrainedEye: boolean,
     backloadProgress: boolean,
     adversarial: boolean,
+    stellarSteadyHandCharges: number,
 ): Promise<Actions[]> {
     clarityReport('runRaphaelSolver');
     const args = {
@@ -150,6 +149,7 @@ export async function raphael_solve(
         useTrainedEye,
         backloadProgress,
         adversarial,
+        stellarSteadyHandCharges,
     };
     if (isTauri) {
         let { invoke } = await pkgTauri;

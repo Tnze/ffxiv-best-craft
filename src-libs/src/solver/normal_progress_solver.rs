@@ -31,8 +31,7 @@ fn search(status: Status, maximum_depth: usize, specialist: bool) -> (i32, Vec<A
     SKILL_LIST
         .into_iter()
         .filter(|&next_action| {
-            !matches!(next_action, Actions::AdvancedTouch if status.buffs.observed == 0 && status.buffs.touch_combo_stage != 2)
-                && (!matches!(next_action, Actions::HeartAndSoul) || specialist)
+            (!matches!(next_action, Actions::HeartAndSoul) || specialist)
                 && status.is_action_allowed(next_action).is_ok()
         })
         .filter_map(|x| {

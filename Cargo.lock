@@ -1544,8 +1544,6 @@ dependencies = [
 [[package]]
 name = "ffxiv-crafting"
 version = "7.4.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "358ca3bec3bf70bb4a7641140b0e497ca167d5cce7e8442998cef3d384401dfa"
 dependencies = [
  "serde",
 ]
@@ -4452,7 +4450,7 @@ dependencies = [
 [[package]]
 name = "raphael-sim"
 version = "0.0.0"
-source = "git+https://github.com/KonaeAkira/raphael-rs.git?tag=v0.25.10#f5a149c77a5951bcc730107bf1b0125689481c03"
+source = "git+https://github.com/KonaeAkira/raphael-rs.git?tag=v0.26.1#03e949221ca8ca0cc54bb9b9399eabf95d4fbbd0"
 dependencies = [
  "bitfield-struct",
  "log",
@@ -4463,7 +4461,7 @@ dependencies = [
 [[package]]
 name = "raphael-solver"
 version = "0.0.0"
-source = "git+https://github.com/KonaeAkira/raphael-rs.git?tag=v0.25.10#f5a149c77a5951bcc730107bf1b0125689481c03"
+source = "git+https://github.com/KonaeAkira/raphael-rs.git?tag=v0.26.1#03e949221ca8ca0cc54bb9b9399eabf95d4fbbd0"
 dependencies = [
  "bitfield-struct",
  "log",

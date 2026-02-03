@@ -28,6 +28,7 @@ pub fn solve(
     use_trained_eye: bool,
     backload_progress: bool,
     adversarial: bool,
+    stellar_steady_hand_charges: u8,
 ) -> Vec<Actions> {
     let mut allowed_actions = ActionMask::all();
     if !use_heart_and_soul {
@@ -54,6 +55,7 @@ pub fn solve(
         allowed_actions,
         adversarial,
         backload_progress,
+        stellar_steady_hand_charges,
     };
     let solver_settings = SolverSettings {
         simulator_settings,
@@ -102,11 +104,13 @@ fn map_action(action: Action) -> Actions {
         Action::ImmaculateMend => Actions::ImmaculateMend,
         Action::TrainedPerfection => Actions::TrainedPerfection,
         Action::TrainedEye => Actions::TrainedEye,
-
         Action::TricksOfTheTrade => Actions::TricksOfTheTrade,
         Action::RefinedTouch => Actions::RefinedTouch,
-
         Action::HeartAndSoul => Actions::HeartAndSoul,
         Action::QuickInnovation => Actions::QuickInnovation,
+        Action::StellarSteadyHand => Actions::StellarSteadyHand,
+        Action::RapidSynthesis => Actions::RapidSynthesis,
+        Action::HastyTouch => Actions::HastyTouch,
+        Action::DaringTouch => Actions::DaringTouch,
     }
 }
