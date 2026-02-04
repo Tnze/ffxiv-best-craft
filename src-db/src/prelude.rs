@@ -11,3 +11,6 @@ pub use super::item_with_amount::Entity as ItemWithAmount;
 pub use super::items::Entity as Items;
 pub use super::recipe_level_tables::Entity as RecipeLevelTables;
 pub use super::recipes::Entity as Recipes;
+pub use super::wks_mission_recipe::Entity as WksMissionRecipe;
+pub use super::wks_mission_to_do::Entity as WksMissionToDo;
+pub use super::wks_mission_unit::Entity as WksMissionUnit;

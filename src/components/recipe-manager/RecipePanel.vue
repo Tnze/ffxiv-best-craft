@@ -17,15 +17,7 @@
 -->
 
 <script setup lang="ts">
-import {
-    ref,
-    reactive,
-    watch,
-    onMounted,
-    onActivated,
-    computed,
-    watchEffect,
-} from 'vue';
+import { ref, reactive, watch, onMounted, onActivated, watchEffect } from 'vue';
 import {
     ElInput,
     ElButton,
@@ -82,6 +74,7 @@ const filterCraftType = ref<number>();
 const filterLevel = ref<number>();
 const craftTypeOptions = ref<CraftType[]>([]);
 const filterRecipeLevel = ref<number>();
+const stellarSteadyHandCount = ref<number>(0);
 
 async function craftTypeRemoteMethod() {
     const source = await settingStore.getDataSource();
@@ -220,21 +213,29 @@ async function selectRecipeRow(row: RecipeInfo) {
     try {
         isRecipeTableLoading.value = true;
         const source = await settingStore.getDataSource();
-        var [recipeLevel, itemInfoTmp, collectabilityTmp] = await Promise.all([
-            source.recipeLevelTable(row.rlv),
-            source.itemInfo(row.item_id),
-            (async () => {
-                if (source.recipeCollectableShopRefine == undefined) {
-                    return undefined;
-                }
-                try {
-                    return await source.recipeCollectableShopRefine(row.id);
-                } catch (e: any) {
-                    console.error('Failed to fatch recipe collectability', e);
-                    return undefined; // in case the server doesn't support or any other situation;
-                }
-            })(),
-        ]);
+
+        var [recipeLevel, itemInfoTmp, collectabilityTmp, temporaryActionInfo] =
+            await Promise.all([
+                source.recipeLevelTable(row.rlv),
+                source.itemInfo(row.item_id),
+                (async () => {
+                    if (source.recipeCollectableShopRefine == undefined) {
+                        return undefined;
+                    }
+                    try {
+                        return await source.recipeCollectableShopRefine(row.id);
+                    } catch (e: any) {
+                        console.error(
+                            'Failed to fatch recipe collectability',
+                            e,
+                        );
+                        return undefined; // in case the server doesn't support or any other situation;
+                    }
+                })(),
+                source.temporaryActionInfo
+                    ? source.temporaryActionInfo(row.id)
+                    : undefined,
+            ]);
     } catch (e: any) {
         ElMessage.error(String(e));
         return;
@@ -251,6 +252,8 @@ async function selectRecipeRow(row: RecipeInfo) {
     itemInfo.value = itemInfoTmp;
     collectability.value = collectabilityTmp;
     confirmDialogVisible.value = true;
+    stellarSteadyHandCount.value =
+        temporaryActionInfo?.action == 46843 ? temporaryActionInfo.count : 0;
 }
 
 async function selectRecipeById(recipeId: number) {
@@ -281,6 +284,7 @@ async function selectRecipeById(recipeId: number) {
             :recipe-info="recipeInfo"
             :item-info="itemInfo"
             :collectability="collectability"
+            :stellarSteadyHandCount="stellarSteadyHandCount"
         />
         <el-input
             v-model="searchText"

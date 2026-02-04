@@ -13,3 +13,6 @@ pub mod item_with_amount;
 pub mod items;
 pub mod recipe_level_tables;
 pub mod recipes;
+pub mod wks_mission_recipe;
+pub mod wks_mission_to_do;
+pub mod wks_mission_unit;

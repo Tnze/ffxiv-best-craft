@@ -41,6 +41,7 @@ const props = defineProps<{
     initStatus: Status;
     recipeName: string;
     collectableShopRefine?: CollectablesShopRefine;
+    maxStellarSteadyHand: number;
 }>();
 
 const emits = defineEmits<{
@@ -126,7 +127,7 @@ const useQuickInnovation = ref(false);
 const useTrainedEye = ref(true);
 const backloadProgress = ref(false);
 const adversarial = ref(false);
-const stellarSteadyHandCharges = ref(0);
+const stellarSteadyHandCharges = ref(props.maxStellarSteadyHand);
 
 function runRaphaelSolver() {
     emits(
@@ -220,6 +221,18 @@ function runRaphaelSolver() {
                     {{ $t((scope.item as TargetQualityOption).label) }}
                 </template>
             </el-segmented>
+        </el-space>
+        <el-space>
+            <el-text style="flex: none">
+                {{ $t('stellar-steady-hand') }}
+            </el-text>
+            <el-input-number
+                v-model="stellarSteadyHandCharges"
+                :min="0"
+                :max="props.maxStellarSteadyHand"
+                :step="1"
+                step-strictly
+            />
         </el-space>
         <el-checkbox
             v-model="useTrainedEye"

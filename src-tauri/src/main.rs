@@ -42,7 +42,8 @@ use tokio::sync::{Mutex, OnceCell};
 
 use app_db::{
     collectables_shop_refine, craft_types, item_action, item_food, item_food_effect,
-    item_with_amount, items, prelude::*, recipe_level_tables, recipes,
+    item_with_amount, items, prelude::*, recipe_level_tables, recipes, wks_mission_recipe,
+    wks_mission_to_do, wks_mission_unit,
 };
 
 /// 创建新的Recipe对象，蕴含了模拟一次制作过程所必要的全部配方信息
@@ -64,8 +65,12 @@ async fn recipe_level_table(
 }
 
 #[tauri::command(async)]
-fn new_status(attrs: Attributes, recipe: Recipe) -> Result<Status, String> {
-    app_libs::new_status(attrs, recipe)
+fn new_status(
+    attrs: Attributes,
+    recipe: Recipe,
+    stellar_steady_hand_count: u8,
+) -> Result<Status, String> {
+    app_libs::new_status(attrs, recipe, stellar_steady_hand_count)
 }
 
 #[tauri::command(async)]
@@ -402,6 +407,47 @@ async fn query_enhancers(
     Ok(result)
 }
 
+#[derive(Default, Serialize, FromQueryResult)]
+struct TemporaryActionInfo {
+    action: u32,
+    count: u32,
+}
+
+#[tauri::command(async)]
+async fn temporary_action_info(
+    app_state: tauri::State<'_, AppState>,
+    app_handle: tauri::AppHandle,
+    recipe_id: i32,
+) -> Result<Option<TemporaryActionInfo>, String> {
+    let db = app_state.get_db(app_handle).await?;
+    let query = WksMissionUnit::find()
+        .join(
+            JoinType::InnerJoin,
+            wks_mission_unit::Relation::WksMissionRecipe.def(),
+        )
+        .join(
+            JoinType::LeftJoin,
+            wks_mission_unit::Relation::WksMissionToDo3.def(),
+        )
+        .filter(
+            wks_mission_recipe::Column::Recipe0Id
+                .eq(recipe_id)
+                .or(wks_mission_recipe::Column::Recipe1Id.eq(recipe_id))
+                .or(wks_mission_recipe::Column::Recipe2Id.eq(recipe_id))
+                .or(wks_mission_recipe::Column::Recipe3Id.eq(recipe_id))
+                .or(wks_mission_recipe::Column::Recipe4Id.eq(recipe_id)),
+        )
+        .select_only()
+        .column_as(wks_mission_to_do::Column::TemporaryAction, "action")
+        .column_as(wks_mission_to_do::Column::TemporaryActionCount, "count");
+    let result = query
+        .into_model::<TemporaryActionInfo>()
+        .one(db)
+        .await
+        .map_err(err_to_string)?;
+    Ok(result)
+}
+
 type SolverInstance = Arc<Mutex<Option<Box<dyn Solver + Send>>>>;
 struct AppState {
     solver_list: Mutex<HashMap<SolverHash, SolverInstance>>,
@@ -633,6 +679,7 @@ fn main() {
             craft_type,
             medicine_table,
             meals_table,
+            temporary_action_info,
             create_solver,
             read_solver,
             destroy_solver,

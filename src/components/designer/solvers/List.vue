@@ -43,6 +43,7 @@ const props = defineProps<{
     recipeName: string;
     canHq: boolean;
     collectableShopRefine?: CollectablesShopRefine;
+    maxStellarSteadyHand: number;
 }>();
 
 const emits = defineEmits<{
@@ -128,6 +129,7 @@ async function runSimpleSolver(
                     :recipe-name="recipeName"
                     @run-simple-solver="runSimpleSolver"
                     :collectable-shop-refine="collectableShopRefine"
+                    :maxStellarSteadyHand="maxStellarSteadyHand"
                 />
             </el-tab-pane>
             <el-tab-pane :label="$t('dp-solver')" name="dp">

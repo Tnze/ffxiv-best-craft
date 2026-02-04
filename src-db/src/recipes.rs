@@ -15,7 +15,7 @@ pub struct Model {
     #[sea_orm(column_name = "RecipeLevelId")]
     pub recipe_level_id: u32,
     #[sea_orm(column_name = "ItemResultId")]
-    pub item_result_id: u32,
+    pub item_result_id: Option<u32>,
     #[sea_orm(column_name = "MaterialQualityFactor")]
     pub material_quality_factor: u8,
     #[sea_orm(column_name = "DifficultyFactor")]
@@ -55,7 +55,7 @@ pub enum Relation {
         from = "Column::ItemResultId",
         to = "super::item_with_amount::Column::Id",
         on_update = "Restrict",
-        on_delete = "Cascade"
+        on_delete = "Restrict"
     )]
     ItemWithAmount,
     #[sea_orm(

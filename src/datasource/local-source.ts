@@ -27,6 +27,7 @@ import {
     DataSourceResult,
     DataSourceType,
     RecipesSourceResult,
+    TemporaryActionInfo,
 } from './source';
 
 export class LocalRecipeSource {
@@ -136,5 +137,11 @@ export class LocalRecipeSource {
     async mealsTable(_page: number): Promise<DataSourceResult<Enhancer>> {
         const results: Enhancer[] = await (await this.invoke)('meals_table');
         return { results, totalPages: 1 };
+    }
+
+    async temporaryActionInfo(recipeId: number): Promise<TemporaryActionInfo> {
+        return await (
+            await this.invoke
+        )('temporary_action_info', { recipeId });
     }
 }

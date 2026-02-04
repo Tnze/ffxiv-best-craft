@@ -118,7 +118,7 @@ export interface ActionLimits {
     quick_innovation_used: number;
     heart_and_soul_used: number;
     trained_perfection_used: number;
-    stellar_steady_hand_used: number;
+    stellar_steady_hand_left: number;
 }
 
 export enum LimitedActionState {
@@ -257,7 +257,7 @@ const waitTimes = new Map([
     [Actions.ImmaculateMend, 2.17],
     [Actions.QuickInnovation, 2.17],
     [Actions.TrainedPerfection, 2.17],
-    [Actions.StellarSteadyHand, 2.17]
+    [Actions.StellarSteadyHand, 2.17],
 ]);
 
 export const newRecipe = async (
@@ -279,13 +279,14 @@ export const newRecipe = async (
 export async function newStatus(
     attrs: Attributes,
     recipe: Recipe,
+    stellarSteadyHandCount: number,
 ): Promise<Status> {
     if (isTauri) {
         let { invoke } = await pkgTauri;
-        return invoke('new_status', { attrs, recipe });
+        return invoke('new_status', { attrs, recipe, stellarSteadyHandCount });
     } else {
         let { new_status } = await pkgWasm;
-        return new_status(attrs, recipe);
+        return new_status(attrs, recipe, stellarSteadyHandCount);
     }
 }
 

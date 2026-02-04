@@ -37,11 +37,13 @@ pub struct SimulateResult {
 }
 
 /// 初始化一个表示一次制作的初始状态的Status对象，包含玩家属性、配方信息和初期品质
-pub fn new_status(attrs: Attributes, recipe: Recipe) -> Result<Status, String> {
+pub fn new_status(attrs: Attributes, recipe: Recipe, stellar_steady_hand_count: u8) -> Result<Status, String> {
     if recipe.job_level > attrs.level + 5 {
         Err("player-level-lower-than-recipe-requirement".to_string())
     } else {
-        Ok(Status::new(attrs, recipe))
+        let mut s = Status::new(attrs, recipe);
+        s.limits.stellar_steady_hand_left = stellar_steady_hand_count;
+        Ok(s)
     }
 }
 

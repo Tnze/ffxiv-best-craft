@@ -28,10 +28,15 @@ fn err_to_string<T: ToString>(v: T) -> String {
 }
 
 #[wasm_bindgen]
-pub fn new_status(attrs: JsValue, recipe: JsValue) -> Result<JsValue, JsValue> {
+pub fn new_status(
+    attrs: JsValue,
+    recipe: JsValue,
+    stellar_steady_hand_count: u8,
+) -> Result<JsValue, JsValue> {
     let attrs: Attributes = from_value(attrs)?;
     let recipe: Recipe = from_value(recipe)?;
-    let result = app_libs::new_status(attrs, recipe).map_err(err_to_string)?;
+    let result =
+        app_libs::new_status(attrs, recipe, stellar_steady_hand_count).map_err(err_to_string)?;
     Ok(to_value(&result)?)
 }
 

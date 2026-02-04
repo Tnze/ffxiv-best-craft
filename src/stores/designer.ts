@@ -34,6 +34,7 @@ export default defineStore('designer', {
             requirements: RecipeRequirements;
             collectability?: CollectablesShopRefine;
             simulatorMode: boolean;
+            stellarSteadyHandCount: number;
         } | null,
         options: {
             exportOptions: {
@@ -69,6 +70,7 @@ export default defineStore('designer', {
             requirements: RecipeRequirements;
             collectability?: CollectablesShopRefine;
             simulatorMode: boolean;
+            stellarSteadyHandCount: number;
         }) {
             this.content = payload;
         },

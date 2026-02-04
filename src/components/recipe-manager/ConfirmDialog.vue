@@ -46,6 +46,7 @@ const props = defineProps<{
     recipeInfo: RecipeInfo;
     itemInfo: Item;
     collectability?: CollectablesShopRefine;
+    stellarSteadyHandCount: number;
 }>();
 const router = useRouter();
 const { $t } = useFluent();
@@ -131,6 +132,7 @@ async function confirm(mode: 'simulator' | 'designer') {
         itemInfo,
         props.recipeInfo.job,
         mode == 'simulator',
+        props.stellarSteadyHandCount,
     );
     router.push({ name: 'designer' });
     visible.value = false;

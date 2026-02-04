@@ -45,6 +45,7 @@ export interface DataSource {
 
     medicineTable(page: number): Promise<DataSourceResult<Enhancer>>;
     mealsTable(page: number): Promise<DataSourceResult<Enhancer>>;
+    temporaryActionInfo?(recipeId: number): Promise<TemporaryActionInfo>;
 }
 
 export interface CraftType {
@@ -56,6 +57,11 @@ export enum DataSourceType {
     Realtime,
     RemoteRealtime,
     SingleShot,
+}
+
+export interface TemporaryActionInfo {
+    action: number;
+    count: number;
 }
 
 export interface DataSourceResult<T> {

@@ -193,12 +193,20 @@ watch(isReadingSolver, (irs, irsPrev) => {
 // Simulation Input
 const initQuality = ref(0);
 const initStatus = ref<Status>({
-    ...(await newStatus(enhancedAttributes.value, props.recipe)),
+    ...(await newStatus(
+        enhancedAttributes.value,
+        props.recipe,
+        store.content?.stellarSteadyHandCount ?? 0,
+    )),
     quality: initQuality.value,
 });
 watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
     initStatus.value = {
-        ...(await newStatus(ea, p.recipe)),
+        ...(await newStatus(
+            ea,
+            p.recipe,
+            store.content?.stellarSteadyHandCount ?? 0,
+        )),
         quality: iq,
     };
 });
@@ -434,6 +442,9 @@ async function handleSolverResult(
                                 @solver-load="readSolver()"
                                 @solver-result="handleSolverResult"
                                 :collectable-shop-refine="collectableShopRefine"
+                                :maxStellarSteadyHand="
+                                    store.content?.stellarSteadyHandCount ?? 0
+                                "
                             />
                         </el-scrollbar>
                     </el-tab-pane>

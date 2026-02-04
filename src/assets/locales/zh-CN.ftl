@@ -129,6 +129,8 @@ desc-immaculate-mend = 耐久恢复到最大值。
 desc-quick-innovation = 获得改革状态，持续1次作业，一次制作最多可使用1次。
 desc-trained-perfection = 下一个会消耗耐久的技能耐久消耗变为0，一次制作最多可使用1次。
 
+desc-stellar-steady-hand = 令接下来使用的技能必定成功，3次作业内有效
+
 # 技能释放错误
 DurabilityNotEnough = 耐久不足
 CraftPointNotEnough = 制作力不足

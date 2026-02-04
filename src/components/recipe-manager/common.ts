@@ -106,6 +106,7 @@ export const selectRecipe = (
     item: Item,
     craftType: string,
     simulatorMode: boolean,
+    stellarSteadyHandCount: number,
 ) => {
     designerStore.selectRecipe({
         job: craftTypeTojobs(craftType),
@@ -116,5 +117,6 @@ export const selectRecipe = (
         requirements,
         collectability,
         simulatorMode,
+        stellarSteadyHandCount,
     });
 };
