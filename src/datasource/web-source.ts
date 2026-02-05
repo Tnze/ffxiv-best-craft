@@ -26,6 +26,7 @@ import {
     DataSourceResult,
     DataSourceType,
     RecipesSourceResult,
+    TemporaryActionInfo,
 } from './source';
 import { Enhancer } from '@/libs/Enhancer';
 
@@ -75,6 +76,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
+        if (!resp.ok) throw resp.statusText;
         const { data: results, p: totalPages } = (await resp.json()) as {
             data: RecipeInfo[];
             p: number;
@@ -90,6 +92,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
+        if (!resp.ok) throw resp.statusText;
         const ings: [number, number][] = await resp.json();
         return ings.map(x => ({ ingredient_id: x[0], amount: x[1] }));
     }
@@ -102,6 +105,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
+        if (!resp.ok) throw resp.statusText;
         let result: RecipeLevel = {
             id: rlv,
             stars: 0, // TODO
@@ -120,6 +124,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
+        if (!resp.ok) throw resp.statusText;
         const result: RecipeLevel | null = await resp.json();
         if (result == null) return null;
         return {
@@ -138,6 +143,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
+        if (!resp.ok) throw resp.statusText;
         return resp.json();
     }
 
@@ -151,9 +157,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
-        if (!resp.ok) {
-            throw resp.statusText;
-        }
+        if (!resp.ok) throw resp.statusText;
         return resp.json();
     }
 
@@ -165,6 +169,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
+        if (!resp.ok) throw resp.statusText;
         const {
             id,
             name,
@@ -199,6 +204,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
+        if (!resp.ok) throw resp.statusText;
         return (await resp.json()) as CraftType[];
     }
 
@@ -208,6 +214,7 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
+        if (!resp.ok) throw resp.statusText;
         const results = (await resp.json()) as Enhancer[];
         return { results, totalPages: 1 };
     }
@@ -218,9 +225,23 @@ export class WebSource {
             method: 'GET',
             mode: 'cors',
         });
+        if (!resp.ok) throw resp.statusText;
         const results = (await resp.json()) as Enhancer[];
         return { results, totalPages: 1 };
     }
+
+    async temporaryActionInfo(recipeId: number): Promise<TemporaryActionInfo> {
+        const query = new URLSearchParams({ recipe_id: String(recipeId) });
+        const url = new URL('temporary_action_info', this.base);
+        url.search = query.toString();
+        const resp = await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+        });
+        if (!resp.ok) throw resp.statusText;
+        return (await resp.json()) as TemporaryActionInfo;
+    }
 }
 
-export const YYYYGamesApiBase = 'https://tnze.yyyy.games/api/datasource/';
+// export const YYYYGamesApiBase = 'https://tnze.yyyy.games/api/datasource/';
+export const YYYYGamesApiBase = 'http://localhost:8693/';

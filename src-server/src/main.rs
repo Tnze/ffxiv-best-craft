@@ -28,7 +28,7 @@ use serde::{Deserialize, Serialize};
 
 use app_db::{
     craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*,
-    recipe_level_tables, recipes,
+    recipe_level_tables, recipes, wks_mission_recipe, wks_mission_to_do, wks_mission_unit,
 };
 
 type Result<T> = std::result::Result<T, StatusError>;
@@ -99,7 +99,8 @@ async fn main() {
                 .push(Router::with_path("item_info").get(item_info))
                 .push(Router::with_path("craft_type").get(craft_type))
                 .push(Router::with_path("medicine_table").get(medicine_table))
-                .push(Router::with_path("meals_table").get(meals_table)),
+                .push(Router::with_path("meals_table").get(meals_table))
+                .push(Router::with_path("temporary_action_info").get(temporary_action_info)),
         );
     let listener = TcpListener::new(server_url);
     let acceptor = listener.bind().await;
@@ -563,4 +564,58 @@ async fn query_enhancers(conn: &DatabaseConnection, search_id: u32) -> Result<Ve
         })
         .collect();
     Ok(result)
+}
+
+#[derive(Default, Serialize, FromQueryResult)]
+struct TemporaryActionInfo {
+    action: u32,
+    count: u32,
+}
+
+// recipe_id: i32
+#[handler]
+async fn temporary_action_info(
+    req: &mut Request,
+    depot: &mut Depot,
+    res: &mut Response,
+) -> Result<()> {
+    let state = depot
+        .obtain::<AppState>()
+        .map_err(|_| StatusError::internal_server_error())?;
+    let lang = req.params().get::<str>("lang").unwrap();
+    let conn = state
+        .connections
+        .get(lang)
+        .ok_or_else(|| StatusError::bad_request())?;
+    let recipe_id = req
+        .query::<u32>("recipe_id")
+        .ok_or_else(|| StatusError::bad_request())?;
+    let query = WksMissionUnit::find()
+        .join(
+            JoinType::InnerJoin,
+            wks_mission_unit::Relation::WksMissionRecipe.def(),
+        )
+        .join(
+            JoinType::LeftJoin,
+            wks_mission_unit::Relation::WksMissionToDo3.def(),
+        )
+        .filter(
+            wks_mission_recipe::Column::Recipe0Id
+                .eq(recipe_id)
+                .or(wks_mission_recipe::Column::Recipe1Id.eq(recipe_id))
+                .or(wks_mission_recipe::Column::Recipe2Id.eq(recipe_id))
+                .or(wks_mission_recipe::Column::Recipe3Id.eq(recipe_id))
+                .or(wks_mission_recipe::Column::Recipe4Id.eq(recipe_id)),
+        )
+        .select_only()
+        .column_as(wks_mission_to_do::Column::TemporaryAction, "action")
+        .column_as(wks_mission_to_do::Column::TemporaryActionCount, "count");
+    let result = query
+        .into_model::<TemporaryActionInfo>()
+        .one(conn)
+        .await
+        .map_err(|_| StatusError::internal_server_error())?
+        .ok_or_else(|| StatusError::bad_gateway())?;
+    res.render(Json(result));
+    Ok(())
 }
