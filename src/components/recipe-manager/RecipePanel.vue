@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -30,6 +30,7 @@ import {
     ElSelect,
     ElOption,
     ElInputNumber,
+    ElMessageBox,
 } from 'element-plus';
 import { EditPen } from '@element-plus/icons-vue';
 import {
@@ -232,9 +233,22 @@ async function selectRecipeRow(row: RecipeInfo) {
                         return undefined; // in case the server doesn't support or any other situation;
                     }
                 })(),
-                source.temporaryActionInfo
-                    ? source.temporaryActionInfo(row.id)
-                    : undefined,
+                (async () => {
+                    if (source.temporaryActionInfo) {
+                        try {
+                            return await source.temporaryActionInfo(row.id);
+                        } catch (err: any) {
+                            ElMessage({
+                                type: 'warning',
+                                message: $t(
+                                    'failed-to-load-temporary-action-info',
+                                    { err: String(err) },
+                                ),
+                            });
+                        }
+                    }
+                    return undefined;
+                })(),
             ]);
     } catch (e: any) {
         ElMessage.error(String(e));
@@ -416,6 +430,7 @@ async function selectRecipeById(recipeId: number) {
 <fluent locale="zh-CN">
 datasource-unsupport-recipe-info = 当前数据源不支持从外部选择配方
 select-recipe-by-id-error = 获取配方信息失败：{ $err }，请尝试切换数据源
+failed-to-load-temporary-action-info = 获取任务指令失败：{ $err }
 
 search = 键入以搜索
 please-wait = 请稍等...
