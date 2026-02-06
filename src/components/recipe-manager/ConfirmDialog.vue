@@ -195,6 +195,18 @@ async function confirm(mode: 'simulator' | 'designer') {
                 {{ recipe.durability }}
             </el-descriptions-item>
             <el-descriptions-item :label="$t('conditions')" :span="3">
+                <el-alert
+                    v-if="recipe.conditions_flag != 15 && !recipeInfo.is_expert"
+                    type="warning"
+                    show-icon
+                    style="margin-bottom: 6px"
+                >
+                    {{
+                        $t(
+                            'conditions-will-not-take-effect-for-non-expert-recipe',
+                        )
+                    }}
+                </el-alert>
                 <div class="conditions-list">
                     <template v-for="(cond, i) in Object.values(Conditions)">
                         <el-tag
@@ -285,6 +297,7 @@ confirm-select = 开始制作“{ $itemName }”吗？
 confirm-select2 = 这是一个高难度配方，请选择模式。
 alert-sync-level = 这是一个等级同步配方，请输入同步等级
 please-confirm = 请确认
+conditions-will-not-take-effect-for-non-expert-recipe = 非高难度配方制作状态标志不会生效
 
 cancel = 取消
 confirm = 确认
@@ -312,6 +325,7 @@ confirm-select = 開始製作“{ $itemName }”嗎？
 confirm-select2 = 這是一個高難度配方，請選擇模式。
 alert-sync-level = 這是一個等級同步配方，請輸入同步等級
 please-confirm = 請確認
+conditions-will-not-take-effect-for-non-expert-recipe = 非高難度配方製作狀態標誌不會生效
 
 cancel = 取消
 confirm = 確認
@@ -339,6 +353,7 @@ confirm-select = Start crafting "{ $itemName }"?
 confirm-select2 = This is a hard recipe. Please make a choice.
 alert-sync-level = This recipe is variant with job level, please setting it
 please-confirm = Please confirm
+conditions-will-not-take-effect-for-non-expert-recipe = The conditions flag for non expert recipe will not take effect
 
 cancel = Cancel
 confirm = Confirm
