@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -122,6 +122,8 @@ function confirm(simulatorMode: boolean) {
         name: $t('custom-recipe'),
         level: customRecipe.value.job_level,
         can_be_hq: true,
+        is_collectable: false,
+        always_collectable: false,
     };
     const requirements: RecipeRequirements = {
         required_craftsmanship: 0,
@@ -136,6 +138,7 @@ function confirm(simulatorMode: boolean) {
         itemInfo,
         '',
         simulatorMode,
+        3,
     );
     router.push({ name: 'designer' });
 }

@@ -257,7 +257,7 @@ const waitTimes = new Map([
     [Actions.ImmaculateMend, 2.17],
     [Actions.QuickInnovation, 2.17],
     [Actions.TrainedPerfection, 2.17],
-    [Actions.StellarSteadyHand, 2.17],
+    [Actions.StellarSteadyHand, 1.07],
 ]);
 
 export const newRecipe = async (
