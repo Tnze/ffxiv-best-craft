@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -45,6 +45,7 @@ import ActionPanelVue from './ActionPanel.vue';
 import ActionQueueVue from './ActionQueue.vue';
 import AttrEnhSelector from './tabs/AttrEnhSelector.vue';
 import { displayJobKey } from './injectionkeys';
+import useStore from '@/stores/designer';
 
 const props = defineProps<{
     recipe: Recipe;
@@ -52,6 +53,7 @@ const props = defineProps<{
     attributes: Attributes;
     collectableShopRefine?: CollectablesShopRefine;
 }>();
+const store = useStore();
 const displayJob = inject(displayJobKey) as Ref<Jobs>;
 
 interface Slot {
@@ -84,12 +86,20 @@ const enhancedAttributes = computed<Attributes>(() => {
     };
 });
 const initStatus = ref<Status>({
-    ...(await newStatus(enhancedAttributes.value, props.recipe)),
+    ...(await newStatus(
+        enhancedAttributes.value,
+        props.recipe,
+        store.content?.stellarSteadyHandCount ?? 0,
+    )),
     quality: 0,
 });
 watch([props, enhancedAttributes], async ([p, attr]) => {
     initStatus.value = {
-        ...(await newStatus(attr, p.recipe)),
+        ...(await newStatus(
+            attr,
+            p.recipe,
+            store.content?.stellarSteadyHandCount ?? 0,
+        )),
         quality: 0,
     };
 });
@@ -172,9 +182,14 @@ function leaveAction() {
 
 <template>
     <div class="main-page">
-        <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
-            <!-- <AttrEnhSelector v-model="attributesEnhancers" /> -->
-        </el-dialog>
+        <!-- <el-dialog v-model="openAttrEnhSelector" :title="$t('meal-and-potion')">
+            <AttrEnhSelector
+                v-model="attributesEnhancers"
+                v-model:gearset-id="gearsetId"
+                :job="isCustomRecipe ? undefined : displayJob"
+                :attributes="attributes"
+            />
+        </el-dialog> -->
         <StatusBarVue
             class="status-bar"
             :attributes="attributes"
