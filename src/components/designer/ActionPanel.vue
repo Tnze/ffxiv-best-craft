@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -86,7 +86,7 @@ const actions: Actions[][] = [
         Actions.StellarSteadyHand,
         Actions.RapidSynthesis,
         Actions.HastyTouch, // Actions.DaringTouch,
-    ]
+    ],
 ];
 
 const actionsForSimulator: Actions[][] = [

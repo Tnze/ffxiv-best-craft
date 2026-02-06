@@ -286,7 +286,7 @@ pub struct ProgressSolver {
     mn: bool,
     wn: usize,
     obz: bool,
-    // [obz][ve][mn][wn][tp][d][cp]
+    // [combo][ve][mn][wn][tp][d][cp]
     results: Array<Cell<SolverSlot<u16>>, 7>,
 }
 
@@ -322,7 +322,7 @@ impl ProgressSolver {
 
     fn get(&self, s: &Status) -> &Cell<SolverSlot<u16>> {
         let i = [
-            s.combo.map(|x| x as usize).unwrap_or(0),
+            matches!(s.combo, Some(ComboStates::Observed)) as usize,
             s.buffs.veneration as usize,
             s.buffs.manipulation as usize,
             s.buffs.wast_not.max(s.buffs.wast_not_ii) as usize,

@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -118,13 +118,19 @@ const chunkedActions = computed(() => {
             if (action == Actions.DaringTouch) {
                 action = Actions.HastyTouch;
             }
-            let actionName = $t(action.replaceAll('_', '-'));
-            if (actionName.includes(' ')) {
-                actionName = `"${actionName}"`;
+            if (action == Actions.StellarSteadyHand) {
+                lines.push(
+                    `/ac ${$t('duty-action')}2 <wait.${calcWaitTime(action) + genOptions.waitTimeInc}>`,
+                );
+            } else {
+                let actionName = $t(action.replaceAll('_', '-'));
+                if (actionName.includes(' ')) {
+                    actionName = `"${actionName}"`;
+                }
+                lines.push(
+                    `/ac ${actionName} <wait.${calcWaitTime(action) + genOptions.waitTimeInc}>`,
+                );
             }
-            lines.push(
-                `/ac ${actionName} <wait.${calcWaitTime(action) + genOptions.waitTimeInc}>`,
-            );
         }
         if (hasNotify.value) {
             lines.push(
@@ -296,6 +302,8 @@ copied-json = 已复制 JSON 表达式 到系统剪切板
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
 marco-finished = 宏#{ $id } 已完成！
 copy-failed = 复制失败：{ $err }
+
+duty-action = 任务指令
 </fluent>
 
 <fluent locale="zh-TW">
