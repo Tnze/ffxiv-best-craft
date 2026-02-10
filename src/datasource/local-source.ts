@@ -139,7 +139,9 @@ export class LocalRecipeSource {
         return { results, totalPages: 1 };
     }
 
-    async temporaryActionInfo(recipeId: number): Promise<TemporaryActionInfo> {
+    async temporaryActionInfo(
+        recipeId: number,
+    ): Promise<TemporaryActionInfo | null> {
         return await (
             await this.invoke
         )('temporary_action_info', { recipeId });

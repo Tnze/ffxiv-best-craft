@@ -45,7 +45,7 @@ export interface DataSource {
 
     medicineTable(page: number): Promise<DataSourceResult<Enhancer>>;
     mealsTable(page: number): Promise<DataSourceResult<Enhancer>>;
-    temporaryActionInfo?(recipeId: number): Promise<TemporaryActionInfo>;
+    temporaryActionInfo?(recipeId: number): Promise<TemporaryActionInfo | null>;
 }
 
 export interface CraftType {

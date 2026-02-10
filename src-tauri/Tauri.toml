@@ -1,6 +1,6 @@
 productName = "BestCraft"
 mainBinaryName = "BestCraft"
-version = "1.0.3"
+version = "1.0.4"
 identifier = "me.tnze.fbc"
 
 [build]
