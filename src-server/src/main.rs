@@ -615,7 +615,7 @@ async fn temporary_action_info(
         .one(conn)
         .await
         .map_err(|_| StatusError::internal_server_error())?
-        .ok_or_else(|| StatusError::bad_gateway())?;
+        .ok_or_else(|| StatusError::not_found())?;
     res.render(Json(result));
     Ok(())
 }

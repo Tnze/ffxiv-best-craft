@@ -16,7 +16,7 @@
 
 use crate::{simulate_one_step, SimulateOneStepResult};
 use ffxiv_crafting::{Actions, CastActionError, Status};
-use rand::{rng, Rng};
+use rand::{rng, Rng, RngExt};
 use serde::{Deserialize, Serialize};
 
 fn simulation(

@@ -21,7 +21,7 @@ pub use ffxiv_crafting;
 use ffxiv_crafting::{
     Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, Status,
 };
-use rand::{seq::IndexedRandom, Rng};
+use rand::{seq::IndexedRandom, Rng, RngExt};
 use serde::Serialize;
 
 #[derive(Serialize)]
