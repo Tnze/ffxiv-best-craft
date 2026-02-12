@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -443,7 +443,7 @@ async function handleSolverResult(
                                 @solver-result="handleSolverResult"
                                 :collectable-shop-refine="collectableShopRefine"
                                 :maxStellarSteadyHand="
-                                    store.content?.stellarSteadyHandCount ?? 0
+                                    store.content?.stellarSteadyHandCount
                                 "
                             />
                         </el-scrollbar>

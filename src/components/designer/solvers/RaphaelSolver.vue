@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -17,7 +17,7 @@
 -->
 
 <script setup lang="ts">
-import { computed, Ref, ref } from 'vue';
+import { computed, Ref, ref, watch } from 'vue';
 import {
     ElSpace,
     ElDialog,
@@ -41,7 +41,7 @@ const props = defineProps<{
     initStatus: Status;
     recipeName: string;
     collectableShopRefine?: CollectablesShopRefine;
-    maxStellarSteadyHand: number;
+    maxStellarSteadyHand: number | undefined;
 }>();
 
 const emits = defineEmits<{
@@ -128,6 +128,12 @@ const useTrainedEye = ref(true);
 const backloadProgress = ref(false);
 const adversarial = ref(false);
 const stellarSteadyHandCharges = ref(props.maxStellarSteadyHand);
+watch(
+    () => props.maxStellarSteadyHand,
+    max => {
+        stellarSteadyHandCharges.value = max;
+    },
+);
 
 function runRaphaelSolver() {
     emits(
@@ -144,7 +150,7 @@ function runRaphaelSolver() {
                 useTrainedEye.value,
                 backloadProgress.value,
                 adversarial.value,
-                stellarSteadyHandCharges.value,
+                stellarSteadyHandCharges.value ?? 0,
             ).catch(e => {
                 const err = String(e);
                 if (err == 'RuntimeError: unreachable')
@@ -231,6 +237,7 @@ function runRaphaelSolver() {
                 :min="0"
                 :max="props.maxStellarSteadyHand"
                 :step="1"
+                :disabled="!props.maxStellarSteadyHand"
                 step-strictly
             />
         </el-space>

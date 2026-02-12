@@ -43,7 +43,7 @@ const props = defineProps<{
     recipeName: string;
     canHq: boolean;
     collectableShopRefine?: CollectablesShopRefine;
-    maxStellarSteadyHand: number;
+    maxStellarSteadyHand: number | undefined;
 }>();
 
 const emits = defineEmits<{
