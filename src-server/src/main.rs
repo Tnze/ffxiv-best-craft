@@ -373,6 +373,7 @@ async fn recipe_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -
         )
         .column_as(recipes::Column::RequiredControl, "required_control")
         .column_as(recipes::Column::CanHq, "can_hq")
+        .column_as(recipes::Column::IsExpert, "is_expert")
         .column_as(recipes::Column::RecipeNotebookList, "recipe_notebook_list")
         .into_model::<RecipeInfo>()
         .one(conn)
