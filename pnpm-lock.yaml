@@ -65,6 +65,9 @@ importers:
       vue-router:
         specifier: 4.5.1
         version: 4.5.1(vue@3.5.28(typescript@5.9.3))
+      xiv-cac-utils:
+        specifier: ^0.0.4
+        version: 0.0.4
     devDependencies:
       '@babel/types':
         specifier: ^7.29.0
@@ -1865,6 +1868,9 @@ packages:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
     hasBin: true
+
+  xiv-cac-utils@0.0.4:
+    resolution: {integrity: sha512-8v90zeKnxVBPv2MYnt9b3ryYjMK4TlUA/lWY3Voo8gx+Z+N4nLFYbGlXYS2Frkum3WmP8Xut8GEI5CunxaAfoQ==}
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
@@ -3737,6 +3743,8 @@ snapshots:
   which@2.0.2:
     dependencies:
       isexe: 2.0.0
+
+  xiv-cac-utils@0.0.4: {}
 
   yallist@3.1.1:
     optional: true

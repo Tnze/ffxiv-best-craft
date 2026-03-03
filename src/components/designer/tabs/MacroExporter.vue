@@ -29,11 +29,14 @@ import {
     ElForm,
     ElFormItem,
     ElSegmented,
+    ElButton,
 } from 'element-plus';
 import { Actions, calcWaitTime } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { isTauri, isWebsite } from '@/libs/Consts';
 import useStore from '@/stores/designer';
+import { compress as cacCompress } from 'xiv-cac-utils';
+import { openUrl } from '@/libs/Utils';
 
 const props = defineProps<{
     actions: Actions[];
@@ -142,6 +145,24 @@ const chunkedActions = computed(() => {
     return macros;
 });
 
+const cac = computed(() =>
+    cacCompress({
+        type: 'signature',
+        actions: props.actions,
+    }),
+);
+
+function openInCac() {
+    openUrl('https://cac.nbb.fan/?s=' + encodeURIComponent(cac.value));
+}
+
+function openInHqHelper() {
+    openUrl(
+        'https://hqhelper.nbb.fan/#/macromanage?import=' +
+            encodeURIComponent(cac.value),
+    );
+}
+
 async function copyChunk(i: number, macro: string[]) {
     const macroText = macro.join('\r\n').replaceAll(/\u2068|\u2069/g, '');
     copy(macroText, $t('copied-marco', { id: i + 1 }));
@@ -230,6 +251,30 @@ async function copy(macroText: string, macroInfo: string) {
             </el-card>
         </el-space>
         <el-divider id="divider" content-position="left">
+            {{ $t('export-cac') }}
+        </el-divider>
+        <el-card
+            v-if="actions.length > 0"
+            :class="genOptions.oneclickCopy ? 'box-card-oneclick' : 'box-card'"
+            shadow="hover"
+            style="width: 300px"
+            @click="
+                genOptions.oneclickCopy
+                    ? copy(cac, $t('copied-cac'))
+                    : undefined
+            "
+        >
+            <code class="box-body">{{ cac }}</code>
+        </el-card>
+        <el-space v-if="actions.length > 0" style="margin-top: 12px">
+            <el-button @click="openInCac">{{
+                $t('open-in-cac-tool')
+            }}</el-button>
+            <el-button @click="openInHqHelper">
+                {{ $t('open-in-hqhelper') }}
+            </el-button>
+        </el-space>
+        <el-divider id="divider" content-position="left">
             {{ $t('export-json') }}
         </el-divider>
         <el-card
@@ -299,9 +344,14 @@ wait-time-inc = 增加等待时间
 
 export-json = 导出 JSON
 copied-json = 已复制 JSON 表达式 到系统剪切板
+export-cac = 导出 CAC 工序码
+copied-cac = 已复制 CAC 工序码到系统剪切板
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
 marco-finished = 宏#{ $id } 已完成！
 copy-failed = 复制失败：{ $err }
+
+open-in-cac-tool = 在 CAC Tool 网站打开
+open-in-hqhelper = 在 HQ Helper 网站打开
 
 duty-action = 任务指令
 </fluent>
@@ -328,9 +378,14 @@ wait-time-inc = 增加等待時間
 
 export-json = 匯出 JSON
 copied-json = 已複製 JSON 表示式 到系統剪下板
+export-cac = 匯出 CAC 工序碼
+copied-cac = 已複製 CAC 工序碼到系統剪下板
 copied-marco = 已複製 巨集#{ $id } 到系統剪下板
 marco-finished = 巨集#{ $id } 已完成！
 copy-failed = 複製失敗：{ $err }
+
+open-in-cac-tool = 在 CAC Tool 網站打開
+open-in-hqhelper = 在 HQ Helper 網站打開
 </fluent>
 
 <fluent locale="en-US">
@@ -355,7 +410,12 @@ wait-time-inc = Increase waiting time
 
 export-json = Export as JSON
 copied-json = Copied JSON expression to system clipboard!
+export-cac = Export as CAC
+copied-cac = Copied CAC to system clipboard!
 copied-marco = Copied M#{ $id } to system clipboard!
 marco-finished = M#{ $id } is finished!
 copy-failed = Copy failed: { $err }
+
+open-in-cac-tool = Open in CAC Tool Website
+open-in-hqhelper = Open in HQ Helper Website
 </fluent>

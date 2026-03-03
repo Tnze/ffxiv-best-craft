@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -30,12 +30,53 @@ import {
 import { useFluent } from 'fluent-vue';
 import { reactive, ref } from 'vue';
 import useStore from '@/stores/designer';
+import { decompress as cacDecompress, CraftActionCacId } from 'xiv-cac-utils';
 
 const emits = defineEmits<{
     onRecognized: [actions: Actions[]];
 }>();
 const fluent = useFluent();
 const store = useStore();
+
+const cacCodeMaps = new Map([
+    [CraftActionCacId.GreatStrides, Actions.GreatStrides],
+    [CraftActionCacId.Manipulation, Actions.Manipulation],
+    [CraftActionCacId.WasteNot, Actions.WasteNot],
+    [CraftActionCacId.WasteNot2, Actions.WasteNotII],
+    [CraftActionCacId.Innovation, Actions.Innovation],
+    [CraftActionCacId.FinalAppraisal, Actions.FinalAppraisal],
+    [CraftActionCacId.Veneration, Actions.Veneration],
+    [CraftActionCacId.BasicSynthesis, Actions.BasicSynthesis],
+    [CraftActionCacId.BasicTouch, Actions.BasicTouch],
+    [CraftActionCacId.MastersMend, Actions.MastersMend],
+    [CraftActionCacId.StandardTouch, Actions.StandardTouch],
+    [CraftActionCacId.Observe, Actions.Observe],
+    [CraftActionCacId.PreciseTouch, Actions.PreciseTouch],
+    [CraftActionCacId.CarefulSynthesis, Actions.CarefulSynthesis],
+    [CraftActionCacId.PrudentTouch, Actions.PrudentTouch],
+    [CraftActionCacId.TrainedEye, Actions.TrainedEye],
+    [CraftActionCacId.PreparatoryTouch, Actions.PreparatoryTouch],
+    [CraftActionCacId.IntensiveSynthesis, Actions.IntensiveSynthesis],
+    [CraftActionCacId.DelicateSynthesis, Actions.DelicateSynthesis],
+    [CraftActionCacId.ByregotsBlessing, Actions.ByregotsBlessing],
+    [CraftActionCacId.HastyTouch, Actions.HastyTouch],
+    [CraftActionCacId.RapidSynthesis, Actions.RapidSynthesis],
+    [CraftActionCacId.TricksOfTheTrade, Actions.TricksOfTheTrade],
+    [CraftActionCacId.MuscleMemory, Actions.MuscleMemory],
+    [CraftActionCacId.Reflect, Actions.Reflect],
+    [CraftActionCacId.CarefulObservation, Actions.CarefulObservation],
+    [CraftActionCacId.Groundwork, Actions.Groundwork],
+    [CraftActionCacId.AdvancedTouch, Actions.AdvancedTouch],
+    [CraftActionCacId.HeartAndSoul, Actions.HeartAndSoul],
+    [CraftActionCacId.PrudentSynthesis, Actions.PrudentSynthesis],
+    [CraftActionCacId.TrainedFinesse, Actions.TrainedFinesse],
+    [CraftActionCacId.RefinedTouch, Actions.RefinedTouch],
+    [CraftActionCacId.DaringTouch, Actions.DaringTouch],
+    [CraftActionCacId.QuickInnovation, Actions.QuickInnovation],
+    [CraftActionCacId.ImmaculateMend, Actions.ImmaculateMend],
+    [CraftActionCacId.TrainedPerfection, Actions.TrainedPerfection],
+    [CraftActionCacId.DutyAction2, Actions.StellarSteadyHand],
+]);
 
 // Create a map converts action names to std Action enum
 const namesToAction: Map<string, Actions> = new Map();
@@ -53,10 +94,11 @@ const options = reactive(store.options.importOptions);
 
 // Start parcing user input text
 function confirm() {
-    const input = inputText.value;
+    const input = inputText.value.trim();
     let result: Actions[];
 
-    if (input.trimStart().charAt(0) == '[') {
+    if (input.charAt(0) == '[') {
+        // Decode as JSON
         try {
             result = parseJson(JSON.parse(input));
             clarityReport('importJsonSuccess');
@@ -69,7 +111,27 @@ function confirm() {
             });
             return;
         }
+    } else if (/\d+v\d+b/.test(input)) {
+        // Decode as CAC
+        try {
+            result = cacDecompress(input).map(({ cacId }) => {
+                let action = cacCodeMaps.get(cacId);
+                if (action == undefined) {
+                    throw new Error('Unknown action ' + cacId);
+                }
+                return action;
+            });
+        } catch (err) {
+            clarityReport('importCacCodeError');
+            ElMessage({
+                type: 'error',
+                showClose: true,
+                message: fluent.$t('err-decode-cac', { err: String(err) }),
+            });
+            return;
+        }
     } else if (options.strictMode) {
+        // Decode as game macro in strict mode
         try {
             result = parseMacroStrict(input);
             clarityReport('importMacroStrictSuccess');
@@ -82,6 +144,7 @@ function confirm() {
             return;
         }
     } else {
+        // Decode as game macro in tolerance mode
         result = input
             .split(/\/[^\s]+|<wait\.\d+>|\n/)
             .map(v => v.trim())
@@ -198,6 +261,7 @@ err-parse-json = 尝试解析 JSON 失败：{ $err }
 err-not-an-array = 输入的 JSON 不是一个数组
 err-not-a-string = 元素 { $elem } 不是一个字符串
 err-invalid-action = 未知的技能：{ $action }
+err-decode-cac = 解码 CAC 工序码失败：{ $err }
 
 err-parse-strict = 严格模式导入宏失败：{ $err }
 err-parse-line-error = 导入第 { $n } 行失败
@@ -215,6 +279,7 @@ err-parse-json = 嘗試解析 JSON 失敗：{ $err }
 err-not-an-array = 輸入的 JSON 不是一個數組
 err-not-a-string = 元素 { $elem } 不是一個字串
 err-invalid-action = 未知的技能：{ $action }
+err-decode-cac = 解析 CAC 工序碼失敗：{ $err }
 
 err-parse-strict = 嚴格模式匯入巨集失敗：{ $err }
 err-parse-line-error = 匯入第 { $n } 行失敗
@@ -232,6 +297,7 @@ err-parse-json = Try parsing JSON failed: { $err }
 err-not-an-array = Input JSON is not an array
 err-not-a-string = Element { $elem } is not a string
 err-invalid-action = Invalid action: { $action }
+err-decode-cac = Failed to decode CAC code: { $err }
 
 err-parse-strict = Try parsing in strict mode failed: { $err }
 err-parse-line-error = Parsing line { $n } failed
