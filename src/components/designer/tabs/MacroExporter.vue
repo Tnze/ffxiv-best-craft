@@ -31,7 +31,7 @@ import {
     ElSegmented,
     ElButton,
 } from 'element-plus';
-import { Actions, calcWaitTime } from '@/libs/Craft';
+import { Actions, calcWaitTime, Item } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { isTauri, isWebsite } from '@/libs/Consts';
 import useStore from '@/stores/designer';
@@ -40,6 +40,7 @@ import { openUrl } from '@/libs/Utils';
 
 const props = defineProps<{
     actions: Actions[];
+    item: Item;
 }>();
 const { $t } = useFluent();
 const store = useStore();
@@ -158,8 +159,7 @@ function openInCac() {
 
 function openInHqHelper() {
     openUrl(
-        'https://hqhelper.nbb.fan/#/macromanage?import=' +
-            encodeURIComponent(cac.value),
+        `https://hqhelper.nbb.fan/#/macromanage?import=${encodeURIComponent(cac.value)}&item=${props.item.id}&name=${encodeURIComponent(props.item.name)}`,
     );
 }
 

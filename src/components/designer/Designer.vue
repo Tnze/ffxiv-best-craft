@@ -416,7 +416,10 @@ async function handleSolverResult(
                         class="multi-function-area"
                     >
                         <el-scrollbar style="flex: auto">
-                            <MacroExporter :actions="displayActions" />
+                            <MacroExporter
+                                :actions="displayActions"
+                                :item="item"
+                            />
                         </el-scrollbar>
                     </el-tab-pane>
                     <el-tab-pane
