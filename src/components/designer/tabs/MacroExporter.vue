@@ -30,7 +30,9 @@ import {
     ElFormItem,
     ElSegmented,
     ElButton,
+    ElButtonGroup,
 } from 'element-plus';
+import { CopyDocument } from '@element-plus/icons-vue';
 import { Actions, calcWaitTime, Item } from '@/libs/Craft';
 import { useFluent } from 'fluent-vue';
 import { isTauri, isWebsite } from '@/libs/Consts';
@@ -153,15 +155,13 @@ const cac = computed(() =>
     }),
 );
 
-function openInCac() {
-    openUrl('https://cac.nbb.fan/?s=' + encodeURIComponent(cac.value));
-}
-
-function openInHqHelper() {
-    openUrl(
+const openInCacUrl = computed(
+    () => 'https://cac.nbb.fan/?s=' + encodeURIComponent(cac.value),
+);
+const openInHqHelperUrl = computed(
+    () =>
         `https://hqhelper.nbb.fan/#/macromanage?import=${encodeURIComponent(cac.value)}&item=${props.item.id}&name=${encodeURIComponent(props.item.name)}`,
-    );
-}
+);
 
 async function copyChunk(i: number, macro: string[]) {
     const macroText = macro.join('\r\n').replaceAll(/\u2068|\u2069/g, '');
@@ -267,12 +267,24 @@ async function copy(macroText: string, macroInfo: string) {
             <code class="box-body">{{ cac }}</code>
         </el-card>
         <el-space v-if="actions.length > 0" style="margin-top: 12px">
-            <el-button @click="openInCac">{{
-                $t('open-in-cac-tool')
-            }}</el-button>
-            <el-button @click="openInHqHelper">
-                {{ $t('open-in-hqhelper') }}
-            </el-button>
+            <el-button-group>
+                <el-button @click="openUrl(openInCacUrl)">
+                    {{ $t('open-in-cac-tool') }}
+                </el-button>
+                <el-button
+                    :icon="CopyDocument"
+                    @click="copy(openInCacUrl, $t('copied-link'))"
+                />
+            </el-button-group>
+            <el-button-group>
+                <el-button @click="openUrl(openInHqHelperUrl)">
+                    {{ $t('open-in-hqhelper') }}
+                </el-button>
+                <el-button
+                    :icon="CopyDocument"
+                    @click="copy(openInHqHelperUrl, $t('copied-link'))"
+                />
+            </el-button-group>
         </el-space>
         <el-divider id="divider" content-position="left">
             {{ $t('export-json') }}
@@ -347,6 +359,7 @@ copied-json = 已复制 JSON 表达式 到系统剪切板
 export-cac = 导出 CAC 工序码
 copied-cac = 已复制 CAC 工序码到系统剪切板
 copied-marco = 已复制 宏#{ $id } 到系统剪切板
+copied-link = 已复制超链接到系统剪切板
 marco-finished = 宏#{ $id } 已完成！
 copy-failed = 复制失败：{ $err }
 
@@ -381,6 +394,7 @@ copied-json = 已複製 JSON 表示式 到系統剪下板
 export-cac = 匯出 CAC 工序碼
 copied-cac = 已複製 CAC 工序碼到系統剪下板
 copied-marco = 已複製 巨集#{ $id } 到系統剪下板
+copied-link = 已複製超連結至系統剪貼簿
 marco-finished = 巨集#{ $id } 已完成！
 copy-failed = 複製失敗：{ $err }
 
@@ -409,10 +423,11 @@ disable-section = Disable
 wait-time-inc = Increase waiting time
 
 export-json = Export as JSON
-copied-json = Copied JSON expression to system clipboard!
+copied-json = The JSON expression has been copied to system clipboard!
 export-cac = Export as CAC
-copied-cac = Copied CAC to system clipboard!
-copied-marco = Copied M#{ $id } to system clipboard!
+copied-cac = The CAC has been copied to system clipboard!
+copied-marco = The M#{ $id } has been copied to system clipboard!
+copied-link = The hyperlink has been copied to the system clipboard!
 marco-finished = M#{ $id } is finished!
 copy-failed = Copy failed: { $err }
 
