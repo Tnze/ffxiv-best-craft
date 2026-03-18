@@ -1,6 +1,6 @@
 productName = "BestCraft"
 mainBinaryName = "BestCraft"
-version = "1.1.1"
+version = "1.1.2"
 identifier = "me.tnze.fbc"
 
 [build]
@@ -20,7 +20,7 @@ icon = [
     "icons/icon.ico",
 ]
 resources = ["assets/xiv.db"]
-copyright = "2024 Tnze"
+copyright = "2026 Tnze"
 category = "Game"
 shortDescription = "FF14 Crafting Simulator & Solver."
 longDescription = "A software for FFXIV crafting simulation and auto solving with friendly UI."

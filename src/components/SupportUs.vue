@@ -29,7 +29,7 @@ import { ElDescriptions, ElDescriptionsItem, ElTag } from 'element-plus';
             <el-tag effect="plain" round>Star</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="支持 YYYY.GAMES 服务器运行">
-            <a href="https://afdian.com/@ffxivtk" target="_blank">
+            <a href="https://ifdian.net/@ffxivtk" target="_blank">
                 <img
                     src="@/assets/coffee.png"
                     alt="Buy Me a Coffee"
