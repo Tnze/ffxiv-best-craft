@@ -19,7 +19,7 @@ pub struct Model {
     #[sea_orm(column_name = "Recipe4Id")]
     pub recipe4_id: Option<u32>,
     #[sea_orm(column_name = "IsExpert")]
-    pub is_expert: i8,
+    pub is_expert: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

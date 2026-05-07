@@ -1,0 +1,19 @@
+[package]
+name = "src-data"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+dialoguer = "0.12.0"
+app-db = { path = "../src-db" }
+thiserror = "2.0.18"
+
+[dependencies.ironworks]
+git = "https://github.com/ackwell/ironworks"
+branch = "main"
+features = ["excel", "sqpack", "zipatch"]
+
+[dependencies.ironworks_schema]
+git = "https://github.com/ackwell/ironworks"
+branch = "main"
+features = ["exdschema"]

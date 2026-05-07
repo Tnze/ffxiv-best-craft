@@ -13,7 +13,7 @@ pub struct Model {
     #[sea_orm(column_name = "Level")]
     pub level: u32,
     #[sea_orm(column_name = "CanBeHQ")]
-    pub can_be_hq: i8,
+    pub can_be_hq: bool,
     #[sea_orm(column_name = "ItemUICategoryId")]
     pub item_ui_category_id: Option<u32>,
     #[sea_orm(column_name = "ItemSearchCategoryId")]
@@ -21,9 +21,9 @@ pub struct Model {
     #[sea_orm(column_name = "ItemActionId")]
     pub item_action_id: Option<u32>,
     #[sea_orm(column_name = "IsCollectable")]
-    pub is_collectable: i8,
+    pub is_collectable: bool,
     #[sea_orm(column_name = "AlwaysCollectable")]
-    pub always_collectable: i8,
+    pub always_collectable: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

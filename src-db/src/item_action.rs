@@ -26,6 +26,8 @@ pub struct Model {
     pub data7: u16,
     #[sea_orm(column_name = "Data8")]
     pub data8: u16,
+    #[sea_orm(column_name = "Data9")]
+    pub data9: u16,
     #[sea_orm(column_name = "DataHQ1")]
     pub data_hq1: u16,
     #[sea_orm(column_name = "DataHQ2")]
@@ -42,6 +44,8 @@ pub struct Model {
     pub data_hq7: u16,
     #[sea_orm(column_name = "DataHQ8")]
     pub data_hq8: u16,
+    #[sea_orm(column_name = "DataHQ9")]
+    pub data_hq9: u16,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["src-libs", "src-tauri", "src-wasm", "src-server", "src-db"]
+members = ["src-libs", "src-tauri", "src-wasm", "src-server", "src-db", "src-data"]
 
 [workspace.dependencies]
 sea-orm = { version = "1.1", features = ["runtime-tokio-native-tls", "macros"] }

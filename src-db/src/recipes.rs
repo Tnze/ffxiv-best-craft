@@ -24,14 +24,16 @@ pub struct Model {
     pub quality_factor: u16,
     #[sea_orm(column_name = "DurabilityFactor")]
     pub durability_factor: u16,
+    #[sea_orm(column_name = "RequiredQuality")]
+    pub required_quality: u32,
     #[sea_orm(column_name = "RequiredCraftsmanship")]
     pub required_craftsmanship: u16,
     #[sea_orm(column_name = "RequiredControl")]
     pub required_control: u16,
     #[sea_orm(column_name = "CanHq")]
-    pub can_hq: i8,
+    pub can_hq: bool,
     #[sea_orm(column_name = "IsExpert")]
-    pub is_expert: i8,
+    pub is_expert: bool,
     #[sea_orm(column_name = "CollectablesMetadataKey")]
     pub collectables_metadata_key: u16,
     #[sea_orm(column_name = "CollectablesMetadata")]
