@@ -1,4 +1,5 @@
 use ironworks::excel::SheetMetadata;
+use sea_orm::ActiveValue;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -155,15 +156,67 @@ impl SheetMetadata for RecipeLevelTable {
     }
 }
 
+pub struct ItemFoodRow {
+    pub id: u32,
+    pub effects: [ItemFoodEffect; 3],
+}
+
+pub struct ItemFoodEffect {
+    pub base_param: u8,
+    pub value: i8,
+    pub max: i16,
+    pub value_hq: i8,
+    pub max_hq: i16,
+}
+
+impl ItemFoodEffect {
+    pub fn to_model(&self, item_food_id: u32) -> app_db::item_food_effect::ActiveModel {
+        app_db::item_food_effect::ActiveModel {
+            id: ActiveValue::NotSet,
+            base_param: ActiveValue::Set(self.base_param),
+            value: ActiveValue::Set(self.value),
+            max: ActiveValue::Set(self.max),
+            value_hq: ActiveValue::Set(self.value_hq),
+            max_hq: ActiveValue::Set(self.max_hq),
+            item_food_id: ActiveValue::Set(item_food_id),
+        }
+    }
+}
+
 impl SheetMetadata for ItemFood {
     fn name(&self) -> String {
         String::from("ItemFood")
     }
 
-    type Row = app_db::item_food::Model;
+    type Row = ItemFoodRow;
     type Error = Error;
     fn populate_row(&self, row: ironworks::excel::Row) -> Result<Self::Row, Self::Error> {
-        Ok(Self::Row { id: row.row_id() })
+        Ok(Self::Row {
+            id: row.row_id(),
+            effects: [
+                ItemFoodEffect {
+                    base_param: row.field(1)?.into_u8()?,
+                    value: row.field(3)?.into_i8()?,
+                    max: row.field(4)?.into_i16()?,
+                    value_hq: row.field(5)?.into_i8()?,
+                    max_hq: row.field(6)?.into_i16()?,
+                },
+                ItemFoodEffect {
+                    base_param: row.field(7)?.into_u8()?,
+                    value: row.field(9)?.into_i8()?,
+                    max: row.field(10)?.into_i16()?,
+                    value_hq: row.field(11)?.into_i8()?,
+                    max_hq: row.field(12)?.into_i16()?,
+                },
+                ItemFoodEffect {
+                    base_param: row.field(13)?.into_u8()?,
+                    value: row.field(15)?.into_i8()?,
+                    max: row.field(16)?.into_i16()?,
+                    value_hq: row.field(17)?.into_i8()?,
+                    max_hq: row.field(18)?.into_i16()?,
+                },
+            ],
+        })
     }
 }
 

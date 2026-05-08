@@ -6,7 +6,7 @@ use serde::Serialize;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize)]
 #[sea_orm(table_name = "ItemUICategories")]
 pub struct Model {
-    #[sea_orm(column_name = "Id", primary_key)]
+    #[sea_orm(column_name = "Id", primary_key, auto_increment = false)]
     pub id: u32,
     #[sea_orm(column_name = "Name", column_type = "custom(\"LONGTEXT\")")]
     pub name: String,

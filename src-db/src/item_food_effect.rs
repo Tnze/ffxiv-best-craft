@@ -9,7 +9,7 @@ pub struct Model {
     #[sea_orm(column_name = "Id", primary_key)]
     pub id: u32,
     #[sea_orm(column_name = "BaseParam")]
-    pub base_param: u32,
+    pub base_param: u8,
     #[sea_orm(column_name = "Value")]
     pub value: i8,
     #[sea_orm(column_name = "Max")]
@@ -19,7 +19,7 @@ pub struct Model {
     #[sea_orm(column_name = "MaxHQ")]
     pub max_hq: i16,
     #[sea_orm(column_name = "ItemFoodId")]
-    pub item_food_id: Option<u32>,
+    pub item_food_id: u32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

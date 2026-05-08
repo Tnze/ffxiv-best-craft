@@ -6,8 +6,10 @@ use ironworks::{
     excel::{Excel, Language, SheetMetadata},
     sqpack::{Install, SqPack},
 };
+use itertools::Itertools;
 use sea_orm::{
-    ActiveValue, ConnectOptions, ConnectionTrait, Database, DatabaseConnection, EntityTrait,
+    ActiveValue, ConnectOptions, ConnectionTrait, Database, DatabaseBackend, DatabaseConnection,
+    EntityTrait, Statement, TryInsertResult,
 };
 
 mod metadata;
@@ -30,8 +32,8 @@ async fn create_tables(db: &sea_orm::DatabaseConnection) -> Result<(), sea_orm::
         schema.create_table_from_entity(app_db::item_action::Entity),
         schema.create_table_from_entity(app_db::items::Entity),
         schema.create_table_from_entity(app_db::recipe_level_tables::Entity),
-        schema.create_table_from_entity(app_db::item_food_effect::Entity),
         schema.create_table_from_entity(app_db::item_food::Entity),
+        schema.create_table_from_entity(app_db::item_food_effect::Entity),
         schema.create_table_from_entity(app_db::collectables_shop_refine::Entity),
         schema.create_table_from_entity(app_db::item_with_amount::Entity),
         schema.create_table_from_entity(app_db::recipes::Entity),
@@ -39,8 +41,24 @@ async fn create_tables(db: &sea_orm::DatabaseConnection) -> Result<(), sea_orm::
         schema.create_table_from_entity(app_db::wks_mission_to_do::Entity),
         schema.create_table_from_entity(app_db::wks_mission_unit::Entity),
     ];
+    if let DatabaseBackend::MySql = backend {
+        db.execute(Statement::from_string(
+            backend,
+            "SET FOREIGN_KEY_CHECKS = 0;",
+        ))
+        .await?;
+    }
+
     for mut stat in stats {
         db.execute(backend.build(stat.if_not_exists())).await?;
+    }
+
+    if let DatabaseBackend::MySql = backend {
+        db.execute(Statement::from_string(
+            backend,
+            "SET FOREIGN_KEY_CHECKS = 1;",
+        ))
+        .await?;
     }
     Ok(())
 }
@@ -54,7 +72,6 @@ async fn insert_excel_sheet<E>(
 where
     E: EntityTrait,
 {
-    use itertools::Itertools;
     for (batch_id, batch) in excel
         .sheet(metadata)?
         .into_iter()
@@ -142,7 +159,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     insert_excel_sheet(ItemAction, &excel, &db, md::ItemAction).await?;
     insert_excel_sheet(Items, &excel, &db, md::Item).await?;
     insert_excel_sheet(RecipeLevelTables, &excel, &db, md::RecipeLevelTable).await?;
-    insert_excel_sheet(ItemFood, &excel, &db, md::ItemFood).await?;
+    // insert_excel_sheet(ItemFood, &excel, &db, md::ItemFood).await?;
+    insert_item_food(&excel, &db).await?;
     insert_excel_sheet(
         CollectablesShopRefine,
         &excel,
@@ -159,8 +177,46 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+async fn insert_item_food(excel: &Excel, db: &DatabaseConnection) -> Result<(), Box<dyn Error>> {
+    for (batch_id, batch) in excel
+        .sheet(metadata::ItemFood)?
+        .into_iter()
+        .filter_map(|x| x.inspect_err(|e| println!("{e}")).ok())
+        .chunks(1000)
+        .into_iter()
+        .enumerate()
+    {
+        println!("Pushing ItemFood batch {}", batch_id * 1000);
+        let (item_foods, item_food_effects): (Vec<_>, Vec<_>) = batch
+            .into_iter()
+            .map(|x| {
+                (
+                    app_db::item_food::ActiveModel {
+                        id: ActiveValue::Set(x.id),
+                    },
+                    x.effects
+                        .into_iter()
+                        .map(move |effect| effect.to_model(x.id)),
+                )
+            })
+            .unzip();
+        app_db::item_food::Entity::insert_many(item_foods)
+            .exec(db)
+            .await?;
+        app_db::item_food_effect::Entity::insert_many(
+            item_food_effects
+                .into_iter()
+                .flatten()
+                .filter(|x| !matches!(x.base_param, ActiveValue::Set(0))),
+        )
+        .do_nothing()
+        .exec(db)
+        .await?;
+    }
+    Ok(())
+}
+
 async fn insert_recipes(excel: &Excel, db: &DatabaseConnection) -> Result<(), Box<dyn Error>> {
-    use itertools::Itertools;
     for (batch_id, batch) in excel
         .sheet(metadata::Recipe)?
         .into_iter()
@@ -209,12 +265,16 @@ async fn insert_recipes(excel: &Excel, db: &DatabaseConnection) -> Result<(), Bo
             .filter_map(|(i, opt_val)| opt_val.map(|val| (i, val)))
             .unzip();
         let keys = app_db::item_with_amount::Entity::insert_many(models)
+            .do_nothing()
             .exec_with_returning_keys(db)
             .await?;
-        for (key, i) in keys.into_iter().zip(idx) {
-            recipes[i].item_result_id = ActiveValue::Set(Some(key));
+        if let TryInsertResult::Inserted(keys) = keys {
+            for (key, i) in keys.into_iter().zip(idx) {
+                recipes[i].item_result_id = ActiveValue::Set(Some(key));
+            }
         }
         app_db::recipes::Entity::insert_many(recipes)
+            .do_nothing()
             .exec(db)
             .await?;
 
@@ -230,6 +290,7 @@ async fn insert_recipes(excel: &Excel, db: &DatabaseConnection) -> Result<(), Bo
                 })
             },
         ))
+        .do_nothing()
         .exec(db)
         .await?;
     }
