@@ -3,10 +3,12 @@ use std::{error::Error, fmt::Display, path::Path};
 use dialoguer::{Confirm, Input, Select};
 use ironworks::{
     Ironworks,
-    excel::{Excel, Language},
+    excel::{Excel, Language, SheetMetadata},
     sqpack::{Install, SqPack},
 };
-use sea_orm::{ActiveValue, ConnectOptions, ConnectionTrait, Database, EntityTrait};
+use sea_orm::{
+    ActiveValue, ConnectOptions, ConnectionTrait, Database, DatabaseConnection, EntityTrait,
+};
 
 mod metadata;
 
@@ -43,23 +45,29 @@ async fn create_tables(db: &sea_orm::DatabaseConnection) -> Result<(), sea_orm::
     Ok(())
 }
 
-macro_rules! insert_excel_sheet {
-    ($($db_mod:ident)::+, $metadata:expr, $excel:expr, $db:expr) => {{
-        use itertools::Itertools;
-        for batch in &$excel
-                .sheet($metadata)?
-                .into_iter()
-                .filter_map(|x| x.inspect_err(|e| println!("{e}")).ok())
-                .map($($db_mod)::+::ActiveModel::from)
-                .chunks(1000)
-        {
-            $($db_mod)::+::Entity::insert_many(batch)
-                .exec($db)
-                .await
-                .inspect_err(|e| println!("Failed to insert many: {e}"))
-                .unwrap();
-        }
-    }};
+async fn insert_excel_sheet<E>(
+    entity: E,
+    excel: &Excel,
+    db: &DatabaseConnection,
+    metadata: impl SheetMetadata<Row = impl Into<E::ActiveModel>>,
+) -> Result<(), Box<dyn Error>>
+where
+    E: EntityTrait,
+{
+    use itertools::Itertools;
+    for (batch_id, batch) in excel
+        .sheet(metadata)?
+        .into_iter()
+        .filter_map(|x| x.inspect_err(|e| println!("{e}")).ok())
+        .map(|x| x.into())
+        .chunks(1000)
+        .into_iter()
+        .enumerate()
+    {
+        println!("Pushing {} batch {}", entity.table_name(), batch_id * 1000);
+        E::insert_many(batch).exec(db).await?;
+    }
+    Ok(())
 }
 
 #[tokio::main]
@@ -126,35 +134,32 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Create tables
     create_tables(&db).await?;
 
-    insert_excel_sheet!(
-        app_db::item_ui_categories,
-        metadata::ItemUICategory,
-        excel,
-        &db
-    );
-    insert_excel_sheet!(
-        app_db::item_search_categories,
-        metadata::ItemSearchCategory,
-        excel,
-        &db
-    );
-    insert_excel_sheet!(app_db::craft_types, metadata::CraftType, excel, &db);
-    insert_excel_sheet!(app_db::item_action, metadata::ItemAction, excel, &db);
-    insert_excel_sheet!(app_db::items, metadata::Item, excel, &db);
-    insert_excel_sheet!(
-        app_db::recipe_level_tables,
-        metadata::RecipeLevelTable,
-        excel,
-        &db
-    );
-    insert_excel_sheet!(app_db::item_food, metadata::ItemFood, excel, &db);
-    insert_excel_sheet!(
-        app_db::collectables_shop_refine,
-        metadata::CollectablesShopRefine,
-        excel,
-        &db
-    );
-    // insert_excel_sheet!(app_db::recipes, metadata::Recipe, excel, &db);
+    use app_db::prelude::*;
+    use metadata as md;
+    insert_excel_sheet(ItemUiCategories, &excel, &db, md::ItemUICategory).await?;
+    insert_excel_sheet(ItemSearchCategories, &excel, &db, md::ItemSearchCategory).await?;
+    insert_excel_sheet(CraftTypes, &excel, &db, md::CraftType).await?;
+    insert_excel_sheet(ItemAction, &excel, &db, md::ItemAction).await?;
+    insert_excel_sheet(Items, &excel, &db, md::Item).await?;
+    insert_excel_sheet(RecipeLevelTables, &excel, &db, md::RecipeLevelTable).await?;
+    insert_excel_sheet(ItemFood, &excel, &db, md::ItemFood).await?;
+    insert_excel_sheet(
+        CollectablesShopRefine,
+        &excel,
+        &db,
+        md::CollectablesShopRefine,
+    )
+    .await?;
+    insert_recipes(&excel, &db).await?;
+    insert_excel_sheet(WksMissionRecipe, &excel, &db, md::WKSMissionRecipe).await?;
+    insert_excel_sheet(WksMissionToDo, &excel, &db, md::WKSMissionToDo).await?;
+    insert_excel_sheet(WksMissionUnit, &excel, &db, md::WKSMissionUnit).await?;
+
+    println!("Success!");
+    Ok(())
+}
+
+async fn insert_recipes(excel: &Excel, db: &DatabaseConnection) -> Result<(), Box<dyn Error>> {
     use itertools::Itertools;
     for (batch_id, batch) in excel
         .sheet(metadata::Recipe)?
@@ -164,7 +169,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .into_iter()
         .enumerate()
     {
-        println!("Start push recipe batch {batch_id}");
+        println!("Pushing Recipes batch {}", batch_id * 1000);
         let ((recipe_results, mut recipes), ingredients): ((Vec<_>, Vec<_>), Vec<_>) = batch
             .map(|row| {
                 let recipe_result =
@@ -204,13 +209,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .filter_map(|(i, opt_val)| opt_val.map(|val| (i, val)))
             .unzip();
         let keys = app_db::item_with_amount::Entity::insert_many(models)
-            .exec_with_returning_keys(&db)
+            .exec_with_returning_keys(db)
             .await?;
         for (key, i) in keys.into_iter().zip(idx) {
             recipes[i].item_result_id = ActiveValue::Set(Some(key));
         }
         app_db::recipes::Entity::insert_many(recipes)
-            .exec(&db)
+            .exec(db)
             .await?;
 
         app_db::item_with_amount::Entity::insert_many(ingredients.into_iter().flat_map(
@@ -225,30 +230,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 })
             },
         ))
-        .exec(&db)
+        .exec(db)
         .await?;
     }
-
-    // app_db::item_with_amount::Entity::
-    insert_excel_sheet!(
-        app_db::wks_mission_recipe,
-        metadata::WKSMissionRecipe,
-        excel,
-        &db
-    );
-    insert_excel_sheet!(
-        app_db::wks_mission_to_do,
-        metadata::WKSMissionToDo,
-        excel,
-        &db
-    );
-    insert_excel_sheet!(
-        app_db::wks_mission_unit,
-        metadata::WKSMissionUnit,
-        excel,
-        &db
-    );
-
-    println!("Success!");
     Ok(())
 }
