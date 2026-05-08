@@ -30,7 +30,6 @@ native-dialog = "0.9.0"
 num_cpus = "1.17"
 percent-encoding = "2.3.1"
 rand = "0.10.1"
-window-vibrancy = "0.7"
 
 tauri = { version = "2", features = [] }
 tauri-plugin-fs = "2"

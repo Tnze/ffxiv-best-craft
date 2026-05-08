@@ -50,7 +50,7 @@ import { useRouter } from 'vue-router';
 import DesktopEditionDownload from './components/DesktopEditionDownload.vue';
 
 const { $t } = useFluent();
-const colorMode = useColorMode();
+const colorMode = useColorMode().store;
 const settingsStore = useSettingsStore();
 const gearsetsStore = useGearsetsStore();
 const designerStore = useDesignerStore();

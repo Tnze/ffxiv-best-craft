@@ -37,7 +37,11 @@ use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 use rand::rng;
 use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
 use serde::Serialize;
-use tauri::{path::BaseDirectory, Manager};
+use tauri::{
+    path::BaseDirectory,
+    window::{Effect, EffectsBuilder},
+    Manager, Theme,
+};
 use tokio::sync::{Mutex, OnceCell};
 
 use app_db::{
@@ -607,19 +611,9 @@ async fn destroy_solver(
 fn set_theme(app_handle: tauri::AppHandle, is_dark: Option<bool>) -> bool {
     #[allow(unused)]
     let window = app_handle.get_webview_window("main").unwrap();
-    #[cfg(target_os = "macos")]
-    {
-        use window_vibrancy::NSVisualEffectMaterial::HudWindow;
-        window_vibrancy::apply_vibrancy(&window, HudWindow, None, None).is_ok()
-    }
-    #[cfg(target_os = "windows")]
-    {
-        window_vibrancy::apply_mica(&window, is_dark).is_ok()
-    }
-    #[cfg(all(not(target_os = "macos"), not(target_os = "windows")))]
-    {
-        false // Linux doesn't support vibrancy window
-    }
+    window
+        .set_theme(is_dark.map(|x| if x { Theme::Dark } else { Theme::Light }))
+        .is_ok()
 }
 
 #[tauri::command(async)]
@@ -702,18 +696,10 @@ fn main() {
             )?;
 
             #[cfg(target_os = "macos")]
-            {
-                use window_vibrancy::NSVisualEffectMaterial;
-                let _ = window_vibrancy::apply_vibrancy(
-                    &window,
-                    NSVisualEffectMaterial::HudWindow,
-                    None,
-                    None,
-                );
-            }
+            let _ = window.set_effects(EffectsBuilder::new().effect(Effect::HudWindow).build());
 
             #[cfg(target_os = "windows")]
-            let _ = window_vibrancy::apply_mica(&window, None);
+            let _ = window.set_effects(EffectsBuilder::new().effect(Effect::Mica).build());
 
             Ok(())
         })
