@@ -16,8 +16,8 @@
 
 pub mod depth_first_search_solver;
 pub mod normal_progress_solver;
-pub mod reflect_solver;
 pub mod raphael;
+pub mod reflect_solver;
 
 use std::cmp::Ordering;
 

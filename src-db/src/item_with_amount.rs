@@ -11,7 +11,7 @@ pub struct Model {
     #[sea_orm(column_name = "IngredientId")]
     pub ingredient_id: u32,
     #[sea_orm(column_name = "Amount")]
-    pub amount: i32,
+    pub amount: u8,
     #[sea_orm(column_name = "RecipeId")]
     pub recipe_id: Option<u32>,
 }

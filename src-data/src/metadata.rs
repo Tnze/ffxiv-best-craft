@@ -8,13 +8,13 @@ pub enum Error {
     #[error("convert SeString error: {0}")]
     SeStringConvertError(#[from] ironworks::sestring::Error),
 
-    #[error("Cannot convert field type: {0:?}")]
-    TypeError(ironworks::excel::Field),
+    #[error("Cannot convert field type: {field:?}")]
+    DataTypeError { field: ironworks::excel::Field },
 }
 
 impl From<ironworks::excel::Field> for Error {
-    fn from(value: ironworks::excel::Field) -> Self {
-        Self::TypeError(value)
+    fn from(field: ironworks::excel::Field) -> Self {
+        Self::DataTypeError { field }
     }
 }
 
@@ -124,7 +124,7 @@ impl SheetMetadata for Item {
             can_be_hq: row.field(27)?.into_bool()?,
             item_ui_category_id: Some(row.field(15)?.into_u8()? as u32).filter(|x| *x != 0),
             item_search_category_id: Some(row.field(16)?.into_u8()? as u32).filter(|x| *x != 0),
-            item_action_id: Some(row.field(15)?.into_u16()? as u32).filter(|x| *x != 0),
+            item_action_id: Some(row.field(15)?.into_u8()? as u32).filter(|x| *x != 0),
             is_collectable: row.field(37)?.into_bool()?,
             always_collectable: row.field(38)?.into_bool()?,
         })
@@ -184,20 +184,73 @@ impl SheetMetadata for CollectablesShopRefine {
     }
 }
 
+pub struct RecipeRow {
+    pub id: u32,
+    pub number: i32,
+    pub craft_type_id: u32,
+    pub recipe_level_id: u32,
+    pub item_result: Option<ItemWithAmount>,
+    pub ingredients: [Option<ItemWithAmount>; 8],
+    pub material_quality_factor: u8,
+    pub difficulty_factor: u16,
+    pub quality_factor: u16,
+    pub durability_factor: u16,
+    pub required_quality: u32,
+    pub required_craftsmanship: u16,
+    pub required_control: u16,
+    pub can_hq: bool,
+    pub is_expert: bool,
+    pub collectables_metadata_key: u32,
+    pub collectables_metadata: Option<u32>,
+    pub recipe_notebook_list: u32,
+}
+
+pub struct ItemWithAmount {
+    pub item_id: u32,
+    pub amount: u8,
+}
+
+impl ItemWithAmount {
+    fn from(item_id: u32, amount: u8) -> Option<Self> {
+        if item_id == 0 || item_id == 0xFFFF_FFFF {
+            return None;
+        }
+        Some(Self { item_id, amount })
+    }
+}
+
 impl SheetMetadata for Recipe {
     fn name(&self) -> String {
         String::from("Recipe")
     }
 
-    type Row = app_db::recipes::Model;
+    type Row = RecipeRow;
     type Error = Error;
     fn populate_row(&self, row: ironworks::excel::Row) -> Result<Self::Row, Self::Error> {
-        Ok(Self::Row {
+        let collectables_metadata_key = row.field(44)?.into_u8()? as u32;
+        let collectables_metadata = match collectables_metadata_key {
+            1 => Some(row.field(45)?.into_u16()? as u32),
+            _ => None,
+        };
+        Ok(RecipeRow {
             id: row.row_id(),
             number: row.field(0)?.into_i32()?,
             craft_type_id: row.field(1)?.into_i32()? as u32,
             recipe_level_id: row.field(2)?.into_u16()? as u32,
-            item_result_id: Some(row.field(4)?.into_i32()? as u32).filter(|x| *x != 0),
+            item_result: ItemWithAmount::from(
+                row.field(4)?.into_i32()? as u32,
+                row.field(5)?.into_u8()?,
+            ),
+            ingredients: [
+                ItemWithAmount::from(row.field(6)?.into_i32()? as u32, row.field(7)?.into_u8()?),
+                ItemWithAmount::from(row.field(8)?.into_i32()? as u32, row.field(9)?.into_u8()?),
+                ItemWithAmount::from(row.field(10)?.into_i32()? as u32, row.field(11)?.into_u8()?),
+                ItemWithAmount::from(row.field(12)?.into_i32()? as u32, row.field(13)?.into_u8()?),
+                ItemWithAmount::from(row.field(14)?.into_i32()? as u32, row.field(15)?.into_u8()?),
+                ItemWithAmount::from(row.field(16)?.into_i32()? as u32, row.field(17)?.into_u8()?),
+                ItemWithAmount::from(row.field(18)?.into_i32()? as u32, row.field(19)?.into_u8()?),
+                ItemWithAmount::from(row.field(20)?.into_i32()? as u32, row.field(21)?.into_u8()?),
+            ],
             material_quality_factor: row.field(25)?.into_u8()?,
             difficulty_factor: row.field(26)?.into_u16()?,
             quality_factor: row.field(27)?.into_u16()?,
@@ -207,8 +260,8 @@ impl SheetMetadata for Recipe {
             required_control: row.field(31)?.into_u16()?,
             can_hq: row.field(37)?.into_bool()?,
             is_expert: row.field(43)?.into_bool()?,
-            collectables_metadata_key: row.field(44)?.into_u8()? as u16,
-            collectables_metadata: row.field(45)?.into_u16()? as u32,
+            collectables_metadata_key,
+            collectables_metadata,
             recipe_notebook_list: row.field(22)?.into_u16()? as u32,
         })
     }

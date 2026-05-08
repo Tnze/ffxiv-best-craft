@@ -150,7 +150,7 @@ async fn recipe_table(
     let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
     let mut query = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
-        .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
+        .join(JoinType::InnerJoin, recipes::Relation::ItemResult.def())
         .join(
             JoinType::InnerJoin,
             recipes::Relation::RecipeLevelTables.def(),
@@ -219,7 +219,7 @@ async fn recipes_ingredientions(
     recipe_id: i32,
     app_state: tauri::State<'_, AppState>,
     app_handle: tauri::AppHandle,
-) -> Result<Vec<(u32, i32)>, String> {
+) -> Result<Vec<(u32, u8)>, String> {
     let db = app_state.get_db(app_handle).await?;
     let mut needs = BTreeMap::new();
     let ing = ItemWithAmount::find()

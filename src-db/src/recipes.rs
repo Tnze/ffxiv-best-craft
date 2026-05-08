@@ -35,9 +35,9 @@ pub struct Model {
     #[sea_orm(column_name = "IsExpert")]
     pub is_expert: bool,
     #[sea_orm(column_name = "CollectablesMetadataKey")]
-    pub collectables_metadata_key: u16,
+    pub collectables_metadata_key: u32,
     #[sea_orm(column_name = "CollectablesMetadata")]
-    pub collectables_metadata: u32,
+    pub collectables_metadata: Option<u32>,
     #[sea_orm(column_name = "RecipeNotebookList")]
     pub recipe_notebook_list: u32,
 }
@@ -59,7 +59,7 @@ pub enum Relation {
         on_update = "Restrict",
         on_delete = "Restrict"
     )]
-    ItemWithAmount,
+    ItemResult,
     #[sea_orm(
         belongs_to = "super::recipe_level_tables::Entity",
         from = "Column::RecipeLevelId",
@@ -82,12 +82,6 @@ pub enum Relation {
 impl Related<super::craft_types::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::CraftTypes.def()
-    }
-}
-
-impl Related<super::item_with_amount::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ItemWithAmount.def()
     }
 }
 

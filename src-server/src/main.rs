@@ -207,7 +207,7 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
 
     let mut query = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
-        .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
+        .join(JoinType::InnerJoin, recipes::Relation::ItemResult.def())
         .join(
             JoinType::InnerJoin,
             recipes::Relation::RecipeLevelTables.def(),
@@ -347,7 +347,7 @@ async fn recipe_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -
         .ok_or_else(|| StatusError::bad_request().detail("Need 'recipe_id'"))?;
     let result = Recipes::find_by_id(recipe_id)
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
-        .join(JoinType::InnerJoin, recipes::Relation::ItemWithAmount.def())
+        .join(JoinType::InnerJoin, recipes::Relation::ItemResult.def())
         .join(
             JoinType::InnerJoin,
             recipes::Relation::RecipeLevelTables.def(),
