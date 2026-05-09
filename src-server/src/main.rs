@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2025 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -113,7 +113,7 @@ struct RecipeInfo {
     rlv: u32,
     item_id: u32,
     item_name: String,
-    item_amount: i32,
+    item_amount: u8,
     job: String,
 
     difficulty_factor: u16,

@@ -9,7 +9,7 @@ use ironworks::{
 use itertools::Itertools;
 use sea_orm::{
     ActiveValue, ConnectOptions, ConnectionTrait, Database, DatabaseBackend, DatabaseConnection,
-    EntityTrait, Statement, TryInsertResult,
+    EntityTrait, Statement,
 };
 
 mod metadata;
@@ -108,7 +108,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("Install not found");
         let path = Input::<String>::new()
             .with_prompt("Input FFXIV installation path?")
-            .default(r"C:\Program Files (x86)\上海数龙科技有限公司\最终幻想XIV".to_string())
+            .default(r"C:\WeGameApps\rail_apps\ffxiv(2000340)".to_string())
             .interact()
             .unwrap();
         install = Some(Install::at(Path::new(&path)))
@@ -217,82 +217,71 @@ async fn insert_item_food(excel: &Excel, db: &DatabaseConnection) -> Result<(), 
 }
 
 async fn insert_recipes(excel: &Excel, db: &DatabaseConnection) -> Result<(), Box<dyn Error>> {
-    for (batch_id, batch) in excel
+    for (i, row) in excel
         .sheet(metadata::Recipe)?
         .into_iter()
         .filter_map(|x| x.inspect_err(|e| println!("{e}")).ok())
-        .chunks(1000)
-        .into_iter()
         .enumerate()
     {
-        println!("Pushing Recipes batch {}", batch_id * 1000);
-        let ((recipe_results, mut recipes), ingredients): ((Vec<_>, Vec<_>), Vec<_>) = batch
-            .map(|row| {
-                let recipe_result =
-                    row.item_result
-                        .map(|item_result| app_db::item_with_amount::ActiveModel {
-                            id: ActiveValue::NotSet,
-                            ingredient_id: ActiveValue::Set(item_result.item_id),
-                            amount: ActiveValue::Set(item_result.amount),
-                            recipe_id: ActiveValue::Set(None),
-                        });
-                let recipe = app_db::recipes::ActiveModel {
-                    id: ActiveValue::Set(row.id),
-                    number: ActiveValue::Set(row.number),
-                    craft_type_id: ActiveValue::Set(row.craft_type_id),
-                    recipe_level_id: ActiveValue::Set(row.recipe_level_id),
-                    item_result_id: ActiveValue::Set(None),
-                    material_quality_factor: ActiveValue::Set(row.material_quality_factor),
-                    difficulty_factor: ActiveValue::Set(row.difficulty_factor),
-                    quality_factor: ActiveValue::Set(row.quality_factor),
-                    durability_factor: ActiveValue::Set(row.durability_factor),
-                    required_quality: ActiveValue::Set(row.required_quality),
-                    required_craftsmanship: ActiveValue::Set(row.required_craftsmanship),
-                    required_control: ActiveValue::Set(row.required_control),
-                    can_hq: ActiveValue::Set(row.can_hq),
-                    is_expert: ActiveValue::Set(row.is_expert),
-                    collectables_metadata_key: ActiveValue::Set(row.collectables_metadata_key),
-                    collectables_metadata: ActiveValue::Set(row.collectables_metadata),
-                    recipe_notebook_list: ActiveValue::Set(row.recipe_notebook_list),
-                };
-                ((recipe_result, recipe), (row.id, row.ingredients))
-            })
-            .unzip();
-
-        let (idx, models): (Vec<_>, Vec<_>) = recipe_results
-            .into_iter()
-            .enumerate()
-            .filter_map(|(i, opt_val)| opt_val.map(|val| (i, val)))
-            .unzip();
-        let keys = app_db::item_with_amount::Entity::insert_many(models)
-            .do_nothing()
-            .exec_with_returning_keys(db)
-            .await?;
-        if let TryInsertResult::Inserted(keys) = keys {
-            for (key, i) in keys.into_iter().zip(idx) {
-                recipes[i].item_result_id = ActiveValue::Set(Some(key));
-            }
+        if i % 100 == 0 {
+            println!("Pushing Recipe {}", i);
         }
-        app_db::recipes::Entity::insert_many(recipes)
+        let Some(recipe_result) =
+            row.item_result
+                .map(|item_result| app_db::item_with_amount::ActiveModel {
+                    id: ActiveValue::NotSet,
+                    ingredient_id: ActiveValue::Set(item_result.item_id),
+                    amount: ActiveValue::Set(item_result.amount),
+                    recipe_id: ActiveValue::Set(None),
+                })
+        else {
+            continue;
+        };
+        let item_result_id = app_db::item_with_amount::Entity::insert(recipe_result)
+            .exec(db)
+            .await
+            .unwrap()
+            .last_insert_id;
+
+        let recipe = app_db::recipes::ActiveModel {
+            id: ActiveValue::Set(row.id),
+            number: ActiveValue::Set(row.number),
+            craft_type_id: ActiveValue::Set(row.craft_type_id),
+            recipe_level_id: ActiveValue::Set(row.recipe_level_id),
+            item_result_id: ActiveValue::Set(item_result_id),
+            material_quality_factor: ActiveValue::Set(row.material_quality_factor),
+            difficulty_factor: ActiveValue::Set(row.difficulty_factor),
+            quality_factor: ActiveValue::Set(row.quality_factor),
+            durability_factor: ActiveValue::Set(row.durability_factor),
+            required_quality: ActiveValue::Set(row.required_quality),
+            required_craftsmanship: ActiveValue::Set(row.required_craftsmanship),
+            required_control: ActiveValue::Set(row.required_control),
+            can_hq: ActiveValue::Set(row.can_hq),
+            is_expert: ActiveValue::Set(row.is_expert),
+            collectables_metadata_key: ActiveValue::Set(row.collectables_metadata_key),
+            collectables_metadata: ActiveValue::Set(row.collectables_metadata),
+            recipe_notebook_list: ActiveValue::Set(row.recipe_notebook_list),
+        };
+
+        let recipe_id = app_db::recipes::Entity::insert(recipe)
+            .exec(db)
+            .await
+            .unwrap()
+            .last_insert_id;
+
+        let ingredients = row.ingredients.into_iter().flatten().map(move |row| {
+            app_db::item_with_amount::ActiveModel {
+                id: ActiveValue::NotSet,
+                ingredient_id: ActiveValue::Set(row.item_id),
+                amount: ActiveValue::Set(row.amount),
+                recipe_id: ActiveValue::Set(Some(recipe_id)),
+            }
+        });
+        app_db::item_with_amount::Entity::insert_many(ingredients)
             .do_nothing()
             .exec(db)
-            .await?;
-
-        app_db::item_with_amount::Entity::insert_many(ingredients.into_iter().flat_map(
-            |(recipe_id, item_result)| {
-                item_result.into_iter().flatten().map(move |row| {
-                    app_db::item_with_amount::ActiveModel {
-                        id: ActiveValue::NotSet,
-                        ingredient_id: ActiveValue::Set(row.item_id),
-                        amount: ActiveValue::Set(row.amount),
-                        recipe_id: ActiveValue::Set(Some(recipe_id)),
-                    }
-                })
-            },
-        ))
-        .do_nothing()
-        .exec(db)
-        .await?;
+            .await
+            .unwrap();
     }
     Ok(())
 }

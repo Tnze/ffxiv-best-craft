@@ -15,7 +15,6 @@ sea-orm = { workspace = true, features = [
     "sqlx-postgres",
     "debug-print",
     "sqlite-use-returning-for-3_35",
-    "mariadb-use-returning",
 ] }
 itertools = "0.14.0"
 tracing-subscriber = "0.3.23"
