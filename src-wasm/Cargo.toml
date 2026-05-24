@@ -3,7 +3,7 @@ cargo-features = ["per-package-target"]
 [package]
 name = "app-wasm"
 version = "0.0.0"
-edition = "2021"
+edition = "2024"
 authors = ["Tnze"]
 license = "AGPL-3.0-or-later"
 
