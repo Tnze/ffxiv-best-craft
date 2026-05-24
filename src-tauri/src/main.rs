@@ -20,34 +20,34 @@
 )]
 
 use std::{
-    collections::{hash_map::Entry, BTreeMap, HashMap},
+    collections::{BTreeMap, HashMap, hash_map::Entry},
     sync::Arc,
 };
 
 use app_libs::{
+    SimulateOneStepResult, SimulateResult,
     analyzer::{rand_simulations, scope_of_application::Scope},
     ffxiv_crafting::{Actions, Attributes, CastActionError, Recipe, Status},
     solver::{
-        depth_first_search_solver, normal_progress_solver, raphael, reflect_solver, Solver,
-        SolverHash,
+        Solver, SolverHash, depth_first_search_solver, normal_progress_solver, raphael,
+        reflect_solver,
     },
-    SimulateOneStepResult, SimulateResult,
 };
-use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
+use percent_encoding::{AsciiSet, CONTROLS, utf8_percent_encode};
 use rand::rng;
-use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
+use sea_orm::{Database, DatabaseConnection, FromQueryResult, entity::*, query::*};
 use serde::Serialize;
 use tauri::{
+    Manager, Theme,
     path::BaseDirectory,
     window::{Effect, EffectsBuilder},
-    Manager, Theme,
 };
 use tokio::sync::{Mutex, OnceCell};
 
 use app_db::{
-    collectables_shop_refine, craft_types, item_action, item_food, item_food_effect,
-    item_with_amount, items, prelude::*, recipe_level_tables, recipes, wks_mission_recipe,
-    wks_mission_to_do, wks_mission_unit,
+    collectables_shop_refine, craft_types, item_action, item_food, item_food_effect, items,
+    prelude::*, recipe_level_tables, recipes, wks_mission_recipe, wks_mission_to_do,
+    wks_mission_unit,
 };
 
 /// 创建新的Recipe对象，蕴含了模拟一次制作过程所必要的全部配方信息
@@ -154,12 +154,12 @@ async fn recipe_table(
     let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
     let mut query = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
-        .join(JoinType::InnerJoin, recipes::Relation::ItemResult.def())
+        .join(JoinType::InnerJoin, recipes::Relation::ItemResultItem.def())
+        .filter(items::Column::Id.ne(0))
         .join(
             JoinType::InnerJoin,
             recipes::Relation::RecipeLevelTables.def(),
         )
-        .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
         .filter(items::Column::Name.like(&search_name));
     if let Some(rlv) = recipe_level {
         query = query.filter(recipes::Column::RecipeLevelId.eq(rlv))
@@ -178,7 +178,7 @@ async fn recipe_table(
         .column_as(recipes::Column::RecipeLevelId, "rlv")
         .column_as(items::Column::Id, "item_id")
         .column_as(items::Column::Name, "item_name")
-        .column_as(item_with_amount::Column::Amount, "item_amount")
+        .column_as(recipes::Column::ItemResultAmount, "item_amount")
         .column_as(craft_types::Column::Name, "job")
         .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
         .column_as(recipes::Column::QualityFactor, "quality_factor")
@@ -225,19 +225,24 @@ async fn recipes_ingredientions(
     app_handle: tauri::AppHandle,
 ) -> Result<Vec<(u32, u8)>, String> {
     let db = app_state.get_db(app_handle).await?;
-    let mut needs = BTreeMap::new();
-    let ing = ItemWithAmount::find()
-        .filter(item_with_amount::Column::RecipeId.eq(recipe_id))
-        .all(db)
+    let recipe = Recipes::find_by_id(recipe_id as u32)
+        .one(db)
         .await
-        .map_err(err_to_string)?;
-    for v in &ing {
-        needs
-            .entry(v.ingredient_id)
-            .and_modify(|e| *e += v.amount)
-            .or_insert(v.amount);
-    }
-    Ok(needs.into_iter().collect())
+        .map_err(err_to_string)?
+        .ok_or("Recipe not found".to_string())?;
+    Ok([
+        (recipe.ingredient0, recipe.ingredient_amount0),
+        (recipe.ingredient1, recipe.ingredient_amount1),
+        (recipe.ingredient2, recipe.ingredient_amount2),
+        (recipe.ingredient3, recipe.ingredient_amount3),
+        (recipe.ingredient4, recipe.ingredient_amount4),
+        (recipe.ingredient5, recipe.ingredient_amount5),
+        (recipe.ingredient6, recipe.ingredient_amount6),
+        (recipe.ingredient7, recipe.ingredient_amount7),
+    ]
+    .into_iter()
+    .filter(|(id, _)| *id != 0)
+    .collect())
 }
 
 #[tauri::command(async)]
@@ -499,7 +504,7 @@ async fn create_solver(
                 return match o.get().try_lock() {
                     Ok(_) => Err("solver-already-exist".into()),
                     Err(_) => Err("solver-is-creating".into()),
-                }
+                };
             }
         }
     };

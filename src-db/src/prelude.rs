@@ -7,7 +7,6 @@ pub use super::item_food::Entity as ItemFood;
 pub use super::item_food_effect::Entity as ItemFoodEffect;
 pub use super::item_search_categories::Entity as ItemSearchCategories;
 pub use super::item_ui_categories::Entity as ItemUiCategories;
-pub use super::item_with_amount::Entity as ItemWithAmount;
 pub use super::items::Entity as Items;
 pub use super::recipe_level_tables::Entity as RecipeLevelTables;
 pub use super::recipes::Entity as Recipes;

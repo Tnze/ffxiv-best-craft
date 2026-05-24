@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::{simulate_one_step, SimulateOneStepResult};
+use crate::{SimulateOneStepResult, simulate_one_step};
 use ffxiv_crafting::{Actions, CastActionError, Status};
-use rand::{rng, Rng, RngExt};
+use rand::{Rng, RngExt, rng};
 use serde::{Deserialize, Serialize};
 
 fn simulation(

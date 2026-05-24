@@ -15,8 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use app_libs::{
-    ffxiv_crafting::{Actions, Attributes, Recipe, Status},
     SimulateOneStepResult,
+    ffxiv_crafting::{Actions, Attributes, Recipe, Status},
 };
 
 use rand::rng;
@@ -161,7 +161,7 @@ pub fn rand_collectables_simulation(
     ignore_errors: bool,
     collectables_shop_refine: JsValue,
 ) -> Result<JsValue, JsValue> {
-    use app_libs::analyzer::rand_simulations::{stat_collectables, CollectablesShopRefine};
+    use app_libs::analyzer::rand_simulations::{CollectablesShopRefine, stat_collectables};
     let status: Status = from_value(status)?;
     let actions: Vec<Actions> = from_value(actions)?;
     let collectables_shop_refine: CollectablesShopRefine = from_value(collectables_shop_refine)?;

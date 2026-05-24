@@ -1,3 +1,19 @@
+// This file is part of BestCraft.
+// Copyright (C) 2026 Tnze
+//
+// BestCraft is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// BestCraft is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 use ironworks::excel::SheetMetadata;
 use sea_orm::ActiveValue;
 
@@ -125,7 +141,7 @@ impl SheetMetadata for Item {
             can_be_hq: row.field(27)?.into_bool()?,
             item_ui_category_id: Some(row.field(15)?.into_u8()? as u32).filter(|x| *x != 0),
             item_search_category_id: Some(row.field(16)?.into_u8()? as u32).filter(|x| *x != 0),
-            item_action_id: Some(row.field(15)?.into_u8()? as u32).filter(|x| *x != 0),
+            item_action_id: Some(row.field(30)?.into_u16()? as u32).filter(|x| *x != 0),
             is_collectable: row.field(37)?.into_bool()?,
             always_collectable: row.field(38)?.into_bool()?,
         })
@@ -237,38 +253,17 @@ impl SheetMetadata for CollectablesShopRefine {
     }
 }
 
-pub struct RecipeRow {
-    pub id: u32,
-    pub number: i32,
-    pub craft_type_id: u32,
-    pub recipe_level_id: u32,
-    pub item_result: Option<ItemWithAmount>,
-    pub ingredients: [Option<ItemWithAmount>; 8],
-    pub material_quality_factor: u8,
-    pub difficulty_factor: u16,
-    pub quality_factor: u16,
-    pub durability_factor: u16,
-    pub required_quality: u32,
-    pub required_craftsmanship: u16,
-    pub required_control: u16,
-    pub can_hq: bool,
-    pub is_expert: bool,
-    pub collectables_metadata_key: u32,
-    pub collectables_metadata: Option<u32>,
-    pub recipe_notebook_list: u32,
-}
-
-pub struct ItemWithAmount {
-    pub item_id: u32,
-    pub amount: u8,
-}
-
-impl ItemWithAmount {
-    fn from(item_id: u32, amount: u8) -> Option<Self> {
-        if item_id == 0 || item_id == 0xFFFF_FFFF {
-            return None;
-        }
-        Some(Self { item_id, amount })
+fn read_ingredient(
+    row: &ironworks::excel::Row,
+    id_field: usize,
+    amt_field: usize,
+) -> Result<(u32, u8), Error> {
+    let item_id = row.field(id_field)?.into_i32()? as u32;
+    let amount = row.field(amt_field)?.into_u8()?;
+    if item_id == 0 || item_id == 0xFFFF_FFFF {
+        Ok((0, 0))
+    } else {
+        Ok((item_id, amount))
     }
 }
 
@@ -277,7 +272,7 @@ impl SheetMetadata for Recipe {
         String::from("Recipe")
     }
 
-    type Row = RecipeRow;
+    type Row = app_db::recipes::Model;
     type Error = Error;
     fn populate_row(&self, row: ironworks::excel::Row) -> Result<Self::Row, Self::Error> {
         let collectables_metadata_key = row.field(44)?.into_u8()? as u32;
@@ -285,25 +280,22 @@ impl SheetMetadata for Recipe {
             1 => Some(row.field(45)?.into_u16()? as u32),
             _ => None,
         };
-        Ok(RecipeRow {
+        let (item_result_id, item_result_amount) = read_ingredient(&row, 4, 5)?;
+        let (ingredient0, ingredient_amount0) = read_ingredient(&row, 6, 7)?;
+        let (ingredient1, ingredient_amount1) = read_ingredient(&row, 8, 9)?;
+        let (ingredient2, ingredient_amount2) = read_ingredient(&row, 10, 11)?;
+        let (ingredient3, ingredient_amount3) = read_ingredient(&row, 12, 13)?;
+        let (ingredient4, ingredient_amount4) = read_ingredient(&row, 14, 15)?;
+        let (ingredient5, ingredient_amount5) = read_ingredient(&row, 16, 17)?;
+        let (ingredient6, ingredient_amount6) = read_ingredient(&row, 18, 19)?;
+        let (ingredient7, ingredient_amount7) = read_ingredient(&row, 20, 21)?;
+        Ok(app_db::recipes::Model {
             id: row.row_id(),
             number: row.field(0)?.into_i32()?,
             craft_type_id: row.field(1)?.into_i32()? as u32,
             recipe_level_id: row.field(2)?.into_u16()? as u32,
-            item_result: ItemWithAmount::from(
-                row.field(4)?.into_i32()? as u32,
-                row.field(5)?.into_u8()?,
-            ),
-            ingredients: [
-                ItemWithAmount::from(row.field(6)?.into_i32()? as u32, row.field(7)?.into_u8()?),
-                ItemWithAmount::from(row.field(8)?.into_i32()? as u32, row.field(9)?.into_u8()?),
-                ItemWithAmount::from(row.field(10)?.into_i32()? as u32, row.field(11)?.into_u8()?),
-                ItemWithAmount::from(row.field(12)?.into_i32()? as u32, row.field(13)?.into_u8()?),
-                ItemWithAmount::from(row.field(14)?.into_i32()? as u32, row.field(15)?.into_u8()?),
-                ItemWithAmount::from(row.field(16)?.into_i32()? as u32, row.field(17)?.into_u8()?),
-                ItemWithAmount::from(row.field(18)?.into_i32()? as u32, row.field(19)?.into_u8()?),
-                ItemWithAmount::from(row.field(20)?.into_i32()? as u32, row.field(21)?.into_u8()?),
-            ],
+            item_result_id,
+            item_result_amount,
             material_quality_factor: row.field(25)?.into_u8()?,
             difficulty_factor: row.field(26)?.into_u16()?,
             quality_factor: row.field(27)?.into_u16()?,
@@ -316,6 +308,22 @@ impl SheetMetadata for Recipe {
             collectables_metadata_key,
             collectables_metadata,
             recipe_notebook_list: row.field(22)?.into_u16()? as u32,
+            ingredient0,
+            ingredient_amount0,
+            ingredient1,
+            ingredient_amount1,
+            ingredient2,
+            ingredient_amount2,
+            ingredient3,
+            ingredient_amount3,
+            ingredient4,
+            ingredient_amount4,
+            ingredient5,
+            ingredient_amount5,
+            ingredient6,
+            ingredient_amount6,
+            ingredient7,
+            ingredient_amount7,
         })
     }
 }

@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -21,7 +21,7 @@ pub use ffxiv_crafting;
 use ffxiv_crafting::{
     Actions, Attributes, CastActionError, Condition, ConditionIterator, Recipe, Status,
 };
-use rand::{seq::IndexedRandom, Rng, RngExt};
+use rand::{Rng, RngExt, seq::IndexedRandom};
 use serde::Serialize;
 
 #[derive(Serialize)]

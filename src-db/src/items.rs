@@ -52,8 +52,6 @@ pub enum Relation {
         on_delete = "Restrict"
     )]
     ItemUiCategories,
-    #[sea_orm(has_many = "super::item_with_amount::Entity")]
-    ItemWithAmount,
 }
 
 impl Related<super::item_action::Entity> for Entity {
@@ -71,12 +69,6 @@ impl Related<super::item_search_categories::Entity> for Entity {
 impl Related<super::item_ui_categories::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::ItemUiCategories.def()
-    }
-}
-
-impl Related<super::item_with_amount::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::ItemWithAmount.def()
     }
 }
 

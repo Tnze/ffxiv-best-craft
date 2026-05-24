@@ -15,9 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use crate::{
-    simulate,
+    SimulateResult, simulate,
     solver::{Score, Solver},
-    SimulateResult,
 };
 use ffxiv_crafting::{Actions, Buffs, ComboStates, Status};
 use micro_ndarray::Array;
@@ -127,7 +126,7 @@ impl QualitySolver {
         ];
         // let results = Array::new(size);
         let results = unsafe {
-            use std::alloc::{alloc_zeroed, Layout};
+            use std::alloc::{Layout, alloc_zeroed};
 
             let length = size.iter().product();
             let layout = Layout::array::<Cell<SolverSlot<u32>>>(length).unwrap();
@@ -304,7 +303,7 @@ impl ProgressSolver {
             cp + 1,
         ];
         let results = unsafe {
-            use std::alloc::{alloc_zeroed, Layout};
+            use std::alloc::{Layout, alloc_zeroed};
 
             let length = size.iter().product();
             let layout = Layout::array::<Cell<SolverSlot<u16>>>(length).unwrap();

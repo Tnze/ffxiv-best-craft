@@ -23,12 +23,12 @@ use salvo::cors;
 use salvo::cors::Cors;
 use salvo::hyper::Method;
 use salvo::prelude::*;
-use sea_orm::{entity::*, query::*, Database, DatabaseConnection, FromQueryResult};
+use sea_orm::{Database, DatabaseConnection, FromQueryResult, entity::*, query::*};
 use serde::{Deserialize, Serialize};
 
 use app_db::{
-    craft_types, item_action, item_food, item_food_effect, item_with_amount, items, prelude::*,
-    recipe_level_tables, recipes, wks_mission_recipe, wks_mission_to_do, wks_mission_unit,
+    craft_types, item_action, item_food, item_food_effect, items, prelude::*, recipe_level_tables,
+    recipes, wks_mission_recipe, wks_mission_to_do, wks_mission_unit,
 };
 
 type Result<T> = std::result::Result<T, StatusError>;
@@ -207,12 +207,12 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
 
     let mut query = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
-        .join(JoinType::InnerJoin, recipes::Relation::ItemResult.def())
+        .join(JoinType::InnerJoin, recipes::Relation::ItemResultItem.def())
+        .filter(items::Column::Id.ne(0))
         .join(
             JoinType::InnerJoin,
             recipes::Relation::RecipeLevelTables.def(),
         )
-        .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
         .select_only()
         .filter(items::Column::Name.like(&search_name));
     if let Some(rlv) = req.query::<u32>("rlv") {
@@ -232,7 +232,7 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
         .column_as(recipes::Column::RecipeLevelId, "rlv")
         .column_as(items::Column::Id, "item_id")
         .column_as(items::Column::Name, "item_name")
-        .column_as(item_with_amount::Column::Amount, "item_amount")
+        .column_as(recipes::Column::ItemResultAmount, "item_amount")
         .column_as(craft_types::Column::Name, "job")
         .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
         .column_as(recipes::Column::QualityFactor, "quality_factor")
@@ -315,17 +315,29 @@ async fn recipes_ingredientions(
         .query::<u32>("recipe_id")
         .ok_or_else(|| StatusError::bad_request())?;
 
-    let mut needs = BTreeMap::new();
-    let ing = ItemWithAmount::find()
-        .filter(item_with_amount::Column::RecipeId.eq(recipe_id))
-        .all(conn)
+    let recipe = Recipes::find_by_id(recipe_id)
+        .one(conn)
         .await
-        .map_err(|_| StatusError::internal_server_error())?;
-    for v in &ing {
-        needs
-            .entry(v.ingredient_id)
-            .and_modify(|e| *e += v.amount)
-            .or_insert(v.amount);
+        .map_err(|_| StatusError::internal_server_error())?
+        .ok_or_else(|| StatusError::bad_request().detail("Recipe not found"))?;
+    let ingredients = [
+        (recipe.ingredient0, recipe.ingredient_amount0),
+        (recipe.ingredient1, recipe.ingredient_amount1),
+        (recipe.ingredient2, recipe.ingredient_amount2),
+        (recipe.ingredient3, recipe.ingredient_amount3),
+        (recipe.ingredient4, recipe.ingredient_amount4),
+        (recipe.ingredient5, recipe.ingredient_amount5),
+        (recipe.ingredient6, recipe.ingredient_amount6),
+        (recipe.ingredient7, recipe.ingredient_amount7),
+    ];
+    let mut needs = BTreeMap::new();
+    for (id, amount) in ingredients {
+        if id != 0 {
+            needs
+                .entry(id)
+                .and_modify(|e| *e += amount)
+                .or_insert(amount);
+        }
     }
     let result: Vec<_> = needs.into_iter().collect();
     res.render(Json(result));
@@ -347,18 +359,17 @@ async fn recipe_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -
         .ok_or_else(|| StatusError::bad_request().detail("Need 'recipe_id'"))?;
     let result = Recipes::find_by_id(recipe_id)
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
-        .join(JoinType::InnerJoin, recipes::Relation::ItemResult.def())
+        .join(JoinType::InnerJoin, recipes::Relation::ItemResultItem.def())
         .join(
             JoinType::InnerJoin,
             recipes::Relation::RecipeLevelTables.def(),
         )
-        .join(JoinType::InnerJoin, item_with_amount::Relation::Items.def())
         .select_only()
         .column_as(recipes::Column::Id, "id")
         .column_as(recipes::Column::RecipeLevelId, "rlv")
         .column_as(items::Column::Id, "item_id")
         .column_as(items::Column::Name, "item_name")
-        .column_as(item_with_amount::Column::Amount, "item_amount")
+        .column_as(recipes::Column::ItemResultAmount, "item_amount")
         .column_as(craft_types::Column::Name, "job")
         .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
         .column_as(recipes::Column::QualityFactor, "quality_factor")

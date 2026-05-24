@@ -16,6 +16,8 @@ pub struct Model {
     pub recipe_level_id: u32,
     #[sea_orm(column_name = "ItemResultId")]
     pub item_result_id: u32,
+    #[sea_orm(column_name = "ItemResultAmount")]
+    pub item_result_amount: u8,
     #[sea_orm(column_name = "MaterialQualityFactor")]
     pub material_quality_factor: u8,
     #[sea_orm(column_name = "DifficultyFactor")]
@@ -40,6 +42,38 @@ pub struct Model {
     pub collectables_metadata: Option<u32>,
     #[sea_orm(column_name = "RecipeNotebookList")]
     pub recipe_notebook_list: u32,
+    #[sea_orm(column_name = "Ingredient0")]
+    pub ingredient0: u32,
+    #[sea_orm(column_name = "IngredientAmount0")]
+    pub ingredient_amount0: u8,
+    #[sea_orm(column_name = "Ingredient1")]
+    pub ingredient1: u32,
+    #[sea_orm(column_name = "IngredientAmount1")]
+    pub ingredient_amount1: u8,
+    #[sea_orm(column_name = "Ingredient2")]
+    pub ingredient2: u32,
+    #[sea_orm(column_name = "IngredientAmount2")]
+    pub ingredient_amount2: u8,
+    #[sea_orm(column_name = "Ingredient3")]
+    pub ingredient3: u32,
+    #[sea_orm(column_name = "IngredientAmount3")]
+    pub ingredient_amount3: u8,
+    #[sea_orm(column_name = "Ingredient4")]
+    pub ingredient4: u32,
+    #[sea_orm(column_name = "IngredientAmount4")]
+    pub ingredient_amount4: u8,
+    #[sea_orm(column_name = "Ingredient5")]
+    pub ingredient5: u32,
+    #[sea_orm(column_name = "IngredientAmount5")]
+    pub ingredient_amount5: u8,
+    #[sea_orm(column_name = "Ingredient6")]
+    pub ingredient6: u32,
+    #[sea_orm(column_name = "IngredientAmount6")]
+    pub ingredient_amount6: u8,
+    #[sea_orm(column_name = "Ingredient7")]
+    pub ingredient7: u32,
+    #[sea_orm(column_name = "IngredientAmount7")]
+    pub ingredient_amount7: u8,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -53,13 +87,13 @@ pub enum Relation {
     )]
     CraftTypes,
     #[sea_orm(
-        belongs_to = "super::item_with_amount::Entity",
+        belongs_to = "super::items::Entity",
         from = "Column::ItemResultId",
-        to = "super::item_with_amount::Column::Id",
+        to = "super::items::Column::Id",
         on_update = "Restrict",
         on_delete = "Restrict"
     )]
-    ItemResult,
+    ItemResultItem,
     #[sea_orm(
         belongs_to = "super::recipe_level_tables::Entity",
         from = "Column::RecipeLevelId",
@@ -82,6 +116,12 @@ pub enum Relation {
 impl Related<super::craft_types::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::CraftTypes.def()
+    }
+}
+
+impl Related<super::items::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ItemResultItem.def()
     }
 }
 
