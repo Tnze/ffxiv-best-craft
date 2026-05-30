@@ -36,6 +36,7 @@ tauri-plugin-process = "2"
 tauri-plugin-updater = "2"
 tauri-plugin-clipboard-manager = "2"
 tauri-plugin-opener = "2"
+window-vibrancy = "0.7.1"
 
 [features]
 # by default Tauri runs in production mode

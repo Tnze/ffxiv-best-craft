@@ -37,11 +37,7 @@ use percent_encoding::{AsciiSet, CONTROLS, utf8_percent_encode};
 use rand::rng;
 use sea_orm::{Database, DatabaseConnection, FromQueryResult, entity::*, query::*};
 use serde::Serialize;
-use tauri::{
-    Manager, Theme,
-    path::BaseDirectory,
-    window::{Effect, EffectsBuilder},
-};
+use tauri::{Manager, Theme, path::BaseDirectory, webview::WebviewWindow};
 use tokio::sync::{Mutex, OnceCell};
 
 use app_db::{
@@ -614,11 +610,22 @@ async fn destroy_solver(
 /// which means the front-end should make its background transparent to show the window effect below.
 #[tauri::command]
 fn set_theme(app_handle: tauri::AppHandle, is_dark: Option<bool>) -> bool {
-    #[allow(unused)]
     let window = app_handle.get_webview_window("main").unwrap();
-    window
-        .set_theme(is_dark.map(|x| if x { Theme::Dark } else { Theme::Light }))
-        .is_ok()
+    let _ = window.set_theme(is_dark.map(|x| if x { Theme::Dark } else { Theme::Light }));
+    set_transparent(&window, is_dark)
+}
+
+fn set_transparent(window: &WebviewWindow, is_dark: Option<bool>) -> bool {
+    cfg_select! {
+        target_os = "macos" => {
+            use window_vibrancy::NSVisualEffectMaterial::HudWindow;
+            window_vibrancy::apply_vibrancy(&window, HudWindow, None, None).is_ok()
+        },
+        target_os = "windows" => {
+            window_vibrancy::apply_mica(&window, is_dark).is_ok()
+        },
+        _ => false
+    }
 }
 
 #[tauri::command(async)]
@@ -700,11 +707,7 @@ fn main() {
                 format!("{} v{}", window.title()?, packaeg_info.version.to_string()).as_str(),
             )?;
 
-            #[cfg(target_os = "macos")]
-            let _ = window.set_effects(EffectsBuilder::new().effect(Effect::HudWindow).build());
-
-            #[cfg(target_os = "windows")]
-            let _ = window.set_effects(EffectsBuilder::new().effect(Effect::Mica).build());
+            set_transparent(&window, None);
 
             Ok(())
         })
