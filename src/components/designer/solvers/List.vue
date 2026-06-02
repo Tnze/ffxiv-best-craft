@@ -235,5 +235,21 @@ simple-solver-finished-no-result = "{ $solverName }" is finished. None of result
 
 sum-info = Warning: The following content contains many fragmented ideas that are not helpful to you. To use the solvers, please click on the '{solver-start}' button directly.
 </fluent>
+
 <fluent locale="ja-JP">
+web-worker-not-avaliable = お使いのブラウザは Web Worker に対応していないため、ソルバーを実行できません。
+
+do-not-touch = 品質を上げない
+reduce-steps-info = 最小リソース
+
+solving-info = 「{ $solverName }」求解中です。しばらくお待ちください
+error-with = エラー：{ $err }
+
+warning = 警告
+solver-start = 求解開始
+simple-solver-solving = 求解中
+simple-solver-finished =「{ $solverName }」求解完了({ $solveTime })
+simple-solver-finished-no-result =「{ $solverName }」を実行しましたが、結果が得られませんでした({ $solveTime })
+
+sum-info = ヒント：以下には役に立たない雑談が表示されます。ソルバーを使用するには「{solver-start}」ボタンを直接クリックしてください。
 </fluent>

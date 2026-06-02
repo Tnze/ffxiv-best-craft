@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -175,5 +175,16 @@ collectability-stage =
         [2] Second: { $v } ~
         [3] Third: { $v } ~
        *[other] Unknown
+    }
+</fluent>
+
+<fluent locale="ja-JP">
+required-collectability = 必要収集価値
+collectability-stage =
+    { $lv ->
+        [1] 1段階：{ $v } ~
+        [2] 2段階：{ $v } ~
+        [3] 3段階：{ $v } ~
+       *[other] 不明
     }
 </fluent>

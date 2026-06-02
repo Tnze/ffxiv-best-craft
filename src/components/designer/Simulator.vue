@@ -302,3 +302,8 @@ restart = 倒
 meal-and-potion = Meal & Potions
 restart = Restart
 </fluent>
+
+<fluent locale="ja-JP">
+meal-and-potion = 食事 & 薬品
+restart = リスタート
+</fluent>

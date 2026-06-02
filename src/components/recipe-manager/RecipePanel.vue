@@ -445,6 +445,7 @@ can-hq = 存在HQ
 <fluent locale="zh-TW">
 datasource-unsupport-recipe-info = 當前資料來源不支援從外部選擇配方
 select-recipe-by-id-error = 獲取配方資訊失敗：{ $err }，請嘗試切換資料來源
+failed-to-load-temporary-action-info = 獲取任務指令失敗：{ $err }
 
 search = 鍵入以搜尋
 please-wait = 請稍等...
@@ -459,6 +460,7 @@ can-hq = 存在HQ
 <fluent locale="en-US">
 datasource-unsupport-recipe-info = Current data-source doesn't support choice recipe from external pages
 select-recipe-by-id-error = Error fetching recipe data: { $err }. Please try choosing another DataSource
+failed-to-load-temporary-action-info = Failed to load temporary action info: { $err }
 
 search = Search
 please-wait = Please wait...
@@ -468,4 +470,19 @@ craft-type = Craft Type
 level = Level
 name = Name
 can-hq = Can HQ
+</fluent>
+
+<fluent locale="ja-JP">
+datasource-unsupport-recipe-info = 現在のデータソースは外部からのレシピ選択をサポートしていません
+select-recipe-by-id-error = レシピ情報の取得に失敗しました：{ $err }。データソースの切り替えをお試しください
+failed-to-load-temporary-action-info = コンテンツアクションの取得に失敗しました：{ $err }
+
+search = 入力して検索
+please-wait = お待ちください...
+
+type = タイプ
+craft-type = 製作タイプ
+level = レベル
+name = 名前
+can-hq = HQ可
 </fluent>

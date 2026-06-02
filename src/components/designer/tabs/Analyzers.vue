@@ -518,3 +518,31 @@ check-simulate-detail = Check simulate detail
 action = Action
 buffs = Buffs
 </fluent>
+
+<fluent locale="ja-JP">
+run-simulations = シミュレーション実行
+run-n-times = { $n } 回シミュレーション実行
+action-queue = アクションキュー
+ignore-errors = エラーを無視
+
+empty = 空
+
+errors = エラー
+unfinished = 未完成
+fails = 失敗
+normal = 通常品質
+highqual = 高品質
+
+no_collectability = 収集価値なし
+low_collectability = 収集価値1段階
+middle_collectability = 収集価値2段階
+high_collectability = 収集価値3段階
+
+calc-scope = 装備属性の適応範囲を計算
+craftsmanship-range = { craftsmanship }範囲
+control-range = { control }範囲
+
+check-simulate-detail = シミュレーション詳細を確認
+action = アクション
+buffs = バフ
+</fluent>

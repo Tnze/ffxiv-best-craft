@@ -308,3 +308,21 @@ recognize-success = Recognize successed, { $n ->
     *[other] {$n} actions are
 } imported
 </fluent>
+
+<fluent locale="ja-JP">
+auto-recognize = マクロまたはJSONを貼り付け
+confirm = 確認
+strict-mode = 厳密モード
+
+err-parse-json = JSONの解析に失敗しました：{ $err }
+err-not-an-array = 入力されたJSONは配列ではありません
+err-not-a-string = 要素 { $elem } は文字列ではありません
+err-invalid-action = 不明なアクション：{ $action }
+err-decode-cac = CACコードのデコードに失敗しました：{ $err }
+
+err-parse-strict = 厳密モードでのインポートに失敗しました：{ $err }
+err-parse-line-error = { $n } 行目の解析に失敗しました
+
+warn-action-not-found = アクションが認識されませんでした
+recognize-success = 認識成功、{ $n } 個のアクションをインポートしました
+</fluent>

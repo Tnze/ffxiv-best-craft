@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -329,6 +329,15 @@ clear = 清空
 display-relations = 显示依赖关系
 </fluent>
 
+<fluent locale="zh-TW">
+ings = 材料
+calculating = 計算中
+fetching-item = 正在查詢 { $itemName }
+add = 新增
+clear = 清除
+display-relations = 顯示依賴關係
+</fluent>
+
 <fluent locale="en-US">
 ings = Ingredients
 calculating = Calculating
@@ -339,10 +348,10 @@ display-relations = Display Relations
 </fluent>
 
 <fluent locale="ja-JP">
-ings = コンポーネント
-calculating = ずるい
-fetching-item = つかむ { $itemName }
+ings = 材料
+calculating = 計算中
+fetching-item = 取得中 { $itemName }
 add = 追加
-clear = パージ
-display-relations = 表示関係
+clear = クリア
+display-relations = 依存関係を表示
 </fluent>

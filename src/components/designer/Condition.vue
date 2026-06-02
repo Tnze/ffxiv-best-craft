@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2023  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -143,4 +143,8 @@ condition = 製作狀態
 
 <fluent locale="en-US">
 condition = Condition
+</fluent>
+
+<fluent locale="ja-JP">
+condition = 製作状態
 </fluent>

@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -202,5 +202,23 @@ download-desktop-edition = Download Desktop Edition
 </fluent>
 
 <fluent locale="ja-JP">
+greeting = 
+    { $time ->
+        [beforedawn] おはようございます
+        [morning] おはようございます
+        [noon] こんにちは
+        [afternoon] こんにちは
+        [evening] こんばんは
+        [night] 夜も更けてまいりました
+        *[other] はじめまして
+    }
+welcome = { greeting }、BestCraftへようこそ
+input-recipe-name = レシピ名を入力
+loading = 読み込み中
+no-match = 一致するレシピがありません
+no-data = レシピがありません
+
+confirm = 確認
+select-recipe = レシピを選択
 download-desktop-edition = デスクトップ版のダウンロード
 </fluent>

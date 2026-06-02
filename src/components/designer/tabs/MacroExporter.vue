@@ -440,5 +440,36 @@ duty-action2 = Duty Action II
 </fluent>
 
 <fluent locale="ja-JP">
+has-notify = 完了通知
+has-notify-auto = 自動
+has-notify-true = 常に通知
+has-notify-false = 通知しない
+
+has-lock = マクロロック
+oneclick-copy = ワンクリックコピー
+
+notify-sound = 通知音
+random-sound = ランダム通知音
+no-sound = 通知音なし
+
+section-method = 長いマクロの分割方法
+avg-section = 均等
+greedy-section = 貪欲
+disable-section = 無効
+
+wait-time-inc = 待機時間を増やす
+
+export-json = JSONとしてエクスポート
+copied-json = JSON式をクリップボードにコピーしました
+export-cac = CACとしてエクスポート
+copied-cac = CACをクリップボードにコピーしました
+copied-marco = マクロ#{ $id } をクリップボードにコピーしました
+copied-link = ハイパーリンクをクリップボードにコピーしました
+marco-finished = マクロ#{ $id } が完了しました！
+copy-failed = コピー失敗：{ $err }
+
+open-in-cac-tool = CAC Toolで開く
+open-in-hqhelper = HQ Helperで開く
+
 duty-action2 = コンテンツアクション2
 </fluent>

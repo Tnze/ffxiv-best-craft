@@ -273,3 +273,13 @@ cancel = Cancel
 confirm = Confirm
 simulator-mode = Simulator Mode
 </fluent>
+
+<fluent locale="ja-JP">
+back = 戻る
+custom-recipe = カスタムレシピ
+auto-load = 自動入力
+
+cancel = キャンセル
+confirm = 確認
+simulator-mode = シミュレーターモード
+</fluent>

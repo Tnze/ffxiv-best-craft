@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -90,4 +90,11 @@ macro-length-tag = Macro Length: { $length }
 steps-tag = { steps }: { $steps }
 macro-duration-tag = Macro Duration: { $duration }
 manual-duration-tag = Manual Duration: { $duration }
+</fluent>
+
+<fluent locale="ja-JP">
+macro-length-tag = マクロ長：{ $length }
+steps-tag = { steps }：{ $steps }
+macro-duration-tag = マクロ所要時間：{ $duration }
+manual-duration-tag = 手動所要時間：{ $duration }
 </fluent>

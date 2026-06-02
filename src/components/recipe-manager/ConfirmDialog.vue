@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -373,4 +373,32 @@ is-expert = Is Expert
 
 required-craftsmanship = Required { craftsmanship }
 required-control = Required { control }
+</fluent>
+
+<fluent locale="ja-JP">
+confirm-select = 「{ $itemName }」の製作を開始しますか？
+confirm-select2 = これは高難易度レシピです。モードを選択してください。
+alert-sync-level = これはレベルsyncレシピです。syncレベルを入力してください
+please-confirm = 確認してください
+conditions-will-not-take-effect-for-non-expert-recipe = 非高難易度レシピでは製作状態フラグは効果がありません
+
+cancel = キャンセル
+confirm = 確認
+designer-mode = 通常モード
+simulator-mode = 高難易度モード
+sync-level-item-name = { $itemName }（レベルsync：{ $syncLevel }）
+
+sync-level = レベルsync
+type = 製作タイプ
+level = レベル
+recipe-id = レシピID
+item-info = アイテム情報
+
+true = はい
+false = いいえ
+can-hq = HQ可
+is-expert = 高難易度レシピ
+
+required-craftsmanship = 最低{ craftsmanship }
+required-control = 最低{ control }
 </fluent>

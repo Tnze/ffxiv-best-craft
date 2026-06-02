@@ -439,3 +439,48 @@ solver-info =
 
     How does it work: Branch-and-bound, best-first-search, dynamic programming, Pareto optimization.
 </fluent>
+
+<fluent locale="ja-JP">
+solver-start = 求解開始
+simple-solver-solving = 求解中
+error-probably-out-of-memory = { $err }（メモリ不足の可能性があります。デスクトップ版をお試しください）
+
+from-initial = 全体求解
+from-current = 追加求解
+
+first-stage = 1段階
+second-stage = 2段階
+third-stage = 3段階
+maximum-target = 最大
+custom-target = カスタム
+
+target-quality = 目標品質
+enable-action = アクション有効：{ $action }
+backload-progress = 作業アクション後置（高速求解）
+minimize-steps = ステップ数を最小化
+adversarial = 100%信頼性を確保（低品質対策）
+
+speed-up = 求解速度向上
+speed-down = 求解速度低下
+quality-down = 求解品質低下
+increase-duration = 最終ステップ数増加
+need-learn-manipulation = {manipulation}の習得が必要です
+consume-crafters-delineation = 能工巧匠の設計図を消費
+
+solver-info-title = Raphael ソルバー
+solver-info =
+    提供元：{ $origin }
+
+    ソースコード：{ $source }
+
+    ライセンス：Apache-2.0
+
+    最適な製作マクロを計算：
+    · 生成されるマクロはレシピの作業を完了できる必要があります（100%進捗）
+    · 以下の優先順位で最適なマクロを選択：
+        - 目標品質に達するまで、品質が高いほど良い
+        - マクロの長さが短いほど良い
+        - 合計時間が短いほど良い
+
+    動作原理：分枝限定法、最良優先探索、動的計画法、パレート最適化
+</fluent>

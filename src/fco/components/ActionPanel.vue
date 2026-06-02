@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -216,4 +216,12 @@ action-panel = 技能面板
 
 <fluent locale="zh-TW">
 action-panel = 技能面板
+</fluent>
+
+<fluent locale="en-US">
+action-panel = Action Panel
+</fluent>
+
+<fluent locale="ja-JP">
+action-panel = アクションパネル
 </fluent>

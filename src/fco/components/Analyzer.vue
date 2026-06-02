@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -288,4 +288,23 @@ highqual = High-quality
 calc-scope = Calculate the range of adaptive gearsets
 craftsmanship-range = { craftsmanship } range
 control-range = { control } range
+</fluent>
+
+<fluent locale="ja-JP">
+run-simulations = シミュレーション実行
+run-n-times = { $n } 回シミュレーション実行
+action-queue = アクションキュー
+ignore-errors = エラーを無視
+
+empty = 空
+
+errors = エラー
+unfinished = 未完成
+fails = 失敗
+normal = 通常品質
+highqual = 高品質
+
+calc-scope = 装備属性の適応範囲を計算
+craftsmanship-range = { craftsmanship }範囲
+control-range = { control }範囲
 </fluent>

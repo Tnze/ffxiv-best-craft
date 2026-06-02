@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -242,4 +242,16 @@ clear = Clear
 
 random = Random
 macro = Macro
+</fluent>
+
+<fluent locale="ja-JP">
+edit = 編集
+solve = 求解
+
+cancel = キャンセル
+save = 保存
+clear = クリア
+
+random = ランダム
+macro = マクロ
 </fluent>

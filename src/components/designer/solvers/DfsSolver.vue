@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -225,4 +225,24 @@ dfs-solver-info =
     This solver is usually suitable for recipes that are 10-level lower than the player or above.
     .command-line-tool = Command line tool
 dfs-too-depth = The depth is too big. Solving time could be very long.
+</fluent>
+
+<fluent locale="ja-JP">
+from-initial = 全体求解
+from-current = 追加求解
+do-not-touch = 品質を上げない
+dfs-max-depth = 最大深度
+solver-start = 求解開始
+simple-solver-solving = 求解中
+dfs-solver-info-title = 深さ優先探索
+dfs-solver-info =
+    このソルバーは Tnze が初期に開発した{ $ffxivCraftingAlgo }に基づいており、元々は最短の巨匠の薬酒の製作手順を探索するために使用されていました。
+
+    このアルゴリズムは単純な全探索を採用しており、探索深度の制限に応じて所要時間が指数関数的に増加します。
+    探索深度は6に制限することを推奨します。
+    v2への更新後、マルチスレッドに対応しました。
+
+    このソルバーは通常、プレイヤーレベルより10以上低いレベルのレシピに適しています。
+    .command-line-tool = コマンドラインツール
+dfs-too-depth = 選択した最大深度が大きすぎます。求解に非常に長い時間がかかる可能性があります。
 </fluent>

@@ -1,6 +1,6 @@
 <!--
     This file is part of BestCraft.
-    Copyright (C) 2024  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -255,4 +255,8 @@ solved-in = 求解完成（{ $time }）
 
 <fluent locale="en-US">
 solved-in = Solving finished ({ $time })
+</fluent>
+
+<fluent locale="ja-JP">
+solved-in = 求解完了（{ $time }）
 </fluent>

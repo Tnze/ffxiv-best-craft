@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -108,7 +108,6 @@ const createSolver = async () => {
         const startTime = new Date().getTime();
         await create_solver(
             solver.initStatus,
-            useMuscleMemory.value,
             useManipulation.value,
             useObserve.value,
         );
@@ -519,5 +518,94 @@ muscle-memory-msg =
     The usage for {muscle-memory} mode is a little bit different from other solvers. 
     Please discretionary explore, or read the instructions below before using it.
 dp-solver-empty-text = None of solver is loaded
+
+</fluent>
+
+<fluent locale="ja-JP">
+from-initial = 全体求解
+from-current = 追加求解
+
+solver-start = 求解開始
+simple-solver-solving = 求解中
+create-solver = ソルバーを作成
+solver-created = ソルバー作成完了({ $solveTime })
+release-solver = 解放
+error-with = エラー：{ $err }
+enable-action = アクション有効：{ $action }
+
+dp-solver-info-title = メモ化探索に基づく動的計画法アルゴリズム
+dp-solver-info =
+    このアルゴリズムは、慎重に最適化された全探索手法と理解できます。
+
+    すべての状態を列挙し、すべての手順を列挙するわけではありません。そのため、DFSの指数時間計算量を多項式時間計算量に低減し、従来不可能だった全探索を可能にしました。
+
+    しかし、多項式時間計算量に低減しても、製作における状態次元は依然として多く存在します。すべての状態を考慮すると、アルゴリズムは大量のメモリを消費し、求解にも長い時間がかかります。
+
+    製作中の状態には以下の次元が含まれます：
+    · 現在の{durability}
+    · 残り{craft-point}
+    · {muscle-memory}の残りターン数（0~5）
+    · インナークワイエットのスタック数（0~10）
+    · {waste-not}の残り回数（0~8）
+    · {manipulation}の残り回数（0~8）
+    · {veneration}の残り回数（0~4）
+    · {innovation}の残り回数（0~4）
+    · {great-strides}の残りターン数（0~3）
+    · 加工コンボ状態（0~3）
+    · 経過観察済みか（0~1）
+    そして最も重要な：
+    · 現在の{progress}
+    · 現在の{quality}
+    計13次元。
+
+    完全な状態空間のサイズを計算するには、各次元のサイズを掛け合わせます。
+    耐久70、CP500で推定：（現在の進捗と品質は一旦考慮しない）
+    {$calcCard}
+    そして各状態について以下を記録する必要があります：
+    1. 現在の状態スコア
+    2. 次の最適アクション
+
+    さらなる最適化を行わなければ、このアルゴリズムの実行にはPB級の空間が必要となり、コストが高すぎることがわかります。（進捗と品質をまだ考慮していないことをお忘れなく）
+    そのため、以下の2つの妥協が必要です：
+    1. 状態空間では現在の{quality}と{progress}を考慮しない
+    2. 品質フェーズと進捗フェーズを2つのプロセスに分割し、2回の動的計画法を実行する
+
+    （具体的な解決策は言葉で説明するのが難しいため、理解できない場合は本ソフトウェアのソースコードを参照してください。）
+
+    これにより2つの利点が得られます：
+    1. 進捗をStateではなくValueとして扱い、多項式に数千もの大きな数を掛けることを避けられます。
+    2. 大きなDPを2つの小さなDPに分割することで、品質関連の状態と進捗関連の状態を分離でき、空間計算量を削減できます。
+
+    しかし、いくつかの小さな欠点もあります：
+    1. 加工と製作を交互に使用するケースを同時に考慮していません（{delicate-synthesis}は特別処理済み）。数学的には全探索で得られた結果が最適解であることを保証できなくなります。
+    2. 2回の動的計画法の接続部分では、様々な{durability}と{craft-point}の組み合わせのみを考慮し、品質段階では進捗段階のためにBuffリソースを意図的に残しません。
+    3. {muscle-memory}の処理が困難：進捗→品質→進捗の順で3段階のDPが必要になります。
+
+    また、空間計算量を削減するため、状態スコアを記録せず、次の最適アクションのみを記録しています。
+    実際のテストでは、求解時間の顕著な増加は見られませんでした。
+
+    アルゴリズムが{muscle-memory}の処理を苦手としており、現バージョンでは{muscle-memory}が絶対的な優位手法であるため、本ソフトウェアではやむを得ず以下の方案を提供しています：
+
+    ユーザーが手動で{muscle-memory}の初手を指定します。この方案の具体的な動作方法は以下の通りです：
+
+    1. ユーザーがレシピのすべてのパラメータを設定し、{start-solver}ボタンをクリックします。現在のレシピと装備属性に対するソルバーオブジェクトが作成されます。
+       このソルバーオブジェクトはメモリを割り当て、すべての状態の次の最適アクションを保存します。
+
+    2. ユーザーはワークスペースで{muscle-memory}の初手を入力し、進捗を「最後の1アクションで完成できる」状態まで進める必要があります。
+       具体的には「{basic-synthesis}（効率100）」または「{careful-synthesis}（効率180）」のいずれかで完成できる状態と定義されます。
+
+    3. アルゴリズムが処理可能な状況を認識すると、最終ステップに必要なリソースを計算し、現在のBuff状態に基づいて品質を向上させる動的計画法を実行します。
+       このとき、ワークスペースに回転するLoadingアイコンが表示されます。数分後、求解結果がユーザーの入力したアクションの後に表示されます。
+
+    4. ユーザーは入力を調整し、異なる初手を試して、求解結果をリアルタイムでプレビューできます。調整結果は通常1秒以内に計算完了します。
+
+    .calc-msg =
+        70 × 500 × 6 × 11 × 9 × 9 × 5 × 5 × 4 × 4 × 2
+        = 149,688,000,000
+        = 146,179,687.5 Ki
+        ≈ 142,753.6 Mi
+        ≈ 139.4 Gi
+muscle-memory-msg = {muscle-memory}モードの使用方法は他のソルバーと若干異なります。ご自身でお試しいただくか、以下の説明をお読みになってからご使用ください。
+dp-solver-empty-text = 読み込まれたソルバーはありません
 
 </fluent>

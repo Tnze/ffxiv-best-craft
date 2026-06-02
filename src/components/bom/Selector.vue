@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -151,4 +151,12 @@ name = Name
 
 type-to-search = Type to search
 confirm = Confirm
+</fluent>
+
+<fluent locale="ja-JP">
+craft-type = 製作タイプ
+name = 名前
+
+type-to-search = 入力して検索
+confirm = 確認
 </fluent>
