@@ -126,7 +126,7 @@ const chunkedActions = computed(() => {
             }
             if (action == Actions.StellarSteadyHand) {
                 lines.push(
-                    `/ac ${$t('duty-action')} <wait.${calcWaitTime(action) + genOptions.waitTimeInc}>`,
+                    `/ac ${$t('duty-action2')} <wait.${calcWaitTime(action) + genOptions.waitTimeInc}>`,
                 );
             } else {
                 let actionName = $t(action.replaceAll('_', '-'));
