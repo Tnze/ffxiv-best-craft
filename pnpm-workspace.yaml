@@ -1,5 +1,5 @@
 allowBuilds:
-  core-js: true
-  esbuild: true
-  vue-demi: true
+    core-js: true
+    esbuild: true
+    vue-demi: true
 shellEmulator: true

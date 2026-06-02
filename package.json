@@ -26,17 +26,17 @@
         "ajv": "^8.20.0",
         "d3": "^7.9.0",
         "el-table-infinite-scroll": "^3.0.8",
-        "element-plus": "^2.14.0",
+        "element-plus": "^2.14.1",
         "fluent-vue": "^3.8.2",
         "pinia": "3.0.4",
         "semver": "^7.8.1",
-        "vue": "^3.5.34",
+        "vue": "^3.5.35",
         "vue-draggable-plus": "^0.6.1",
-        "vue-router": "^5.0.7",
+        "vue-router": "^5.1.0",
         "xiv-cac-utils": "^1.0.1"
     },
     "devDependencies": {
-        "@babel/types": "^7.29.0",
+        "@babel/types": "^7.29.7",
         "@tauri-apps/cli": "^2.11.2",
         "@types/d3": "^7.4.3",
         "@types/lodash-es": "4.17.12",
@@ -44,7 +44,7 @@
         "@types/semver": "^7.7.1",
         "@vitejs/plugin-vue": "^6.0.7",
         "naive-ui": "^2.44.1",
-        "oxlint": "^1.66.0",
+        "oxlint": "^1.67.0",
         "prettier": "^3.8.3",
         "typescript": "^6.0.3",
         "unplugin-element-plus": "0.11.2",
@@ -52,7 +52,7 @@
         "vite": "8.0.10",
         "vite-plugin-oxlint": "^2.1.1",
         "vite-plugin-wasm": "^3.6.0",
-        "vue-tsc": "^3.3.1"
+        "vue-tsc": "^3.3.3"
     },
     "packageManager": "pnpm@11.0.8+sha512.4c4097e1dd2d42372c4e7fa5a791ff28fc75a484c7ac192e64b1df0fdef17594ba982f9b4fed9adfb3c757846f565b799b2763fb3733d1de1bcb82cf46684912"
 }
