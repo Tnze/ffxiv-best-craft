@@ -126,7 +126,7 @@ const chunkedActions = computed(() => {
             }
             if (action == Actions.StellarSteadyHand) {
                 lines.push(
-                    `/ac ${$t('duty-action')}2 <wait.${calcWaitTime(action) + genOptions.waitTimeInc}>`,
+                    `/ac ${$t('duty-action')} <wait.${calcWaitTime(action) + genOptions.waitTimeInc}>`,
                 );
             } else {
                 let actionName = $t(action.replaceAll('_', '-'));
@@ -366,7 +366,7 @@ copy-failed = 复制失败：{ $err }
 open-in-cac-tool = 在 CAC Tool 网站打开
 open-in-hqhelper = 在 HQ Helper 网站打开
 
-duty-action = 任务指令
+duty-action2 = 任务指令2
 </fluent>
 
 <fluent locale="zh-TW">
@@ -400,6 +400,8 @@ copy-failed = 複製失敗：{ $err }
 
 open-in-cac-tool = 在 CAC Tool 網站打開
 open-in-hqhelper = 在 HQ Helper 網站打開
+
+duty-action2 = 任務指令2
 </fluent>
 
 <fluent locale="en-US">
@@ -433,4 +435,10 @@ copy-failed = Copy failed: { $err }
 
 open-in-cac-tool = Open in CAC Tool Website
 open-in-hqhelper = Open in HQ Helper Website
+
+duty-action2 = Duty Action II
+</fluent>
+
+<fluent locale="ja-JP">
+duty-action2 = コンテンツアクション2
 </fluent>
