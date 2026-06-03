@@ -20,7 +20,12 @@ import { isTauri } from './Consts';
 if (import.meta.env.VITE_BESTCRAFT_TARGET == 'tauri') {
     var pkgTauri = import('@tauri-apps/api/core');
 } else {
-    var pkgWasm = import('@/../pkg-wasm/app_wasm');
+    var pkgWasm = (async () => {
+        const m = await import('@/../pkg-wasm/app_wasm');
+        await m.default();
+        // await m.initThreadPool(navigator.hardwareConcurrency);
+        return m;
+    })();
 }
 
 export interface Attributes {

@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -17,11 +17,13 @@
 onmessage = async e => {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == 'web') {
         var {
+            default: init,
             rand_simulation,
             rand_collectables_simulation,
             calc_attributes_scope,
         } = await import('../../pkg-wasm/app_wasm');
     } else return;
+    await init();
     const { name, args: argsJson } = e.data;
     const args = JSON.parse(argsJson);
     try {

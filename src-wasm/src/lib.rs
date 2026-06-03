@@ -22,6 +22,7 @@ use app_libs::{
 use rand::rng;
 use serde_wasm_bindgen::{from_value, to_value};
 use wasm_bindgen::prelude::*;
+pub use wasm_bindgen_rayon::init_thread_pool;
 
 fn err_to_string<T: ToString>(v: T) -> String {
     v.to_string()

@@ -16,9 +16,17 @@
 
 onmessage = async e => {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == 'web') {
-        var { dfs_solve, nq_solve, reflect_solve, raphael_solve } =
-            await import('../../pkg-wasm/app_wasm');
+        var {
+            default: init,
+            initThreadPool,
+            dfs_solve,
+            nq_solve,
+            reflect_solve,
+            raphael_solve,
+        } = await import('../../pkg-wasm/app_wasm');
     } else return;
+    await init();
+    await initThreadPool(navigator.hardwareConcurrency);
     const { name, args: argsJson } = e.data;
     const args = JSON.parse(argsJson);
     try {
