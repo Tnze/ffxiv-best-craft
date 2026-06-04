@@ -180,7 +180,7 @@ watch(
         const thisTimeout = setTimeout(async () => {
             await runBatchSimulatios(defaultSimulationCounts);
             await calcScope();
-            if (autoRunTimeout == thisTimeout) {
+            if (autoRunTimeout === thisTimeout) {
                 autoRunTimeout = null;
             }
         }, 200);

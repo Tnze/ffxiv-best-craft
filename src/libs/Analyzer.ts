@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2024 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -52,6 +52,28 @@ export interface CollectableStatistics {
     high_collectability: number;
 }
 
+function runInWorker<T>(
+    name: string,
+    args: Record<string, unknown>,
+): Promise<T> {
+    return new Promise((resolve, reject) => {
+        const worker = new Worker(
+            new URL('./AnalyzerWorker.ts', import.meta.url),
+            { type: 'module' },
+        );
+        worker.onmessage = ev => {
+            worker.terminate();
+            if (ev.data.error === undefined) resolve(ev.data);
+            else reject(ev.data.error);
+        };
+        worker.onerror = ev => {
+            worker.terminate();
+            reject(ev);
+        };
+        worker.postMessage({ name, args: JSON.stringify(args) });
+    });
+}
+
 export async function rand_simulation(
     status: Status,
     actions: Actions[],
@@ -63,21 +85,7 @@ export async function rand_simulation(
         let { invoke } = await pkgTauri;
         return invoke('rand_simulation', args);
     } else {
-        return new Promise((resolve, reject) => {
-            const worker = new Worker(
-                new URL('./AnalyzerWorker.ts', import.meta.url),
-                { type: 'module' },
-            );
-            worker.onmessage = ev => {
-                if (ev.data.error == undefined) resolve(ev.data);
-                else reject(ev.data.error);
-            };
-            worker.onerror = ev => reject(ev);
-            worker.postMessage({
-                name: 'rand_simulation',
-                args: JSON.stringify(args),
-            });
-        });
+        return runInWorker('rand_simulation', args);
     }
 }
 
@@ -93,21 +101,7 @@ export async function rand_collectables_simulation(
         let { invoke } = await pkgTauri;
         return invoke('rand_collectables_simulation', args);
     } else {
-        return new Promise((resolve, reject) => {
-            const worker = new Worker(
-                new URL('./AnalyzerWorker.ts', import.meta.url),
-                { type: 'module' },
-            );
-            worker.onmessage = ev => {
-                if (ev.data.error == undefined) resolve(ev.data);
-                else reject(ev.data.error);
-            };
-            worker.onerror = ev => reject(ev);
-            worker.postMessage({
-                name: 'rand_collectables_simulation',
-                args: JSON.stringify(args),
-            });
-        });
+        return runInWorker('rand_collectables_simulation', args);
     }
 }
 
@@ -126,20 +120,6 @@ export async function calc_attributes_scope(
         let { invoke } = await pkgTauri;
         return invoke('calc_attributes_scope', args);
     } else {
-        return new Promise((resolve, reject) => {
-            const worker = new Worker(
-                new URL('./AnalyzerWorker.ts', import.meta.url),
-                { type: 'module' },
-            );
-            worker.onmessage = ev => {
-                if (ev.data.error == undefined) resolve(ev.data);
-                else reject(ev.data.error);
-            };
-            worker.onerror = ev => reject(ev);
-            worker.postMessage({
-                name: 'calc_attributes_scope',
-                args: JSON.stringify(args),
-            });
-        });
+        return runInWorker('calc_attributes_scope', args);
     }
 }

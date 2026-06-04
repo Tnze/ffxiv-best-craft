@@ -18,12 +18,18 @@ onmessage = async e => {
     if (import.meta.env.VITE_BESTCRAFT_TARGET == 'web') {
         var {
             default: init,
+            initThreadPool,
             rand_simulation,
             rand_collectables_simulation,
             calc_attributes_scope,
         } = await import('../../pkg-wasm/app_wasm');
     } else return;
     await init();
+    try {
+        await initThreadPool(navigator.hardwareConcurrency);
+    } catch (e: any) {
+        console.warn('Failed to init thread pool', e);
+    }
     const { name, args: argsJson } = e.data;
     const args = JSON.parse(argsJson);
     try {
@@ -48,8 +54,10 @@ onmessage = async e => {
                         args.collectablesShopRefine,
                     ),
                 );
+                break;
             case 'calc_attributes_scope':
                 postMessage(calc_attributes_scope(args.status, args.actions));
+                break;
         }
     } catch (e: any) {
         postMessage({ error: String(e) });
