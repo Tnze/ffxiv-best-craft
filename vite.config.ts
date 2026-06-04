@@ -82,7 +82,6 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 main: resolve(__dirname, 'index.html'),
-                fco: resolve(__dirname, 'fco.html'),
             },
         },
         // Disable sourcemap for Tauri target
