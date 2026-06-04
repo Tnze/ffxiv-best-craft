@@ -23,6 +23,7 @@ jobs:
               uses: dtolnay/rust-toolchain@stable
               with:
                   toolchain: nightly
+                  components: rust-src
             - name: install wasm-pack
               run: npm install -g wasm-pack
             - name: install app dependencies and build it
