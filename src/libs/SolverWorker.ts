@@ -26,7 +26,11 @@ onmessage = async e => {
         } = await import('../../pkg-wasm/app_wasm');
     } else return;
     await init();
-    await initThreadPool(navigator.hardwareConcurrency);
+    try {
+        await initThreadPool(navigator.hardwareConcurrency);
+    } catch (e: any) {
+        console.warn('Failed to init thread pool', e);
+    }
     const { name, args: argsJson } = e.data;
     const args = JSON.parse(argsJson);
     try {
