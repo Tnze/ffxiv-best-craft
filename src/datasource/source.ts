@@ -1,5 +1,5 @@
 // This file is part of BestCraft.
-// Copyright (C) 2025 Tnze
+// Copyright (C) 2026 Tnze
 //
 // BestCraft is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -67,7 +67,6 @@ export interface TemporaryActionInfo {
 export interface DataSourceResult<T> {
     results: T[];
     totalPages: number;
-    next?(): Promise<DataSourceResult<T>>;
 }
 
 export type RecipesSourceResult = DataSourceResult<RecipeInfo>;

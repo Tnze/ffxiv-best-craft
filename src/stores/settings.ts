@@ -17,11 +17,6 @@
 import { defineStore } from 'pinia';
 import { DataSource } from '@/datasource/source';
 import { WebSource, YYYYGamesApiBase } from '@/datasource/web-source';
-import {
-    BetaXivApiRecipeSource,
-    BetaXivapiBase,
-    CafeXivapiBase,
-} from '@/datasource/beta-xivapi-source';
 import { isTauri, isWebsite } from '@/libs/Consts';
 
 export type DataSourceID =
@@ -81,20 +76,6 @@ export default defineStore('settings', {
             let dataSources: Record<string, () => Promise<DataSource>> = {
                 'yyyy.games': async () => {
                     return new WebSource(YYYYGamesApiBase, dataSourceLanguage!);
-                },
-                xivapi: async () =>
-                    new BetaXivApiRecipeSource(
-                        BetaXivapiBase,
-                        dataSourceLanguage,
-                    ),
-                'cafe-xivapi': async () => {
-                    let lang = undefined;
-                    if (dataSourceLanguage)
-                        lang = new Map([
-                            ['zh-CN', 'chs'],
-                            ['zh-TW', 'tc'],
-                        ]).get(dataSourceLanguage);
-                    return new BetaXivApiRecipeSource(CafeXivapiBase, lang);
                 },
             };
             let defaultSource = dataSources['yyyy.games'];

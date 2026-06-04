@@ -175,7 +175,8 @@ const hqPerc = asyncComputed(() => highQualityProbability(props.status), null);
             <CollectabilityRefineMark
                 v-if="
                     collectableShopRefine != undefined &&
-                    status.recipe.quality > 0
+                    status.recipe.quality > 0 &&
+                    qualityProgressBarWidth > 0
                 "
                 :collectableShopRefine="collectableShopRefine"
                 :max-collectability="status.recipe.quality / 10"

@@ -67,7 +67,6 @@ const pagination = reactive({
     Page: 1,
     PageTotal: 1,
 });
-const infiniteRecipeNext = ref<() => Promise<RecipesSourceResult>>();
 const displayTable = ref<RecipeInfo[]>([]);
 const isRecipeTableLoading = ref(false);
 const compactLayout = useMediaQuery('screen and (max-width: 500px)');
@@ -87,6 +86,7 @@ let loadRecipeTableResult: Promise<{
     results: RecipeInfo[];
     totalPages: number;
 }> | null = null;
+
 async function updateRecipePage(
     dataSource: DataSource,
     pageNumber: number,
@@ -104,35 +104,11 @@ async function updateRecipePage(
             filterLevel.value ? filterLevel.value * 10 : undefined,
         );
         loadRecipeTableResult = promise;
-        let { results, totalPages, next } = await promise;
+        let { results, totalPages } = await promise;
         if (loadRecipeTableResult == promise) {
             displayTable.value = results;
             pagination.PageTotal = totalPages;
             loadRecipeTableResult = null;
-            infiniteRecipeNext.value = next;
-        }
-    } catch (e: any) {
-        ElMessage.error(String(e));
-    } finally {
-        clearTimeout(timer);
-        isRecipeTableLoading.value = false;
-    }
-}
-
-async function infiniteRecipeLoad() {
-    if (infiniteRecipeNext.value == undefined) {
-        return;
-    }
-    let timer = setTimeout(() => (isRecipeTableLoading.value = true), 20);
-    try {
-        const promise = infiniteRecipeNext.value();
-        loadRecipeTableResult = promise;
-        let { results, totalPages, next } = await promise;
-        if (loadRecipeTableResult == promise) {
-            displayTable.value = displayTable.value.concat(results);
-            pagination.PageTotal = totalPages;
-            loadRecipeTableResult = null;
-            infiniteRecipeNext.value = next;
         }
     } catch (e: any) {
         ElMessage.error(String(e));
@@ -370,10 +346,6 @@ async function selectRecipeById(recipeId: number) {
             :data="displayTable"
             height="100%"
             style="width: 100%"
-            v-el-table-infinite-scroll="infiniteRecipeLoad"
-            :infinite-scroll-disabled="infiniteRecipeNext == undefined"
-            :infinite-scroll-immediate="false"
-            :infinite-scroll-distance="100"
         >
             <el-table-column
                 prop="id"
