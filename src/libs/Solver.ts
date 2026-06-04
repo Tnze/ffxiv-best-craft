@@ -36,11 +36,14 @@ if (isTauri) {
                 },
             );
             worker.onmessage = ev => {
+                worker.terminate();
                 if (ev.data.error == undefined) resolve(ev.data);
                 else reject(ev.data.error);
-                worker.terminate();
             };
-            worker.onerror = ev => reject(ev);
+            worker.onerror = ev => {
+                worker.terminate();
+                reject(ev);
+            };
             worker.postMessage({ name, args: JSON.stringify(args) });
         });
     };

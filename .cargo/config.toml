@@ -12,6 +12,3 @@ rustflags = [
     "-Clink-arg=--export=__tls_base",
     "-Clink-arg=--export=__heap_base",
 ]
-
-[unstable]
-build-std = ["panic_abort", "std"]
