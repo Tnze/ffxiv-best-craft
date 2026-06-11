@@ -1,47 +1,47 @@
 {
-    "version": "1.3.7",
-    "notes": "- 修复了一些未知问题\r\n\r\n不知道为啥，反正莫名修好了（大概） ",
-    "pub_date": "2026-06-04T19:17:28.196Z",
+    "version": "1.3.8",
+    "notes": "- BOM界面增加分页器\r\n- 优化网页版中的客户端下载界面",
+    "pub_date": "2026-06-11T13:20:23.402Z",
     "platforms": {
-        "linux-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnRSbGxKQm5QbjI0T3lqZ3JKelU5d1V0U2pQZE45dUdnblBhb1VSSmhTWFBEUXI1QjlNTzRtZXc4VEFsNlJ0NHIyZ2MxM3BCL3g0Y2N4RklycytNbEE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgwNjAwNDkxCWZpbGU6QmVzdENyYWZ0XzEuMy43X2FtZDY0LkFwcEltYWdlLnRhci5negpZU2VLT2FmUEl2NzMwRlprM1BXN2RQQWRIYWhnSXQ5UkNHSDJMOW91aktrUmRhWFFjUS94bVlpUTFHekVNeXBrVG9wRXEvaVg2Q3E5TE0yWU52Z3lBUT09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v1.3.7/BestCraft_1.3.7_amd64.AppImage.tar.gz"
-        },
-        "linux-x86_64-appimage": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9OTGMwU0RSb0RKRVVCVTFEUG1hc1Z6WUUweWlJb3A5R1NRUGNzM0VVcFRTK0lQVTl2VWh0cEVXMSswNFJ1K0tKbUtVVjNZalF1RDYzTzVETHhQQ0FRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgwNjAwNDkxCWZpbGU6QmVzdENyYWZ0XzEuMy43X2FtZDY0LkFwcEltYWdlCllJT0tvOWNXSmJ0Y3pHTi9EaDVOZXFsSzRCd2d5YVBReFJhcDRwLzdpVEk0T2R1bHZza2NtdU55dUk1c2w2cDd2Ynp5MXVIbHZ3Ynh4a2hBaGNnOUJRPT0K",
-            "url": "https://tnze.yyyy.games/releases/v1.3.7/BestCraft_1.3.7_amd64.AppImage"
-        },
-        "linux-x86_64-deb": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnFZL3ZMZXNGMTFsN2ptUnZMc0FKb2JlQ0l0WERSaTh3YVNjOFc3MEw1UlVLaTdjUHd2eGZLS3dUampXaXh6SHdjaFFteTFvdTd0YzIvN0ZhMXFnR0FvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgwNjAwNDkxCWZpbGU6QmVzdENyYWZ0XzEuMy43X2FtZDY0LmRlYgpuWW5wQzdKZm9MUVVIWW92V09scWcvY3FNeGtLUyt0cWVreTJVaXBCU0NOMTVHSXNtSENGck53ZUREc2c4VTFua2hFdnk2bWhoSFBTRmRUb28raE5EZz09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v1.3.7/BestCraft_1.3.7_amd64.deb"
-        },
-        "linux-x86_64-rpm": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmtRYTd6UksxVk5hOU9xVWwyTjltMWQ4WnZLQjJmZVo0VGlic0JHL3FXTGszaGhmaFRXbXpyRmI5WlJmZ1prWUpna2RYSGhlMDZ6aWhTQzdsbzJ2UndjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgwNjAwNDkxCWZpbGU6QmVzdENyYWZ0LTEuMy43LTEueDg2XzY0LnJwbQpNVTlwTGRsZUFtUjYrN0ZwVmdqMlpRV1Q5RjBRd3BVZmI0RHZCQzNXeks2ODd4Q2NCTU5vTDdJZmhkUE1MTmkyeFl0ZkZzVUREMXBuckp2RzE0TDNCQT09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v1.3.7/BestCraft-1.3.7-1.x86_64.rpm"
-        },
         "windows-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smw5MXJnY2pUZlIyd1U2RkhOZFUyUDMwb3hNbENFTTB3dWNUWW9tUEFFNnhMWU9xMysxODgrdnlwNUlxM3RyRWQvUjg1YXVoUmRJTkordHIzL1c1NndRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgwNjAwNjE4CWZpbGU6QmVzdENyYWZ0XzEuMy43X3g2NF96aC1DTi5tc2kuemlwCmRTVFF6dmY1ZEpobGZRWFRXbWt5cThpdmJiUVpscndlbXZtRnRxdE9pMWliQjcwN0ltZ3V0clpyajByL1ZQSENzYlEyQW5SM2dtNkp2akxkdGtIekNBPT0K",
-            "url": "https://tnze.yyyy.games/releases/v1.3.7/BestCraft_1.3.7_x64_zh-CN.msi.zip"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm56UGpjaDZqRElYZmtyRGdvcE5RRmJlU2UzdGQzOEFFZGJqam92Unh0R3RRLzd2MldqN25HTnNqUE9hZjJMMlhsRUNnZ2Rzak9HTmgvTE9RYy9pUmc0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxMTgzODc3CWZpbGU6QmVzdENyYWZ0XzEuMy44X3g2NF96aC1DTi5tc2kuemlwCnBMU3FIZU1za0NIbUFyZmMvUTlhK3p2U290bktleTZJajd4R2xnZnV1Zk5zZ2t2cEIrT2s5WGhKNnlncEtINFc4a2RSTVpILzJmeDgwS2ZiTVRmVERBPT0K",
+            "url": "https://tnze.yyyy.games/releases/v1.3.8/BestCraft_1.3.8_x64_zh-CN.msi.zip"
         },
         "windows-x86_64-msi": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmpBYXptRlV1OC9KOU1BQ3Y0SkZhbW5wNTcwbHZyVVJaTkNxMWptamhYS29CaUdZalN0RkJ2dStzTWpYWitCQXVUUmh6SkMvSnF6ZzlzQ1BWRUxMU1FrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgwNjAwNjE4CWZpbGU6QmVzdENyYWZ0XzEuMy43X3g2NF96aC1DTi5tc2kKNFk2dDBRYlFHUDVmVnNkeW55MXU3a2daRm1xUlNxVlVoSnRoWjZ6cDlpSVpWV0ZHZ2FnS1JSWFkvOGVjMjkxdU9wVXBKTFp3Ly9wQnoxR0hlaTA4Q3c9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v1.3.7/BestCraft_1.3.7_x64_zh-CN.msi"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnJYRFJnR3JYZkJtSFp1K1dBR0g5TGkrZjQ1QmRjMEZMdlg3Vk5Cd0tLbHN3TzZ2b1R3OWhVa3VVb2ZDeHNaVEFoWHc5VHZaOXlIVVlrK21hNGkvb0FBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxMTgzODc3CWZpbGU6QmVzdENyYWZ0XzEuMy44X3g2NF96aC1DTi5tc2kKUWZiVU91Q0NBOTNDdnF1ZTlXNXJGMGxDVy8rOHlHZ05QcXpOb3RSNHZTdU5FbmpCTVZsUmdmWEpzL0RXK2hpZ3BTY1BUM3RYRnJoNlliSU1uUjlXRFE9PQo=",
+            "url": "https://tnze.yyyy.games/releases/v1.3.8/BestCraft_1.3.8_x64_zh-CN.msi"
         },
         "windows-x86_64-nsis": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Smc1WWhaLzNoKzltZHJScktsbEZ5OU9tbDBBYjFpRGR3ZkRoQUh6UzlsMXhrdmxpNy93ajFFdDh0c2JoNFlzQW9XaVR1SFlacE1oMUVCL2tJM2R5aUFjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgwNjAwNjE4CWZpbGU6QmVzdENyYWZ0XzEuMy43X3g2NC1zZXR1cC5leGUKMFptYnIvN0pDSUR1Sm8vWWcySUN5cEpJVVE5N0JYNktkdytQSjdQby9Hc0xBVHY4TTM3M0lYV2xuSFZ3Wit5MUYwYVN1ZXFkMVZBL0UxczBqNW9QQ0E9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v1.3.7/BestCraft_1.3.7_x64-setup.exe"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnEyOWZaZUtkWWRRUWJsWjNTaVZiTE1SQ1JiUUFRSno5aHZrUDdTRzdESE1YWHdwV0dCUG5Ka2ZTaGRMaHQraTNmZUo5QldkWFA3SFJ1VTNiREdXQWc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxMTgzODc3CWZpbGU6QmVzdENyYWZ0XzEuMy44X3g2NC1zZXR1cC5leGUKeEtBWG1mS3F2eGRTOFljN2plb0xkRlJSYmQrS3RHNWMxalVFdzl4SWYwU3V5ZEYvbDFsaUxzMnF6WFN1SHlVUlY2Z3ZjMkdwN3BpWGY1RGQwak9aREE9PQo=",
+            "url": "https://tnze.yyyy.games/releases/v1.3.8/BestCraft_1.3.8_x64-setup.exe"
+        },
+        "linux-x86_64": {
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9kaGtzdnpKNmFMZFFXZEN4S3FtK3lOZGcrTE5SUExzY2g1djUxdkg4Nk9SME92b1htQXAyWFBBVVcveGRFMC9xOXZqNWZoVlBzaGZYajh1MXg5TWc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxMTgzODk2CWZpbGU6QmVzdENyYWZ0XzEuMy44X2FtZDY0LkFwcEltYWdlLnRhci5negowcndHTUFqdlEwY3YwdnBkUWNEV3lmNFdXb3RWWnFqM0ZDRjV5WEF3WWdrdG1FbUNjdVpwRElrU1NJcitPdzJyWlpuaWNiaS9lbVdTcWZxbzFjaWNDQT09Cg==",
+            "url": "https://tnze.yyyy.games/releases/v1.3.8/BestCraft_1.3.8_amd64.AppImage.tar.gz"
+        },
+        "linux-x86_64-appimage": {
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnNMbGJyM0l1TXZFZ0lGbmF5TXhvUWxJMDRlSTVwSmFzOEJ4QTh4ckFkclFKU2I1OC9maGRqejgwQXBHcjdxV3lvVDhKcmsyTExLZVI1R3pFQVVjcWdjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxMTgzODk1CWZpbGU6QmVzdENyYWZ0XzEuMy44X2FtZDY0LkFwcEltYWdlCittRnpyQnc3Q0VERWZ4UjRoUVdaSFBCL29XNTdRUzRSTVZ3VFBkTWw4VDZoekdFaGNCUU1CM0VHQVd1cXBRbEkyM3dsZGxTU0w0eEdhV1FudElzZkJ3PT0K",
+            "url": "https://tnze.yyyy.games/releases/v1.3.8/BestCraft_1.3.8_amd64.AppImage"
+        },
+        "linux-x86_64-deb": {
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnIwZnVUTkx2amdpeGtKdzlvbzk1cHhOcUhFMCtMbHlxcEQvNUEzb3gyUFZ0QnZxNi9FVnBDQlgyandNbVVPYkxmWWN5Ni8yeUJNTXUyL0VDRktNMEF3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxMTgzODk1CWZpbGU6QmVzdENyYWZ0XzEuMy44X2FtZDY0LmRlYgp6UEI2NENMdmFYNjJxUFQwZmF3bGR0Ti9CNUMyUm9pS2M1N2xQZlNDdUl0SEJqVmRYZGk2dVRJd0dXd2lVSmRxQTJWRFZlSjJxZ2FkdXFkWUNnYVVBZz09Cg==",
+            "url": "https://tnze.yyyy.games/releases/v1.3.8/BestCraft_1.3.8_amd64.deb"
+        },
+        "linux-x86_64-rpm": {
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm9XcmE3Zm8rNW1TT2hlcWRpbEdXWTdLZ0RZTURMcnhEcE16Z1QxNTNDRUNBc3oyekpWdTB2cnVNR2o2Y29sWDYvcFgyVkFlSXdKVjdXVExTN2p0a2dVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxMTgzODk1CWZpbGU6QmVzdENyYWZ0LTEuMy44LTEueDg2XzY0LnJwbQoxZmRMTDJBY3ExQzJ0TlNGMENzNzFSN1FsWmhtT2liQVo5MmJqd3Jsa3liZzVjZklZQ2tUUE1abDlEY0x6emM5cFVFWTZEM05Xc2pxNVdEbWFKRElDZz09Cg==",
+            "url": "https://tnze.yyyy.games/releases/v1.3.8/BestCraft-1.3.8-1.x86_64.rpm"
         },
         "windows-aarch64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm5TOFA5ZXp1Z3p3RnRqM0tNQVVITDI2TnRodVRBZG9uQWV0a0gza1JFU1B5Y2tzS09rQUx3TXlGUkJDSkJNSGZ3c2dJZjFkbEcvUk9jYjZidjFmdWdJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgwNjAwNjM2CWZpbGU6QmVzdENyYWZ0XzEuMy43X2FybTY0X3poLUNOLm1zaS56aXAKL1ZybFNMa2NDSXF4ZnBIWWV3b0Nzc004eEdnTjJOaVN5alRZcDlUN0QwOUpPS1lLRkZzdmtmNGk0aER0UVZqeUpwZEczZXYvQk9GSHg4QUNabW9XRFE9PQo=",
-            "url": "https://tnze.yyyy.games/releases/v1.3.7/BestCraft_1.3.7_arm64_zh-CN.msi.zip"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnZCeE9RZDR2THVib3U1N0YydTBKdk83cGRDcmp3d1BRV09LbWszQWpqZ2s2NGdlTmhSUUxnYm1FSkhHZUEyMUxGZjdHNmlpRVlNKzNpTzBxYmlCcGdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxMTg0MDE0CWZpbGU6QmVzdENyYWZ0XzEuMy44X2FybTY0X3poLUNOLm1zaS56aXAKcWZXcDNuUEFFMmticE02Q3VoemFhZWJ1Y3Z2SGE5U1h6VnU4RXlIa21mb2ZWeXI2RWQxVFB3T3pLTDZLSUFjQURTVERydDY5UFcvOEZlNG9rRWtVRGc9PQo=",
+            "url": "https://tnze.yyyy.games/releases/v1.3.8/BestCraft_1.3.8_arm64_zh-CN.msi.zip"
         },
         "windows-aarch64-msi": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0Sm1ZaHJ4bG44VDREeVkzUU5LTlY0aXpxcXdWTEsvMFBKK0U4aXd5OXk2ejcybStWT0VxTEU1LzFnU1R4ZUxJTmtxUFBYbFZpZDNkdi9ZRmtJSUp5R1FjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgwNjAwNjM2CWZpbGU6QmVzdENyYWZ0XzEuMy43X2FybTY0X3poLUNOLm1zaQpOUWNjNTBGUEFpdERCa0RvcE1WMEsxMURPY0g0eFdjc3RrS2lxaVR4aHEwRGNybnFoU3UyWEpEWkJhV1FiV3hCT0ZHdkFDdHlxczRIZDk5aVFpdEJCdz09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v1.3.7/BestCraft_1.3.7_arm64_zh-CN.msi"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnNFdUVaZDFMbWViTDJTWEo0UGk2aHhtZ1JLVkRyeXpNRmEyV3l6UnRpTk9nNlNlZlRHYS80UlI4YVNBMFEvRDJpVnBRVmxKYUhIbkVYRzVsaHRoMkFjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxMTg0MDE0CWZpbGU6QmVzdENyYWZ0XzEuMy44X2FybTY0X3poLUNOLm1zaQpHNWdlYXU5d2Zvem1BUFZST3VQYVYrT093SjE2VUZmYkEvZ3RPcHh2cU4rUS9BNnZJUE1pdVRvSVBEbi9PVTAwSkxZeExKN3JpeWw3WWdLei9MYVFBZz09Cg==",
+            "url": "https://tnze.yyyy.games/releases/v1.3.8/BestCraft_1.3.8_arm64_zh-CN.msi"
         },
         "windows-aarch64-nsis": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SnVMN3ZjOFd3YWVrbUgydldHWUJ0U2dTU0xKOGlQa2JSSmRTNk5qOTNld2g1QjJ4bytrR1ZtelFiejRiSzdRMVVYSDBXSjNFSGUwTlk2cW5rK2RiQ1FZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgwNjAwNjM2CWZpbGU6QmVzdENyYWZ0XzEuMy43X2FybTY0LXNldHVwLmV4ZQpBUVo1eVUrV01mMzNIcVV4RkJlOFFsWXQyRW11c1ZYSHViTzNpcjBlTWZic0dWUjgyODJoT0UzMDFPcmpDMVlEUDFhYXhCR0FMY05WT1NXam9MSC9CUT09Cg==",
-            "url": "https://tnze.yyyy.games/releases/v1.3.7/BestCraft_1.3.7_arm64-setup.exe"
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTdS9TVU1Sa1R0SmhLMi9CaWpheWRxMWRXRTFOVUpYWEZqNzlEempXazBySmpuUkNrYW5JY0VKNjRRVzJ2RmRkMllMMFZ5TGRDaHBrNTE2ekcyZGVRRExKVUVZQ1h0REF3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxMTg0MDE0CWZpbGU6QmVzdENyYWZ0XzEuMy44X2FybTY0LXNldHVwLmV4ZQpJUXRyMERaOU9QQzZ5SDV6SVVnekZaMVFuYUNvMDcxRGk5bUxGckpBeTJxUXRkZGgyaDBNWUhYc0pPYWFwN1pudWpYRUQxT1BqTGp5MEZMaG5tajlDQT09Cg==",
+            "url": "https://tnze.yyyy.games/releases/v1.3.8/BestCraft_1.3.8_arm64-setup.exe"
         }
     }
 }
