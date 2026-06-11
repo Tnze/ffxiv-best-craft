@@ -17,13 +17,14 @@
 -->
 
 <script setup lang="ts">
-import { ref, useTemplateRef, watch } from 'vue';
+import { ref, reactive, useTemplateRef, watch } from 'vue';
 import {
     ElTable,
     ElTableColumn,
     ElInput,
     ElSpace,
     ElButton,
+    ElPagination,
 } from 'element-plus';
 import type { TableInstance } from 'element-plus';
 import { Search } from '@element-plus/icons-vue';
@@ -44,17 +45,39 @@ const recipeList = ref<RecipeInfo[]>([]);
 const isLoading = ref(false);
 const tableInstance = useTemplateRef<TableInstance>('table');
 
+const pagination = reactive({
+    page: 1,
+    totalPages: 1,
+});
+
 async function update() {
     try {
         isLoading.value = true;
         const source = await settingStore.getDataSource();
-        const recipeTable = await source.recipeTable(1, search.value);
+        const recipeTable = await source.recipeTable(
+            pagination.page,
+            search.value,
+        );
         recipeList.value = recipeTable.results;
+        pagination.totalPages = recipeTable.totalPages;
     } finally {
         isLoading.value = false;
     }
 }
-watch(search, () => update(), { immediate: true });
+
+watch(
+    search,
+    () => {
+        pagination.page = 1;
+        update();
+    },
+    { immediate: true },
+);
+
+function handlePageChange(page: number) {
+    pagination.page = page;
+    update();
+}
 
 const selected = ref<RecipeInfo[]>([]);
 function selectionChanged(rows: RecipeInfo[]) {
@@ -106,6 +129,17 @@ function clearSelections() {
             </template>
         </el-table-column>
     </el-table>
+    <div class="pagination-wrapper">
+        <el-pagination
+            v-model:current-page="pagination.page"
+            :page-count="pagination.totalPages"
+            :pager-count="5"
+            layout="prev, pager, next"
+            size="small"
+            background
+            @current-change="handlePageChange"
+        />
+    </div>
     <div class="buttons" v-if="selected.length > 0">
         <el-button type="primary" @click="selectionConfirmed">
             {{ $t('confirm') }}
@@ -119,6 +153,13 @@ function clearSelections() {
     border-top-left-radius: var(--tnze-content-raduis);
     --el-table-header-bg-color: transparent;
     --el-table-tr-bg-color: transparent;
+}
+
+.pagination-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
 }
 
 .buttons {
