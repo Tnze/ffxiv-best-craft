@@ -7,6 +7,8 @@ src-libs
 src-tauri
 src-wasm
 src-server
+src-db
+src-data
 
 # Ignore lock files
 pnpm-lock.yaml
