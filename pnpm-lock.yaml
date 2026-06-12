@@ -47,6 +47,9 @@ importers:
       fluent-vue:
         specifier: ^3.8.2
         version: 3.8.2(@fluent/bundle@0.19.1)(vue@3.5.35(typescript@6.0.3))
+      lunar-typescript:
+        specifier: ^1.8.6
+        version: 1.8.6
       pinia:
         specifier: 3.0.4
         version: 3.0.4(typescript@6.0.3)(vue@3.5.35(typescript@6.0.3))
@@ -1179,6 +1182,9 @@ packages:
 
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
+
+  lunar-typescript@1.8.6:
+    resolution: {integrity: sha512-5Eo4T/cnuXfrgO4k5LCpOGHIUOuz5hCF/IfNv0T29WY2shR36Hiz+ecN9WjnUuxUKhql9gbOkPaQoqLFKtPRNA==}
 
   magic-string-ast@1.0.3:
     resolution: {integrity: sha512-CvkkH1i81zl7mmb94DsRiFeG9V2fR2JeuK8yDgS8oiZSFa++wWLEgZ5ufEOyLHbvSbD1gTRKv9NdX69Rnvr9JA==}
@@ -2496,6 +2502,8 @@ snapshots:
       lodash-es: 4.18.1
 
   lodash@4.18.1: {}
+
+  lunar-typescript@1.8.6: {}
 
   magic-string-ast@1.0.3:
     dependencies:

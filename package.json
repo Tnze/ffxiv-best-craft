@@ -27,6 +27,7 @@
         "d3": "^7.9.0",
         "element-plus": "^2.14.1",
         "fluent-vue": "^3.8.2",
+        "lunar-typescript": "^1.8.6",
         "pinia": "3.0.4",
         "semver": "^7.8.1",
         "vue": "^3.5.35",

@@ -21,7 +21,7 @@ import { ElText, ElButton, ElLink, ElDialog } from 'element-plus';
 import { computed, onActivated, ref } from 'vue';
 import { useFluent } from 'fluent-vue';
 import { isWebsite, isYYYYGames } from '@/libs/Consts';
-import E1 from '@/eastereggs/e1';
+import { activeEggs } from '@/eastereggs';
 import DesktopEditionDownload from '@/components/DesktopEditionDownload.vue';
 
 const emit = defineEmits<{
@@ -69,12 +69,13 @@ const showDesktopEditionDownload = ref(false);
                 {{ $t('select-recipe') }}
             </el-button>
             <el-button
-                v-if="E1.c()"
+                v-for="egg in activeEggs"
+                :key="egg.t0"
                 type="warning"
                 size="large"
-                @click="cks += E1.t0"
+                @click="cks += egg.t0"
             >
-                {{ E1.t1 }}
+                {{ egg.t1 }}
             </el-button>
             <el-button
                 v-if="isWebsite"

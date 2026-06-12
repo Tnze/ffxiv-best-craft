@@ -1,6 +1,6 @@
 <!-- 
     This file is part of BestCraft.
-    Copyright (C) 2025  Tnze
+    Copyright (C) 2026  Tnze
 
     BestCraft is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
@@ -39,7 +39,7 @@ import { isTauri, isWebsite, isYYYYGames } from '@/libs/Consts';
 import { openUrl } from '@/libs/Utils';
 import FeedbackEmail from '@/components/FeedbackEmail.vue';
 import SupportUs from '@/components/SupportUs.vue';
-import E1 from '@/eastereggs/e1';
+import { developerText } from '@/eastereggs';
 
 const emit = defineEmits<{
     (e: 'setTitle', title: string): void;
@@ -218,7 +218,7 @@ function fixDataSourceLanguage() {
                 </el-form-item>
             </template>
             <el-form-item :label="$t('developer')">
-                {{ E1.c() ? E1.t3 : 'Tnze' }}
+                {{ developerText }}
             </el-form-item>
             <el-form-item :label="$t('feedback')">
                 <FeedbackEmail @click="openUrl" :version="version" />
