@@ -47,7 +47,20 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                   name: bestcraft-dist
-            - name: ssh deploy
+            # Step 1: deploy all assets except index.html, keeping old files
+            # This ensures new JS/CSS/images are available before index.html goes live
+            - name: ssh deploy (assets first)
+              uses: easingthemes/ssh-deploy@v5.1.0
+              with:
+                  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+                  ARGS: '-rlzvc --exclude=releases --exclude=.htaccess --exclude=.user.ini --exclude=index.html -i'
+                  SOURCE: './'
+                  REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+                  REMOTE_USER: ${{ secrets.REMOTE_USER }}
+                  TARGET: ${{ vars.TARGET }}
+            # Step 2: deploy index.html and clean up old files
+            # At this point all new assets are already on the server, seamless switch
+            - name: ssh deploy (finalize with index.html)
               uses: easingthemes/ssh-deploy@v5.1.0
               with:
                   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
