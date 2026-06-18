@@ -35,7 +35,7 @@ use app_libs::{
 };
 use percent_encoding::{AsciiSet, CONTROLS, utf8_percent_encode};
 use rand::rng;
-use sea_orm::{Database, DatabaseConnection, FromQueryResult, entity::*, query::*};
+use sea_orm::{Database, DatabaseConnection, FromQueryResult, entity::*, prelude::Expr, query::*};
 use serde::Serialize;
 use tauri::{Manager, Theme, path::BaseDirectory, webview::WebviewWindow};
 use tokio::sync::{Mutex, OnceCell};
@@ -148,6 +148,27 @@ async fn recipe_table(
     app_handle: tauri::AppHandle,
 ) -> Result<(Vec<RecipeInfo>, u64), String> {
     let db = app_state.get_db(app_handle).await.map_err(err_to_string)?;
+    let search_condition = Condition::any()
+        .add(items::Column::Name.like(&search_name))
+        .add(Expr::cust_with_values(
+            "recipes.Id IN (
+                SELECT CASE s.slot
+                    WHEN 0 THEN mr.Recipe0Id
+                    WHEN 1 THEN mr.Recipe1Id
+                    WHEN 2 THEN mr.Recipe2Id
+                    WHEN 3 THEN mr.Recipe3Id
+                    ELSE mr.Recipe4Id
+                END
+                FROM WKSMissionRecipe mr
+                INNER JOIN WKSMissionUnit mu ON mr.Id = mu.RecipeId
+                CROSS JOIN (
+                    SELECT 0 AS slot UNION ALL SELECT 1 UNION ALL
+                    SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+                ) s
+                WHERE mu.Name LIKE ?
+            )",
+            [search_name.clone()],
+        ));
     let mut query = Recipes::find()
         .join(JoinType::InnerJoin, recipes::Relation::CraftTypes.def())
         .join(JoinType::InnerJoin, recipes::Relation::ItemResultItem.def())
@@ -156,7 +177,7 @@ async fn recipe_table(
             JoinType::InnerJoin,
             recipes::Relation::RecipeLevelTables.def(),
         )
-        .filter(items::Column::Name.like(&search_name));
+        .filter(search_condition);
     if let Some(rlv) = recipe_level {
         query = query.filter(recipes::Column::RecipeLevelId.eq(rlv))
     }
