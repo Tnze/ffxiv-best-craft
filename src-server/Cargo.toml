@@ -9,7 +9,7 @@ license = "AGPL-3.0-or-later"
 [dependencies]
 app-db = { path = "../src-db" }
 
-sea-orm = { workspace = true, features = ["sqlx-mysql"] }
+sea-orm = { workspace = true, features = ["sqlx-mysql", "sqlx-sqlite"] }
 tokio = { workspace = true, features = ["tokio-macros"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
