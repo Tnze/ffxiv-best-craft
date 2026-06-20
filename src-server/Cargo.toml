@@ -16,4 +16,4 @@ serde_json = { workspace = true }
 
 salvo = { version = "0.93", features = ["affix-state", "cors"] }
 dotenvy = "0.15.7"
-toml = "0.9"
+toml = "1.1.2"
