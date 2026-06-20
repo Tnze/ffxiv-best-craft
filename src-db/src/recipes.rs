@@ -90,6 +90,7 @@ pub enum Relation {
         belongs_to = "super::items::Entity",
         from = "Column::ItemResultId",
         to = "super::items::Column::Id",
+        on_condition = r#"Column::ItemResultId.ne(0)"#,
         on_update = "Restrict",
         on_delete = "Restrict"
     )]
