@@ -1,4 +1,4 @@
-<!-- 
+<!--
     This file is part of BestCraft.
     Copyright (C) 2025  Tnze
 
@@ -75,9 +75,18 @@ const selectedGearsetIndex = computed(() =>
     gearsets.gearsets.findIndex(v => v.id == selectedGearset.value),
 );
 
+const minLevel = defineModel<number | undefined>('minLevel');
+
 const emits = defineEmits<{
     (event: 'update:modelValue', v: Enhancer[]): void;
 }>();
+
+function handleLevelChange(level: number) {
+    const index = selectedGearsetIndex.value;
+    if (index === -1) return;
+
+    gearsets.gearsets[index].value.level = level;
+}
 
 onMounted(async () => loadMealsAndMedicine(setting.getDataSource()));
 watch(() => setting.getDataSource(), loadMealsAndMedicine);
@@ -235,7 +244,9 @@ function EnhIncComponent(props: {
             <Gearset
                 v-if="selectedGearsetIndex != -1"
                 :index="selectedGearsetIndex"
+                :min-level="minLevel"
                 simplify
+                @level-change="handleLevelChange"
             />
         </template>
     </el-form>
