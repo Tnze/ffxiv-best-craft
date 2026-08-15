@@ -146,16 +146,6 @@ const recipeTablePageSize = computed({
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item :label="$t('page-size')">
-                <el-input-number
-                    v-model="recipeTablePageSize"
-                    :min="MIN_PAGE_SIZE"
-                    :max="MAX_PAGE_SIZE"
-                    :step="10"
-                    :precision="0"
-                    controls-position="right"
-                />
-            </el-form-item>
             <!-- Data source languages -->
             <el-form-item
                 v-if="(dataSourceList.get(store.dataSource)?.length ?? 0) > 1"
@@ -171,6 +161,20 @@ const recipeTablePageSize = computed({
                         </span>
                     </el-option>
                 </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('page-size')">
+                <el-input-number
+                    v-model="recipeTablePageSize"
+                    :min="MIN_PAGE_SIZE"
+                    :max="MAX_PAGE_SIZE"
+                    :step="10"
+                    :precision="0"
+                    controls-position="right"
+                >
+                    <template #suffix>
+                        <span>{{ $t('rows-per-page') }}</span>
+                    </template>
+                </el-input-number>
             </el-form-item>
             <el-form-item v-if="isWebsite" :label="$t('switch-lines')">
                 <el-button @click="switchLinesDialogVisible = true">
@@ -307,7 +311,8 @@ light = 亮
 dark = 暗
 auto = 自动
 
-page-size = 每页显示行数
+page-size = 配方页大小
+rows-per-page = 行/页
 
 data-source = 数据源
 ds-local = 本地
@@ -347,7 +352,8 @@ light = 亮
 dark = 暗
 auto = 自動
 
-page-size = 每頁顯示行數
+page-size = 每頁配方數
+rows-per-page = 行/頁
 
 data-source = 資料來源
 ds-local = 本地
@@ -386,7 +392,8 @@ light = Light
 dark = Dark
 auto = Auto
 
-page-size = Rows per page
+page-size = Recipe page size
+rows-per-page = rows/page
 
 data-source = Data Source
 ds-local = Local
@@ -425,7 +432,8 @@ ds-local = ローカル
 # ds-xivapi =
 # ds-cafe =
 
-page-size = ページ表示行数
+page-size = レシピページサイズ
+rows-per-page = 行/ページ
 
 switch-lines = サーバの切り替え
 dslang-zh-CN = 簡体字中国語
