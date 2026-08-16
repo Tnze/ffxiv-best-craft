@@ -1,4 +1,4 @@
-<!-- 
+<!--
     This file is part of BestCraft.
     Copyright (C) 2026  Tnze
 
@@ -130,15 +130,15 @@ function confirm(simulatorMode: boolean) {
         required_control: 0,
     };
     selectRecipe(
-        customRecipe.value,
-        undefined,
-        0,
-        requirements,
-        undefined,
-        itemInfo,
-        '',
-        simulatorMode,
-        3,
+        customRecipe.value, // recipe
+        undefined, // recipeId
+        0, // materialQualityFactor
+        requirements, // requirements
+        undefined, // collectability
+        itemInfo, // item
+        undefined, // craftTypeId
+        simulatorMode, // simulatorMode
+        3, // stellarSteadyHandCount
     );
     router.push({ name: 'designer' });
 }

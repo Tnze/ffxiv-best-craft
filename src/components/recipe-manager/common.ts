@@ -25,76 +25,23 @@ import useDesignerStore from '@/stores/designer';
 
 const designerStore = useDesignerStore();
 
-const jobMapsZhCN: { [key: string]: Jobs } = {
-    木工: Jobs.Carpenter,
-    锻冶: Jobs.Blacksmith,
-    铸甲: Jobs.Armorer,
-    雕金: Jobs.Goldsmith,
-    制革: Jobs.Leatherworker,
-    裁缝: Jobs.Weaver,
-    炼金: Jobs.Alchemist,
-    烹调: Jobs.Culinarian,
-};
-const jobMapsZhTW: { [key: string]: Jobs } = {
-    木工: Jobs.Carpenter,
-    鍛造: Jobs.Blacksmith,
-    甲冑: Jobs.Armorer,
-    金工: Jobs.Goldsmith,
-    皮革: Jobs.Leatherworker,
-    裁縫: Jobs.Weaver,
-    鍊金: Jobs.Alchemist,
-    烹調: Jobs.Culinarian,
-};
-const jobMapsEn: { [key: string]: Jobs } = {
-    Woodworking: Jobs.Carpenter,
-    Smithing: Jobs.Blacksmith,
-    Armorcraft: Jobs.Armorer,
-    Goldsmithing: Jobs.Goldsmith,
-    Leatherworking: Jobs.Leatherworker,
-    Clothcraft: Jobs.Weaver,
-    Alchemy: Jobs.Alchemist,
-    Cooking: Jobs.Culinarian,
-};
-const jobMapsJa: { [key: string]: Jobs } = {
-    木工: Jobs.Carpenter,
-    鍛冶: Jobs.Blacksmith,
-    甲冑: Jobs.Armorer,
-    彫金: Jobs.Goldsmith,
-    革細工: Jobs.Leatherworker,
-    裁縫: Jobs.Weaver,
-    錬金: Jobs.Alchemist,
-    調理: Jobs.Culinarian,
-};
-const jobMapsDe: { [key: string]: Jobs } = {
-    Zimmerer: Jobs.Carpenter,
-    Grobschmied: Jobs.Blacksmith,
-    Plattner: Jobs.Armorer,
-    Goldschmied: Jobs.Goldsmith,
-    Gerber: Jobs.Leatherworker,
-    Weber: Jobs.Weaver,
-    Alchemist: Jobs.Alchemist,
-    Gourmet: Jobs.Culinarian,
-};
-const jobMapsFr: { [key: string]: Jobs } = {
-    Menuiserie: Jobs.Carpenter,
-    Métallurgie: Jobs.Blacksmith,
-    Armurerie: Jobs.Armorer,
-    Orfèvrerie: Jobs.Goldsmith,
-    Tannerie: Jobs.Leatherworker,
-    Couture: Jobs.Weaver,
-    Alchimie: Jobs.Alchemist,
-    Cuisine: Jobs.Culinarian,
+export const craftTypeIdToJobMap: Record<number, Jobs> = {
+    0: Jobs.Carpenter,
+    1: Jobs.Blacksmith,
+    2: Jobs.Armorer,
+    3: Jobs.Goldsmith,
+    4: Jobs.Leatherworker,
+    5: Jobs.Weaver,
+    6: Jobs.Alchemist,
+    7: Jobs.Culinarian,
 };
 
-export function craftTypeTojobs(craftType: string): Jobs | undefined {
-    return (
-        jobMapsZhCN[craftType] ??
-        jobMapsZhTW[craftType] ??
-        jobMapsEn[craftType] ??
-        jobMapsJa[craftType] ??
-        jobMapsDe[craftType] ??
-        jobMapsFr[craftType]
-    );
+export function craftTypeIdToJob(
+    craftTypeId: number | undefined,
+): Jobs | undefined {
+    return craftTypeId == undefined
+        ? undefined
+        : craftTypeIdToJobMap[craftTypeId];
 }
 
 export const selectRecipe = (
@@ -104,12 +51,12 @@ export const selectRecipe = (
     requirements: RecipeRequirements,
     collectability: CollectablesShopRefine | undefined,
     item: Item,
-    craftType: string,
+    craftTypeId: number | undefined,
     simulatorMode: boolean,
     stellarSteadyHandCount: number,
 ) => {
     designerStore.selectRecipe({
-        job: craftTypeTojobs(craftType),
+        job: craftTypeIdToJob(craftTypeId),
         item,
         recipe,
         recipeId,

@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use std::{
-    collections::{BTreeMap, HashMap}, env, u64::MAX,
+    collections::{BTreeMap, HashMap}, env,
 };
 
 use salvo::cors;
@@ -114,6 +114,7 @@ struct RecipeInfo {
     item_id: u32,
     item_name: String,
     item_amount: u8,
+    craft_type_id: u32,
     job: String,
 
     difficulty_factor: u16,
@@ -264,6 +265,7 @@ async fn recipe_table(req: &mut Request, depot: &mut Depot, res: &mut Response) 
         .column_as(items::Column::Id, "item_id")
         .column_as(items::Column::Name, "item_name")
         .column_as(recipes::Column::ItemResultAmount, "item_amount")
+        .column_as(recipes::Column::CraftTypeId, "craft_type_id")
         .column_as(craft_types::Column::Name, "job")
         .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
         .column_as(recipes::Column::QualityFactor, "quality_factor")
@@ -418,6 +420,7 @@ async fn recipe_info(req: &mut Request, depot: &mut Depot, res: &mut Response) -
         .column_as(items::Column::Id, "item_id")
         .column_as(items::Column::Name, "item_name")
         .column_as(recipes::Column::ItemResultAmount, "item_amount")
+        .column_as(recipes::Column::CraftTypeId, "craft_type_id")
         .column_as(craft_types::Column::Name, "job")
         .column_as(recipes::Column::DifficultyFactor, "difficulty_factor")
         .column_as(recipes::Column::QualityFactor, "quality_factor")
