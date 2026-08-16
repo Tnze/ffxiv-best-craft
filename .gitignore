@@ -38,3 +38,4 @@ target
 !.yarn/versions
 
 .env
+config.toml

@@ -43,11 +43,6 @@ export function craftTypeIdToJob(
         ? undefined
         : craftTypeIdToJobMap[craftTypeId];
 }
-export function recipeInfoToJob(
-    craftTypeId: number | undefined,
-): Jobs | undefined {
-    return craftTypeIdToJob(craftTypeId);
-}
 
 export const selectRecipe = (
     recipe: Recipe,
@@ -61,7 +56,7 @@ export const selectRecipe = (
     stellarSteadyHandCount: number,
 ) => {
     designerStore.selectRecipe({
-        job: recipeInfoToJob(craftTypeId),
+        job: craftTypeIdToJob(craftTypeId),
         item,
         recipe,
         recipeId,

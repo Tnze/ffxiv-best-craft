@@ -35,7 +35,7 @@ import {
     Recipe,
     RecipeInfo,
 } from '@/libs/Craft';
-import { recipeInfoToJob, selectRecipe } from './common';
+import { craftTypeIdToJob, selectRecipe } from './common';
 import { useMediaQuery } from '@vueuse/core';
 import { useRouter } from 'vue-router';
 import { computed, onWatcherCleanup, ref, watch } from 'vue';
@@ -74,7 +74,7 @@ const recipe = computed(() =>
         : rawRecipe.value,
 );
 const currentJob = computed<Jobs | undefined>(() =>
-    recipeInfoToJob(props.recipeInfo.craft_type_id),
+    craftTypeIdToJob(props.recipeInfo.craft_type_id),
 );
 const currentJobGearsetLevel = computed<number>(() => {
     const job = currentJob.value;
