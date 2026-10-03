@@ -24,19 +24,9 @@ const MIN_PAGE_SIZE = 10;
 const MAX_PAGE_SIZE = 200;
 
 export type DataSourceID =
-    | 'local'
-    | 'yyyy.games'
-    | 'yyyy.games-beta'
-    | 'cafe'
-    | 'xivapi';
+    'local' | 'yyyy.games' | 'yyyy.games-beta' | 'cafe' | 'xivapi';
 export type DataSourceLangID =
-    | 'zh-CN'
-    | 'zh-TW'
-    | 'en'
-    | 'de'
-    | 'fr'
-    | 'ja'
-    | 'ko';
+    'zh-CN' | 'zh-TW' | 'en' | 'de' | 'fr' | 'ja' | 'ko';
 
 export const dataSourceList: Map<string, DataSourceLangID[]> = new Map([
     ['local', []],

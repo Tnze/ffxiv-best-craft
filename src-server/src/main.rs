@@ -15,7 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use std::{
-    collections::{BTreeMap, HashMap}, env,
+    collections::{BTreeMap, HashMap},
+    env,
 };
 
 use salvo::cors;

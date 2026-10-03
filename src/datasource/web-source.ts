@@ -166,7 +166,6 @@ export class WebSource {
     }
 
     // batch fetch multiple recipe info in a single request
-    // no parallel fetch now
     async recipeInfoList(recipeIds: number[]): Promise<RecipeInfo[]> {
         if (recipeIds.length === 0) return [];
 
@@ -174,7 +173,7 @@ export class WebSource {
             recipe_ids: recipeIds.join(','),
         });
         const url =
-            new URL('recipe_info_batch', this.base).toString() +
+            new URL('recipe_info', this.base).toString() +
             '?' +
             query.toString();
         const resp = await fetch(url, {

@@ -274,13 +274,6 @@ async function clearAllFavorites() {
             :stellarSteadyHandCount="stellarSteadyHandCount"
         />
         <div class="content">
-            <el-button
-                type="primary"
-                class="clear-button"
-                @click="clearAllFavorites"
-            >
-                {{ $t('clear-all-favorites') }}
-            </el-button>
             <el-table
                 v-tnze-loading="isRecipeTableLoading"
                 :element-loading-text="$t('please-wait')"
@@ -295,6 +288,22 @@ async function clearAllFavorites() {
                     align="center"
                     class-name="favorite-column"
                 >
+                    <template #header>
+                        <el-button
+                            rectangle
+                            text
+                            size="small"
+                            style="width: 100%; height: 100%"
+                            :type="
+                                recipeFavoritesStore.recipes.length > 0
+                                    ? 'warning'
+                                    : 'info'
+                            "
+                            :icon="StarFilled"
+                            :title="$t('clear-all-favorites')"
+                            @click.stop="clearAllFavorites"
+                        />
+                    </template>
                     <template #default="{ row }">
                         <el-button
                             rectangle

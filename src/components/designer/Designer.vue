@@ -1,4 +1,4 @@
-<!-- 
+<!--
     This file is part of BestCraft.
     Copyright (C) 2026  Tnze
 
@@ -59,6 +59,7 @@ import ActionQueue from './ActionQueue.vue';
 import StatusBar from './StatusBar.vue';
 import SolverList from './solvers/List.vue';
 import { useFluent } from 'fluent-vue';
+import { ElMessage } from 'element-plus';
 import Analyzers from './tabs/Analyzers.vue';
 import { activeSeqKey, displayJobKey } from './injectionkeys';
 import { Slot, Sequence, SequenceSource } from './types';
@@ -200,15 +201,56 @@ const initStatus = ref<Status>({
     )),
     quality: initQuality.value,
 });
+
+const minGearsetLevel = computed(() => {
+    const recipeLevel = props.recipe.job_level;
+    return Math.max(1, recipeLevel - 5);
+});
+
+// check job level
+watch(activeTab, newTab => {
+    if (newTab === 'attributes-enhance') {
+        const currentGearset = selectedGearsetRow.value;
+        if (currentGearset) {
+            const minLevel = minGearsetLevel.value;
+            if (currentGearset.value.level < minLevel) {
+                currentGearset.value.level = minLevel;
+                ElMessage({
+                    message: $t('level-adjusted-warning', { level: minLevel }),
+                    type: 'warning',
+                    duration: 3000,
+                });
+            }
+        }
+    }
+});
+
 watch([props, enhancedAttributes, initQuality], async ([p, ea, iq]) => {
-    initStatus.value = {
-        ...(await newStatus(
-            ea,
-            p.recipe,
-            store.content?.stellarSteadyHandCount ?? 0,
-        )),
-        quality: iq,
-    };
+    try {
+        initStatus.value = {
+            ...(await newStatus(
+                ea,
+                p.recipe,
+                store.content?.stellarSteadyHandCount ?? 0,
+            )),
+            quality: iq,
+        };
+    } catch (error) {
+        if (String(error) === 'player-level-lower-than-recipe-requirement') {
+            const currentGearset = selectedGearsetRow.value;
+            if (currentGearset) {
+                const minLevel = minGearsetLevel.value;
+                currentGearset.value.level = minLevel;
+                ElMessage({
+                    message: $t('level-adjusted-warning', { level: minLevel }),
+                    type: 'warning',
+                    duration: 3000,
+                });
+            }
+        } else {
+            throw error;
+        }
+    }
 });
 
 // Active Sequence
@@ -396,6 +438,7 @@ async function handleSolverResult(
                             />
                         </el-scrollbar>
                     </el-tab-pane>
+                    <!-- 食药&装备 -->
                     <el-tab-pane
                         :label="$t('attributes-enhance')"
                         name="attributes-enhance"
@@ -405,6 +448,7 @@ async function handleSolverResult(
                             <AttrEnhSelector
                                 v-model="attributesEnhancers"
                                 v-model:gearset-id="gearsetId"
+                                v-model:min-level="minGearsetLevel"
                                 :job="isCustomRecipe ? undefined : displayJob"
                                 :attributes="attributes"
                             />
@@ -576,6 +620,7 @@ delete = 删除
 and = { $a }和{ $b }
 attributes-do-not-meet-the-requirements = 装备{ $attribute }不满足配方要求
 attributes-requirements = 制作该配方要求：作业精度 ≥ { $craftsmanship } 且 加工精度 ≥ { $control }
+level-adjusted-warning = 等级不足，已自动调整为最低要求等级: { $level }
 </fluent>
 
 <fluent locale="zh-TW">
@@ -604,6 +649,7 @@ delete = 刪除
 and = { $a }和{ $b }
 attributes-do-not-meet-the-requirements = 裝備{ $attribute }不滿足配方要求
 attributes-requirements = 製作該配方要求：作業精度 ≥ { $craftsmanship } 且 加工精度 ≥ { $control }
+level-adjusted-warning = 等級不足，已自動調整為最低要求等級: { $level }
 </fluent>
 
 <fluent locale="en-US">
@@ -623,7 +669,7 @@ save-file = Save file
 save-success = Saving successed
 save-fail = Saving failed: { $reason }
 open-file = Open file
-read-n-macros = Read { $n -> 
+read-n-macros = Read { $n ->
     [one] one macro
     *[other] { $n } macros
 }
@@ -633,7 +679,7 @@ edit = Edit
 delete = Delete
 
 and = { $a } and { $b }
-attributes-do-not-meet-the-requirements = 
+attributes-do-not-meet-the-requirements =
     { $attribute }
     { $num ->
         [one] does
@@ -641,6 +687,7 @@ attributes-do-not-meet-the-requirements =
     }
     not meet the requirements.
 attributes-requirements = Require: craftsmanship ≥ { $craftsmanship } and control ≥ { $control }
+level-adjusted-warning = Level insufficient, automatically adjusted to minimum required level: { $level }
 </fluent>
 
 <fluent locale="ja-JP">
@@ -649,4 +696,5 @@ init-quality = 初期品質
 and = { $a }と{ $b }
 attributes-do-not-meet-the-requirements = { $attribute }が足りないため
 attributes-requirements = 製作可能条件：{ craftsmanship }{ $craftsmanship}以上 と { control }{ $control }以上
+level-adjusted-warning = レベルが不足しているため、最低要求レベルに自動調整されました: { $level }
 </fluent>

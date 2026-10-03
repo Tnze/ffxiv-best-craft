@@ -1,4 +1,4 @@
-<!-- 
+<!--
     This file is part of BestCraft.
     Copyright (C) 2025  Tnze
 
@@ -25,6 +25,7 @@ import {
     ElCheckboxGroup,
     ElCheckboxButton,
 } from 'element-plus';
+import { ref, watch } from 'vue';
 import { Jobs } from '@/libs/Craft';
 import useGearsets from '@/stores/gearsets';
 import { choiceGearsetDisplayName } from '@/libs/Gearsets';
@@ -33,7 +34,34 @@ const store = useGearsets();
 const props = defineProps<{
     index: number;
     simplify?: boolean;
+    minLevel?: number;
 }>();
+
+const emit = defineEmits<{
+    (e: 'levelChange', level: number): void;
+}>();
+
+const localLevel = ref(store.gearsets[props.index].value.level);
+
+// change localLevel
+watch(
+    () => store.gearsets[props.index].value.level,
+    newLevel => {
+        localLevel.value = newLevel;
+    },
+);
+
+function handleLevelChange(value: number | undefined) {
+    if (value === undefined || value === null) {
+        localLevel.value = store.gearsets[props.index].value.level;
+        return;
+    }
+
+    // write to store directly
+    store.gearsets[props.index].value.level = value;
+
+    emit('levelChange', value);
+}
 </script>
 
 <template>
@@ -64,11 +92,12 @@ const props = defineProps<{
         </template>
         <el-form-item :label="$t('level')">
             <el-input-number
-                v-model="store.gearsets[index].value.level"
+                v-model="localLevel"
                 :min="1"
                 :max="100"
                 :step-strictly="true"
                 :value-on-clear="0"
+                @change="handleLevelChange"
             />
         </el-form-item>
         <el-form-item :label="$t('craftsmanship')">
